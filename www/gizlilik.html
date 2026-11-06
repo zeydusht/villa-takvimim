@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<title>Gizlilik ve Kişisel Verilerin Korunması — Villa Takvim</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff !important;color:#12232B;color-scheme:light only;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  body{display:flex;justify-content:center}
+  .w{width:100%;max-width:40rem;padding:2.5rem 1.25rem 4rem;line-height:1.7;font-size:.9375rem}
+  h1{font-family:ui-serif,Georgia,serif;font-weight:400;font-size:1.875rem;letter-spacing:-.02em;margin:0 0 .5rem}
+  h2{font-family:ui-serif,Georgia,serif;font-weight:400;font-size:1.25rem;letter-spacing:-.02em;
+    margin:2.25rem 0 .75rem;padding-top:1.5rem;border-top:1px solid #E3E9EC}
+  .tarih{color:#6B7C85;font-size:.8125rem;margin-bottom:1.5rem}
+  ul{padding-left:1.125rem}
+  li{margin-bottom:.375rem}
+  table{width:100%;border-collapse:collapse;font-size:.875rem;margin:1rem 0}
+  th,td{text-align:left;padding:.625rem .5rem;border-bottom:1px solid #E3E9EC;vertical-align:top}
+  th{color:#6B7C85;font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}
+  .kutu{background:#F4F7F8;border-radius:.75rem;padding:1rem 1.125rem;margin:1rem 0}
+  a{color:#0E6E7D}
+  .dip{margin-top:3rem;padding-top:1.5rem;border-top:1px solid #E3E9EC;color:#6B7C85;font-size:.8125rem}
+</style>
+</head>
+<body>
+<div class="w">
+
+<h1>Gizlilik ve Kişisel Verilerin Korunması</h1>
+<div class="tarih">Villa Takvim · Son güncelleme: <span id="tarih">—</span></div>
+
+<p>Bu metin, Villa Takvim uygulamasında kişisel verilerin nasıl işlendiğini açıklar. 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında aydınlatma yükümlülüğü gereği hazırlanmıştır.</p>
+
+<h2>1. Kimler hangi rolde?</h2>
+<p>Uygulamada iki ayrı sorumluluk vardır:</p>
+<ul>
+  <li><b>Villa sahibi</b>, misafirlerine ait bilgileri kendi kararıyla girer ve kullanır. Bu veriler bakımından <b>veri sorumlusu villa sahibidir</b>.</li>
+  <li><b>Villa Takvim</b>, bu verileri yalnızca hizmetin çalışması için saklar ve işler. Bu veriler bakımından <b>veri işleyen</b> konumundadır; verileri kendi amaçları için kullanmaz, satmaz, pazarlama yapmaz.</li>
+</ul>
+<div class="kutu">Villa sahibiyseniz: misafirlerinizin bilgilerini uygulamaya girerken onları bilgilendirmek ve gerekli hukuki dayanağı sağlamak sizin sorumluluğunuzdadır.</div>
+
+<h2>2. Hangi veriler işleniyor?</h2>
+<table>
+  <tr><th>Veri</th><th>Neden</th></tr>
+  <tr><td>E-posta adresi, şifre (şifrelenmiş)</td><td>Hesabınıza giriş yapabilmeniz için</td></tr>
+  <tr><td>Ad soyad (isteğe bağlı)</td><td>Hesabınızı tanımlamak, rezervasyon formunda göstermek</td></tr>
+  <tr><td>Villa bilgileri, fotoğraflar, fiyatlar</td><td>Takvimi ve tanıtım sayfasını oluşturmak</td></tr>
+  <tr><td>Misafir adı, telefonu, kişi sayısı, notlar</td><td>Rezervasyon takibi ve iletişim</td></tr>
+  <tr><td>Ödemeler, gelir ve gider kayıtları, fiş fotoğrafları</td><td>Villa sahibinin kendi muhasebe takibi</td></tr>
+</table>
+<p>Kimlik numarası, pasaport, kredi kartı veya konum verisi toplanmaz. Uygulamada reklam, izleme çerezi veya üçüncü taraf analitik yazılımı bulunmaz.</p>
+
+<h2>3. Veriler nerede saklanıyor?</h2>
+<p>Veriler Supabase altyapısında, Avrupa Birliği (Frankfurt, Almanya) bölgesindeki sunucularda tutulur. Aktarım sırasında TLS ile, sunucuda ise şifreli olarak saklanır.</p>
+<div class="kutu">KVKK'ya göre kişisel verilerin yurt dışına aktarılması ayrı bir hukuki dayanak gerektirir. Villa sahibi olarak misafir verilerini bu uygulamaya girmeniz, bu aktarıma ilişkin gerekli bilgilendirme ve dayanağı sağladığınız anlamına gelir.</div>
+
+<h2>4. Kim ne görebiliyor?</h2>
+<ul>
+  <li><b>Villa sahibi:</b> kendi villalarına ait her şeyi görür.</li>
+  <li><b>Bakıcı:</b> yalnızca davet edildiği villayı görür. Takvimi, misafir bilgilerini ve giderleri görebilir; <b>ödemeler, gelirler, kazanç ve rezervasyon tutarları ona kapalıdır.</b> Bu kısıtlama yalnızca ekran düzeyinde değil, veritabanı kuralları (RLS) düzeyinde uygulanır.</li>
+  <li><b>Başka kullanıcılar:</b> hiçbir şey göremez. Her kayıt, erişim yetkisi olan hesaplarla sınırlıdır.</li>
+</ul>
+
+<h2>5. Paylaşılan villa sayfasında ne görünüyor?</h2>
+<p>Villa sahibi bir tanıtım bağlantısı oluşturduğunda, o sayfada yalnızca şunlar yayınlanır: villa adı, konumu, tanıtım metni, fotoğraflar, özellikler, ev kuralları, gecelik fiyatlar, dolu ve boş günler ve villa sahibinin iletişim numarası.</p>
+<p><b>Misafirlere ait hiçbir bilgi yayınlanmaz.</b> Dolu günler yalnızca tarih olarak görünür; o tarihte kimin kaldığı bilgisi sayfaya hiçbir şekilde gönderilmez. Ödemeler, gelir-gider kayıtları ve misafir notları da paylaşılmaz.</p>
+<p>Bağlantı tahmin edilmesi güç rastgele bir adres taşır ve arama motorlarına kapalıdır. Villa sahibi dilediği an "Paylaşımı kaldır" diyerek sayfayı ve fotoğrafları sunucudan siler.</p>
+
+<h2>6. Destek erişimi</h2>
+<p>Villa sahibi yardım istediğinde, uygulamayı yöneten kişi ilgili villaya <b>destek modunda</b> girebilir. Bu modda takvim, rezervasyonlar, fiyatlar, giderler ve tanıtım sayfası görülebilir; <b>ödemeler, gelirler ve kazanç kayıtları destek modunda dahi görüntülenemez.</b></p>
+<p>Her destek girişi tarih ve villa bilgisiyle birlikte kayıt altına alınır. Villa sahibi kendi villasına yapılan destek girişlerinin kaydını talep edebilir.</p>
+
+<h2>7. Veriler ne kadar süre saklanıyor?</h2>
+<ul>
+  <li>Hesabınız açık olduğu sürece kayıtlarınız saklanır.</li>
+  <li>Sildiğiniz rezervasyon, gider ve fotoğraflar sunucudan da silinir.</li>
+  <li>Hesabınızı sildiğinizde, sahibi olduğunuz villalara ait tüm kayıtlar kalıcı olarak silinir.</li>
+  <li>Çıkış yaptığınızda cihazınızdaki geçici kopya temizlenir.</li>
+</ul>
+
+<h2>8. Haklarınız</h2>
+<p>KVKK 11. madde kapsamında; verilerinizin işlenip işlenmediğini öğrenme, bilgi talep etme, düzeltilmesini veya silinmesini isteme ve işlemeye itiraz etme haklarına sahipsiniz.</p>
+<ul>
+  <li><b>Verilerinizi indirmek için:</b> uygulamada Hesabım → Verilerimi indir</li>
+  <li><b>Hesabınızı ve tüm verilerinizi silmek için:</b> Hesabım → Hesabımı kalıcı olarak sil</li>
+  <li>Diğer talepleriniz için aşağıdaki adresten bize yazabilirsiniz.</li>
+</ul>
+
+<h2>9. Güvenlik önlemleri</h2>
+<ul>
+  <li>Tüm bağlantılar TLS ile şifrelenir.</li>
+  <li>Şifreler geri döndürülemez şekilde saklanır; kimse şifrenizi göremez.</li>
+  <li>Her kaydın kime ait olduğu veritabanı düzeyinde (satır bazlı güvenlik) zorunlu kılınmıştır; uygulama hatası olsa bile başka bir kullanıcının verisi okunamaz.</li>
+  <li>Fiş ve belge fotoğrafları kapalı bir alanda saklanır, yalnızca yetkili hesaplar erişebilir.</li>
+  <li>Rol kısıtlamaları sunucuda uygulanır; istemci tarafında değiştirilerek aşılamaz.</li>
+</ul>
+
+<h2>10. Veri ihlali</h2>
+<p>Kişisel verilerin hukuka aykırı şekilde erişilmesi hâlinde, durum en kısa sürede etkilenen kullanıcılara bildirilir ve KVKK'nın öngördüğü şekilde Kişisel Verileri Koruma Kurulu'na bilgi verilir.</p>
+
+<h2>11. İletişim</h2>
+<p>Veri sorumlusu: <b>[Ad soyad / şirket unvanı]</b><br>
+Adres: <b>[adres]</b><br>
+E-posta: <b>[e-posta adresi]</b></p>
+
+<div class="dip">
+  Bu metin bilgilendirme amaçlıdır ve hukuki danışmanlık yerine geçmez. Ticari kullanımdan önce
+  bir avukata inceletmeniz, gerekiyorsa VERBİS kaydı ve yurt dışına aktarım dayanağı konusunda
+  görüş almanız önerilir. Köşeli parantezli alanları kendi bilgilerinizle doldurunuz.
+</div>
+
+</div>
+<script>
+document.getElementById("tarih").textContent =
+  new Date().toLocaleDateString("tr-TR",{day:"numeric",month:"long",year:"numeric"});
+</script>
+</body>
+</html>

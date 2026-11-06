@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0B5B57">
+<title>Villa</title>
+<style>
+  :root{--ink:#12232B;--muted:#6B7C85;--line:#E3E9EC;--soft:#F4F7F8;--dolu:#DDE4E7;--dip:#A3B0B6;
+    --yes:#0B5B57;--yesKoyu:#084842;
+    --serif:ui-serif,Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:#fff !important;color:var(--ink);color-scheme:light only;
+    font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{display:flex;justify-content:center}
+  .w{width:100%;max-width:32rem;padding-bottom:calc(6rem + env(safe-area-inset-bottom))}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;
+    -webkit-appearance:none;appearance:none;background-clip:padding-box}
+  .pad{padding:0 1.25rem}
+  .eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;color:var(--yes);font-weight:600}
+  h1{font-family:var(--serif);font-weight:400;font-size:2rem;letter-spacing:-.02em;margin:.375rem 0 0}
+  h2{font-family:var(--serif);font-weight:400;font-size:1.375rem;letter-spacing:-.02em;margin:0 0 1rem}
+  .bolum{border-top:1px solid var(--line);margin-top:2rem;padding-top:2rem}
+  .son{height:.5rem}
+
+  /* galeri: tam genişlik, köşesiz */
+  .galeri{position:relative}
+  .kaydir{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+    scrollbar-width:none;-ms-overflow-style:none}
+  .kaydir::-webkit-scrollbar{display:none}
+  .kaydir img{width:100%;flex:none;aspect-ratio:4/3;object-fit:cover;
+    scroll-snap-align:center;background:var(--soft);display:block}
+  .sayac{position:absolute;right:.75rem;bottom:.75rem;background:rgba(18,35,43,.72);color:#fff;
+    font-size:.75rem;padding:.25rem .625rem;border-radius:99px;backdrop-filter:blur(4px)}
+
+  /* üst şerit */
+  .ust{position:sticky;top:0;z-index:50;background:var(--yes);color:#fff;
+    padding:.75rem 1.25rem calc(.75rem + env(safe-area-inset-top));
+    display:flex;justify-content:center}
+  .ustIc{width:100%;max-width:29.5rem;display:flex;align-items:baseline;gap:.625rem;
+    overflow:hidden;white-space:nowrap}
+  .ustAd{font-family:var(--serif);font-size:1.125rem;letter-spacing:-.01em;
+    overflow:hidden;text-overflow:ellipsis}
+  .ustKonum{font-size:.75rem;opacity:.85;flex:none}
+  .dilBtn{margin-left:auto;flex:none;color:#fff;border:1px solid rgba(255,255,255,.45);
+    border-radius:.5rem;padding:.25rem .5rem;font-size:.75rem;letter-spacing:.04em;
+    font-family:var(--sans)}
+  .dilBtn:active{opacity:.6}
+
+  /* künye kutucukları */
+  .kunye{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:1.25rem}
+  .kt{background:var(--soft);border-radius:.75rem;padding:.75rem .25rem;text-align:center;
+    font-size:.75rem;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:.375rem;
+    line-height:1.25}
+  .ktIkon{width:1.75rem;height:1.75rem;border-radius:99px;background:#fff;color:var(--yes);
+    display:flex;align-items:center;justify-content:center}
+  .ktIkon svg{width:15px;height:15px}
+
+  /* amblemli özellik listesi */
+  .amblemler{display:grid;grid-template-columns:1fr 1fr;gap:.625rem}
+  .amb{display:flex;align-items:center;gap:.625rem;background:var(--soft);border-radius:.75rem;
+    padding:.75rem .75rem;font-size:.8125rem;line-height:1.3}
+  .ambIkon{width:2rem;height:2rem;border-radius:99px;background:#fff;color:var(--yes);flex:none;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(18,35,43,.06)}
+  .ambIkon svg{width:17px;height:17px}
+
+  /* dip bilgi */
+  .dip{background:var(--soft);margin-top:2.5rem;padding:2rem 0 2.25rem;text-align:center}
+  .dipAd{font-family:var(--serif);font-size:1.375rem;letter-spacing:-.02em}
+  .dipKonum{font-size:.8125rem;color:var(--muted);margin-top:.25rem}
+  .dipNot{font-size:.8125rem;color:var(--muted);margin-top:1rem;line-height:1.6}
+  .dipTel{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.25rem;text-decoration:none;
+    color:var(--yes);font-size:.9375rem;border:1px solid var(--yes);border-radius:.75rem;
+    padding:.625rem 1.125rem}
+
+  p{line-height:1.7;margin:0;font-size:.9375rem;white-space:pre-line;color:#2A3B44}
+  .liste{display:grid;grid-template-columns:1fr 1fr;gap:.75rem .75rem;font-size:.875rem}
+  .liste div{display:flex;gap:.5rem;align-items:flex-start}
+  .tik{color:var(--yes);flex:none;margin-top:.0625rem}
+
+  .odalar{display:grid;gap:.5rem}
+  .oda{background:var(--soft);border-radius:.75rem;padding:.875rem 1rem}
+  .odaAd{font-size:.9375rem;font-weight:600}
+  .odaAlt{font-size:.8125rem;color:var(--muted);margin-top:.1875rem;line-height:1.5}
+  .havuz{display:flex;align-items:center;gap:.5rem;margin-top:.75rem;font-size:.875rem;
+    color:var(--ink);background:var(--soft);border-radius:.75rem;padding:.875rem 1rem}
+  .havuz svg{color:var(--yes)}
+
+  .harita{display:flex;align-items:center;justify-content:center;gap:.5rem;text-decoration:none;
+    border:1px solid var(--line);border-radius:.75rem;padding:.875rem;font-size:.9375rem;color:var(--ink)}
+  .harita svg{color:var(--yes)}
+
+  .kural{margin:0;padding-left:1.125rem;font-size:.875rem;line-height:1.9;color:#2A3B44}
+  .kural b{font-weight:600}
+  .mesafe{display:grid;gap:.5rem;font-size:.875rem}
+  .mesafe div{display:flex;justify-content:space-between;padding:.625rem 0;
+    border-bottom:1px solid var(--line)}
+  .mesafe div:last-child{border-bottom:0}
+  .mesafe span{color:var(--muted)}
+
+  /* takvim */
+  .aybar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+  .aybar .ad{font-family:var(--serif);font-size:1.0625rem}
+  .aybar button{padding:.5rem;border-radius:99px;line-height:0;color:var(--muted)}
+  .dow{display:grid;grid-template-columns:repeat(7,1fr)}
+  .dow div{text-align:center;font-size:.6875rem;text-transform:uppercase;letter-spacing:.1em;
+    color:var(--muted);padding:.375rem 0}
+  .ay{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:3.5rem;row-gap:.1875rem}
+  .g{height:3.5rem;min-height:3.5rem;max-height:3.5rem;align-self:stretch;margin:0;padding:0;
+    border:0;box-sizing:border-box;background-clip:padding-box;
+    border-radius:9px;display:grid;grid-template-rows:1.125rem .8125rem;
+    align-content:center;justify-items:center;font-size:.9375rem;line-height:1;overflow:hidden}
+  .g>span:first-child{height:1.125rem;line-height:1.125rem;display:block}
+  .g .f{line-height:.8125rem;font-size:.5rem;color:var(--muted);letter-spacing:-.02em;
+    white-space:nowrap}
+  .g.dolu{color:var(--dip)}
+  .g.dolu .f{visibility:hidden}
+  .g.gecmis{color:#C3CDD2}
+  .g.gecmis .f{visibility:hidden}
+  .g.sec{background:var(--yes) !important;color:#fff}
+  .g.sec .f{color:rgba(255,255,255,.85);visibility:visible}
+  .g.ara{background:#DDEAE7 !important;border-radius:0}
+  .g.secilebilir{cursor:pointer}
+  .uyari{font-size:.8125rem;color:#9B2C4A;margin-top:.75rem;min-height:1.25rem}
+  .aciklik{display:flex;gap:1rem;margin-top:1rem;font-size:.8125rem;color:var(--muted);
+    align-items:center;flex-wrap:wrap}
+  .ornek{width:1rem;height:1rem;border-radius:5px;display:inline-block;vertical-align:-3px;margin-right:.375rem}
+
+  .fiyatKutu{background:var(--soft); border-radius:.875rem; padding:1rem 1.125rem; margin-top:1rem}
+  .fs{display:flex; justify-content:space-between; align-items:baseline; gap:1rem;
+    padding:.4375rem 0; font-size:.9375rem}
+  .fs span:first-child{color:var(--muted)}
+  .fs span:last-child{font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap}
+  .fsTop{border-top:1px solid var(--line); margin-top:.375rem; padding-top:.75rem;
+    font-family:var(--serif); font-size:1.25rem}
+  .fsTop span:first-child{color:var(--ink)}
+  .fsAlt{font-size:.75rem}
+  .fsNot{font-size:.75rem; color:var(--muted); margin-top:.5rem; line-height:1.5}
+  .ozetkutu{background:var(--soft);border-radius:.875rem;padding:1rem;margin-top:1rem;
+    display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .ozetkutu .top{font-family:var(--serif);font-size:1.25rem;letter-spacing:-.02em}
+  .temizle{font-size:.8125rem;color:var(--muted);text-decoration:underline}
+  .kisi{display:flex;align-items:center;gap:.75rem;font-size:.9375rem;
+    justify-content:space-between;padding:.625rem 0;border-bottom:1px solid var(--line)}
+  .kisi:last-of-type{border-bottom:0}
+  .kisi .alt2{font-size:.75rem;color:var(--muted);margin-top:.125rem}
+  .kisiler{margin-top:1rem}
+  .adet{display:flex;align-items:center;gap:.25rem}
+  .adet button{width:2rem;height:2rem;border-radius:99px;background:var(--soft);font-size:1.125rem;
+    display:flex;align-items:center;justify-content:center;line-height:0}
+  .adet span{min-width:1.75rem;text-align:center;font-variant-numeric:tabular-nums}
+  .adet button:disabled{opacity:.3}
+
+  .alt{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97);
+    border-top:1px solid var(--line);padding:.75rem 1.25rem calc(.75rem + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;align-items:center;gap:.5rem;backdrop-filter:blur(8px)}
+  .alt .ic{width:100%;max-width:29.5rem}
+  .alt a{display:block;width:100%;text-align:center;background:var(--yes);color:#fff;
+    text-decoration:none;padding:.9375rem 0;border-radius:.75rem;font-size:1rem;font-weight:600}
+  .alt a.pasif{background:var(--soft);color:var(--dip);pointer-events:none;font-weight:400}
+  .altozet{display:flex;justify-content:space-between;align-items:baseline;
+    font-size:.8125rem;color:var(--muted);margin-bottom:.5rem}
+  .altozet b{color:var(--ink);font-size:.9375rem}
+
+  .onay{position:fixed;inset:0;background:rgba(18,35,43,.45);display:flex;align-items:flex-start;
+    justify-content:center;z-index:70;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .onaykutu{width:100%;max-width:32rem;background:#fff;border-radius:1rem 1rem 0 0;padding:1.5rem;
+    padding-bottom:calc(1.5rem + env(safe-area-inset-bottom));margin-top:auto}
+  @media(min-width:640px){.onaykutu{border-radius:1rem;margin:auto}}
+  .onaykutu h3{font-family:var(--serif);font-weight:400;font-size:1.5rem;letter-spacing:-.02em;margin:0}
+  .ozetsatir{display:flex;justify-content:space-between;padding:.5rem 0;font-size:.9375rem}
+  .ozetsatir.top{border-top:1px solid var(--line);margin-top:.25rem;padding-top:.75rem;
+    font-family:var(--serif);font-size:1.25rem}
+  .onaybtn{display:block;width:100%;text-align:center;background:var(--yes);color:#fff;
+    text-decoration:none;padding:.9375rem 0;border-radius:.75rem;font-size:1rem;margin-top:1.25rem;font-weight:600}
+  .vazgec{display:block;width:100%;text-align:center;background:var(--soft);color:var(--ink);
+    padding:.875rem 0;border-radius:.75rem;font-size:1rem;margin-top:.5rem}
+  .bos{text-align:center;color:var(--muted);font-size:.9375rem;padding:5rem 1.25rem;line-height:1.6}
+  .yuk{text-align:center;color:var(--muted);font-size:.875rem;padding:4rem 0}
+</style>
+</head>
+<body>
+<div class="w" id="kok"><div class="yuk">Yükleniyor…</div></div>
+<script src="config.js"></script>
+<script>
+(function(){
+  var C=window.VILLA_CONFIG||{};
+  var kok=document.getElementById("kok");
+  var AYLAR_TR=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+  var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+  var pad=function(n){return String(n).padStart(2,"0")};
+  var fmt=function(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())};
+  var DILLER={
+    "Uygunluk":"Availability","Ev hakkında":"About the house","Öne çıkan özellikler":"Highlights",
+    "Oda ve banyo bilgileri":"Rooms and bathrooms","Ev olanakları":"Amenities","Konum":"Location",
+    "Ev kuralları":"House rules","Yakınlarda ne var?":"What's nearby?","Haritada göster":"Show on map",
+    "Uygun":"Available","Dolu":"Booked","Temizle":"Clear","Kapat":"Close",
+    "Rezervasyon isteği oluştur":"Send a booking request","Tarih seçin":"Select dates",
+    "Giriş gününü seçin":"Select check-in day","Çıkış gününü seçin":"Select check-out day",
+    "Kaç kişi geliyorsunuz?":"How many guests?","Yetişkin":"Adults","Çocuk":"Children",
+    "Evcil hayvan":"Pets","Kabul edilmiyor":"Not allowed","Vazgeç":"Cancel",
+    "İsteği WhatsApp'tan gönder":"Send request on WhatsApp","Soru sormak için yazın":"Message us with questions",
+    "Hasar depozitosu":"Damage deposit","Kısa konaklama ücreti":"Short-stay fee","Toplam":"Total",
+    "Kalan ödeme":"Balance due","(eve girişte)":"(at check-in)",
+    "Hasar depozitosu çıkışta iade edilir.":"The damage deposit is refunded at check-out.",
+    "Bu bağlantı artık geçerli değil.":"This link is no longer valid.",
+    "Villa sahibinden yeni bir bağlantı isteyin.":"Please ask the owner for a new link.",
+    "kişi":"guests","yatak odası":"bedrooms","banyo":"bathrooms","Havuz":"Pool","derinlik":"depth",
+    "Özel havuz":"Private pool","Korunaklı havuz":"Secluded pool","Isıtmalı havuz":"Heated pool",
+    "Çocuk havuzu":"Children's pool","Jakuzi":"Jacuzzi","Deniz manzarası":"Sea view",
+    "Doğa manzarası":"Nature view","Klima":"Air conditioning","İnternet":"Internet",
+    "Barbekü":"Barbecue","Barbekü / Mangal":"Barbecue / grill","Şömine":"Fireplace",
+    "Bulaşık makinesi":"Dishwasher","Çamaşır makinesi":"Washing machine","Otopark":"Parking",
+    "Sessiz konum":"Quiet location","Araç gerekli":"Car needed","Bebek ekipmanı":"Baby equipment",
+    "Engelli erişimi":"Accessible","Buzdolabı":"Refrigerator","Fırın":"Oven","Su ısıtıcı":"Kettle",
+    "Tost makinesi":"Sandwich maker","Mikrodalga":"Microwave","TV":"TV",
+    "Saç kurutma makinesi":"Hair dryer","Ütü":"Iron","Sineklik":"Insect screens","Hamak":"Hammock",
+    "Bebek yatağı":"Cot","Mama sandalyesi":"High chair",
+    "Rezervasyon isteği oluştur":"Send a booking request",
+    "Tarih seçin":"Select dates",
+    "Kaç kişi geliyorsunuz?":"How many guests?",
+    "Yetişkin":"Adults","Çocuk":"Children","0–12 yaş":"ages 0–12",
+    "Evcil hayvan":"Pets","Kabul edilmiyor":"Not allowed",
+    "WhatsApp'tan gönder":"Send on WhatsApp","Vazgeç":"Cancel",
+    "Soru sormak için yazın":"Message us with questions",
+    "Depozito, hasar yoksa çıkışta iade edilir.":
+      "The deposit is refunded at check-out if there is no damage.",
+    "Su bedeli fiyata dahildir.":"Water is included in the price.",
+    "Elektrik bedeli fiyata dahildir.":"Electricity is included in the price.",
+    "Evde sigara içilmesine izin ":"Smoking in the house is ",
+    "Evde evcil hayvana izin ":"Pets in the house are ",
+    "Parti ve kalabalık misafir ağırlanmasına izin ":"Parties and large groups are ",
+    "verilmiyor":"not allowed","veriliyor":"allowed",
+    "Giriş saati ":"Check-in at ", ", çıkış saati ":", check-out at ",
+    "Giriş":"Check-in","Çıkış":"Check-out","Uygun":"Available","Dolu":"Booked",
+    "Havaalanına":"To the airport","Merkeze":"To the centre","Plaja":"To the beach",
+    "Markete":"To a shop","Restorana":"To a restaurant","Toplu taşımaya":"To public transport"
+  };
+  var EN = (function(){
+    try{
+      var k=localStorage.getItem("villa-sayfa-dil");
+      if(k) return k==="en";
+    }catch(e){}
+    return !/^tr/i.test(navigator.language||"tr");
+  })();
+  var KURAL=[
+    [/^(\d+) gece$/, "$1 nights"],
+    [/^(\d+) yetişkin$/, "$1 adults"],
+    [/^(\d+) çocuk$/, "$1 children"],
+    [/^(\d+) evcil hayvan$/, "$1 pets"],
+    [/^(\d+) kişi$/, "$1 guests"],
+    [/^(\d+) yatak odası$/, "$1 bedrooms"],
+    [/^(\d+) banyo$/, "$1 bathrooms"],
+    [/^Konaklama · (\d+) gece$/, "Accommodation · $1 nights"],
+    [/^(.+) · (\d+) gece · (\d+) yetişkin$/, "$1 · $2 nights · $3 adults"],
+    [/^· (\d+) gece · (\d+) yetişkin$/, "· $1 nights · $2 adults"],
+    [/^(.+) · (\d+) gece$/, "$1 · $2 nights"],
+    [/^Giriş (\d+:\d+) · Çıkış (\d+:\d+)$/, "Check-in $1 · Check-out $2"],
+    [/^Giriş (\d+:\d+) · Çıkış (\d+:\d+) · Takvimden tarih seçip rezervasyon isteği gönderebilirsiniz\.$/,
+      "Check-in $1 · Check-out $2 · Pick dates on the calendar to send a booking request."],
+    [/^kısa konaklama ücreti, (\d+) gece ve altındaki konaklamalara eklenir\.$/,
+      "short-stay fee applies to stays of $1 nights or fewer."],
+    [/^hasar depozitosu eve girişte alınır, hasar yoksa çıkışta iade edilir\.$/,
+      "damage deposit is collected at check-in and refunded at check-out if there is no damage."],
+    [/^(.+) ₺ \/ (\d+) gece$/, "$1 ₺ / $2 nights"],
+    [/^Giriş (\d+) (\w+)$/, "Check-in $1 $2"],
+    [/^Çıkış (\d+) (\w+)$/, "Check-out $1 $2"],
+    [/^Önceki ay$/, "Previous month"], [/^Sonraki ay$/, "Next month"],
+    [/^(\d+) – (\d+) (\w+) (\d{4})$/, "$1 – $2 $3 $4"]
+  ];
+  function CEV(t){
+    if(!EN) return t;
+    var k=String(t);
+    if(DILLER[k]!==undefined) return DILLER[k];
+    var kirp=k.trim();
+    if(DILLER[kirp]!==undefined) return k.replace(kirp,DILLER[kirp]);
+    for(var i=0;i<KURAL.length;i++){
+      if(KURAL[i][0].test(kirp)) return k.replace(kirp, kirp.replace(KURAL[i][0],KURAL[i][1]));
+    }
+    return t;
+  }
+  // Sayfadaki her metni sözlükten geçir (gözden kaçan kalmasın)
+  function dugumCevir(n){
+    if(n.nodeType===3){ var y=CEV(n.nodeValue); if(y!==n.nodeValue) n.nodeValue=y; return; }
+    if(n.nodeType!==1) return;
+    if(n.tagName==="SCRIPT"||n.tagName==="STYLE") return;
+    ["placeholder","aria-label","title"].forEach(function(a){
+      var v=n.getAttribute&&n.getAttribute(a);
+      if(v){ var y2=CEV(v); if(y2!==v) n.setAttribute(a,y2); }
+    });
+    for(var c=n.firstChild;c;c=c.nextSibling) dugumCevir(c);
+  }
+  function dilIzle(){
+    if(!EN) return;
+    document.documentElement.setAttribute("lang","en");
+    if(window.MutationObserver){
+      new MutationObserver(function(kayit){
+        kayit.forEach(function(k){
+          for(var i=0;i<k.addedNodes.length;i++) dugumCevir(k.addedNodes[i]);
+          if(k.type==="characterData"&&k.target) dugumCevir(k.target);
+        });
+      }).observe(document.body,{childList:true,subtree:true,characterData:true});
+    }
+    dugumCevir(document.body);
+  }
+  var AYAD_EN=["January","February","March","April","May","June","July","August",
+    "September","October","November","December"];
+  var AYLAR=EN?AYAD_EN:AYLAR_TR;
+  var nf=new Intl.NumberFormat(EN?"en-US":"tr-TR");
+  var kisaFiyat=function(n){
+    return n>=100000 ? Math.round(n/1000)+"b₺" : nf.format(n)+"₺";
+  };
+
+  function guvenliAdres(u){
+    var t=String(u||"").trim();
+    return /^https?:\/\//i.test(t) ? t : "";
+  }
+  function hata(){
+    kok.innerHTML='<div class="bos">Bu bağlantı artık geçerli değil.<br>Villa sahibinden yeni bir bağlantı isteyin.</div>';
+  }
+
+  var yol=decodeURIComponent(location.pathname.replace(/^\/+|\/+$/g,""));
+  var q=(location.search.match(/[?&]v=([^&]+)/)||[])[1];
+  var jeton=q?decodeURIComponent(q):yol;
+  if(!jeton || !/^[a-z0-9-]+$/i.test(jeton) || !C.supabaseUrl) return hata();
+
+  fetch(C.supabaseUrl.replace(/\/+$/,"")+"/storage/v1/object/public/galeri/"+jeton+".json",{cache:"no-cache"})
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(ciz).catch(hata);
+
+  var D={}, imlec=new Date();
+  imlec.setDate(1); imlec.setHours(0,0,0,0);
+  var bugun=new Date(); bugun.setHours(0,0,0,0);
+
+  function ciz(d){
+    D=d; if(!D.fotolar) D.fotolar=[];
+    var b=D.bilgi||{};
+    document.title=(D.ad||"Villa")+(b.konum?", "+b.konum:"");
+
+    var h='<div class="ust"><div class="ustIc">'+
+      '<span class="ustAd">'+esc(D.ad||"Villa")+"</span>"+
+      (b.konum?'<span class="ustKonum">'+esc(b.konum)+"</span>":"")+
+      '<button class="dilBtn" id="dilBtn">'+(EN?"TR":"EN")+"</button>"+
+      "</div></div>";
+    // ---- galeri ----
+    D.fotolar=(D.fotolar||[]).filter(function(u){ return guvenliAdres(u); });
+    if(D.fotolar.length){
+      h+='<div class="galeri"><div class="kaydir" id="kaydir">'+
+         D.fotolar.map(function(u){
+           var a=guvenliAdres(u);
+           return a? '<img src="'+esc(a)+'" loading="lazy" alt="">' : "";
+         }).join("")+
+         '</div><div class="sayac" id="sayac">1 / '+D.fotolar.length+"</div></div>";
+    }
+
+    // ---- başlık ----
+    h+='<div class="pad" style="padding-top:1.5rem">';
+    if(b.konum) h+='<div class="eyebrow">'+esc(b.konum)+"</div>";
+    h+="<h1>"+esc(D.ad||"Villa")+"</h1>";
+    var kunye=[];
+    if(b.kapasite) kunye.push([ikon("kisi"), b.kapasite+" "+CEV("kişi")]);
+    if(b.oda) kunye.push([ikon("oda"), b.oda+" "+CEV("yatak odası")]);
+    if(b.banyo) kunye.push([ikon("banyo"), b.banyo+" "+CEV("banyo")]);
+    if(b.m2) kunye.push([ikon("alan"), b.m2+" m²"]);
+    if(kunye.length) h+='<div class="kunye">'+kunye.map(function(x){
+      return '<div class="kt"><span class="ktIkon">'+x[0]+"</span><span>"+x[1]+"</span></div>"; }).join("")+"</div>";
+    h+="</div>";
+
+    // ---- uygunluk ----
+    h+=bolum(CEV("Uygunluk"),'<div id="takvim"></div>'+
+       '<div class="aciklik">'+
+       '<span><i class="ornek" style="background:#fff;box-shadow:inset 0 0 0 1px var(--line)"></i>Uygun</span>'+
+       '<span><i class="ornek" style="background:var(--dolu)"></i>Dolu</span>'+
+       '<span style="color:var(--muted)">Giriş 16:00 · Çıkış 10:00</span></div>'+
+       '<div id="secimAlan"></div>');
+
+    // ---- ev hakkında ----
+    if(b.aciklama) h+=bolum(CEV("Ev hakkında"),'<p>'+esc(b.aciklama)+"</p>");
+
+    // ---- öne çıkan özellikler ----
+    if(b.ozellikler && b.ozellikler.length)
+      h+=bolum(CEV("Öne çıkan özellikler"),amblemler(b.ozellikler));
+
+    // ---- oda ve banyo ----
+    var odaHtml="";
+    if(b.odalar){
+      odaHtml+='<div class="odalar">'+String(b.odalar).split("\n").filter(function(x){return x.trim()})
+        .map(function(sat){
+          var p=sat.split("·");
+          return '<div class="oda"><div class="odaAd">'+esc((p[0]||"").trim())+"</div>"+
+            (p.length>1?'<div class="odaAlt">'+esc(p.slice(1).join(" · ").trim())+"</div>":"")+"</div>";
+        }).join("")+"</div>";
+    }
+    if(b.havuzBoyut || b.havuzDerinlik){
+      odaHtml+='<div class="havuz">'+ikon("havuz")+"<span>Havuz"+
+        (b.havuzBoyut?" · "+esc(b.havuzBoyut):"")+
+        (b.havuzDerinlik?" · derinlik "+esc(b.havuzDerinlik):"")+"</span></div>";
+    }
+    if(odaHtml) h+=bolum(CEV("Oda ve banyo bilgileri"),odaHtml);
+
+    // ---- ev olanakları ----
+    if(b.olanaklar && b.olanaklar.length)
+      h+=bolum(CEV("Ev olanakları"),amblemler(b.olanaklar));
+
+    // ---- konum ----
+    var haritaAdres=guvenliAdres(b.harita);
+    if(haritaAdres)
+      h+=bolum(CEV("Konum"),'<a class="harita" href="'+esc(haritaAdres)+'" target="_blank" rel="noopener noreferrer">'+
+        ikon("pin")+CEV("Haritada göster")+"</a>");
+
+    // ---- ev kuralları ----
+    var k=[];
+    k.push("Giriş saati <b>16:00</b>, çıkış saati <b>10:00</b>.");
+    if(b.sigara!==undefined) k.push("Evde sigara içilmesine izin <b>"+(b.sigara?"veriliyor":"verilmiyor")+"</b>.");
+    if(b.evcil!==undefined) k.push("Evde evcil hayvana izin <b>"+(b.evcil?"veriliyor":"verilmiyor")+"</b>.");
+    if(b.parti!==undefined) k.push("Parti ve kalabalık misafir ağırlanmasına izin <b>"+(b.parti?"veriliyor":"verilmiyor")+"</b>.");
+    if(b.su!==false) k.push("Su bedeli fiyata dahildir.");
+    if(b.elektrik!==false) k.push("Elektrik bedeli fiyata dahildir.");
+    if(D.ek && D.ek.sinir && D.ek.ucret)
+      k.push("<b>"+nf.format(D.ek.ucret)+" ₺</b> kısa konaklama ücreti, "+D.ek.sinir+
+             " gece ve altındaki konaklamalara eklenir.");
+    if(b.depozito) k.push("<b>"+nf.format(b.depozito)+" ₺</b> hasar depozitosu eve girişte alınır, hasar yoksa çıkışta iade edilir.");
+    h+=bolum(CEV("Ev kuralları"),'<ul class="kural">'+k.map(function(x){return "<li>"+x+"</li>"}).join("")+"</ul>");
+
+    // ---- yakınlarda ne var ----
+    var ms=b.mesafeler||{}, mAd={havaalani:"Havaalanına",merkez:"Merkeze",plaj:"Plaja",
+      market:"Markete",restoran:"Restorana",toplutasima:"Toplu taşımaya"};
+    var mv=Object.keys(mAd).filter(function(x){return ms[x]});
+    if(mv.length) h+=bolum(CEV("Yakınlarda ne var?"),'<div class="mesafe">'+
+      mv.map(function(x){ return "<div><span>"+CEV(mAd[x])+"</span><b>"+esc(ms[x])+" km</b></div>"; }).join("")+"</div>");
+
+    var tel0=telNo(b.whatsapp);
+    h+='<div class="dip"><div class="pad">'+
+      '<div class="dipAd">'+esc(D.ad||"Villa")+"</div>"+
+      (b.konum?'<div class="dipKonum">'+esc(b.konum)+"</div>":"")+
+      '<div class="dipNot">Giriş 16:00 · Çıkış 10:00 · Takvimden tarih seçip rezervasyon isteği gönderebilirsiniz.</div>'+
+      (tel0?'<a class="dipTel" href="https://wa.me/'+tel0+'" target="_blank" rel="noopener">'+
+        ikon("pin")+"Soru sormak için yazın</a>":"")+
+      "</div></div>";
+    kok.innerHTML=h;
+    dilIzle();
+    var db=document.getElementById("dilBtn");
+    if(db) db.onclick=function(){
+      try{ localStorage.setItem("villa-sayfa-dil", EN?"tr":"en"); }catch(e){}
+      location.reload();
+    };
+    if(D.fotolar.length) kaydirmaTakip();
+    takvimCiz(); altCiz();
+  }
+
+
+  var AMBLEM=[
+    [/özel havuz|havuz.*korunak|korunak.*havuz|ısıtmalı havuz|^havuz/i,"havuz"],
+    [/çocuk havuz/i,"cocuk"],
+    [/jakuzi/i,"jakuzi"],
+    [/deniz manzara/i,"deniz"],
+    [/doğa manzara|manzara/i,"dag"],
+    [/klima/i,"klima"],
+    [/internet|wifi|i̇nternet/i,"wifi"],
+    [/barbekü|mangal/i,"mangal"],
+    [/şömine/i,"somine"],
+    [/bulaşık/i,"bulasik"],
+    [/çamaşır/i,"camasir"],
+    [/otopark|araç gerekli/i,"araba"],
+    [/sessiz|sakin/i,"sessiz"],
+    [/bebek|mama sandalye/i,"bebek"],
+    [/engelli/i,"engelli"],
+    [/buzdolab/i,"buzdolabi"],
+    [/fırın|ocak/i,"firin"],
+    [/su ısıtıcı|çay|kettle/i,"cay"],
+    [/tost|mikrodalga/i,"tost"],
+    [/tv|televizyon/i,"tv"],
+    [/saç kurutma/i,"sac"],
+    [/ütü/i,"utu"],
+    [/sineklik/i,"sineklik"],
+    [/hamak/i,"hamak"],
+    [/yatak/i,"yatak"],
+    [/banyo|duş/i,"banyo"]
+  ];
+  var IKONLAR={
+    havuz:'<path d="M2 18c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2M6 14V5a2 2 0 114 0M14 14V5a2 2 0 114 0"/>',
+    cocuk:'<path d="M2 18c2 0 2-1.5 4-1.5S8 18 10 18s2-1.5 4-1.5S16 18 18 18M12 3v6M9 6h6"/>',
+    jakuzi:'<path d="M4 13h16v4a4 4 0 01-4 4H8a4 4 0 01-4-4v-4zM8 9V6M12 9V5M16 9V6"/>',
+    deniz:'<path d="M2 17c2 0 2-1.5 4-1.5S8 17 10 17s2-1.5 4-1.5S16 17 18 17s2-1.5 4-1.5M4 12l8-7 8 7"/>',
+    dag:'<path d="M3 19l6-9 4 6 2-3 6 6z"/>',
+    klima:'<path d="M3 5h18v8H3zM7 17v2M12 17v3M17 17v2M6 9h12"/>',
+    wifi:'<path d="M5 12a10 10 0 0114 0M8 15.5a6 6 0 018 0M12 19h.01"/>',
+    mangal:'<path d="M4 10h16l-2 8H6zM9 6c0-1 1-1.5 1-3 1.5 1 2 2 2 3M14 6c0-.7.6-1 .6-2 1 .7 1.4 1.4 1.4 2"/>',
+    somine:'<path d="M4 21V5h16v16M9 21v-5a3 3 0 016 0v5M12 8c-1 1-1.5 2-.5 3"/>',
+    bulasik:'<path d="M4 3h16v18H4zM4 8h16M8 12h8M8 16h5"/>',
+    camasir:'<path d="M4 3h16v18H4zM12 8a5 5 0 100 10 5 5 0 000-10M7 5.5h.01M10 5.5h.01"/>',
+    araba:'<path d="M5 15h14M6 15l1.5-5h9L18 15M7 19v-2M17 19v-2M4 15h16v4H4z"/>',
+    sessiz:'<path d="M11 5L6 9H3v6h3l5 4zM16 9a4 4 0 010 6"/>',
+    bebek:'<path d="M12 3a4 4 0 014 4v2H8V7a4 4 0 014-4zM6 9h12l-1 8a3 3 0 01-3 3h-4a3 3 0 01-3-3z"/>',
+    engelli:'<path d="M11 6a2 2 0 100-4 2 2 0 000 4zM11 9v5h5l3 6M11 14a5 5 0 101 8"/>',
+    buzdolabi:'<path d="M6 2h12v20H6zM6 10h12M9 6v2M9 14v2"/>',
+    firin:'<path d="M4 4h16v16H4zM4 9h16M8 6.5h.01M12 6.5h.01M8 13h8v4H8z"/>',
+    cay:'<path d="M4 8h12v6a4 4 0 01-4 4H8a4 4 0 01-4-4zM16 10h2a2 2 0 010 4h-2M3 21h14"/>',
+    tost:'<path d="M3 10c0-3 4-5 9-5s9 2 9 5v6a2 2 0 01-2 2H5a2 2 0 01-2-2zM8 7v3M16 7v3"/>',
+    tv:'<path d="M3 5h18v11H3zM8 20h8M12 16v4"/>',
+    sac:'<path d="M4 6h9a5 5 0 010 8H9l-1 6H5l1-6H4a3 3 0 010-8zM17 8l4-2M17 12l4 2"/>',
+    utu:'<path d="M3 17h18v3H3zM5 17c0-5 3-8 8-8h6v8"/>',
+    sineklik:'<path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18"/>',
+    hamak:'<path d="M2 6v12M22 6v12M2 9c5 6 15 6 20 0"/>',
+    yatak:'<path d="M3 18v-6a2 2 0 012-2h14a2 2 0 012 2v6M3 18h18M6 10V7a2 2 0 012-2h8a2 2 0 012 2v3"/>',
+    banyo:'<path d="M4 12h16v3a5 5 0 01-5 5H9a5 5 0 01-5-5v-3zM7 12V5a2 2 0 114 0"/>',
+    varsayilan:'<path d="M20 6L9 17l-5-5"/>'
+  };
+  function amblem(etiket){
+    var ad="varsayilan";
+    for(var i=0;i<AMBLEM.length;i++){ if(AMBLEM[i][0].test(etiket)){ ad=AMBLEM[i][1]; break; } }
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+
+      (IKONLAR[ad]||IKONLAR.varsayilan)+"</svg>";
+  }
+  function amblemler(dizi){
+    return '<div class="amblemler">'+dizi.map(function(o){
+      return '<div class="amb"><span class="ambIkon">'+amblem(o)+"</span><span>"+esc(CEV(o))+"</span></div>";
+    }).join("")+"</div>";
+  }
+
+  function bolum(baslik,ic){
+    return '<div class="bolum"><div class="pad"><h2>'+baslik+"</h2>"+ic+"</div></div>";
+  }
+  function tik(){
+    return '<svg class="tik" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>';
+  }
+  function ikon(t){
+    var y={
+      kisi:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8"/>',
+      oda:'<path d="M3 18v-6a2 2 0 012-2h14a2 2 0 012 2v6M3 18h18M3 18v2M21 18v2M6 10V7a2 2 0 012-2h8a2 2 0 012 2v3"/>',
+      banyo:'<path d="M4 12h16v3a5 5 0 01-5 5H9a5 5 0 01-5-5v-3zM7 12V5a2 2 0 114 0"/>',
+      alan:'<path d="M3 3h18v18H3zM9 3v18M3 9h18"/>',
+      havuz:'<path d="M2 18c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2M6 14V5a2 2 0 114 0M14 14V5a2 2 0 114 0"/>',
+      pin:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0zM12 13a3 3 0 100-6 3 3 0 000 6"/>'
+    }[t]||"";
+    return '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">'+y+"</svg>";
+  }
+
+  function kaydirmaTakip(){
+    var el=document.getElementById("kaydir"), sy=document.getElementById("sayac");
+    if(!el||!sy) return;
+    el.addEventListener("scroll",function(){
+      var n=D.fotolar.length;
+      var i=Math.round(el.scrollLeft/(el.scrollWidth/n));
+      i=Math.max(0,Math.min(n-1,i));
+      sy.textContent=(i+1)+" / "+n;
+    },{passive:true});
+  }
+
+  var sec={bas:null,bit:null}, say={yetiskin:2,cocuk:0,evcil:0}, uyariMetin="";
+
+  function serbestMi(k){ return (D.dolu||[]).indexOf(k)<0; }
+  function yarimVar(k,t){ return (D.yarim||[]).indexOf(k+":"+t)>=0; }
+  function girisUygun(k){ return serbestMi(k) && !yarimVar(k,"a"); }
+  function cikisUygun(k){ return serbestMi(k) && !yarimVar(k,"s"); }
+  function araBos(a,b){
+    var d=new Date(a.slice(0,4),+a.slice(5,7)-1,+a.slice(8,10));
+    d.setDate(d.getDate()+1);
+    while(fmt(d)<b){
+      var k=fmt(d);
+      if(!serbestMi(k) || yarimVar(k,"s") || yarimVar(k,"a")) return false;
+      d.setDate(d.getDate()+1);
+    }
+    return true;
+  }
+  function geceSay(){
+    if(!sec.bas||!sec.bit) return 0;
+    return Math.round((new Date(sec.bit)-new Date(sec.bas))/86400000);
+  }
+  function toplam(){
+    var t=0, eksik=0;
+    var d=new Date(sec.bas);
+    while(fmt(d)<sec.bit){
+      var f=(D.fiyat||{})[fmt(d)];
+      if(f) t+=f; else eksik++;
+      d.setDate(d.getDate()+1);
+    }
+    return {tutar:t, eksik:eksik};
+  }
+
+  function gunTikla(k){
+    uyariMetin="";
+    if(k<fmt(bugun)) return;
+    if(!sec.bas || sec.bit){
+      if(!girisUygun(k)){ uyariMetin="Bu güne giriş yapılamıyor, dolu."; }
+      else sec={bas:k,bit:null};
+    } else if(k<=sec.bas){
+      if(girisUygun(k)) sec={bas:k,bit:null};
+    } else {
+      if(!cikisUygun(k)) uyariMetin="Bu güne çıkış yapılamıyor, dolu.";
+      else if(!araBos(sec.bas,k)) uyariMetin="Seçtiğiniz aralıkta dolu günler var.";
+      else sec.bit=k;
+    }
+    takvimCiz(); altCiz(); secimKutusu();
+  }
+
+  function takvimCiz(){
+    var t=document.getElementById("takvim"); if(!t) return;
+    var y=imlec.getFullYear(), m=imlec.getMonth();
+    var adet=new Date(y,m+1,0).getDate(), lead=(new Date(y,m,1).getDay()+6)%7;
+    var fiyat=D.fiyat||{}, bugunK=fmt(bugun);
+
+    var h='<div class="aybar">'+
+      '<button id="ay-once" aria-label="Önceki ay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>'+
+      '<div class="ad">'+AYLAR[m]+" "+y+"</div>"+
+      '<button id="ay-sonra" aria-label="Sonraki ay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg></button></div>'+
+      '<div class="dow"><div>P</div><div>S</div><div>Ç</div><div>P</div><div>C</div><div>C</div><div>P</div></div>'+
+      '<div class="ay" id="ay">';
+    for(var i=0;i<lead;i++) h+="<div></div>";
+    for(var g=1;g<=adet;g++){
+      var k=fmt(new Date(y,m,g));
+      var tam=!serbestMi(k), ys=yarimVar(k,"s"), ya=yarimVar(k,"a");
+      var gecmis=k<bugunK, f=fiyat[k], st="", cls="g";
+      var secili=(k===sec.bas||k===sec.bit), arada=sec.bit&&k>sec.bas&&k<sec.bit;
+      if(gecmis) cls+=" gecmis";
+      else if(secili) cls+=" sec";
+      else if(arada) cls+=" ara";
+      else if(tam){ cls+=" dolu"; st="background:var(--dolu)"; }
+      else if(ys) st="background:linear-gradient(110deg,var(--dolu) 49.5%,transparent 50.5%)";
+      else if(ya) st="background:linear-gradient(110deg,transparent 49.5%,var(--dolu) 50.5%)";
+      if(!gecmis) cls+=" secilebilir";
+      h+='<div class="'+cls+'" data-k="'+k+'" style="'+st+'"><span>'+g+"</span>"+
+         '<span class="f">'+((!gecmis && !tam && f)?kisaFiyat(f):"")+"</span></div>";
+    }
+    h+='</div><div class="uyari">'+esc(uyariMetin)+"</div>";
+    t.innerHTML=h;
+    document.getElementById("ay-once").onclick=function(){
+      imlec=new Date(imlec.getFullYear(),imlec.getMonth()-1,1); takvimCiz(); };
+    document.getElementById("ay-sonra").onclick=function(){
+      imlec=new Date(imlec.getFullYear(),imlec.getMonth()+1,1); takvimCiz(); };
+    document.getElementById("ay").addEventListener("click",function(e){
+      var c=e.target.closest(".secilebilir"); if(c) gunTikla(c.dataset.k); });
+  }
+
+  function tarihMetni(){
+    var a=new Date(sec.bas), z=new Date(sec.bit);
+    var m1=AYLAR[a.getMonth()], m2=AYLAR[z.getMonth()];
+    return a.getMonth()===z.getMonth()
+      ? a.getDate()+" – "+z.getDate()+" "+m2+" "+z.getFullYear()
+      : a.getDate()+" "+m1+" – "+z.getDate()+" "+m2+" "+z.getFullYear();
+  }
+
+  function altCiz(){
+    var bar=document.getElementById("altbar");
+    if(!bar){ bar=document.createElement("div"); bar.className="alt"; bar.id="altbar";
+      document.body.appendChild(bar); }
+    var b=D.bilgi||{}, tel=telNo(b.whatsapp);
+
+    if(!sec.bas || !sec.bit){
+      bar.innerHTML='<div class="ic">'+
+        (sec.bas?'<div class="altozet"><span>Giriş '+tarihKisa(sec.bas)+'</span><span>Çıkış gününü seçin</span></div>':"")+
+        (tel?'<a href="https://wa.me/'+tel+'?text='+encodeURIComponent((D.ad||"Villa")+" için bilgi almak istiyorum.")+'" target="_blank" rel="noopener">WhatsApp\'tan bilgi al</a>'
+            :'<a class="pasif">Takvimden tarih seçin</a>')+"</div>";
+      return;
+    }
+    var t=toplam(), gc=geceSay();
+    var e2=D.ek||{}, ekU2=(e2.sinir&&e2.ucret&&gc<=e2.sinir)?e2.ucret:0;
+    var dep2=((D.bilgi||{}).depozito||0);
+    var satir=t.eksik? "Fiyat için sorun" : nf.format(t.tutar+ekU2+dep2)+" ₺";
+    bar.innerHTML='<div class="ic">'+
+      '<div class="altozet"><span><b>'+tarihMetni()+"</b> · "+gc+" gece · "+kisiOzet().join(", ")+"</span>"+
+      "<b>"+satir+"</b></div>"+
+      (tel?'<a href="#" id="rez-ac">Rezervasyon isteği oluştur</a>'
+          :'<a class="pasif">İletişim bilgisi yok</a>')+"</div>";
+    var ra=document.getElementById("rez-ac");
+    if(ra) ra.onclick=function(e){ e.preventDefault(); onayAc(); };
+  }
+  function onayAc(){
+    var b=D.bilgi||{}, mx=parseInt(b.kapasite||"20",10)||20, tel=telNo(b.whatsapp);
+    var o=document.createElement("div");
+    o.className="onay"; o.id="onay";
+    function ciz2(){
+      var t=toplam(), gc=geceSay();
+      var e=D.ek||{}, ekU=(e.sinir&&e.ucret&&gc<=e.sinir)?e.ucret:0;
+      var dep=(b.depozito||0);
+      var mesaj=(D.ad||"Villa")+" için "+tarihMetni()+" tarihleri arasında ("+gc+" gece) "+
+        kisiMetin()+" ile rezervasyon yapmak istiyorum. Uygunluk ve fiyat için bilgi alabilir miyim?";
+      o.innerHTML='<div class="onaykutu"><h3>Kaç kişi geliyorsunuz?</h3>'+
+        '<div style="color:var(--muted);font-size:.875rem;margin:.375rem 0 1rem">'+
+          esc(D.ad||"Villa")+" · "+tarihMetni()+" · "+gc+" "+(EN?"nights":"gece")+"</div>"+
+        '<div class="kisiler" id="onay-sayac">'+sayaclar(mx,b.evcil,"o")+"</div>"+
+        '<div class="ozetsatir"><span style="color:var(--muted)">Konaklama · '+gc+" gece</span><span>"+
+          (t.eksik?"—":nf.format(t.tutar)+" ₺")+"</span></div>"+
+        (ekU?'<div class="ozetsatir"><span style="color:var(--muted)">Kısa konaklama ücreti</span><span>'+
+          nf.format(ekU)+" ₺</span></div>":"")+
+        (dep?'<div class="ozetsatir"><span style="color:var(--muted)">Hasar depozitosu</span><span>'+
+          nf.format(dep)+" ₺</span></div>":"")+
+        '<div class="ozetsatir"><span style="color:var(--muted)">Misafir</span><span>'+esc(kisiMetin())+"</span></div>"+
+        '<div class="ozetsatir top"><span>Toplam</span><span>'+
+          (t.eksik?"Fiyat için sorun":nf.format(t.tutar+ekU+dep)+" ₺")+"</span></div>"+
+        (dep?'<div style="font-size:.75rem;color:var(--muted);margin-top:.25rem">Depozito, hasar yoksa çıkışta iade edilir.</div>':"")+
+        '<a class="onaybtn" href="https://wa.me/'+tel+'?text='+encodeURIComponent(mesaj)+
+          '" target="_blank" rel="noopener">WhatsApp\'tan gönder</a>'+
+        '<button class="vazgec" id="onay-kapat">Vazgeç</button></div>';
+      o.querySelector("#onay-kapat").onclick=function(){ o.remove(); secimKutusu(); altCiz(); };
+      o.querySelector("#onay-sayac").onclick=function(e){ sayacTikla(e,mx,ciz2); };
+    }
+    ciz2();
+    o.addEventListener("click",function(e){ if(e.target===o){ o.remove(); secimKutusu(); altCiz(); } });
+    document.body.appendChild(o);
+  }
+
+  function tarihKisa(k){ var d=new Date(k); return d.getDate()+" "+AYLAR[d.getMonth()]; }
+  function telNo(x){
+    if(!x) return "";
+    var t=String(x).replace(/\D/g,"");
+    if(t.charAt(0)==="0") t="9"+t;
+    if(t.charAt(0)==="5") t="90"+t;
+    return t.length>=11?t:"";
+  }
+
+  function kisiOzet(){
+    var p=[];
+    p.push(say.yetiskin+" yetişkin");
+    if(say.cocuk) p.push(say.cocuk+" çocuk");
+    if(say.evcil) p.push(say.evcil+" evcil hayvan");
+    return p;
+  }
+  function kisiMetin(){
+    var p=kisiOzet();
+    if(p.length===1) return p[0];
+    return p.slice(0,-1).join(", ")+" ve "+p[p.length-1];
+  }
+
+  function sayac(k,ad,not,min,max,ek){
+    var d=say[k];
+    return '<div class="kisi"><span>'+ad+(not?'<div class="alt2">'+not+"</div>":"")+"</span>"+
+      '<span class="adet"><button data-e="'+k+'"'+(d<=min?" disabled":"")+'>−</button>'+
+      '<span id="'+(ek||"s")+'-'+k+'">'+d+'</span>'+
+      '<button data-a="'+k+'"'+(d>=max?" disabled":"")+">+</button></span></div>";
+  }
+  function sayaclar(mx,evcilVar,ek){
+    return sayac("yetiskin","Yetişkin","",1,mx,ek)+
+           sayac("cocuk","Çocuk","0–12 yaş",0,mx,ek)+
+           (evcilVar===false
+             ? '<div class="kisi"><span>Evcil hayvan<div class="alt2">Kabul edilmiyor</div></span></div>'
+             : sayac("evcil","Evcil hayvan","",0,5,ek));
+  }
+  function sayacTikla(e,mx,sonra){
+    var btn=e.target.closest("button[data-a],button[data-e]"); if(!btn) return false;
+    var art=btn.dataset.a, eks=btn.dataset.e;
+    if(art){
+      if((art==="yetiskin"||art==="cocuk") && say.yetiskin+say.cocuk>=mx) return true;
+      if(art==="evcil" && say.evcil>=5) return true;
+      say[art]++;
+    } else if(eks){
+      if(eks==="yetiskin" && say.yetiskin<=1) return true;
+      if(say[eks]<=0) return true;
+      say[eks]--;
+    }
+    sonra(); return true;
+  }
+
+  function secimKutusu(){
+    var el=document.getElementById("secimAlan"); if(!el) return;
+    var b=D.bilgi||{}, mx=parseInt(b.kapasite||"20",10)||20;
+    if(!sec.bas||!sec.bit){ el.innerHTML=""; return; }
+    var t=toplam(), gc=geceSay();
+    var ek=(D.ek&&D.ek.sinir&&D.ek.ucret&&gc<=D.ek.sinir)?D.ek.ucret:0;
+    var dep=(b.depozito)||0;
+    var araToplam=t.tutar+ek;
+    var tumToplam=araToplam+dep;
+    var yuzde=parseInt(b.onOdeme,10); if(!yuzde||yuzde<0||yuzde>100) yuzde=30;
+    var onOdeme=Math.round(araToplam*yuzde/100);
+    var girinceKalan=Math.max(0,tumToplam-onOdeme);
+    var gecelik=gc?Math.round(t.tutar/gc):0;
+    var sat=function(ad,deger){
+      return '<div class="fs"><span>'+ad+"</span><span>"+deger+"</span></div>"; };
+
+    var h="";
+    if(!t.eksik){
+      h+='<div class="fiyatKutu">'+
+        sat(nf.format(gecelik)+" ₺ / "+gc+" gece", nf.format(t.tutar)+" ₺")+
+        (ek? sat(CEV("Kısa konaklama ücreti"), nf.format(ek)+" ₺") : "")+
+        (dep? sat(CEV("Hasar depozitosu"), nf.format(dep)+" ₺") : "")+
+        '<div class="fs fsTop"><span>'+CEV("Toplam")+'</span><span>'+nf.format(tumToplam)+" ₺</span></div>"+
+        sat((EN?"Prepayment ("+yuzde+"%)":"Ön ödeme tutarı (%"+yuzde+")"), nf.format(onOdeme)+" ₺")+
+        '<div class="fs"><span>'+CEV("Kalan ödeme")+'<br><span class="fsAlt">'+CEV("(eve girişte)")+'</span></span>'+
+          "<span>"+nf.format(girinceKalan)+" ₺</span></div>"+
+        (dep?'<div class="fsNot">'+CEV("Hasar depozitosu çıkışta iade edilir.")+"</div>":"")+
+      "</div>";
+    }
+    h+='<div class="ozetkutu"><div class="sol">'+
+      '<div class="top">'+(t.eksik?"Fiyat için sorun":nf.format(tumToplam)+" ₺")+"</div>"+
+      '<div style="color:var(--muted)">'+tarihMetni()+" · "+gc+" gece</div></div>"+
+      '<button class="temizle" id="tmz">"+CEV("Temizle")+"</button></div>'+
+      '<div class="kisiler">'+sayaclar(mx,b.evcil)+"</div>";
+    el.innerHTML=h;
+
+    document.getElementById("tmz").onclick=function(){
+      sec={bas:null,bit:null}; takvimCiz(); altCiz(); secimKutusu(); };
+    el.onclick=function(e){
+      sayacTikla(e,mx,function(){ secimKutusu(); altCiz(); });
+    };
+  }
+
+})();
+</script>
+</body>
+</html>
