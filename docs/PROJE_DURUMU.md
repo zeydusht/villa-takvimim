@@ -3,7 +3,8 @@
 _Son güncelleme: 7 Kasım 2026_
 
 ## Ne bu?
-Villa Takvim'in (villatakvim.netlify.app) iPhone/Android uygulaması.
+Villa Takvim'in (villatakvim.netlify.app) iPhone/Android uygulaması. App adı: **Villa Takvimim**.
+Repo: github.com/zeydusht/villa-takvimim (public; Claude GitHub App kurulu).
 Site kodu **baştan yazılmadı**; Capacitor ile aynı HTML bir app kabuğuna sarıldı.
 Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
 
@@ -26,7 +27,7 @@ Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
 `www/` içinde düzenle → `npx cap sync` → GitHub'a gönder → derlemeler kendiliğinden başlar.
 
 ## Bekleyenler (Zeyd'den)
-- [ ] GitHub'ı claude.ai'a bağla, boş `villa-takvim` reposu aç
+- [x] GitHub repo açıldı, kod gönderildi; Android APK ve iOS derleme kontrolü başarılı (7 Kasım)
 - [ ] App Store Connect'te uygulama kaydı (bundle ID: com.zeydtekin.villatakvim)
 - [ ] App Store Connect API anahtarı (Admin) + Team ID → GitHub repo Secrets:
       `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`
