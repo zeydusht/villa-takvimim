@@ -35,6 +35,24 @@ Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
 ## İnceleme raporu (7 Kasım)
 Bulgular ve öncelik sırası claude.ai'daki "Villa Takvimim — Uygulama İnceleme Raporu" dokümanında.
 
+## Çalışma şekli
+Claude (sohbette) ürün yöneticisi: `docs/GOREVLER.md`'den bir bölüm seçip Claude Code'a mesaj yazar.
+Zeyd mesajı Claude Code'a yapıştırır (yerel klasör: İndirilenler\Villa Takvimim). Claude Code
+uygular, GitHub'a gönderir ve durur. Zeyd "bitti" der; Claude GitHub'dan çekip sahte veriyle
+telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajını yazar.
+
+## İlerleme (GOREVLER.md)
+- [x] 1. bölüm — app katmanı (1.6 bildirimler hariç) · test edildi
+- [x] 2. bölüm — hatalar · test edildi. Karar: bakıcı sadece "girişte alınacak" kalan tutarı görür;
+      bakıcının eklediği rezervasyonun tutarı gecelik fiyatlardan otomatik hesaplanır.
+- [x] 3. bölüm — görsel tasarım · test edildi (rezervasyon detayı belirgin iyileşti; ana ekran
+      düzeni 4. bölümde)
+- [ ] 4. bölüm — ekran düzeni (ana ekran, alt sekme barı, takvim) · Claude Code'a gönderildi
+- [ ] 5. bölüm — küçük kazanımlar
+- [ ] 1.6 — telefon bildirimleri (Firebase/Apple anahtarı gerekecek)
+- [ ] Veritabanı güvenlik düzeltmeleri — Claude sohbetten Supabase'de yapacak, Zeyd'in onayıyla
+      (detaylar inceleme raporunda, repo herkese açık olduğu için burada yok)
+
 ## Sonraki fazlar
 - **Faz 3 / bildirimler:** Web Push app içinde çalışmıyor. Firebase/APNs ile native bildirim
   (@capacitor/push-notifications) + Supabase edge function'ı buna göre güncellemek.
