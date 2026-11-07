@@ -75,8 +75,8 @@
     "Örn. depozito iadesi, ek hizmet":"e.g. deposit refund, extra service",
     "Örn. kapora, nakit, havale":"e.g. deposit, cash, transfer",
 
-    "Bakıcılarınız rezervasyonları görüp ekleyebilir, gider girebilir ve villa sayfasını paylaşabilir. Ödemeler, gelirler ve kazanç bilgileri onlara kapalıdır.":
-      "Your caretakers can view and add reservations, enter expenses and share the villa page. Payments, income and earnings are hidden from them.",
+    "Bakıcılar rezervasyonları görüp ekleyebilir, gider girebilir ve girişte tahsil edilecek kalan tutarı görür. Fiyatlar, ödemeler ve kazanç bilgileri onlara kapalıdır.":
+      "Caretakers can view and add reservations, enter expenses and see the balance to collect at check-in. Prices, payments and earnings are hidden from them.",
     "Villa sahibinin verdiği 6 haneli kodu yazın.":"Enter the 6-character code the villa owner gave you.",
     "ÖRN. K7M2XQ":"E.G. K7M2XQ",
     "Örn. temizlik, havuz bakımı":"e.g. cleaning, pool maintenance",
@@ -288,6 +288,20 @@
     "Bu tarayıcı bildirimi desteklemiyor.":"This browser does not support notifications.",
     "Uygulama bildirimleri bir sonraki sürümde geliyor.":"App notifications are coming in the next version.",
 
+    // Villa sayfası önizleme, iptal / geri al, form uyarısı
+    "Yayınla":"Publish", "Villa bilgilerini doldur":"Fill in villa details",
+    "Boş günler ve fiyatlar":"Free days and prices",
+    "Yayınlayınca bir bağlantı oluşur. Bu bağlantıyı gönderdiğiniz kişi şunları görür:":
+      "Publishing creates a link. Anyone you send it to will see:",
+    "Henüz fotoğraf yok. Fotoğrafsız sayfa misafire boş görünür.":
+      "No photos yet. Without photos the page looks empty to guests.",
+    "Villa bilgileri yarım (konum, kişi sayısı, açıklama, WhatsApp…).":
+      "Villa details are incomplete (location, guests, description, WhatsApp…).",
+    "Önümüzdeki günler için fiyat girilmemiş.":"No prices have been entered for the coming days.",
+    "Rezervasyon iptal edildi.":"Reservation cancelled.", "Geri al":"Undo",
+    "Rezervasyon geri alındı.":"Reservation restored.",
+    "Misafir adını yazın":"Enter the guest's name",
+
     // Uyarı paneli ve dosya paylaşımı
     "Anladım":"OK", "Dosya paylaşılamadı.":"The file could not be shared.",
     "Gecelik fiyat girin.":"Enter a nightly price.",
@@ -352,7 +366,28 @@
   };
 
   // ---------- kalıplı metinler ----------
+  function goreli(t){
+    if (t === "bugün") return "today";
+    if (t === "yarın") return "tomorrow";
+    var m = /^(\d+) gün sonra$/.exec(t);
+    return m ? "in " + m[1] + " days" : t;
+  }
+  var GORELI = "(bugün|yarın|\\d+ gün sonra)";
+
   var K = [
+    [/^· kalan (.+)$/, "· balance $1"],
+    [/^Alınan (.+₺)$/, "Received $1"],
+    [/^(\d+) konaklama · son (.+)$/, "$1 stays · last $2"],
+    [/^(\d+) konaklama · sıradaki (.+)$/, "$1 stays · next $2"],
+    [/^Bugün dolu · (.+)$/, "Occupied today · $1"],
+    [/^Bugün giriş · (.+)$/, "Check-in today · $1"],
+    [/^Bugün çıkış · (.+)$/, "Check-out today · $1"],
+    [/^Bugün (.+) çıkıyor, (.+) giriyor$/, "Today $1 checks out, $2 checks in"],
+    [new RegExp("^Çıkış (.+) \\(" + GORELI + "\\)$"),
+      function (_, a, b) { return "Check-out " + a + " (" + goreli(b) + ")"; }],
+    [new RegExp("^Sıradaki: (.+) \\(" + GORELI + "\\)$"),
+      function (_, a, b) { return "Next: " + a + " (" + goreli(b) + ")"; }],
+    [/^Bugün (\d+:\d+) giriş yaptı · çıkış (.+)$/, "Checked in today at $1 · check-out $2"],
     [/^(\d+) gece$/, "$1 nights"],
     [/^(\d+) gece · (.+)$/, "$1 nights · $2"],
     [/^(\d+) kişi$/, "$1 guests"],

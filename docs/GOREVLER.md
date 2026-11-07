@@ -68,12 +68,12 @@ gerçek verilerde test kaydı açarsan sonunda sil.
 
 ## 2. Hatalar
 
-- [ ] **2.1 Misafir sayfası kendiliğinden güncellenmiyor.** `paylasBtn` tıklanınca `yayinla(v)`
+- [x] **2.1 Misafir sayfası kendiliğinden güncellenmiyor.** `paylasBtn` tıklanınca `yayinla(v)`
   çalışıyor, başka hiçbir yerde çalışmıyor. Sonradan eklenen rezervasyon misafire boş görünür.
   Çözüm: `kaydet()` sonrasında, villa yayındaysa (`v.paylasim.yayin`) ve
   `v.paylasim.imza !== icerikImza(v)` ise, birkaç saniye gecikmeli (debounce) arka planda
   `yayinla(v)` çağır; hata olursa sessizce bir sonraki kayıtta tekrar dene.
-- [ ] **2.2 Bakıcı para bilgisi tutarsız.** Bakıcılar ekranı "Ödemeler, gelirler ve kazanç
+- [x] **2.2 Bakıcı para bilgisi tutarsız.** Bakıcılar ekranı "Ödemeler, gelirler ve kazanç
   bilgileri onlara kapalıdır" diyor ama bakıcı:
   - yaklaşan rezervasyonlar listesinde "· kalan 32.000 ₺" görüyor (`ciz()` içinde,
     `'… kalan '+para(kalan)` satırı `paraGorur()` kontrolü olmadan),
@@ -81,26 +81,27 @@ gerçek verilerde test kaydı açarsan sonunda sil.
   **Bu bir ürün kararı — önce Zeyd'e sor:** bakıcı parayı görsün mü?
   Görmesin derse: tüm para gösterimlerini `paraGorur()` ile koru. Görsün derse: bakıcılar
   ekranındaki metni düzelt.
-- [ ] **2.3 Telefon alanında `+` yazılamıyor.** `alan()` fonksiyonu `tel` tipindeki tüm alanlara
+  _Karar (Zeyd, 7 Kasım): bakıcı sadece girişte alınacak kalan tutarı görür; şimdilik yalnız ekranda gizleme._
+- [x] **2.3 Telefon alanında `+` yazılamıyor.** `alan()` fonksiyonu `tel` tipindeki tüm alanlara
   `inputmode="numeric"` veriyor; iPhone'da rakam klavyesi açılıyor. Telefon alanları
   (`f-phone` ve diğer telefon girişleri) için `inputmode="tel"`, tutar alanları `numeric` kalsın.
-- [ ] **2.4 Misafirler listesi.** Liste satırında isim ve "1 konaklama · son …" yapışık
+- [x] **2.4 Misafirler listesi.** Liste satırında isim ve "1 konaklama · son …" yapışık
   ("John Smith1 konaklama"). Alt satıra al. Gelecek konaklama için "son" yerine "sıradaki".
   Sağdaki tutarın başına "Alınan" yaz.
-- [ ] **2.5 Villa sayfası onaysız yayınlanıyor.** "Villa sayfası oluştur" tek dokunuşla yayına
+- [x] **2.5 Villa sayfası onaysız yayınlanıyor.** "Villa sayfası oluştur" tek dokunuşla yayına
   alıyor. Önce önizleme paneli göster (fotoğraf yoksa ve villa bilgisi yarımsa uyarı), "Yayınla"
   butonuyla aç.
-- [ ] **2.6 Villa bilgilerinde tekrar eden seçenekler.** Bulaşık makinesi, çamaşır makinesi,
+- [x] **2.6 Villa bilgilerinde tekrar eden seçenekler.** Bulaşık makinesi, çamaşır makinesi,
   klima, internet, barbekü, şömine hem "Özellikler" hem "Ev olanakları" altında. Tek yerde topla;
   eski kayıtlardaki değerleri kaybetme (iki listeden gelen işaretleri birleştir).
-- [ ] **2.7 Rezervasyon iptali kalıcı siliyor.** İptal → 5 saniyelik "Geri al" bildirimi.
+- [x] **2.7 Rezervasyon iptali kalıcı siliyor.** İptal → 5 saniyelik "Geri al" bildirimi.
   (İptal geçmişi saklamak veritabanı değişikliği ister; şimdilik sadece "Geri al".)
-- [ ] **2.8 Kaydet butonu neden pasif belli değil.** Yeni rezervasyonda isim boşken "Rezervasyonu
+- [x] **2.8 Kaydet butonu neden pasif belli değil.** Yeni rezervasyonda isim boşken "Rezervasyonu
   kaydet" gri. Butonu aktif bırak; basınca isim alanını kırmızı yap ve "Misafir adını yazın" de.
-- [ ] **2.9 Çeviri eksikleri.** İngilizcede Türkçe kalanlar: "Bugün dolu" (villa kartı),
+- [x] **2.9 Çeviri eksikleri.** İngilizcede Türkçe kalanlar: "Bugün dolu" (villa kartı),
   "· kalan …" (yaklaşan rezervasyonlar), "Çıkış … (2 gün sonra)" (villa başlığı). `dil.js`'e ekle;
   dinamik metinleri çeviri fonksiyonundan geçir.
-- [ ] **2.10 Gereksiz istekler.** Villa ekranı açılırken `rpc/villa_erisimleri` 4 kez çağrılıyor.
+- [x] **2.10 Gereksiz istekler.** Villa ekranı açılırken `rpc/villa_erisimleri` 4 kez çağrılıyor.
   Bir kez çağırıp sonucu sakla.
 
 ## 3. Görsel tasarım (okunabilirlik, "butonlar okunmuyor")
