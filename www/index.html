@@ -129,6 +129,9 @@
   .sekmeler button.on{color:var(--ok)}
   .sekmeler button:active, .sekmeler button.basili{background:var(--basili-zemin); transform:scale(var(--basili-olcek))}
   body.sekmeli .wrap{padding-bottom:calc(5.75rem + env(safe-area-inset-bottom))}
+  :root{--menu-h:calc(3.5rem + 1px + env(safe-area-inset-bottom))}
+  body.sekmeli .secBar, body.sekmeli .ftAlt{bottom:var(--menu-h); padding-bottom:.75rem}
+  body.panelAcik .sekmeler{display:none}
   .gunBas{font-size:.75rem; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin:1.5rem 0 .25rem}
 
   /* ana ekran */
@@ -318,13 +321,14 @@
   .kutu .lab{font-size:.75rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted)}
   .kutu .val{font-family:var(--serif); font-size:1.375rem; letter-spacing:-.02em; margin-top:.375rem}
   .seg{display:flex; gap:.5rem}
-  .seg button{flex:1; min-height:2.875rem; padding:.75rem .25rem; border-radius:.75rem;
-    font-size:.9375rem; background:var(--soft); color:var(--muted); text-align:center}
-  .seg button.on{background:var(--ink); color:#fff}
+  .seg button, #misFiltre button{flex:1; min-height:2.875rem; padding:.625rem .25rem; border-radius:var(--kose);
+    font-size:.9375rem; background:#fff; color:var(--ink); text-align:center;
+    border:var(--cerceve-kalinlik) solid var(--cerceve); touch-action:manipulation;
+    transition:background-color var(--gecis), border-color var(--gecis), transform var(--gecis)}
+  .seg button:active, #misFiltre button:active{background:var(--basili-zemin); border-color:var(--basili-cerceve); transform:scale(var(--basili-olcek))}
+  .seg button.on, #misFiltre button.on{background:var(--ok); border-color:var(--ok); color:#fff; font-weight:600}
   #misFiltre{display:flex; gap:.5rem; margin-top:.25rem}
-  #misFiltre button{flex:1; min-height:2.875rem; padding:.75rem .25rem; border-radius:.75rem;
-    font-size:.875rem; text-align:center; background:var(--soft); color:var(--muted)}
-  #misFiltre button.on{background:var(--ink); color:#fff}
+  #misFiltre button{font-size:.875rem}
   /* ---- Fiyatlar ekranı ---- */
   #fiyatEkran{padding-bottom:6rem}
   #fiyatEkran h1{font-size:1.75rem}
@@ -379,9 +383,31 @@
   .misSatir .sagBil{font-size:.8125rem; color:var(--muted); text-align:right; flex:none}
   .yilbar{display:flex; align-items:center; justify-content:space-between; margin-top:.25rem}
   #kasaMod{gap:.5rem}
-  #kasaMod button{flex:1; min-height:2.875rem; padding:.75rem .25rem; border-radius:.75rem;
-    font-size:.9375rem; text-align:center; background:var(--soft); color:var(--muted)}
-  #kasaMod button.on{background:var(--ink); color:#fff}
+  /* Gelir & gider */
+  .ozetKart{background:var(--soft); border-radius:1rem; padding:1.125rem 1.125rem 1rem; margin-top:1rem}
+  .ozetKart .okLab{font-size:.875rem; color:var(--muted)}
+  .ozetKart .okVal{font-family:var(--serif); font-size:2.375rem; letter-spacing:-.02em; line-height:1.15; margin-top:.125rem}
+  .ozetKart .okVal.eksi{color:var(--uyari)}
+  .ozetKart .okAcik{font-size:.9375rem; margin-top:.375rem; line-height:1.45}
+  .ozetKart .ilerleme{margin:.875rem 0 .25rem}
+  .ozetKart .okAlt{font-size:.8125rem; color:var(--muted)}
+  .kSatir{display:flex; align-items:center; gap:1rem; padding:.875rem 0; border-bottom:1px solid var(--line)}
+  .kSatir .kAd{flex:1; min-width:0}
+  .kSatir .kAlt{font-size:.8125rem; color:var(--muted); margin-top:.125rem}
+  .kSatir .kTut{font-size:1.0625rem; white-space:nowrap; font-variant-numeric:tabular-nums}
+  .grafik svg{display:block; width:100%; height:auto; overflow:visible}
+  .grafik .ayKutu{cursor:pointer}
+  .grafikDetay{display:flex; flex-wrap:wrap; gap:.25rem 1rem; font-size:.9375rem; margin-top:.5rem; min-height:1.5rem}
+  .grafikLejant{display:flex; gap:1rem; font-size:.8125rem; color:var(--muted); margin-top:.5rem}
+  .grafikLejant i{display:inline-block; width:.625rem; height:.625rem; border-radius:2px; margin-right:.375rem; vertical-align:-.0625rem}
+  .gunSatir{display:flex; align-items:baseline; gap:.75rem; padding:.625rem 0; border-bottom:1px solid var(--line); font-size:.9375rem}
+  .gunSatir .gT{flex:none; width:4.25rem; color:var(--muted); font-size:.8125rem}
+  .gunSatir .gA{flex:1; min-width:0}
+  .durumEt{font-size:.8125rem; padding:.1875rem .5rem; border-radius:99px; white-space:nowrap}
+  .durumEt.ok{background:#E3EFEC; color:#0B5B57}
+  .durumEt.kismen{background:#FBF0E1; color:#8A5410}
+  .durumEt.yok{background:#FBF1F4; color:#9B2C4A}
+  .durumEt.bos{background:var(--soft); color:var(--muted)}
 
   /* modal */
   .overlay{position:fixed; inset:0; background:rgba(16,22,19,.35); display:flex; z-index:50;
@@ -829,11 +855,22 @@
       <button class="icobtn" id="donNext" aria-label="Sonraki" style="margin-right:-.5rem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg></button>
     </div>
 
-    <div class="kutular">
-      <div class="kutu"><div class="lab">Tahsil edilen</div><div class="val" id="kGelir">0 ₺</div></div>
-      <div class="kutu"><div class="lab">Bekleyen</div><div class="val" id="kBekleyen">0 ₺</div></div>
-      <div class="kutu"><div class="lab">Gider</div><div class="val" id="kGider">0 ₺</div></div>
-      <div class="kutu" style="background:#EEF4F3"><div class="lab">Net kazanç</div><div class="val" id="kNet" style="color:#0B5B57">0 ₺</div></div>
+    <div class="ozetKart">
+      <div class="okLab" id="kNetLab">Net kazanç</div>
+      <div class="okVal" id="kNet">0 ₺</div>
+      <div class="okAcik" id="kAcik"></div>
+      <div class="ilerleme"><i id="kIlerleme" style="width:0"></i></div>
+      <div class="okAlt" id="kIlerlemeYazi"></div>
+    </div>
+    <div style="margin-top:.5rem">
+      <div class="kSatir"><div class="kAd"><div>Alınan ödemeler</div><div class="kAlt">Misafirlerden alınan ödemeler ve diğer gelirler</div></div><div class="kTut" id="kGelir">0 ₺</div></div>
+      <div class="kSatir"><div class="kAd"><div>Alınacak ödemeler</div><div class="kAlt">Henüz misafirden alınmadı</div></div><div class="kTut" id="kBekleyen">0 ₺</div></div>
+      <div class="kSatir"><div class="kAd"><div>Giderler</div><div class="kAlt">Temizlik, bakım ve diğer masraflar</div></div><div class="kTut" id="kGider">0 ₺</div></div>
+    </div>
+
+    <div class="section" id="grafikBolum">
+      <div class="eyebrow" id="grafikBaslik" style="margin-bottom:.75rem">Aylık gelir ve gider</div>
+      <div class="grafik" id="grafik"></div>
     </div>
 
     <div class="section">
@@ -1308,12 +1345,15 @@
   function goster(id){
     ["giris","sifre","onay","ana","ajanda","hesapEkran","takvim","kasa","misafirler","fiyatEkran","fotoEkran"].forEach(function(x){
       document.getElementById(x).classList[x===id?"remove":"add"]("hide"); });
-    var sekmeli=(id==="ana"||id==="ajanda"||id==="hesapEkran");
+    // Alt menü: ana sekmelerde ve villa içi ekranlarda görünür; iç ekranlarda "Villalar" seçili
+    var ic=(id==="takvim"||id==="kasa"||id==="misafirler"||id==="fiyatEkran"||id==="fotoEkran");
+    var sekmeli=(id==="ana"||id==="ajanda"||id==="hesapEkran"||ic);
+    var secili=ic?"ana":id;
     document.getElementById("sekmeler").classList[sekmeli?"remove":"add"]("hide");
     document.body.classList[sekmeli?"add":"remove"]("sekmeli");
     Array.prototype.forEach.call(document.querySelectorAll("#sekmeler [data-sekme]"),function(b){
-      b.classList[b.dataset.sekme===id?"add":"remove"]("on");
-      b.setAttribute("aria-current", b.dataset.sekme===id ? "page" : "false"); });
+      b.classList[b.dataset.sekme===secili?"add":"remove"]("on");
+      b.setAttribute("aria-current", b.dataset.sekme===secili ? "page" : "false"); });
     if(id!=="fiyatEkran"){ var fb=document.getElementById("fyBar"); if(fb) fb.classList.add("hide"); }
     var bar=document.getElementById("appBar");
     if(bar) bar.classList[(id==="giris"||id==="onay"||id==="sifre")?"add":"remove"]("hide");
@@ -1330,6 +1370,13 @@
   document.getElementById("sekmeler").addEventListener("click",function(e){
     var b=e.target.closest("[data-sekme]"); if(!b) return;
     var hedef=b.dataset.sekme;
+    // villa içinden çıkılıyorsa: düzenleme kilidini bırak, villayı kapat
+    var acik=acikEkran();
+    if(acik==="takvim"||acik==="kasa"||acik==="misafirler"||acik==="fiyatEkran"||acik==="fotoEkran"){
+      kilitBitir();
+      if(S.destek){ var dc=document.getElementById("destekCik"); if(dc) dc.click(); return; }
+      S.aktif=null;
+    }
     if(hedef==="ana") cizAna();
     else if(hedef==="ajanda") cizAjanda();
     else { silinenGuncelle(); goster("hesapEkran"); }
@@ -2164,8 +2211,10 @@
     var eski=document.getElementById("geriAlKutu"); if(eski) eski.remove();
     var el=document.createElement("div");
     el.id="geriAlKutu";
-    var fyb=document.getElementById("fyBar"), cubuk=fyb && !fyb.classList.contains("hide");
-    el.style.cssText="position:fixed;left:50%;bottom:calc("+(cubuk?"5.75rem":"2rem")+" + env(safe-area-inset-bottom));transform:translateX(-50%);"+
+    var cubuk=Array.prototype.some.call(document.querySelectorAll("#fyBar,#misSecBar,.ftAlt"),function(x){
+      return !x.classList.contains("hide") && x.offsetParent!==null; });
+    var menu=document.body.classList.contains("sekmeli");
+    el.style.cssText="position:fixed;left:50%;bottom:calc("+((menu?4.75:1.5)+(cubuk?4.25:0))+"rem + env(safe-area-inset-bottom));transform:translateX(-50%);"+
       "background:#101613;color:#fff;padding:.375rem .375rem .375rem 1.125rem;border-radius:99px;font-size:.875rem;"+
       "z-index:60;max-width:92%;width:max-content;display:flex;align-items:center;gap:.75rem;line-height:1.35";
     el.innerHTML='<span></span><button type="button" style="color:#9FE0C9;font-weight:600;padding:.625rem .875rem;'+
@@ -2178,7 +2227,9 @@
   function bildir(msg){
     var el=document.createElement("div");
     el.textContent=msg;
-    el.style.cssText="position:fixed;left:50%;bottom:"+(document.body.classList.contains("sekmeli")?"calc(5.25rem + env(safe-area-inset-bottom))":"2rem")+";transform:translateX(-50%);background:#101613;"+
+    var cubuk2=Array.prototype.some.call(document.querySelectorAll("#fyBar,#misSecBar,.ftAlt"),function(x){
+      return !x.classList.contains("hide") && x.offsetParent!==null; });
+    el.style.cssText="position:fixed;left:50%;bottom:"+(document.body.classList.contains("sekmeli")?"calc("+(cubuk2?9.5:5.25)+"rem + env(safe-area-inset-bottom))":"2rem")+";transform:translateX(-50%);background:#101613;"+
       "color:#fff;padding:.75rem 1.125rem;border-radius:99px;font-size:.875rem;z-index:60;max-width:90%";
     document.body.appendChild(el);
     setTimeout(function(){ el.remove(); },2600);
@@ -3531,7 +3582,7 @@
     var gelir=0, bekleyen=0, gider=0;
     v.rez.forEach(function(r){
       (r.odemeler||[]).forEach(function(o){ if(icinde(a,o.tarih)) gelir+=(o.tutar||0); });
-      if(icinde(a,r.start)) bekleyen+=Math.max(0,(r.tutar||0)-(r.odenen||0));
+      if(icinde(a,r.start)) bekleyen+=Math.max(0,kalemler(v,r).araToplam-(r.odenen||0));
     });
     (v.gelirler||[]).forEach(function(g){ if(icinde(a,g.tarih)) gelir+=(g.tutar||0); });
     (v.giderler||[]).forEach(function(g){ if(icinde(a,g.tarih)) gider+=(g.tutar||0); });
@@ -3592,9 +3643,24 @@
     document.getElementById("kGelir").textContent=para(h.gelir);
     document.getElementById("kBekleyen").textContent=para(h.bekleyen);
     document.getElementById("kGider").textContent=para(h.gider);
-    document.getElementById("kNet").textContent=para(h.net);
     document.getElementById("kasaAlt").textContent=v.ad||"Villa";
     var don=document.getElementById("donAd").textContent;
+
+    // özet kartı: net = alınan − gider; çubuk = alınan / toplam rezervasyon tutarı
+    var rzT=0, rzA=0;
+    v.rez.forEach(function(r){ if(!icinde(a,r.start)) return;
+      var t=kalemler(v,r).araToplam; rzT+=t; rzA+=Math.min(t,r.odenen||0); });
+    document.getElementById("kNetLab").textContent=cev(don+" net kazanç");
+    var kn=document.getElementById("kNet");
+    kn.textContent=para(h.net); kn.className="okVal"+(h.net<0?" eksi":"");
+    document.getElementById("kAcik").textContent = rzT
+      ? cev(para(rzT)+" toplam rezervasyon tutarının "+para(rzA)+"'si alındı, "+para(h.gider)+" gider düşüldü.")
+      : cev(h.gider ? "Bu dönemde rezervasyon tutarı yok, "+para(h.gider)+" gider düşüldü." : "Bu dönemde rezervasyon tutarı yok.");
+    document.getElementById("kAcik").textContent=document.getElementById("kAcik").textContent.replace(/ ₺/g," ₺");
+    var yuz=rzT?Math.min(100,Math.round(rzA/rzT*100)):0;
+    document.getElementById("kIlerleme").style.width=yuz+"%";
+    document.getElementById("kIlerlemeYazi").textContent=rzT?cev("Rezervasyon tutarının %"+yuz+"'i alındı"):"";
+    grafikCiz(v,a);
 
     sezonCiz(v);
 
@@ -3603,10 +3669,14 @@
     var th="";
     if(!rz.length) th='<div class="sm muted">'+don+" için rezervasyon yok.</div>";
     else rz.forEach(function(r){
-      var kalan=(r.tutar||0)-(r.odenen||0);
-      th+='<button class="row" data-id="'+r.id+'"><span class="dot" style="background:'+r.color+'"></span>'+
+      var t=kalemler(v,r).araToplam, al=r.odenen||0, et;
+      if(!(r.tutar>0)) et='<span class="durumEt bos">'+esc(cev("Tutar girilmedi"))+"</span>";
+      else if(al>=t) et='<span class="durumEt ok">'+esc(cev("Ödendi"))+"</span> "+para(t);
+      else if(al>0) et='<span class="durumEt kismen">'+esc(cev("Kısmen"))+"</span> "+nf.format(al)+" / "+para(t);
+      else et='<span class="durumEt yok">'+esc(cev("Ödenmedi"))+"</span> "+para(t);
+      th+='<button class="row" data-id="'+r.id+'"'+(!(r.tutar>0)?' data-tutarsiz="1"':"")+'>'+
         '<span class="name">'+esc(r.guest)+'<span class="muted" style="font-size:.8125rem"> · '+aralikMetni(r)+"</span></span>"+
-        '<span class="meta">'+para(r.odenen)+(kalan>0?' <span style="color:#9B2C4A">+'+para(kalan)+"</span>":"")+"</span></button>";
+        '<span class="meta" style="display:flex;align-items:center;gap:.375rem;color:var(--ink)">'+et+"</span></button>";
     });
     document.getElementById("tahsilat").innerHTML=th;
 
@@ -3630,6 +3700,63 @@
     document.getElementById("hareket").innerHTML=gh;
   }
 
+  // Yıl görünümü: 12 aylık gelir/gider çubuk grafiği (SVG). Ay görünümü: gün gün hareketler.
+  function grafikCiz(v,a){
+    var bol=document.getElementById("grafikBolum"), el=document.getElementById("grafik");
+    if(S.kasaMod==="tum"){ bol.classList.add("hide"); return; }
+    bol.classList.remove("hide");
+    if(S.kasaMod==="ay"){
+      document.getElementById("grafikBaslik").textContent=cev("Gün gün");
+      var l=[];
+      v.rez.forEach(function(r){ (r.odemeler||[]).forEach(function(o){
+        if(icinde(a,o.tarih)) l.push({t:o.tarih, ad:(r.guest||"Misafir")+" · "+cev("ödeme"), tut:o.tutar||0}); }); });
+      (v.gelirler||[]).forEach(function(g){ if(icinde(a,g.tarih)) l.push({t:g.tarih, ad:g.aciklama, tut:g.tutar||0}); });
+      (v.giderler||[]).forEach(function(g){ if(icinde(a,g.tarih)) l.push({t:g.tarih, ad:g.aciklama, tut:-(g.tutar||0)}); });
+      l.sort(function(x,y){ return x.t<y.t?-1:(x.t>y.t?1:0); });
+      el.innerHTML = !l.length ? '<div class="sm muted">'+esc(cev("Bu ay hareket yok."))+"</div>"
+        : l.map(function(x){
+            return '<div class="gunSatir"><span class="gT">'+esc(kisa(x.t))+'</span><span class="gA">'+esc(x.ad||"")+"</span>"+
+              '<span style="white-space:nowrap;color:'+(x.tut>=0?"#0B5B57":"#9B2C4A")+'">'+(x.tut>=0?"+":"−")+para(Math.abs(x.tut))+"</span></div>";
+          }).join("");
+      return;
+    }
+    document.getElementById("grafikBaslik").textContent=cev("Aylık gelir ve gider");
+    var gel=[0,0,0,0,0,0,0,0,0,0,0,0], gid=gel.slice(), y=S.yil;
+    var ekle=function(dizi,t,tut){ var d=parse(t); if(d.getFullYear()===y) dizi[d.getMonth()]+=(tut||0); };
+    v.rez.forEach(function(r){ (r.odemeler||[]).forEach(function(o){ ekle(gel,o.tarih,o.tutar); }); });
+    (v.gelirler||[]).forEach(function(g){ ekle(gel,g.tarih,g.tutar); });
+    (v.giderler||[]).forEach(function(g){ ekle(gid,g.tarih,g.tutar); });
+    if(S.grafikYil!==y){
+      S.grafikYil=y;
+      S.grafikAy = (y===today.getFullYear()) ? today.getMonth() : gel.indexOf(Math.max.apply(null,gel));
+    }
+    var mx=Math.max(1,Math.max.apply(null,gel),Math.max.apply(null,gid));
+    var W=336, H=150, alt=18, ust=8, slot=W/12, bw=9, h="";
+    for(var i=0;i<12;i++){
+      var x=i*slot, sec=(i===S.grafikAy);
+      if(sec) h+='<rect x="'+(x+1)+'" y="0" width="'+(slot-2)+'" height="'+(H-alt+4)+'" rx="5" fill="#E3EFEC"/>';
+      var hg=Math.round(gel[i]/mx*(H-alt-ust)), hd=Math.round(gid[i]/mx*(H-alt-ust));
+      var bx=x+(slot-2*bw-2)/2;
+      if(gel[i]) h+='<rect x="'+bx+'" y="'+(H-alt-Math.max(2,hg))+'" width="'+bw+'" height="'+Math.max(2,hg)+'" rx="2" fill="#0B5B57"/>';
+      if(gid[i]) h+='<rect x="'+(bx+bw+2)+'" y="'+(H-alt-Math.max(2,hd))+'" width="'+bw+'" height="'+Math.max(2,hd)+'" rx="2" fill="#C4718A"/>';
+      h+='<text x="'+(x+slot/2)+'" y="'+(H-4)+'" text-anchor="middle" font-size="9.5" fill="'+(sec?"#0B5B57":"#5F6A64")+'"'+(sec?' font-weight="600"':"")+">"+esc(AYLAR[i].slice(0,3))+"</text>";
+      h+='<rect class="ayKutu" data-ay="'+i+'" x="'+x+'" y="0" width="'+slot+'" height="'+H+'" fill="transparent"/>';
+    }
+    h+='<line x1="0" x2="'+W+'" y1="'+(H-alt)+'" y2="'+(H-alt)+'" stroke="#D9DFDB" stroke-width="1"/>';
+    var m=S.grafikAy, net=gel[m]-gid[m];
+    el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(cev("Aylık gelir ve gider"))+'" style="font-family:inherit">'+h+"</svg>"+
+      '<div class="grafikLejant"><span><i style="background:#0B5B57"></i>'+esc(cev("Gelir"))+'</span><span><i style="background:#C4718A"></i>'+esc(cev("Gider"))+"</span></div>"+
+      '<div class="grafikDetay"><span>'+esc(AYLAR[m]+" "+y)+"</span>"+
+        '<span style="color:#0B5B57">'+esc(cev("Gelir"))+" "+para(gel[m])+"</span>"+
+        '<span style="color:#9B2C4A">'+esc(cev("Gider"))+" "+para(gid[m])+"</span>"+
+        "<span>"+esc(cev("Net"))+" "+(net<0?"−":"")+para(Math.abs(net))+"</span></div>";
+  }
+  document.getElementById("grafik").addEventListener("click",function(e){
+    var r=e.target.closest("[data-ay]"); if(!r || !aktif()) return;
+    S.grafikAy=+r.getAttribute("data-ay");
+    grafikCiz(aktif(),kasaAralik(S.kasaMod,S.yil,S.kasaAy));
+  });
+
   function sezonCiz(v){
     var el=document.getElementById("sezon"); if(!el) return;
     var don=document.getElementById("donAd").textContent;
@@ -3645,13 +3772,21 @@
       tumTarih.sort();
       bas=parse(tumTarih[0]); bit=parse(tumTarih[tumTarih.length-1]);
     }
-    var toplamGece=Math.max(1,Math.round((bit-bas)/86400000));
-    var M=harita(v.rez), doluGece=0, aylik={};
+    if(a) bit=addDays(bit,1);  // dönemin son gecesi de sayılsın
+    // Karar: dönem bugünü içeriyorsa doluluk "bugüne kadar" geçen gecelere göre hesaplanır;
+    // gelecekteki dolu geceler ayrıca "önümüzdeki geceler" olarak yazılır.
+    var bugunIcinde = a && today>=parse(a.bas) && today<bit;
+    var sinir = bugunIcinde ? today : bit;
+    var M=harita(v.rez), doluGece=0, ileriDolu=0, ileriToplam=0, aylik={};
     for(var d=new Date(bas); d<bit; d=addDays(d,1)){
-      var o=M.get(fmt(d));
-      if(o && o.aksam){ doluGece++; aylik[d.getMonth()]=(aylik[d.getMonth()]||0)+1; }
+      var o=M.get(fmt(d)), dolu=!!(o && o.aksam);
+      if(dolu) aylik[d.getMonth()]=(aylik[d.getMonth()]||0)+1;
+      if(d<sinir){ if(dolu) doluGece++; }
+      else { ileriToplam++; if(dolu) ileriDolu++; }
     }
+    var toplamGece=Math.max(1,Math.round((sinir-bas)/86400000));
     var oran=Math.round(doluGece/toplamGece*100);
+    var dolulukAd = bugunIcinde ? "Doluluk (bugüne kadar)" : (a && bas>today ? "Doluluk (rezervasyonlara göre)" : "Doluluk");
 
     var h=kasaHesap(v,a);
     var rezler=v.rez.filter(function(r){ return icinde(a,r.start); });
@@ -3661,7 +3796,10 @@
       misafir[k]=(misafir[k]||0)+1;
     });
     Object.keys(misafir).forEach(function(k){ if(misafir[k]>1) tekrar++; });
-    var gecelik = doluGece ? Math.round(h.gelir/doluGece) : 0;
+    // Ortalama gecelik fiyat = dönemdeki rezervasyonların toplam tutarı ÷ bu rezervasyonların gece sayısı
+    var rzTutar=0, rzGece=0;
+    rezler.forEach(function(r){ if(r.tutar>0){ rzTutar+=kalemler(v,r).araToplam; rzGece+=gece(r); } });
+    var gecelik = rzGece ? Math.round(rzTutar/rzGece) : 0;
     var enYogun=Object.keys(aylik).sort(function(x,y){ return aylik[y]-aylik[x]; })[0];
 
     // geçen dönemle karşılaştırma
@@ -3675,14 +3813,16 @@
     }
 
     el.innerHTML=
-      '<div class="sz"><span class="szAd">Doluluk</span><span class="szDeger">'+
+      '<div class="sz"><span class="szAd">'+esc(cev(dolulukAd))+'</span><span class="szDeger">'+
         oran+"% · "+doluGece+" / "+toplamGece+" gece</span></div>"+
       '<div class="szCubuk"><i style="width:'+Math.min(100,oran)+'%"></i></div>'+
+      (bugunIcinde && ileriToplam?'<div class="sz" style="margin-top:.5rem"><span class="szAd">'+esc(cev("Önümüzdeki geceler"))+'</span><span class="szDeger">'+
+        esc(cev(ileriDolu+" / "+ileriToplam+" gece dolu"))+"</span></div>":"")+
       '<div class="sz" style="margin-top:.5rem"><span class="szAd">Rezervasyon</span><span class="szDeger">'+
         rezler.length+" kayıt · "+Object.keys(misafir).length+" misafir</span></div>"+
       (tekrar?'<div class="sz"><span class="szAd">Tekrar gelen</span><span class="szDeger">'+
         tekrar+" misafir</span></div>":"")+
-      (gecelik?'<div class="sz"><span class="szAd">Gecelik ortalama</span><span class="szDeger">'+
+      (gecelik?'<div class="sz"><span class="szAd">'+esc(cev("Ortalama gecelik fiyat"))+'</span><span class="szDeger">'+
         para(gecelik)+"</span></div>":"")+
       (enYogun!==undefined?'<div class="sz"><span class="szAd">En yoğun ay</span><span class="szDeger">'+
         AYLAR[enYogun]+" · "+aylik[enYogun]+" gece</span></div>":"")+
@@ -3694,7 +3834,8 @@
     if(!aktif()) return;
     var b=e.target.closest(".row"); if(!b) return;
     var r=aktif().rez.filter(function(x){return x.id===b.dataset.id})[0];
-    if(r) odemeSheet(r);
+    if(r && b.dataset.tutarsiz && duzenlenebilir()) duzenleSheet(r);
+    else if(r) odemeSheet(r);
   });
 
   var fisBekleyen=null;
@@ -5014,6 +5155,10 @@
     });
   }
   function kapat(){ var l=document.querySelectorAll(".overlay"); if(l.length) l[l.length-1].remove(); }
+  // Alttan açılan panel veya tam ekran görüntüleyici açıkken alt menü gizlenir
+  try{ new MutationObserver(function(){
+    document.body.classList[document.querySelector(".overlay")?"add":"remove"]("panelAcik");
+  }).observe(document.body,{childList:true}); }catch(e){}
   // Tarayıcının alert() kutusu yerine uygulamanın kendi paneli.
   // Açık bir formun üstüne ayrı katman olarak açılır, formu kapatmaz.
   function uyari(metin){
