@@ -53,7 +53,7 @@
   input::placeholder, textarea::placeholder{color:#8E9893; opacity:1}
   a{color:inherit}
   svg{display:block; flex:none}
-  h1{font-family:var(--serif); font-size:2.25rem; letter-spacing:-.015em; font-weight:600; margin:0}
+  h1{font-family:var(--serif); font-size:2.25rem; letter-spacing:-.02em; font-weight:400; margin:0}
 
   /* ana ekran */
   .mark{width:2.5rem; height:2.5rem; margin:0 auto .875rem}
@@ -93,7 +93,7 @@
     border-radius:99px; padding:.25rem .625rem .3rem; font-size:.75rem; display:flex;
     align-items:center; gap:.375rem; color:var(--ink); box-shadow:0 1px 3px rgba(16,22,19,.12)}
   .kartAlt{display:block; padding:.75rem .125rem 0}
-  .kad{font-family:var(--serif); font-size:1.25rem; font-weight:600; letter-spacing:-.01em; display:block;
+  .kad{font-family:var(--serif); font-size:1.25rem; letter-spacing:-.02em; display:block;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .kalt{font-size:.8125rem; color:var(--muted); display:block; margin-top:.1875rem;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
@@ -107,10 +107,10 @@
     margin-left:-.25rem; border-radius:99px; color:var(--muted); font-size:.9375rem}
   .icobtn{min-width:2.75rem; min-height:2.75rem; padding:.5rem; border-radius:99px; line-height:0; color:var(--muted);
     display:inline-flex; align-items:center; justify-content:center}
-  #villaAd{font-family:var(--serif); font-size:1.875rem; font-weight:600; letter-spacing:-.015em; padding:0}
+  #villaAd{font-family:var(--serif); font-size:1.875rem; letter-spacing:-.02em; padding:0}
   #villaAd::placeholder{color:#C7CFCB}
   .today{padding-bottom:1.5rem; margin:.75rem 0 1.5rem; border-bottom:1px solid var(--line)}
-  .durumBas{font-family:var(--serif); font-size:1.375rem; font-weight:600; letter-spacing:-.01em;
+  .durumBas{font-family:var(--serif); font-size:1.375rem; letter-spacing:-.02em;
     display:flex; align-items:center; gap:.5rem}
   .durumAlt{font-size:.875rem; color:var(--muted); margin-top:.375rem; line-height:1.5}
   .fmod{background:#FEF6EC; border:1px solid #F0D9B8; border-radius:.75rem; padding:.75rem .875rem;
@@ -122,7 +122,7 @@
 
   /* takvim */
   .monthbar{display:flex; align-items:center; justify-content:space-between}
-  .monthbar .m{font-family:var(--serif); font-size:1.1875rem; font-weight:600; letter-spacing:-.01em}
+  .monthbar .m{font-family:var(--serif); font-size:1.1875rem; letter-spacing:-.02em}
   .nav{display:flex; gap:.25rem}
   .nav button{width:2.75rem; height:2.75rem; border-radius:99px; line-height:0; color:var(--ink);
     display:flex; align-items:center; justify-content:center; margin-right:-.375rem}
@@ -197,7 +197,7 @@
   .kutular{display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-top:1.25rem}
   .kutu{background:var(--soft); border-radius:.875rem; padding:1rem}
   .kutu .lab{font-size:.75rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted)}
-  .kutu .val{font-family:var(--serif); font-size:1.375rem; font-weight:600; letter-spacing:-.01em; margin-top:.375rem}
+  .kutu .val{font-family:var(--serif); font-size:1.375rem; letter-spacing:-.02em; margin-top:.375rem}
   .seg{display:flex; gap:.5rem}
   .seg button{flex:1; min-height:2.875rem; padding:.75rem .25rem; border-radius:.75rem;
     font-size:.9375rem; background:var(--soft); color:var(--muted); text-align:center}
@@ -232,8 +232,8 @@
   .sheet{width:100%; max-width:28rem; background:#fff; border-radius:1rem 1rem 0 0; padding:1.5rem;
     padding-bottom:calc(1.5rem + env(safe-area-inset-bottom)); margin-top:auto}
   @media(min-width:640px){ .sheet{border-radius:1rem; margin:auto} }
-  .sheet h2, .sheet h3{font-family:var(--serif); font-size:1.5rem; letter-spacing:-.01em; margin:0;
-    font-weight:600; line-height:1.25}
+  .sheet h2, .sheet h3{font-family:var(--serif); font-size:1.5rem; letter-spacing:-.02em; margin:0;
+    font-weight:400; line-height:1.25}
   .x{position:absolute; top:-.625rem; right:-.75rem; width:2.75rem; height:2.75rem; line-height:0;
     color:var(--muted); display:flex; align-items:center; justify-content:center; border-radius:99px}
   .x:active{background:var(--soft)}
@@ -274,18 +274,18 @@
   .svic i{box-shadow:0 1px 2px rgba(16,22,19,.25)}
   .svic::after{content:""; position:absolute; inset:-.5625rem -.375rem}
   .big{width:100%; margin-top:1.5rem; min-height:3.25rem; padding:.875rem 0; border-radius:.75rem; font-size:1rem;
-    font-weight:600; color:#fff; text-align:center; background:var(--ok); border:1.5px solid transparent;
+    font-weight:600; color:#fff; text-align:center; background:var(--ok); border:2px solid transparent;
     box-shadow:0 1px 2px rgba(16,22,19,.12); transition:filter .12s, background-color .12s}
   .big:active{filter:brightness(.9)}
   .big:disabled{opacity:.35}
-  .big.ghost, .ghost{background:#fff; color:var(--ink); border:1.5px solid var(--cizgi); box-shadow:none}
-  .big.ghost:active, .ghost:active{filter:none; background:#EEF2EF; border-color:#AEB9B3}
-  .big.tehlike{background:#fff; color:var(--uyari); border:1.5px solid #E4C3CD; box-shadow:none; margin-top:2.5rem}
-  .big.tehlike:active{filter:none; background:#FBF1F4}
+  .big.ghost, .ghost{background:#fff; color:var(--ink); border:2px solid #8A968F; box-shadow:none}
+  .big.ghost:active, .ghost:active{filter:none; background:#EEF2EF; border-color:var(--ok)}
+  .big.tehlike{background:#fff; color:var(--uyari); border:2px solid #C4718A; box-shadow:none; margin-top:2.5rem}
+  .big.tehlike:active{filter:none; background:#FBF1F4; border-color:var(--uyari)}
   .cols{display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.5rem; padding-top:1.25rem;
     border-top:1px solid var(--line)}
   .info{display:flex; align-items:center; gap:.75rem; margin-top:.75rem}
-  .info a{display:inline-flex; align-items:center; min-height:2.75rem; font-weight:500}
+  .info a{display:inline-flex; align-items:center; min-height:2.75rem}
   .para{display:flex; justify-content:space-between; padding:.5rem 0; font-size:.9375rem}
   .para.net{border-top:1px solid var(--line); margin-top:.25rem; padding-top:.75rem}
   .foot{margin-top:2.5rem; padding-top:1.25rem; border-top:1px solid var(--line);

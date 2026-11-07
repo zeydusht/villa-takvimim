@@ -132,8 +132,10 @@ Hedef: daha net, daha "premium" ama aynı sade dil. Renk paleti ve yeşil (#0B5B
   "Villa sayfası".
 - [x] **3.9 Tek kapatma.** Sheet'lerde hem sağ üstte X hem altta "Kapat" var. Altta "Kapat"ı kaldır,
   X'i 44 px yap. (Asıl eylem butonu olan sheet'lerde aşağı kaydırarak kapatma da iyi olur.)
-- [x] **3.10 Başlıklar.** Serif başlıklar ince duruyor; `font-weight:600`. Villa kartı ve sheet
-  başlıkları için ölçü tutarlı olsun.
+- [x] **3.10 Başlıklar.** Başlıklar **kalınlaşmayacak**: serif başlıklar, ay adı, durum satırı,
+  liste satırları ve diğer yazılar normal kalınlıkta (400) kalır; sadece buton yazıları kalın
+  (600). Villa kartı ve sheet başlıklarının ölçüsü tutarlı olsun. _(7 Kasım: kalınlaştırma Zeyd'in
+  isteğiyle geri alındı.)_
 
 ## 4. Ekran düzeni
 
