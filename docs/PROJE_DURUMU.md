@@ -65,6 +65,14 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
 - [ ] Fiyat girme yeniden tasarımı · Claude Code'a gönderildi: sarı "fiyat modu" kalkar, ayrı "Fiyatlar"
       ekranı, "Aylar" (12 ay listesi, aya dokun → tüm aya fiyat, hafta sonu ayrı fiyat, çoklu ay seçimi)
       ve "Günler" (takvimde gün seç → fiyat gir) sekmeleri, son kullanılan fiyatlar, "Geri al".
+- [ ] Fotoğraflar ekranı · Claude Code'a gönderildi: villa ekranında ilk 3 foto + "+X", ayrı Fotoğraflar
+      ekranı (3'lü ızgara, kapak etiketi, basılı tut-sürükle sıralama, çoklu seçip silme, tam ekran
+      görüntüleme + kapak yap). Bakıcı silemez/sıralayamaz.
+- [ ] Drive'dan fotoğraf alma (fotoğraf ekranından sonra, mesajı henüz yazılmadı). Plan: kullanıcı
+      herkese açık Drive klasör linkini yapıştırır → Supabase edge function (girişli + villaya erişim
+      kontrolü, Google API anahtarı sır olarak) klasördeki görselleri listeler ve indirmeyi aracılık
+      eder → istemci mevcut küçültme akışıyla (fotoHazirla) yükler, ilerleme gösterir, üst sınır ~60.
+      Zeyd'in Google Cloud'da Drive API anahtarı oluşturması gerekecek (adım adım anlatılacak).
 - [ ] SIRADAKİ: Veritabanı güvenlik düzeltmeleri — Claude sohbetten Supabase'de yapacak, Zeyd'in onayıyla
       (detaylar inceleme raporunda, repo herkese açık olduğu için burada yok)
 
