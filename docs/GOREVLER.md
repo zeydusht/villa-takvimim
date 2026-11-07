@@ -139,22 +139,22 @@ Hedef: daha net, daha "premium" ama aynı sade dil. Renk paleti ve yeşil (#0B5B
 
 ## 4. Ekran düzeni
 
-- [ ] **4.1 Ana ekran yer israfı.** Üstte bar logosu + büyük logo + "Villalarım" başlığı var;
+- [x] **4.1 Ana ekran yer israfı.** Üstte bar logosu + büyük logo + "Villalarım" başlığı var;
   villa kartları 272 px yüksek, fotoğrafsızsa koca "V". Büyük logoyu kaldır; kartı ~140 px
   (fotoğraf solda kare, sağda ad + durum); fotoğrafsızsa küçük renkli baş harf.
-- [ ] **4.2 Alt sekme barı.** Ana ekrandaki uzun liste (villa ekle, kullanıcılar, davet kodu,
+- [x] **4.2 Alt sekme barı.** Ana ekrandaki uzun liste (villa ekle, kullanıcılar, davet kodu,
   hesabım, yedek) yerine altta 3 sekme: **Villalar · Takvim · Hesap**. "Takvim" şimdilik
   tüm villaların yaklaşan giriş/çıkışlarının listesi olabilir. Safe area'ya dikkat
   (`env(safe-area-inset-bottom)`).
-- [ ] **4.3 Takvim günleri.** Haftanın günleri "P S Ç P C C P" (iki P, iki C) →
+- [x] **4.3 Takvim günleri.** Haftanın günleri "P S Ç P C C P" (iki P, iki C) →
   "Pt Sa Ça Pe Cu Ct Pz". Aynı düzeltme `g.html`'de de.
-- [ ] **4.4 Takvim okunabilirliği.** Geçmiş günler soluk; dolu günlerde fiyat yerine misafirin baş
+- [x] **4.4 Takvim okunabilirliği.** Geçmiş günler soluk; dolu günlerde fiyat yerine misafirin baş
   harfleri; ardışık rezervasyonlar birbirinden ayrılsın (farklı ton ya da aralarında boşluk);
   fiyat yazısı 9 px → en az 11 px.
-- [ ] **4.5 1 gecelik rezervasyonlar** ince şerit olarak kalıyor; dokunması zor. Görünür blok yap.
-- [ ] **4.6 Rezervasyon detayı.** Düz telefon numarası yerine iki buton: **Ara** (`tel:`) ve
+- [x] **4.5 1 gecelik rezervasyonlar** ince şerit olarak kalıyor; dokunması zor. Görünür blok yap.
+- [x] **4.6 Rezervasyon detayı.** Düz telefon numarası yerine iki buton: **Ara** (`tel:`) ve
   **WhatsApp** (`https://wa.me/<numara>`). Numarayı okunur biçimde göster (+90 532 000 00 00).
-- [ ] **4.7 Onay bekleyen ekranı.** "Hesabınız onay bekliyor" ekranına "WhatsApp'tan bize yazın"
+- [x] **4.7 Onay bekleyen ekranı.** "Hesabınız onay bekliyor" ekranına "WhatsApp'tan bize yazın"
   butonu ve "genelde 24 saat içinde onaylanır" gibi bir beklenti metni (metni Zeyd'e onaylat).
 
 ## 5. Küçük kazanımlar (vakit kalırsa)

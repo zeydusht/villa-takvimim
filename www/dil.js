@@ -116,7 +116,7 @@
 
     // Genel eylemler
     "Kaydet":"Save", "Kapat":"Close", "Vazgeç":"Cancel", "Sil":"Delete", "Ekle":"Add",
-    "Geri":"Back", "Aç":"Enable", "Kaldır":"Remove", "Durdur":"Suspend", "Ara":"Search",
+    "Geri":"Back", "Aç":"Enable", "Kaldır":"Remove", "Durdur":"Suspend",
     "Tamam":"Done", "Bitir":"Finish", "Temizle":"Clear", "Kopyala":"Copy", "Paylaş":"Share",
     "Yenile":"Refresh", "Devam":"Continue", "Değişiklikleri kaydet":"Save changes",
     "Tekrar dene":"Try again", "Hazırlanıyor…":"Preparing…", "Yükleniyor…":"Loading…",
@@ -303,6 +303,16 @@
     "Misafir adını yazın":"Enter the guest's name",
     "· tutar girilmedi":"· no amount entered",
 
+    // Alt sekmeler, Takvim sekmesi, telefon, onay ekranı
+    "Villalar":"Villas", "Takvim":"Calendar", "Hesap":"Account", "Ara":"Call", "Yedek":"Backup",
+    "Yarın":"Tomorrow", "Ana menü":"Main menu",
+    "Tüm villaların önümüzdeki 30 gündeki giriş ve çıkışları":"Check-ins and check-outs for all villas in the next 30 days",
+    "Önümüzdeki 30 günde giriş veya çıkış yok.":"No check-ins or check-outs in the next 30 days.",
+    "Henüz villa yok. Aşağıdan ilk villanızı ekleyin.":"No villas yet. Add your first villa below.",
+    "Hesabınız genellikle 24 saat içinde onaylanır. Acele ediyorsanız bize WhatsApp'tan yazın.":
+      "Accounts are usually approved within 24 hours. In a hurry? Message us on WhatsApp.",
+    "WhatsApp'tan bize yazın":"Message us on WhatsApp",
+
     // Uyarı paneli ve dosya paylaşımı
     "Anladım":"OK", "Dosya paylaşılamadı.":"The file could not be shared.",
     "Gecelik fiyat girin.":"Enter a nightly price.",
@@ -377,6 +387,12 @@
 
   var K = [
     [/^· kalan (.+)$/, "· balance $1"],
+    [/^Giriş (\d+:\d+) · (.+)$/, "Check-in $1 · $2"],
+    [/^Çıkış (\d+:\d+) · (.+)$/, "Check-out $1 · $2"],
+    [/^(Bugün|Yarın) · (.+)$/, function (_, a, b) { return (a === "Bugün" ? "Today" : "Tomorrow") + " · " + b; }],
+    [/^(Pazartesi|Salı|Çarşamba|Perşembe|Cuma|Cumartesi|Pazar) · (.+)$/, function (_, a, b) {
+      var g = {"Pazartesi":"Monday","Salı":"Tuesday","Çarşamba":"Wednesday","Perşembe":"Thursday","Cuma":"Friday","Cumartesi":"Saturday","Pazar":"Sunday"};
+      return g[a] + " · " + b; }],
     [/^Alınan (.+₺)$/, "Received $1"],
     [/^(\d+) konaklama · son (.+)$/, "$1 stays · last $2"],
     [/^(\d+) konaklama · sıradaki (.+)$/, "$1 stays · next $2"],

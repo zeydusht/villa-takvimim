@@ -107,7 +107,7 @@
   .aybar .ad{font-family:var(--serif);font-size:1.0625rem}
   .aybar button{padding:.5rem;border-radius:99px;line-height:0;color:var(--muted)}
   .dow{display:grid;grid-template-columns:repeat(7,1fr)}
-  .dow div{text-align:center;font-size:.6875rem;text-transform:uppercase;letter-spacing:.1em;
+  .dow div{text-align:center;font-size:.6875rem;letter-spacing:.02em;
     color:var(--muted);padding:.375rem 0}
   .ay{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:3.5rem;row-gap:.1875rem}
   .g{height:3.5rem;min-height:3.5rem;max-height:3.5rem;align-self:stretch;margin:0;padding:0;
@@ -609,7 +609,8 @@
       '<button id="ay-once" aria-label="Önceki ay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>'+
       '<div class="ad">'+AYLAR[m]+" "+y+"</div>"+
       '<button id="ay-sonra" aria-label="Sonraki ay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg></button></div>'+
-      '<div class="dow"><div>P</div><div>S</div><div>Ç</div><div>P</div><div>C</div><div>C</div><div>P</div></div>'+
+      '<div class="dow">'+(EN?["Mo","Tu","We","Th","Fr","Sa","Su"]:["Pt","Sa","Ça","Pe","Cu","Ct","Pz"])
+        .map(function(x){ return "<div>"+x+"</div>"; }).join("")+"</div>"+
       '<div class="ay" id="ay">';
     for(var i=0;i<lead;i++) h+="<div></div>";
     for(var g=1;g<=adet;g++){
