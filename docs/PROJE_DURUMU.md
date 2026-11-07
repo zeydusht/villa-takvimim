@@ -120,7 +120,9 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       karşılama kartı…) · Claude Code'a gönderilecek
 - [x] Veritabanı güvenlik düzeltmeleri — 1. bölüm (Claude, 7 Kasım).
       Fotoğraflar artık <villa id>/f/ klasörüne yükleniyor.
-- [ ] SIRADAKİ: Bakıcının para bilgilerini veritabanında da kapatmak (plan sohbette onaylanacak).
+- [x] Bakıcı para bilgisi veritabanında da kapatıldı (Claude, 7 Kasım).
+      Bakıcı kalan tutarı bakici_kalanlar fonksiyonundan alır; tutarı sunucu hesaplar; bakıcı sadece kendi giderlerini görür.
+- [ ] SIRADAKİ: Claude bakıcı hesabıyla test edecek, sonra 5. bölüm küçük kazanımlar.
 
 ## Sonraki fazlar
 - **Faz 3 / bildirimler:** Web Push app içinde çalışmıyor. Firebase/APNs ile native bildirim

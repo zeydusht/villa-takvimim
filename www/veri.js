@@ -273,20 +273,22 @@
         roller[e.villa_id] = e.rol;
       });
       var listesi = "in.(" + idler.join(",") + ")";
-      // Para bilgileri sahip ve bakıcıya açık; yalnız destek modunda kapalı
-      var paraVar = idler.some(function (i) { return roller[i] !== "destek"; });
+      var liste = function (l) { return "in.(" + l.join(",") + ")"; };
+      // Para bilgileri (mali, ödemeler) yalnız sahibin villalarında okunur; bakıcı ve destek modunda istenmez.
+      // Gecelik fiyatlar bakıcıya kapalı; sahip ve destek modunda okunur.
+      var sahipIdler = idler.filter(function (i) { return roller[i] === "sahip"; });
+      var fiyatIdler = idler.filter(function (i) { return roller[i] !== "bakici"; });
 
       var sorgular = [
         api("villalar?select=*&id=" + listesi),
         api("rezervasyonlar?select=*&villa_id=" + listesi),
         api("giderler?select=*&villa_id=" + listesi),
-        api("fiyatlar?select=*&villa_id=" + listesi),
+        fiyatIdler.length ? api("fiyatlar?select=*&villa_id=" + liste(fiyatIdler)) : Promise.resolve([]),
         api("villa_fotograflar?select=*&villa_id=" + listesi + "&order=sira"),
         api("misafir_notlari?select=*&villa_id=" + listesi),
-        paraVar ? api("rezervasyon_mali?select=*&villa_id=" + listesi) : Promise.resolve([]),
-        paraVar ? api("odemeler?select=*&villa_id=" + listesi) : Promise.resolve([]),
-        idler.some(function (i) { return roller[i] === "sahip"; })
-          ? api("gelirler?select=*&villa_id=" + listesi) : Promise.resolve([])
+        sahipIdler.length ? api("rezervasyon_mali?select=*&villa_id=" + liste(sahipIdler)) : Promise.resolve([]),
+        sahipIdler.length ? api("odemeler?select=*&villa_id=" + liste(sahipIdler)) : Promise.resolve([]),
+        sahipIdler.length ? api("gelirler?select=*&villa_id=" + liste(sahipIdler)) : Promise.resolve([])
       ];
 
       return Promise.all(sorgular).then(function (s) {
@@ -333,7 +335,7 @@
           fiyat.filter(function (f) { return f.villa_id === v.id; })
                .forEach(function (f) { m.fiyatlar[f.tarih] = say(f.tutar); });
           gider.filter(function (g) { return g.villa_id === v.id; }).forEach(function (g) {
-            m.giderler.push({ id: g.id, aciklama: g.aciklama, tutar: say(g.tutar), tarih: g.tarih,
+            m.giderler.push({ id: g.id, aciklama: g.aciklama, tutar: say(g.tutar), tarih: g.tarih, ekleyen: g.ekleyen || undefined,
                               foto: g.fis_yol ? { id: g.id, tam: g.fis_yol, thumb: g.fis_yol } : undefined });
           });
           gelir.filter(function (g) { return g.villa_id === v.id; }).forEach(function (g) {
@@ -348,8 +350,25 @@
           m.__anlik = anlik(m);
           return m;
         });
+      }).then(function (l) {
+        // Bakıcı villaları: girişte alınacak kalan tutar sunucudan gelir (bakici_kalanlar)
+        return Promise.all(l.filter(function (v) { return v.rol === "bakici"; }).map(VT.bakiciKalanlar))
+          .then(function () { return l; });
       });
     });
+  };
+
+  // Bakıcının göreceği kalan tutarlar: r.kalanSunucu (depozito dahil), r.depozitoSunucu
+  VT.bakiciKalanlar = function (v) {
+    return VT.rpc("bakici_kalanlar", { p_villa: v.id }).then(function (satirlar) {
+      var m = {};
+      (satirlar || []).forEach(function (x) { m[x.rezervasyon_id] = x; });
+      (v.rez || []).forEach(function (r) {
+        var x = m[r.id];
+        r.kalanSunucu = x ? Math.max(0, Math.round(Number(x.kalan) || 0)) : 0;
+        r.depozitoSunucu = x ? Math.max(0, Math.round(Number(x.depozito) || 0)) : 0;
+      });
+    }).catch(function () {});
   };
 
   // ---------------- bildirim aboneliği ----------------
@@ -548,7 +567,10 @@
     }
     rz.sil.forEach(function (id) { isler.push(api("rezervasyonlar?id=eq." + id, { method: "DELETE" })); });
 
-    var para = v.rol !== "destek";
+    // Para bilgileri (mali, ödemeler) yalnız sahip yazar. Bakıcı hiç göndermez: tutarı sunucu hesaplar.
+    // Destek modunda (yönetici) önceden de yazılmıyordu; değişmedi.
+    var bakici = v.rol === "bakici";
+    var para = sahip;
     if (para) {
       var ml = fark(e.mali, y.mali);
       ml.ekle.forEach(function (id) {
@@ -603,7 +625,7 @@
           var g = v.giderler.filter(function (x) { return x.id === id; })[0];
           return { id: g.id, villa_id: v.id, aciklama: g.aciklama, tutar: g.tutar, tarih: g.tarih,
                    fis_yol: (g.foto && /^https?:/.test(g.foto.tam)) ? g.foto.tam : null,
-                   ekleyen: VT.kullanici().id };
+                   ekleyen: g.ekleyen || VT.kullanici().id };
         }) }));
     }
     gd.sil.forEach(function (id) { isler.push(api("giderler?id=eq." + id, { method: "DELETE" })); });
@@ -627,7 +649,23 @@
         }) }));
     }
 
-    return Promise.all(isler).then(function () { v.__anlik = y; });
+    if (bakici) {
+      isler = isler.map(function (pr) {
+        return pr.catch(function (er) {
+          if (/row-level security|permission denied|\(403\)/i.test(String((er && er.message) || ""))) return null;
+          throw er;
+        });
+      });
+    }
+    return Promise.all(isler).then(function () {
+      v.__anlik = y;
+      // bakıcı rezervasyon ekledi/sildi: kalan tutarları sunucudan tazele
+      if (bakici && (rz.ekle.length || rz.sil.length)) {
+        VT.bakiciKalanlar(v).then(function () {
+          try { window.dispatchEvent(new CustomEvent("vt-kalanlar", { detail: v.id })); } catch (e) {}
+        });
+      }
+    });
   };
 
   // Kalıcı silme yok: silindi_tarih doldurulur, 30 gün "Silinen villalar"da kalır

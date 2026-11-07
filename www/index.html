@@ -831,6 +831,10 @@
         <span>Gelir &amp; gider</span>
         <span class="sag" id="kasaOzet"></span>
       </button>
+      <button class="satirBtn hide" id="giderlerimBtn">
+        <span>Giderlerim</span>
+        <span class="sag" id="giderlerimOzet"></span>
+      </button>
       </div>
     </div>
 
@@ -1322,6 +1326,13 @@
              kalan:Math.max(0,toplam-alinan), iade:dep };
   }
 
+  // Kalan ödeme: bakıcı için sunucunun hesapladığı tutar (depozito dahil); destek modunda gösterilmez
+  function kalanTutar(v,r){
+    if(S.bulut && v && v.rol==="bakici") return r.kalanSunucu||0;
+    if(S.bulut && v && v.rol==="destek") return 0;
+    return kalemler(v,r).kalan;
+  }
+
   function kalemHTML(k,gc){
     var sat=function(ad,deger,renk){
       return '<div class="para"><span class="muted">'+ad+"</span><span"+
@@ -1411,10 +1422,10 @@
       });
       if(v.rol!=="destek"){
         (v.rez||[]).forEach(function(r){
-          var k=kalemler(v,r);
-          if(k.kalan>0 && r.start<=yarinK && r.end>=bugunK)
+          var kl=kalanTutar(v,r);
+          if(kl>0 && r.start<=yarinK && r.end>=bugunK)
             sat.push({o:5,renk:"#9B2C4A",
-              m:"<b>Kalan ödeme</b> · "+esc(r.guest)+" · "+para(k.kalan), v:villaAdi, r:r, vid:v.id});
+              m:"<b>Kalan ödeme</b> · "+esc(r.guest)+" · "+para(kl), v:villaAdi, r:r, vid:v.id});
         });
       }
     });
@@ -1521,7 +1532,7 @@
         h+='<div class="gunBas">'+(fark===0?esc(cev("Bugün"))+" · ":(fark===1?esc(cev("Yarın"))+" · ":""))+
           esc(gunKisa(d))+" "+esc(kisa(o.k))+"</div>";
       }
-      var kalan=(o.giris && (!S.bulut || o.v.rol!=="destek")) ? kalemler(o.v,o.r).kalan : 0;
+      var kalan=o.giris ? kalanTutar(o.v,o.r) : 0;
       h+='<button class="satirBtn ajSatir" data-ai="'+i+'" style="margin-top:.5rem">'+
          '<span class="ajIc"><span class="ajOk '+(o.giris?"g":"c")+'">'+(o.giris?okG:okC)+"</span>"+
            "<span><span>"+esc(cev(o.giris?"Giriş":"Çıkış"))+" · "+esc(o.v.ad||"Villa")+" · "+esc(o.r.guest)+" · "+(o.giris?GIRIS:CIKIS)+"</span>"+
@@ -1930,7 +1941,7 @@
     var lh="";
     if(!yak.length) lh='<div class="sm muted">Henüz rezervasyon yok. Takvimden tarih aralığı seçerek başlayın.</div>';
     else yak.forEach(function(r){
-      var kalan=kalanGorur()?kalemler(v,r).kalan:0;
+      var kalan=kalanGorur()?kalanTutar(v,r):0;
       var tutarYok=paraGorur() && !(r.tutar>0);
       lh+='<button class="row" data-id="'+r.id+'"><span class="dot" style="background:'+r.color+'"></span>'+
           '<span class="name">'+esc(r.guest)+
@@ -1954,6 +1965,13 @@
 
     var sahip=sahipMi(), duz=duzenlenebilir();
     document.getElementById("kasaBtn").classList[sahip?"remove":"add"]("hide");
+    var bakiciMi=!!(S.bulut && v.rol==="bakici");
+    document.getElementById("giderlerimBtn").classList[bakiciMi?"remove":"add"]("hide");
+    if(bakiciMi){
+      var gl0=v.giderler||[];
+      document.getElementById("giderlerimOzet").textContent = gl0.length
+        ? cev(gl0.length+" kayıt")+" · "+para(gl0.reduce(function(a,x){return a+(x.tutar||0)},0)) : cev("Gider ekle");
+    }
     document.getElementById("fiyatBtn").classList[(sahip&&duz)?"remove":"add"]("hide");
     document.getElementById("fiyatBolum").classList[(sahip&&duz)?"remove":"add"]("hide");
     document.getElementById("bakiciBtn").classList[(S.bulut&&sahip&&!S.destek)?"remove":"add"]("hide");
@@ -2383,9 +2401,10 @@
   function form(){
     var t=S.taslak, v=aktif();
     var g=Math.round((parse(t.end)-parse(t.start))/86400000);
-    var h=hesapla(v,t.start,t.end);
-    var ekOn=ekUcretHesap(v,g);
     var para0=paraGorur();
+    // Bakıcıda gecelik fiyatlar gelmez; tutarı veritabanı kendisi hesaplar
+    var h=para0?hesapla(v,t.start,t.end):{toplam:0,eksik:0};
+    var ekOn=para0?ekUcretHesap(v,g):0;
     var kisiStep='<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Kişi sayısı"))+"</div>"+
       '<div class="adimci"><button class="big ghost" id="f-kisiAz" aria-label="Azalt">−</button>'+
       '<span id="f-kisiYazi">2</span><input type="hidden" id="f-people" value="2">'+
@@ -2498,11 +2517,11 @@
         note:document.getElementById("f-note").value.trim(),
         // Bakıcı tutarı görmez: gecelik fiyatlardan kendiliğinden hesaplanır.
         // Fiyatı girilmemiş gece varsa 0 kalır, sahip listede "tutar girilmedi" görür.
-        tutar:para0?sayi(document.getElementById("f-tutar").value):(h.eksik?0:h.toplam),
+        tutar:para0?sayi(document.getElementById("f-tutar").value):0,
         indirim:para0?sayi(document.getElementById("f-indirim").value):0,
         onOdemeTutar:para0?sayi(document.getElementById("f-ontl").value):undefined,
         onOdemeYuzde:para0?sayi(document.getElementById("f-onyuzde").value):undefined,
-        ekUcret:(para0||!h.eksik)?ekOn:0,
+        ekUcret:para0?ekOn:0,
         odenen:0, odemeler:[] });
       var yeniRez=v.rez[v.rez.length-1];
       var ilk=(para0 && kaporaAcik)?sayi(document.getElementById("f-odenen").value):0;
@@ -2556,10 +2575,12 @@
       "</div>"+
       (paraGorur()? '<div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--line)">'+
         kalemHTML(kalemler(aktif(),r), gece(r))+"</div>" : "")+
-      (!paraGorur() && kalanGorur()? (function(){ var kl=kalemler(aktif(),r).kalan;
+      (!paraGorur() && kalanGorur()? (function(){ var kl=kalanTutar(aktif(),r), dp=r.depozitoSunucu||0;
         return '<div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--line)">'+
           '<div class="para net"><span>Kalan ödeme</span><span style="color:'+(kl>0?"#9B2C4A":"#0B5B57")+'">'+
-          para(kl)+"</span></div></div>"; })() : "")+
+          para(kl)+"</span></div>"+
+          (dp>0&&kl>0?'<div class="sm muted" style="text-align:right;margin-top:.125rem">'+esc(cev("("+para(dp)+" depozito dahil)"))+"</div>":"")+
+          "</div>"; })() : "")+
       (duzenlenebilir()?'<button class="big ghost" id="d-duzenle" style="margin-top:1rem">Rezervasyonu düzenle</button>':"")+
       (paraGorur()?'<button class="big ghost" id="d-odeme" style="margin-top:.5rem">Ödeme al / güncelle</button>'+
       '<button class="big ghost" id="d-form" style="margin-top:.5rem">Rezervasyon formu (PDF)</button>':"")+
@@ -4099,30 +4120,30 @@
 
   var fisBekleyen=null;
 
-  function hareketSheet(tip){
+  function hareketSheet(tip,mevcut,sonra){
     fisBekleyen=null;
     var gelirMi=tip==="gelir";
     var KAT=["Temizlik","Havuz bakımı","Bahçe","Elektrik","Su","İnternet","Tamir","Diğer"];
     // "Su" çeviri tablosunda yok (İngilizce takvimdeki "Su" = Pazar ile karışmasın diye), burada çevrilir
     var katAd=function(k){ return (k==="Su" && window.DIL && DIL.ingilizce && DIL.ingilizce()) ? "Water" : cev(k); };
-    perde('<div class="head"><h2>'+(gelirMi?"Gelir ekle":"Gider ekle")+'</h2>'+kapatBtn()+"</div>"+
+    perde('<div class="head"><h2>'+(mevcut?(gelirMi?"Geliri düzenle":"Gideri düzenle"):(gelirMi?"Gelir ekle":"Gider ekle"))+'</h2>'+kapatBtn()+"</div>"+
       (gelirMi?'<div style="margin-top:1.25rem"></div>':
         '<div class="katlar" id="h-katlar">'+KAT.map(function(k){
           return '<button class="big ghost" data-kat="'+esc(k)+'">'+esc(katAd(k))+"</button>"; }).join("")+"</div>")+
-      alan("h-ad","Açıklama",gelirMi?"Örn. depozito iadesi, ek hizmet":"Örn. temizlik, havuz bakımı","text")+
+      alan("h-ad","Açıklama",gelirMi?"Örn. depozito iadesi, ek hizmet":"Örn. temizlik, havuz bakımı","text",mevcut?esc(mevcut.aciklama||""):"")+
       '<div class="ikili">'+
-        alan("h-tutar","Tutar (₺)","0","tel")+
+        alan("h-tutar","Tutar (₺)","0","tel",mevcut&&mevcut.tutar?binlik(mevcut.tutar):"")+
         '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Tarih</div>'+
-        tarihInput("h-tarih",fmt(today))+"</div>"+
+        tarihInput("h-tarih",(mevcut&&mevcut.tarih)||fmt(today))+"</div>"+
       "</div>"+
       '<div class="sonTutar" id="h-son"></div>'+
       (gelirMi?"":'<div class="eyebrow" style="margin-bottom:.5rem">Fiş / fatura <span style="text-transform:none;letter-spacing:0">· isteğe bağlı</span></div>'+
-        '<div class="sheetfoto" id="h-onizleme"></div>'+
-        '<button class="big ghost" id="h-foto" style="margin-top:0">Fotoğraf ekle</button>')+
+        '<div class="sheetfoto" id="h-onizleme">'+((mevcut&&mevcut.foto)?'<span class="mini" style="background-image:url('+mevcut.foto.thumb+')"></span>':"")+"</div>"+
+        '<button class="big ghost" id="h-foto" style="margin-top:0">'+((mevcut&&mevcut.foto)?"Fotoğrafı değiştir":"Fotoğraf ekle")+"</button>")+
       '<button class="big" id="h-kaydet"'+(gelirMi?"":' style="background:#9B2C4A"')+'>Kaydet</button>');
     var tIn=document.getElementById("h-tutar"), adIn=document.getElementById("h-ad");
     sayiBicimle(tIn);
-    if(gelirMi) adIn.focus();
+    if(gelirMi && !mevcut) adIn.focus();
     else{
       // Kategoriye dokununca: açıklama dolar, imleç tutara geçer, o kategorinin son tutarı önerilir
       document.getElementById("h-katlar").addEventListener("click",function(e){
@@ -4163,15 +4184,23 @@
       var tt=sayi(document.getElementById("h-tutar").value);
       var tr=document.getElementById("h-tarih").value||fmt(today);
       if(!ad||!tt) return uyari("Açıklama ve tutar girin.");
-      var kayit={id:uid(), aciklama:ad, tutar:tt, tarih:tr};
-      if(fisBekleyen) kayit.foto=fisBekleyen;
-      var v=aktif();
-      (gelirMi?v.gelirler:v.giderler).push(kayit);
+      var v=aktif(), kayit;
+      if(mevcut){
+        kayit=mevcut; kayit.aciklama=ad; kayit.tutar=tt; kayit.tarih=tr;
+        if(fisBekleyen) kayit.foto=fisBekleyen;
+      } else {
+        kayit={id:uid(), aciklama:ad, tutar:tt, tarih:tr};
+        if(fisBekleyen) kayit.foto=fisBekleyen;
+        if(S.bulut && window.VT && VT.kullanici && VT.kullanici()) kayit.ekleyen=VT.kullanici().id;
+        if(gelirMi) v.gelirler=v.gelirler||[]; else v.giderler=v.giderler||[];
+        (gelirMi?v.gelirler:v.giderler).push(kayit);
+      }
       if(!kaydet()){
         delete kayit.foto; kaydet();
         uyari("Fiş fotoğrafı kaydedilemedi, hafıza dolu. Kayıt fotoğrafsız eklendi.");
       }
       fisBekleyen=null; kapat();
+      if(sonra){ sonra(); return; }
       S.yil=parse(tr).getFullYear(); S.kasaAy=new Date(S.yil,parse(tr).getMonth(),1);
       cizKasa();
     };
@@ -4188,19 +4217,57 @@
     var dizi=tip==="gelir"?v.gelirler:v.giderler;
     var g=dizi.filter(function(x){return x.id===b.dataset.hid})[0];
     if(!g) return;
+    hareketDetay(tip,g,cizKasa);
+  });
+
+  function hareketDetay(tip,g,sonra){
+    var v=aktif(); if(!v) return;
     perde('<div class="head"><h2>'+esc(g.aciklama)+"</h2>"+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin-top:.5rem">'+kisa(g.tarih)+" · "+
         (tip==="gelir"?"Gelir":"Gider")+" · "+para(g.tutar)+"</div>"+
       (g.foto?'<img class="buyuk" style="margin-top:1.25rem" src="'+g.foto.tam+'" alt="">':"")+
-      '<button class="big" id="hd-sil" style="background:#9B2C4A">Kaydı sil</button>'+
+      '<button class="big ghost" id="hd-duz">'+esc(cev("Düzenle"))+"</button>"+
+      '<button class="big tehlike" id="hd-sil" style="margin-top:.5rem">Kaydı sil</button>'+
       '<button class="big ghost" id="hd-vaz" style="margin-top:.5rem">Kapat</button>');
     document.getElementById("hd-vaz").onclick=kapat;
+    document.getElementById("hd-duz").onclick=function(){ kapat(); hareketSheet(tip,g,sonra); };
     document.getElementById("hd-sil").onclick=function(){
-      var yeni=dizi.filter(function(x){return x.id!==g.id});
-      if(tip==="gelir") v.gelirler=yeni; else v.giderler=yeni;
-      kaydet(); kapat(); cizKasa();
+      if(tip==="gelir") v.gelirler=(v.gelirler||[]).filter(function(x){return x.id!==g.id});
+      else v.giderler=(v.giderler||[]).filter(function(x){return x.id!==g.id});
+      kaydet(); kapat(); sonra && sonra();
     };
+  }
+
+  // Bakıcı: sadece kendi eklediği giderler (veritabanı da yalnız bunları verir)
+  function giderlerimSheet(){
+    var v=aktif(); if(!v) return;
+    var l=(v.giderler||[]).slice().sort(function(a,b){ return String(a.tarih)<String(b.tarih)?1:-1; });
+    var tekrar=function(){ ciz(); giderlerimSheet(); };
+    perde('<div class="head"><h2>'+esc(cev("Giderlerim"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 1rem">'+esc(cev("Bu villa için sizin girdiğiniz giderler. Dokunarak düzeltebilir ya da silebilirsiniz."))+"</div>"+
+      (l.length?'<div class="grup">'+l.map(function(g){
+        return '<button class="satirBtn" data-gid="'+esc(g.id)+'"><span>'+esc(g.aciklama)+
+          '<span class="satirAlt">'+esc(kisa(g.tarih))+"</span></span>"+
+          '<span class="sag">'+para(g.tutar)+"</span></button>"; }).join("")+"</div>"
+        :'<div class="sm muted">'+esc(cev("Henüz gider girmediniz."))+"</div>")+
+      '<button class="ekleKart" id="gl-ekle" style="width:100%;margin-top:1rem">'+esc(cev("+ Gider"))+"</button>");
+    document.getElementById("gl-ekle").onclick=function(){ kapat(); hareketSheet("gider",null,tekrar); };
+    Array.prototype.forEach.call(document.querySelectorAll("[data-gid]"),function(b){
+      b.onclick=function(){
+        var g=(v.giderler||[]).filter(function(x){ return x.id===b.dataset.gid; })[0];
+        if(g){ kapat(); hareketDetay("gider",g,tekrar); }
+      };
+    });
+  }
+  document.getElementById("giderlerimBtn").onclick=function(){ giderlerimSheet(); };
+
+  // Bakıcı rezervasyon ekleyince sunucunun hesapladığı kalan tutar gelir: ekranı tazele
+  window.addEventListener("vt-kalanlar",function(){
+    if(!document.getElementById("takvim").classList.contains("hide") && aktif()) ciz();
+    else if(!document.getElementById("ajanda").classList.contains("hide")) cizAjanda();
+    else if(!document.getElementById("ana").classList.contains("hide")) cizAna();
   });
+
 
   // ================= FOTOĞRAF =================
   function cizim(img,gen,yuk,kalite,kirp){
