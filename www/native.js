@@ -92,4 +92,52 @@
       else if (P.App.minimizeApp) P.App.minimizeApp();
     });
   }
+
+  // ---------- dosya indirme / paylaşma ----------
+  // App içinde <a download> çalışmıyor. Dosyayı geçici klasöre yazıp
+  // telefonun paylaş menüsünü açar (Dosyalar'a kaydet, WhatsApp, Mail…).
+  function base64(blob) {
+    return new Promise(function (ok, hata) {
+      var r = new FileReader();
+      r.onload = function () { ok(String(r.result).split(",")[1] || ""); };
+      r.onerror = function () { hata(r.error); };
+      r.readAsDataURL(blob);
+    });
+  }
+  function dosyaPaylas(blob, dosyaAdi) {
+    var FS = P.Filesystem, SH = P.Share;
+    if (!FS || !SH) return Promise.reject(new Error("Paylaşım eklentisi yok"));
+    var ad = String(dosyaAdi || "dosya").replace(/[\/:*?"<>|]/g, "-");
+    return base64(blob).then(function (veri) {
+      return FS.writeFile({ path: ad, data: veri, directory: "CACHE" });
+    }).then(function (sonuc) {
+      return SH.share({ title: ad, files: [sonuc.uri] });
+    }).catch(function (e) {
+      // Kullanıcı paylaş menüsünü kapattıysa hata sayma
+      if (e && /cancel/i.test(String(e.message || e))) return;
+      throw e;
+    });
+  }
+  window.VTNative = window.VTNative || {};
+  window.VTNative.dosyaPaylas = dosyaPaylas;
+
+  // Sayfadaki navigator.share({files}) çağrıları da aynı yoldan gitsin.
+  if (P.Filesystem && P.Share) {
+    var eskiShare = navigator.share ? navigator.share.bind(navigator) : null;
+    var eskiCanShare = navigator.canShare ? navigator.canShare.bind(navigator) : null;
+    try {
+      navigator.canShare = function (d) {
+        if (d && d.files && d.files.length) return true;
+        return eskiCanShare ? eskiCanShare(d) : !!eskiShare;
+      };
+      navigator.share = function (d) {
+        if (d && d.files && d.files.length) {
+          var f = d.files[0];
+          return dosyaPaylas(f, f.name || d.title);
+        }
+        if (eskiShare) return eskiShare(d);
+        return P.Share.share({ title: d && d.title, text: d && d.text, url: d && d.url });
+      };
+    } catch (e) {}
+  }
 })();

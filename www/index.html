@@ -1061,7 +1061,7 @@
       S.villalar.push(v);
       if(!kaydet()){
         if(!S.bulut){ v.fotolar=[]; kaydet();
-          alert("Bu cihazda fotoğraf için yer kalmadı. Villa fotoğrafsız eklendi."); }
+          uyari("Bu cihazda fotoğraf için yer kalmadı. Villa fotoğrafsız eklendi."); }
       }
       if(S.bulut){
         v.id=VT.yeniId();
@@ -1302,7 +1302,7 @@
     document.getElementById("p-tutar").focus();
     document.getElementById("p-uygula").onclick=function(){
       var f=sayi(document.getElementById("p-tutar").value);
-      if(!f) return alert("Gecelik fiyat girin.");
+      if(!f) return uyari("Gecelik fiyat girin.");
       for(var d=parse(bas); d<=parse(bit); d=addDays(d,1)) v.fiyatlar[fmt(d)]=f;
       kaydet(); kapat(); ciz(); bildir(n+" gün için "+para(f)+" yazıldı.");
     };
@@ -1312,6 +1312,13 @@
     };
   }
 
+  // Uygulamada (iPhone/Android) dosyayı paylaş menüsüyle verir; true dönerse iş bitti.
+  // Web sitesinde false döner ve eski indirme yolu çalışır.
+  function dosyaVer(blob,ad){
+    if(!(window.VTNative && window.VTNative.dosyaPaylas)) return false;
+    window.VTNative.dosyaPaylas(blob,ad).catch(function(){ bildir("Dosya paylaşılamadı."); });
+    return true;
+  }
   function bildir(msg){
     var el=document.createElement("div");
     el.textContent=msg;
@@ -1587,7 +1594,7 @@
 
     document.getElementById("o-ekle").onclick=function(){
       var t=sayi(document.getElementById("o-tutar").value);
-      if(!t) return alert("Alınan tutarı girin.");
+      if(!t) return uyari("Alınan tutarı girin.");
       r.odemeler=r.odemeler||[];
       r.odemeler.push({ id:uid(), tutar:t,
         tarih:document.getElementById("o-tarih").value||fmt(today),
@@ -1793,10 +1800,7 @@
     document.getElementById("h-veri").onclick=function(){
       var d={ hesap:(k&&k.email)||"", tarih:new Date().toISOString(), villalar:S.villalar };
       var blob=new Blob([JSON.stringify(d,null,2)],{type:"application/json"});
-      var a=document.createElement("a");
-      a.href=URL.createObjectURL(blob);
-      a.download="villa-takvim-verilerim-"+fmt(new Date())+".json";
-      a.click(); setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
+      if(dosyaVer(blob,"villa-takvim-verilerim-"+fmt(new Date())+".json")) return;
       bildir("Verileriniz indirildi.");
     };
 
@@ -1825,7 +1829,7 @@
           try{ localStorage.removeItem(K2); }catch(e){}
           S.villalar=[]; S.bulut=false; kapat(); goster("giris");
           bildir("Hesabınız silindi.");
-        }).catch(function(e){ alert(e.message); });
+        }).catch(function(e){ uyari(e.message); });
       };
     };
   };
@@ -1865,6 +1869,7 @@
 
   function zatenKurulu(){
     try{
+      if(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform()) return true;
       if(window.navigator.standalone) return true;
       if(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) return true;
     }catch(e){}
@@ -2653,7 +2658,8 @@
         var blob=pdfYap(c);
         var ad=(v.ad||"villa").replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ ]/g,"").trim()+" - "+don+".pdf";
         var dosya=new File([blob],ad,{type:"application/pdf"});
-        if(navigator.canShare && navigator.canShare({files:[dosya]})){
+        if(dosyaVer(blob,ad)){}
+        else if(navigator.canShare && navigator.canShare({files:[dosya]})){
           navigator.share({files:[dosya],title:ad}).catch(function(){});
         } else {
           var a2=document.createElement("a");
@@ -2837,14 +2843,14 @@
       var ad=document.getElementById("h-ad").value.trim();
       var tt=sayi(document.getElementById("h-tutar").value);
       var tr=document.getElementById("h-tarih").value||fmt(today);
-      if(!ad||!tt) return alert("Açıklama ve tutar girin.");
+      if(!ad||!tt) return uyari("Açıklama ve tutar girin.");
       var kayit={id:uid(), aciklama:ad, tutar:tt, tarih:tr};
       if(fisBekleyen) kayit.foto=fisBekleyen;
       var v=aktif();
       (gelirMi?v.gelirler:v.giderler).push(kayit);
       if(!kaydet()){
         delete kayit.foto; kaydet();
-        alert("Fiş fotoğrafı kaydedilemedi, hafıza dolu. Kayıt fotoğrafsız eklendi.");
+        uyari("Fiş fotoğrafı kaydedilemedi, hafıza dolu. Kayıt fotoğrafsız eklendi.");
       }
       fisBekleyen=null; kapat();
       S.yil=parse(tr).getFullYear(); S.kasaAy=new Date(S.yil,parse(tr).getMonth(),1);
@@ -3045,7 +3051,7 @@
       v.fotolar=(v.fotolar||[]).concat(yeni);
       if(!kaydet()){
         v.fotolar=v.fotolar.slice(0,v.fotolar.length-yeni.length); kaydet();
-        alert("Bu cihazda fotoğraf için yer kalmadı. Giriş yaparsanız fotoğraflar buluta yüklenir ve sınır kalkar.");
+        uyari("Bu cihazda fotoğraf için yer kalmadı. Giriş yaparsanız fotoğraflar buluta yüklenir ve sınır kalkar.");
       }
       ciz();
     });
@@ -3449,6 +3455,7 @@
     var blob=null;
     function hazirla(){ if(!blob) blob=pdfYap(c); return blob; }
     document.getElementById("fm-indir").onclick=function(){
+      if(dosyaVer(hazirla(),ad)) return;
       var a=document.createElement("a");
       a.href=URL.createObjectURL(hazirla()); a.download=ad; a.click();
       setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
@@ -3456,6 +3463,7 @@
     };
     document.getElementById("fm-paylas").onclick=function(){
       var d=document.getElementById("fm-durum");
+      if(dosyaVer(hazirla(),ad)) return;
       try{
         var f=new File([hazirla()],ad,{type:"application/pdf"});
         if(navigator.canShare && navigator.canShare({files:[f]}))
@@ -3727,9 +3735,9 @@
       var u=document.getElementById("a-url").value.trim().replace(/\/+$/,"");
       var k=document.getElementById("a-key").value.trim();
       var st=document.getElementById("a-site").value.trim().replace(/\/+$/,"");
-      if(!/^https:\/\/.+/.test(u)) return alert("Project URL https:// ile başlamalı.");
-      if(k.length<20) return alert("Anahtarı eksiksiz yapıştırın.");
-      if(/^sb_secret|service_role/.test(k)) return alert("Bu gizli anahtar. sb_publishable_ ile başlayan anahtarı kullanın.");
+      if(!/^https:\/\/.+/.test(u)) return uyari("Project URL https:// ile başlamalı.");
+      if(k.length<20) return uyari("Anahtarı eksiksiz yapıştırın.");
+      if(/^sb_secret|service_role/.test(k)) return uyari("Bu gizli anahtar. sb_publishable_ ile başlayan anahtarı kullanın.");
       S.cfg={url:u,key:k,site:st}; cfgKaydet(); kapat(); ciz(); bildir("Ayarlar kaydedildi.");
     };
   }
@@ -3835,13 +3843,28 @@
     var x=o.querySelector(".x"); if(x) x.onclick=kapat;
     return o;
   }
-  function kapat(){ var o=document.querySelector(".overlay"); if(o) o.remove(); }
+  function kapat(){ var l=document.querySelectorAll(".overlay"); if(l.length) l[l.length-1].remove(); }
+  // Tarayıcının alert() kutusu yerine uygulamanın kendi paneli.
+  // Açık bir formun üstüne ayrı katman olarak açılır, formu kapatmaz.
+  function uyari(metin){
+    var o=document.createElement("div");
+    o.className="overlay";
+    o.innerHTML='<div class="sheet"><p style="margin:0 0 1.25rem;font-size:1rem;line-height:1.5"></p>'+
+      '<button class="big" type="button">Anladım</button></div>';
+    o.querySelector("p").textContent=String(metin==null?"":metin);
+    function kapa(){ o.remove(); }
+    o.querySelector("button").onclick=kapa;
+    o.addEventListener("click",function(e){ if(e.target===o) kapa(); });
+    document.body.appendChild(o);
+  }
 
   document.getElementById("yedek").onclick=function(){
     var blob=new Blob([JSON.stringify({villalar:S.villalar,cfg:S.cfg},null,2)],{type:"application/json"});
+    var ad="villa-takvim-"+fmt(new Date())+".json";
+    if(dosyaVer(blob,ad)) return;
     var a=document.createElement("a");
     a.href=URL.createObjectURL(blob);
-    a.download="villa-takvim-"+fmt(new Date())+".json";
+    a.download=ad;
     a.click(); setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
   };
   var dosya=document.getElementById("dosya");
@@ -3857,7 +3880,7 @@
         else if(d.rez) S.villalar=[{id:uid(), ad:d.villa||"Villam", color:PALET[0], rez:d.rez}];
         S.villalar.forEach(duzelt);
         kaydet(); cizAna();
-      }catch(e){ alert("Dosya okunamadı. Yedek dosyasını seçtiğinizden emin olun."); }
+      }catch(e){ uyari("Dosya okunamadı. Yedek dosyasını seçtiğinizden emin olun."); }
       dosya.value="";
     };
     fr.readAsText(f);

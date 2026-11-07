@@ -288,6 +288,22 @@
     "Bu tarayıcı bildirimi desteklemiyor.":"This browser does not support notifications.",
     "Uygulama bildirimleri bir sonraki sürümde geliyor.":"App notifications are coming in the next version.",
 
+    // Uyarı paneli ve dosya paylaşımı
+    "Anladım":"OK", "Dosya paylaşılamadı.":"The file could not be shared.",
+    "Gecelik fiyat girin.":"Enter a nightly price.",
+    "Bu cihazda fotoğraf için yer kalmadı. Villa fotoğrafsız eklendi.":
+      "There is no room left for photos on this device. The villa was added without a photo.",
+    "Fiş fotoğrafı kaydedilemedi, hafıza dolu. Kayıt fotoğrafsız eklendi.":
+      "The receipt photo could not be saved, storage is full. The entry was added without a photo.",
+    "Bu cihazda fotoğraf için yer kalmadı. Giriş yaparsanız fotoğraflar buluta yüklenir ve sınır kalkar.":
+      "There is no room left for photos on this device. If you sign in, photos are uploaded to the cloud and the limit goes away.",
+    "Project URL https:// ile başlamalı.":"Project URL must start with https://.",
+    "Anahtarı eksiksiz yapıştırın.":"Paste the full key.",
+    "Bu gizli anahtar. sb_publishable_ ile başlayan anahtarı kullanın.":
+      "This is a secret key. Use the key that starts with sb_publishable_.",
+    "Dosya okunamadı. Yedek dosyasını seçtiğinizden emin olun.":
+      "The file could not be read. Make sure you selected the backup file.",
+
     // Bakıcı / davet
     "Bakıcı ekle":"Add caretaker", "Davet et":"Invite", "Davet kodu":"Invite code",
     "Yeni bakıcı davet et":"Invite a new caretaker", "Davet kodu oluştur":"Create invite code",

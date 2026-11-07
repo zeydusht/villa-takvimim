@@ -38,13 +38,13 @@ gerçek verilerde test kaydı açarsan sonunda sil.
 
 ## 1. App katmanı (App Store'u engelleyenler)
 
-- [ ] **1.1 Kamera / fotoğraf izin metinleri.** `ios/App/App/Info.plist` içinde
+- [x] **1.1 Kamera / fotoğraf izin metinleri.** `ios/App/App/Info.plist` içinde
   `NSCameraUsageDescription` ve `NSPhotoLibraryUsageDescription` yok. iPhone'da fotoğraf eklerken
   "Fotoğraf çek" seçilince uygulama çöker.
   Ekle: "Villa ve fiş fotoğrafı çekebilmeniz için kameraya erişim gerekiyor." /
   "Villa fotoğraflarınızı seçebilmeniz için fotoğraflarınıza erişim gerekiyor."
   Android için gerekirse `AndroidManifest.xml`'e kamera izni.
-- [ ] **1.2 İndirme butonları.** Şu 4 yer `a.download` + `URL.createObjectURL` ile dosya indiriyor;
+- [x] **1.2 İndirme butonları.** Şu 4 yer `a.download` + `URL.createObjectURL` ile dosya indiriyor;
   iOS uygulamasının içinde bu çalışmaz:
   - Verilerimi indir (`a.download="villa-takvim-verilerim-…json"`)
   - Rezervasyon formu PDF (`a2.download=ad`, misafir teklifi civarı)
@@ -55,11 +55,11 @@ gerçek verilerde test kaydı açarsan sonunda sil.
   Bu 4 yer native'deyse bunu çağırsın, sitede eskisi gibi indirsin.
   Ayrıca `navigator.share({files})` kullanan yerler (PDF'i WhatsApp'a gönder) native'de
   aynı fonksiyona yönlensin.
-- [ ] **1.3 "Ana ekrana ekleyin" kutusu app içinde gizlensin.** `zatenKurulu()` fonksiyonuna
+- [x] **1.3 "Ana ekrana ekleyin" kutusu app içinde gizlensin.** `zatenKurulu()` fonksiyonuna
   native kontrolü ekle (`window.Capacitor && Capacitor.isNativePlatform()` → true).
-- [ ] **1.4 Tarayıcı uyarı kutuları.** `index.html`'de 12 adet `alert(` var. Uygulamanın kendi
+- [x] **1.4 Tarayıcı uyarı kutuları.** `index.html`'de 12 adet `alert(` var. Uygulamanın kendi
   `perde()` panelini kullanan küçük bir `uyari(metin)` fonksiyonu yaz, hepsini ona çevir.
-- [ ] **1.5 Sadece iPhone.** `ios/App/App.xcodeproj/project.pbxproj` içinde
+- [x] **1.5 Sadece iPhone.** `ios/App/App.xcodeproj/project.pbxproj` içinde
   `TARGETED_DEVICE_FAMILY = "1,2"` → `"1"` (iki yerde). Info.plist'teki iPad yön ayarları kalabilir.
 - [ ] **1.6 Bildirimler (büyük iş, en sona bırakılabilir).** Web Push app içinde çalışmıyor.
   `@capacitor/push-notifications` ile native bildirim; cihaz jetonunu `push_abonelik` tablosuna
