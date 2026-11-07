@@ -226,8 +226,8 @@
   .cell.full .fy{opacity:.85}
   .cell.today .gn{display:flex; align-items:center; justify-content:center; width:1.625rem; height:1.625rem;
     border-radius:99px; background:var(--ok); color:#fff; line-height:1}
-  .cell.today.sel{box-shadow:inset 0 0 0 2.5px #fff, inset 0 0 0 4.5px var(--ink)}
-  .cell.sel{box-shadow:inset 0 0 0 1.5px var(--ink)}
+  .cell.today.sel{box-shadow:inset 0 0 0 2.5px var(--ok), inset 0 0 0 4px #fff}
+  .cell.sel{box-shadow:inset 0 0 0 2.5px var(--ok); background-color:#E3EFEC}
   .cell.full{color:#fff}
   .hint{margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--line); font-size:.875rem;
     color:var(--muted); display:flex; justify-content:space-between; gap:.75rem; min-height:2.5rem}
@@ -330,6 +330,49 @@
   .seg button.on, #misFiltre button.on{background:var(--ok); border-color:var(--ok); color:#fff; font-weight:600}
   #misFiltre{display:flex; gap:.5rem; margin-top:.25rem}
   #misFiltre button{font-size:.875rem}
+  /* ---- 6. bölüm: ilk kullanımda anlaşılırlık ---- */
+  .ajIc{display:flex; align-items:flex-start; gap:.625rem}
+  .ajOk{flex:none; width:1.75rem; height:1.75rem; border-radius:99px; display:flex; align-items:center; justify-content:center; margin-top:-.125rem}
+  .ajOk.g{background:#E3EFEC; color:#0B5B57}
+  .ajOk.c{background:var(--soft); color:#7A857F}
+  .adimSerit{position:sticky; z-index:30; background:var(--ok); color:#fff; border-radius:var(--kose);
+    padding:.375rem .5rem .375rem 1rem; display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+    margin-top:1rem; font-size:.9375rem; box-shadow:0 4px 14px rgba(16,22,19,.14)}
+  .adimSerit .adimAlt{display:block; font-size:.8125rem; opacity:.85}
+  .adimSerit button{color:#fff; text-decoration:underline; text-underline-offset:2px; min-height:2.75rem; padding:0 .625rem; flex:none}
+  .adimci{display:flex; align-items:center; gap:1rem}
+  .adimci .big{width:3.25rem; margin:0; padding:0; font-size:1.375rem; flex:none}
+  .adimci span{min-width:2rem; text-align:center; font-size:1.25rem}
+  .ucretKart{border:var(--cerceve-kalinlik) solid var(--line); border-radius:var(--kose); padding:1rem; margin-top:.25rem}
+  .ucBas{display:flex; align-items:center; justify-content:space-between; gap:.75rem}
+  .ucTut{font-size:1.125rem; margin-top:.25rem}
+  .ucBas .big{width:auto; margin:0; min-height:2.75rem; padding:.5rem 1rem; flex:none}
+  .altSabit{position:sticky; bottom:0; background:#fff; padding:.75rem 0 .25rem; margin-top:.5rem; z-index:2}
+  .altSabit .big{margin-top:0}
+  .hazirOdeme{display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.75rem}
+  .hazirOdeme .big{width:auto; flex:1 1 auto; margin:0; min-height:2.75rem; padding:.5rem .75rem; font-size:.9375rem}
+  .odemeOzet{font-size:.9375rem; background:var(--soft); border-radius:.75rem; padding:.75rem .875rem; margin-bottom:1.25rem}
+  .tarihKutu{position:relative; border-bottom:1px solid var(--cizgi); padding:.125rem 0 .5rem; cursor:pointer}
+  .tarihKutu .tarihYazi{display:block; min-height:1.5em}
+  .tarihKutu input{position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; border:0; padding:0; margin:0}
+  .tarihKutu:focus-within{border-color:var(--ok); box-shadow:0 1px 0 var(--ok)}
+  .karsilama{background:var(--soft); border-radius:1rem; padding:1.25rem; margin-top:1.25rem}
+  .karsilama h2{margin:0; font-size:1.5rem; font-family:var(--serif); font-weight:400; letter-spacing:-.02em}
+  .karsilama ol{list-style:none; padding:0; margin:1rem 0 0; display:grid; gap:.75rem}
+  .karsilama li{display:flex; align-items:center; gap:.75rem}
+  .karsilama .no{flex:none; width:1.75rem; height:1.75rem; border-radius:99px; background:var(--ok); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:.875rem}
+  .karsilama .big{margin-top:1.25rem}
+  .bakiciLink{display:block; width:100%; text-align:center; margin-top:.5rem; font-size:.875rem; color:var(--muted);
+    text-decoration:underline; text-underline-offset:2px; min-height:2.75rem}
+  .onayKutu{display:flex; align-items:flex-start; gap:.75rem; padding:.5rem 0; cursor:pointer}
+  .onayKutu input{flex:none; width:1.375rem; height:1.375rem; margin:.0625rem 0 0; accent-color:var(--ok); cursor:pointer}
+  .onayKutu a{color:var(--ok); text-underline-offset:2px}
+  a.satirBtn{text-decoration:none; color:inherit}
+  .lejant .lj-gecmis{opacity:.38}
+  .lejant .lj-harf{font-size:.6875rem; letter-spacing:.04em; background:var(--ok); color:#fff; border-radius:3px; padding:0 .25rem; margin-right:.375rem}
+  .lejant .lj-bugun{background:var(--ok)!important; border-radius:99px!important}
+
   /* ---- Fiyatlar ekranı ---- */
   #fiyatEkran{padding-bottom:6rem}
   #fiyatEkran h1{font-size:1.75rem}
@@ -540,11 +583,11 @@
         <input id="g-ad" placeholder="Adınız"></div>
       <div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Şifre</div>
         <input id="g-sifre" type="password" autocomplete="current-password" placeholder="En az 6 karakter"></div>
-      <div class="anahtar hide" id="g-rizaSatir" style="border:0;padding:.5rem 0">
-        <span class="sm" style="line-height:1.4">Gizlilik metnini okudum, kişisel verilerin
+      <label class="onayKutu hide" id="g-rizaSatir">
+        <input type="checkbox" id="g-riza">
+        <span class="sm" style="line-height:1.4"><a href="gizlilik.html" target="_blank" rel="noopener">Gizlilik metnini</a> okudum, kişisel verilerin
           burada anlatıldığı şekilde işlenmesini kabul ediyorum.</span>
-        <span class="svic" id="g-riza"><i></i></span>
-      </div>
+      </label>
       <div class="sm warn" id="g-hata" style="min-height:1.25rem"></div>
       <button class="big" id="g-gonder">Giriş yap</button>
       <button class="big ghost" id="g-mod" style="margin-top:.5rem">Hesabım yok, oluştur</button>
@@ -639,7 +682,10 @@
   <!-- TAKVİM SEKMESİ: tüm villaların yaklaşan giriş/çıkışları -->
   <div id="ajanda" class="hide sekmeEkran">
     <h1>Takvim</h1>
-    <div class="sm muted" style="margin-top:.5rem">Tüm villaların önümüzdeki 30 gündeki giriş ve çıkışları</div>
+    <div class="sm muted" style="margin-top:.5rem">Tüm villaların giriş ve çıkışları</div>
+    <div class="seg" id="ajSeg" style="margin-top:1rem">
+      <button data-m="gun">Bugün</button><button data-m="hafta">Bu hafta</button><button data-m="ay">Bu ay</button>
+    </div>
     <div id="ajandaListe" style="margin-top:.5rem"></div>
   </div>
 
@@ -647,25 +693,52 @@
   <div id="hesapEkran" class="hide sekmeEkran">
     <h1>Hesap</h1>
     <div style="margin-top:1.25rem">
-    <button class="satirBtn hide" id="yoneticiBtn">
-      <span>Kullanıcılar</span>
-      <span class="sag" id="yoneticiSayi"></span>
-    </button>
-    <button class="satirBtn hide" id="davetBtn">
-      <span>Villa davet kodu gir</span>
-      <span class="sag">Bakıcıysanız</span>
-    </button>
+    <div class="hide" id="yonetimBolum" style="margin-bottom:1.75rem">
+      <div class="eyebrow" style="margin-bottom:.75rem">Yönetim</div>
+      <button class="satirBtn hide" id="yoneticiBtn" style="margin-top:0">
+        <span>Kullanıcılar</span>
+        <span class="sag" id="yoneticiSayi"></span>
+      </button>
+    </div>
     <button class="satirBtn hide" id="hesapBtn">
       <span>Hesabım</span>
       <span class="sag" id="hesapAd"></span>
+    </button>
+    <button class="satirBtn hide" id="davetBtn">
+      <span><span>Bakıcı olarak villaya katıl</span>
+        <span class="satirAlt">Villa sahibinin gönderdiği 6 haneli kod</span></span>
     </button>
     <button class="satirBtn hide" id="silinenBtn">
       <span>Silinen villalar</span>
       <span class="sag" id="silinenSay"></span>
     </button>
-    <div class="eyebrow" style="margin:1.75rem 0 0">Yedek</div>
-    <button class="satirBtn" id="yedek" style="margin-top:.75rem"><span>Yedek al</span></button>
-    <button class="satirBtn" id="geriyukle"><span>Geri yükle</span></button>
+    <div class="hide" id="hsBildirimBolum">
+      <div class="eyebrow" style="margin:1.75rem 0 .25rem">Bildirimler</div>
+      <div class="anahtar"><span>Giriş, çıkış ve kalan ödeme hatırlatmaları
+        <div class="sm muted" style="margin-top:.125rem">Bir gün önce ve o gün sabahı</div></span>
+        <span class="svic" id="hs-bildirim"><i></i></span></div>
+      <div class="sm muted" id="hs-bildirimNot" style="margin-top:.5rem"></div>
+    </div>
+    <div class="eyebrow" style="margin:1.75rem 0 .75rem">Dil / Language</div>
+    <div class="seg" id="hs-dil">
+      <button data-d="tr">Türkçe</button><button data-d="en">English</button>
+    </div>
+    <div class="eyebrow" style="margin:1.75rem 0 .25rem">Destek</div>
+    <button class="satirBtn hide" id="destekBtn" style="margin-top:.75rem">
+      <span>Bize ulaşın</span><span class="sag">WhatsApp</span>
+    </button>
+    <a class="satirBtn" id="gizlilikBtn" href="gizlilik.html" target="_blank" rel="noopener">
+      <span>Gizlilik ve kişisel veriler</span>
+    </a>
+    <button class="satirBtn hide" id="cikisBtn"><span>Çıkış yap</span></button>
+    <button class="satirBtn hsAc" id="gelismisAc" style="margin-top:1.75rem">
+      <span><span>Gelişmiş</span><span class="satirAlt">Yedek al, geri yükle</span></span>
+    </button>
+    <div class="hide" id="gelismis">
+      <div class="sm muted" style="margin:.75rem 0 0">Verilerinizi dosyaya kaydedebilir ya da daha önce aldığınız bir yedeği geri yükleyebilirsiniz.</div>
+      <button class="satirBtn" id="yedek" style="margin-top:.75rem"><span>Yedek al</span></button>
+      <button class="satirBtn" id="geriyukle"><span>Geri yükle</span></button>
+    </div>
     <input type="file" id="dosya" accept="application/json" style="display:none; width:auto">
     </div>
   </div>
@@ -690,6 +763,7 @@
     <div class="kurulum hide" id="kurulum"></div>
     <div class="today" id="bugun"><div class="durumBas">Villa boş</div><div class="durumAlt"></div></div>
 
+    <div class="adimSerit hide" id="adimSerit"></div>
     <div class="monthbar">
       <div>
         <div class="m" id="ayad"></div>
@@ -708,6 +782,9 @@
       <span><i style="background:var(--ok)"></i>Dolu</span>
       <span><i style="background:linear-gradient(110deg,#fff 49.5%,#9DBDB9 50.5%);box-shadow:inset 0 0 0 1px #9DBDB9"></i>Giriş/çıkış</span>
       <span><i style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--cerceve)"></i>Boş</span>
+      <span><i class="lj-bugun"></i>Bugün</span>
+      <span class="lj-gecmis"><i style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--cerceve)"></i>Geçmiş gün</span>
+      <span><b class="lj-harf" style="font-weight:400">AY</b>Misafirin baş harfleri</span>
     </div>
     <div class="hint" id="hint"></div>
 
@@ -876,7 +953,7 @@
     </div>
     <div style="margin-top:.5rem">
       <div class="kSatir"><div class="kAd"><div>Alınan ödemeler</div><div class="kAlt">Misafirlerden alınan ödemeler ve diğer gelirler</div></div><div class="kTut" id="kGelir">0 ₺</div><button class="big ghost artiBtn" id="kGelirEkle" aria-label="Gelir ekle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div>
-      <button class="kSatir" id="kAlinacak"><div class="kAd"><div>Alınacak ödemeler</div><div class="kAlt">Henüz misafirden alınmadı</div></div><div class="kTut" id="kBekleyen">0 ₺</div></button>
+      <button class="kSatir" id="kAlinacak"><div class="kAd"><div>Kalan ödemeler</div><div class="kAlt">Henüz misafirden alınmadı</div></div><div class="kTut" id="kBekleyen">0 ₺</div></button>
       <div class="kSatir"><div class="kAd"><div>Giderler</div><div class="kAlt">Temizlik, bakım ve diğer masraflar</div></div><div class="kTut" id="kGider">0 ₺</div><button class="big ghost artiBtn" id="kGiderEkle" aria-label="Gider ekle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div>
     </div>
 
@@ -1247,7 +1324,7 @@
     h+='<div class="para net"><span>Toplam</span><span>'+para(k.toplam)+"</span></div>";
     h+=sat("Ön ödeme (%"+k.yuzde+")", para(k.onOdeme));
     if(k.alinan) h+=sat("Alınan", "−"+para(k.alinan), "#0B5B57");
-    h+='<div class="para net"><span>Girişte alınacak</span><span style="color:'+
+    h+='<div class="para net"><span>Kalan ödeme</span><span style="color:'+
       (k.kalan>0?"#9B2C4A":"#0B5B57")+'">'+para(k.kalan)+"</span></div>";
     if(k.dep) h+='<div class="sm muted" style="margin-top:.375rem">Çıkışta '+para(k.iade)+
       " depozito iade edilir (hasar yoksa).</div>";
@@ -1284,8 +1361,19 @@
          '<span class="kdurum"><i class="dot" style="background:'+(bm.c||"#B8C2BC")+'"></i><span>'+esc(bm.t)+"</span></span>"+
          (alt?'<span class="kalt">'+esc(alt)+"</span>":"")+"</span></button>";
     });
-    if(!S.villalar.length) h='<div class="sm muted" style="padding:.5rem 0">Henüz villa yok. Aşağıdan ilk villanızı ekleyin.</div>';
+    if(!S.villalar.length) h='<div class="karsilama"><h2>'+esc(cev("Hoş geldiniz"))+"</h2>"+
+      "<ol>"+
+        '<li><span class="no">1</span><span>'+esc(cev("Villanızı ekleyin"))+"</span></li>"+
+        '<li><span class="no">2</span><span>'+esc(cev("Gecelik fiyatları girin"))+"</span></li>"+
+        '<li><span class="no">3</span><span>'+esc(cev("Rezervasyonları takvime işleyin"))+"</span></li>"+
+      "</ol>"+
+      '<button class="big" id="karsilamaEkle">'+esc(cev("Villa ekle"))+"</button>"+
+      ((S.bulut && window.VT && VT.girisli && VT.girisli())?'<button class="bakiciLink" id="karsilamaDavet">'+esc(cev("Bakıcı mısınız? Davet koduyla katılın"))+"</button>":"")+
+      "</div>";
     document.getElementById("villalar").innerHTML=h;
+    document.getElementById("villaEkle").classList[S.villalar.length?"remove":"add"]("hide");
+    var ke=document.getElementById("karsilamaEkle"); if(ke) ke.onclick=function(){ document.getElementById("villaEkle").click(); };
+    var kd=document.getElementById("karsilamaDavet"); if(kd) kd.onclick=function(){ davetGirSheet(); };
     kurKartKontrol();
     hatirlatCiz();
     document.getElementById("ozet").textContent = S.villalar.length
@@ -1315,7 +1403,7 @@
           var k=kalemler(v,r);
           if(k.kalan>0 && r.start<=yarinK && r.end>=bugunK)
             sat.push({o:5,renk:"#9B2C4A",
-              m:"<b>Tahsil edilecek</b> · "+esc(r.guest)+" · "+para(k.kalan), v:villaAdi, r:r, vid:v.id});
+              m:"<b>Kalan ödeme</b> · "+esc(r.guest)+" · "+para(k.kalan), v:villaAdi, r:r, vid:v.id});
         });
       }
     });
@@ -1391,38 +1479,47 @@
     }
     if(hedef==="ana") cizAna();
     else if(hedef==="ajanda") cizAjanda();
-    else { silinenGuncelle(); goster("hesapEkran"); }
+    else { silinenGuncelle(); hesapEkranCiz(); goster("hesapEkran"); }
   });
 
-  // Takvim sekmesi: tüm villaların önümüzdeki 30 gündeki giriş ve çıkışları
+  // Takvim sekmesi (6.1): tüm villaların giriş/çıkışları — Bugün / Bu hafta / Bu ay
+  var AJ={mod:"hafta"};
+  var GUN_KISA={tr:["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"], en:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]};
+  function gunKisa(d){ return GUN_KISA[(window.DIL&&DIL.ingilizce&&DIL.ingilizce())?"en":"tr"][d.getDay()]; }
   function cizAjanda(){
     goster("ajanda");
-    var bas=fmt(today), son=fmt(addDays(today,30)), olaylar=[];
-    var cok=S.villalar.length>1;
+    Array.prototype.forEach.call(document.querySelectorAll("#ajSeg button"),function(b){
+      b.classList[b.dataset.m===AJ.mod?"add":"remove"]("on"); });
+    var sonD = AJ.mod==="gun" ? today
+      : (AJ.mod==="hafta" ? addDays(today,(7-today.getDay())%7) : new Date(today.getFullYear(),today.getMonth()+1,0));
+    var bas=fmt(today), son=fmt(sonD), olaylar=[];
     S.villalar.forEach(function(v){
       (v.rez||[]).forEach(function(r){
-        if(r.end>=bas && r.end<=son) olaylar.push({k:r.end, sira:0, tur:"Çıkış "+CIKIS, v:v, r:r});
-        if(r.start>=bas && r.start<=son) olaylar.push({k:r.start, sira:1, tur:"Giriş "+GIRIS, v:v, r:r});
+        if(r.end>=bas && r.end<=son) olaylar.push({k:r.end, sira:0, giris:false, v:v, r:r});
+        if(r.start>=bas && r.start<=son) olaylar.push({k:r.start, sira:1, giris:true, v:v, r:r});
       });
     });
     olaylar.sort(function(a,b){ return a.k<b.k?-1:(a.k>b.k?1:a.sira-b.sira); });
-    var GN=(window.DIL&&DIL.GUNLER[DIL.dil])||["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+    var okG='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    var okC='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
     var h="", sonGun="";
     olaylar.forEach(function(o,i){
       if(o.k!==sonGun){
         sonGun=o.k;
-        var fark=Math.round((parse(o.k)-today)/86400000);
-        h+='<div class="gunBas">'+(fark===0?"Bugün":(fark===1?"Yarın":GN[parse(o.k).getDay()]))+" · "+kisa(o.k)+"</div>";
+        var d=parse(o.k), fark=Math.round((d-today)/86400000);
+        h+='<div class="gunBas">'+(fark===0?esc(cev("Bugün"))+" · ":(fark===1?esc(cev("Yarın"))+" · ":""))+
+          esc(gunKisa(d))+" "+esc(kisa(o.k))+"</div>";
       }
-      h+='<button class="satirBtn" data-ai="'+i+'" style="margin-top:.5rem">'+
-         '<span style="display:flex;align-items:flex-start;gap:.625rem">'+
-           '<i class="dot" style="background:'+(o.sira?o.r.color:"#B0761A")+';margin-top:.4375rem"></i>'+
-           '<span><span>'+esc(o.tur)+" · "+esc(o.r.guest)+"</span>"+
-           '<span class="satirAlt">'+(cok?esc(o.v.ad||"Villa")+" · ":"")+
-             esc(cev(gece(o.r)+" gece"))+(o.r.people?" · "+esc(cev(o.r.people+" kişi")):"")+"</span></span></span>"+
+      var kalan=(o.giris && (!S.bulut || o.v.rol!=="destek")) ? kalemler(o.v,o.r).kalan : 0;
+      h+='<button class="satirBtn ajSatir" data-ai="'+i+'" style="margin-top:.5rem">'+
+         '<span class="ajIc"><span class="ajOk '+(o.giris?"g":"c")+'">'+(o.giris?okG:okC)+"</span>"+
+           "<span><span>"+esc(cev(o.giris?"Giriş":"Çıkış"))+" · "+esc(o.v.ad||"Villa")+" · "+esc(o.r.guest)+" · "+(o.giris?GIRIS:CIKIS)+"</span>"+
+           '<span class="satirAlt">'+esc(cev(gece(o.r)+" gece"))+(o.r.people?" · "+esc(cev(o.r.people+" kişi")):"")+"</span></span></span>"+
+         (kalan>0?'<span class="sag" style="color:#9B2C4A">'+para(kalan)+"</span>":"")+
          "</button>";
     });
-    if(!olaylar.length) h='<div class="sm muted" style="margin-top:1rem">Önümüzdeki 30 günde giriş veya çıkış yok.</div>';
+    if(!olaylar.length) h='<div class="sm muted" style="margin-top:1.25rem">'+
+      esc(cev({gun:"Bugün giriş veya çıkış yok.", hafta:"Bu hafta giriş veya çıkış yok.", ay:"Bu ay giriş veya çıkış yok."}[AJ.mod]))+"</div>";
     var el=document.getElementById("ajandaListe");
     el.innerHTML=h;
     el.onclick=function(e){
@@ -1431,6 +1528,10 @@
       ac(o.v.id); detay(o.r);
     };
   }
+  document.getElementById("ajSeg").addEventListener("click",function(e){
+    var b=e.target.closest("[data-m]"); if(!b) return;
+    AJ.mod=b.dataset.m; cizAjanda();
+  });
 
   document.getElementById("villalar").addEventListener("click",function(e){
     var b=e.target.closest(".kart"); if(b) ac(b.dataset.id);
@@ -1485,15 +1586,18 @@
     perde('<div class="head"><h2>Yeni villa</h2>'+kapatBtn()+"</div>"+
       '<div class="field" style="margin-top:1.25rem"><div class="eyebrow" style="margin-bottom:.375rem">Villa adı</div>'+
       '<input id="v-ad" placeholder="Örn. Villa Salta"></div>'+
+      '<div class="sm warn hide" id="v-ad-hata" style="margin:-.5rem 0 1rem">'+esc(cev("Villa adını yazın"))+"</div>"+
       '<div class="eyebrow" style="margin-bottom:.5rem">Fotoğraf <span style="text-transform:none;letter-spacing:0">· isteğe bağlı</span></div>'+
       '<div class="sheetfoto" id="v-onizleme"></div>'+
       '<button class="big ghost" id="v-foto" style="margin-top:0">Fotoğraf seç</button>'+
       '<input type="file" id="v-dosya" accept="image/*" multiple style="display:none;width:auto">'+
-      '<button class="big" id="v-kaydet" disabled>Villayı ekle</button>');
+      '<button class="big" id="v-kaydet">Villayı ekle</button>');
     var i=document.getElementById("v-ad"), b=document.getElementById("v-kaydet");
     var fbtn=document.getElementById("v-foto"), fin=document.getElementById("v-dosya");
     var onz=document.getElementById("v-onizleme");
-    i.addEventListener("input",function(){ b.disabled=!i.value.trim(); });
+    var adHata=document.getElementById("v-ad-hata");
+    i.addEventListener("input",function(){
+      if(i.value.trim()){ i.parentNode.classList.remove("hata"); adHata.classList.add("hide"); } });
     i.focus();
     fbtn.onclick=function(){ fin.click(); };
     fin.onchange=function(){
@@ -1508,7 +1612,7 @@
       });
     };
     b.onclick=function(){
-      if(!i.value.trim()) return;
+      if(!i.value.trim()){ i.parentNode.classList.add("hata"); adHata.classList.remove("hide"); i.focus(); return; }
       var v={id:uid(), ad:i.value.trim(), color:PALET[S.villalar.length%PALET.length],
              rez:[], fotolar:bekleyen};
       duzelt(v);
@@ -1791,12 +1895,22 @@
 
     var hint=document.getElementById("hint");
     if(S.uyari) hint.innerHTML='<span class="warn">'+esc(S.uyari)+"</span>";
-    else if(S.start) hint.innerHTML="<span>Giriş: "+kisa(S.start)+" ("+GIRIS+") — çıkış gününü seçin.</span><u id='vazgec'>Vazgeç</u>";
-    else if(S.rezModu) hint.innerHTML="<span>Giriş gününe dokunun.</span><u id='vazgec'>Vazgeç</u>";
     else hint.innerHTML="<span>Boş güne dokunup tarih seçin. Dolu güne dokununca rezervasyon açılır. Giriş "+GIRIS+", çıkış "+CIKIS+".</span>";
     var vz=document.getElementById("vazgec");
     if(vz) vz.onclick=function(){ S.start=null; S.rezModu=false; ciz(); };
-    hint.classList[(S.rezModu||S.start)?"add":"remove"]("vurgu");
+    hint.classList.remove("vurgu");
+    // Rezervasyon eklerken takvimin üstünde sabit adım şeridi: 1/2 giriş, 2/2 çıkış
+    var ser=document.getElementById("adimSerit");
+    if(S.start || S.rezModu){
+      ser.innerHTML="<span>"+(S.start
+          ? esc(cev("2/2 · Çıkış gününe dokunun"))+'<span class="adimAlt">'+esc(cev("Giriş: "+kisa(S.start)))+"</span>"
+          : esc(cev("1/2 · Giriş gününe dokunun")))+"</span>"+
+        '<button id="adimVazgec">'+esc(cev("Vazgeç"))+"</button>";
+      var ab=document.getElementById("appBar");
+      ser.style.top=(((ab&&!ab.classList.contains("hide"))?ab.offsetHeight:0)+8)+"px";
+      ser.classList.remove("hide");
+      document.getElementById("adimVazgec").onclick=function(){ S.start=null; S.rezModu=false; S.uyari=""; ciz(); };
+    } else ser.classList.add("hide");
 
     var yak=v.rez.filter(function(r){return parse(r.end)>=today})
                  .sort(function(a,c){return a.start<c.start?-1:1}).slice(0,6);
@@ -1808,7 +1922,7 @@
       lh+='<button class="row" data-id="'+r.id+'"><span class="dot" style="background:'+r.color+'"></span>'+
           '<span class="name">'+esc(r.guest)+
           (tutarYok?' <span class="warn" style="font-size:.8125rem">'+esc(cev("· tutar girilmedi"))+"</span>":
-           (kalan>0?' <span class="muted" style="font-size:.8125rem">'+esc(cev("· kalan "+para(kalan)))+"</span>":""))+"</span>"+
+           (kalan>0?' <span class="muted" style="font-size:.8125rem">'+esc(cev("· kalan ödeme "+para(kalan)))+"</span>":""))+"</span>"+
           '<span class="meta">'+aralikMetni(r)+"</span></button>";
     });
     document.getElementById("liste").innerHTML=lh;
@@ -1933,7 +2047,10 @@
     var is=b.dataset.is;
     if(is==="rez"){
       S.start=null; S.rezModu=true; ciz();
-      try{ document.getElementById("ayad").scrollIntoView({block:"start",behavior:"smooth"}); }catch(x){}
+      try{
+        var se=document.getElementById("adimSerit"), ab2=document.getElementById("appBar");
+        window.scrollTo({top:se.getBoundingClientRect().top+window.scrollY-((ab2?ab2.offsetHeight:0)+8), behavior:"smooth"});
+      }catch(x){}
     }
     else if(is==="fiyat") fiyatEkranAc();
     else if(is==="paylas") document.getElementById("paylasBtn").click();
@@ -2248,68 +2365,113 @@
   }
 
   // ================= REZERVASYON =================
+  // Yeni rezervasyon formu (6.4): üstte kişi bilgileri, "Ücret" kartı, "Kapora aldım",
+  // ayrıntılar kapalı, not en altta, Kaydet altta sabit.
   function form(){
     var t=S.taslak, v=aktif();
     var g=Math.round((parse(t.end)-parse(t.start))/86400000);
     var h=hesapla(v,t.start,t.end);
     var ekOn=ekUcretHesap(v,g);
+    var para0=paraGorur();
+    var kisiStep='<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Kişi sayısı"))+"</div>"+
+      '<div class="adimci"><button class="big ghost" id="f-kisiAz" aria-label="Azalt">−</button>'+
+      '<span id="f-kisiYazi">2</span><input type="hidden" id="f-people" value="2">'+
+      '<button class="big ghost" id="f-kisiCok" aria-label="Artır">+</button></div></div>';
+    var ucret="";
+    if(para0){
+      var ac=!!h.eksik;
+      ucret='<div class="ucretKart">'+
+          '<div class="ucBas"><div><div class="eyebrow">'+esc(cev("Ücret"))+"</div>"+
+            '<div class="ucTut" id="f-ucretYazi"></div>'+
+            '<div class="sm muted" id="f-ucretAlt"></div></div>'+
+          '<button class="big ghost" id="f-degistir">'+esc(cev("Değiştir"))+"</button></div>"+
+          '<div id="f-tutarAlan" class="'+(ac?"":"hide")+'" style="margin-top:1rem">'+
+            alan("f-tutar","Konaklama tutarı (₺)","0","tel",h.toplam?String(h.toplam):"")+"</div>"+
+        "</div>"+
+        '<div class="anahtar" style="margin-top:.75rem"><span>'+esc(cev("Kapora aldım"))+"</span>"+
+          '<span class="svic" id="f-kaporaSw"><i></i></span></div>'+
+        '<div id="f-kaporaAlan" class="hide" style="margin-top:1rem">'+alan("f-odenen","Alınan kapora (₺)","0","tel")+"</div>"+
+        '<button class="satirBtn hsAc" id="f-digerAc" style="margin-top:1rem"><span>'+esc(cev("Diğer ayrıntılar"))+
+          '<span class="satirAlt">'+esc(cev("İndirim, ön ödeme"))+"</span></span></button>"+
+        '<div id="f-diger" class="hide" style="margin-top:1rem">'+
+          alan("f-indirim","İndirim (₺)","0","tel")+
+          '<div class="ikili">'+
+            alan("f-onyuzde","Ön ödeme (%)","30","tel",String(sayi((v.bilgi||{}).onOdeme)||30))+
+            alan("f-ontl","Ön ödeme (₺)","0","tel")+
+          "</div>"+
+          '<div class="sm muted" style="margin:-.5rem 0 1rem">İkisinden birini yazmanız yeter, diğeri kendiliğinden hesaplanır.</div>'+
+          '<div class="sm" id="f-ozet" style="background:var(--soft);border-radius:.75rem;padding:.875rem;margin:0 0 1rem"></div>'+
+        "</div>";
+    }
     perde('<div class="head"><h2>Kim gelecek?</h2>'+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.25rem 0 1.5rem;display:flex;align-items:center;gap:.5rem">'+
         '<span class="dot" style="background:'+t.color+'"></span>'+
         kisa(t.start)+" "+GIRIS+" → "+kisa(t.end)+" "+CIKIS+" · "+g+" gece</div>"+
       alan("f-guest","Ad soyad","Örn. Ahmet Yılmaz","text")+
       '<div class="sm warn hide" id="f-guest-hata" style="margin:-.5rem 0 1rem">Misafir adını yazın</div>'+
-      alan("f-people","Kaç kişi","2","number","2")+
+      kisiStep+
       alan("f-phone","Telefon","İsteğe bağlı","telefon")+
-      (paraGorur()? '<div class="ikili">'+
-        alan("f-tutar","Konaklama tutarı (₺)","0","tel",h.toplam?String(h.toplam):"")+
-        alan("f-indirim","İndirim (₺)","0","tel")+
-      "</div>"+
-      '<div class="ikili">'+
-        alan("f-onyuzde","Ön ödeme (%)","30","tel",String(sayi((v.bilgi||{}).onOdeme)||30))+
-        alan("f-ontl","Ön ödeme (₺)","0","tel")+
-      "</div>"+
-      '<div class="sm muted" style="margin:-.5rem 0 1rem">İkisinden birini yazmanız yeter, diğeri kendiliğinden hesaplanır.</div>'+
-      alan("f-odenen","Alınan / kapora (₺)","0","tel")+
-      '<div class="sm" id="f-ozet" style="background:var(--soft);border-radius:.75rem;padding:.875rem;margin:0 0 1rem"></div>'+
-      '<div class="sm muted" style="margin:-.5rem 0 1rem">'+
-        (h.eksik? h.eksik+" gecenin fiyatı girilmemiş, tutarı elle yazabilirsiniz."
-                : g+" gece · "+para(h.toplam)+" olarak hesaplandı.")+
-        (ekOn? " Kısa konaklama ücreti "+para(ekOn)+" ayrıca eklenecek." : "")+"</div>" : "")+
-      alan("f-note","Not","İsteğe bağlı","text")+
-      '<button class="big" id="f-kaydet" style="background:'+t.color+'">Rezervasyonu kaydet</button>');
+      ucret+
+      '<div style="margin-top:1rem">'+alan("f-note","Not","İsteğe bağlı","text")+"</div>"+
+      '<div class="altSabit"><button class="big" id="f-kaydet" style="background:'+t.color+'">Rezervasyonu kaydet</button></div>');
+
     var isim=document.getElementById("f-guest"), btn=document.getElementById("f-kaydet");
     var isimHata=document.getElementById("f-guest-hata");
     isim.addEventListener("input",function(){
       if(isim.value.trim()){ isim.parentNode.classList.remove("hata"); isimHata.classList.add("hide"); } });
-    if(paraGorur() && document.getElementById("f-ozet")){
+
+    // kişi sayısı − / +
+    var kisi=2, kp=document.getElementById("f-people"), ky=document.getElementById("f-kisiYazi");
+    var kisiYaz=function(){ kp.value=String(kisi); ky.textContent=String(kisi); };
+    document.getElementById("f-kisiAz").onclick=function(){ if(kisi>1){ kisi--; kisiYaz(); } };
+    document.getElementById("f-kisiCok").onclick=function(){ if(kisi<50){ kisi++; kisiYaz(); } };
+
+    var kaporaAcik=false;
+    if(para0){
+      var tIn=document.getElementById("f-tutar");
+      var ucretYaz=function(){
+        var tt=sayi(tIn.value);
+        document.getElementById("f-ucretYazi").textContent=cev(g+" gece")+" · "+para(tt);
+        var alt = h.eksik ? cev(h.eksik+" gecenin fiyatı girilmemiş, tutarı yazın")
+                : (tt===h.toplam ? cev("Gecelik fiyatlardan hesaplandı") : cev("Elle değiştirildi"));
+        if(ekOn) alt+=" · "+cev("Kısa konaklama ücreti")+" +"+para(ekOn);
+        document.getElementById("f-ucretAlt").textContent=alt;
+      };
+      document.getElementById("f-degistir").onclick=function(){
+        document.getElementById("f-tutarAlan").classList.remove("hide"); tIn.focus();
+        try{ tIn.setSelectionRange(0,tIn.value.length); }catch(e){}
+      };
+      var ksw=document.getElementById("f-kaporaSw");
+      ksw.onclick=function(){
+        kaporaAcik=!kaporaAcik; ksw.className="svic"+(kaporaAcik?" on":"");
+        document.getElementById("f-kaporaAlan").classList[kaporaAcik?"remove":"add"]("hide");
+        if(kaporaAcik) document.getElementById("f-odenen").focus();
+      };
+      var da=document.getElementById("f-digerAc");
+      da.onclick=function(){
+        var d=document.getElementById("f-diger"), ac2=d.classList.contains("hide");
+        d.classList[ac2?"remove":"add"]("hide"); da.classList[ac2?"add":"remove"]("on");
+      };
       var araTop=function(){
-        return Math.max(0, sayi(document.getElementById("f-tutar").value)+ekOn-
-          sayi(document.getElementById("f-indirim").value));
+        return Math.max(0, sayi(tIn.value)+ekOn-sayi(document.getElementById("f-indirim").value));
       };
       var ozetYaz=function(elleTl){
-        var gec={ tutar:sayi(document.getElementById("f-tutar").value),
-          ekUcret:ekOn, indirim:sayi(document.getElementById("f-indirim").value),
+        var gec={ tutar:sayi(tIn.value), ekUcret:ekOn, indirim:sayi(document.getElementById("f-indirim").value),
           onOdemeTutar: elleTl? document.getElementById("f-ontl").value : undefined,
           onOdemeYuzde:document.getElementById("f-onyuzde").value, odenen:0 };
         var k=kalemler(v,gec);
         document.getElementById("f-ozet").innerHTML=kalemHTML(k, g);
         return k;
       };
-      var tlYaz=function(){ // % değişti -> TL güncelle
-        var k=ozetYaz(false);
-        document.getElementById("f-ontl").value=k.onOdeme||"";
-      };
-      var yuzdeYaz=function(){ // TL değişti -> % güncelle
+      var tlYaz=function(){ var k=ozetYaz(false); document.getElementById("f-ontl").value=k.onOdeme||""; ucretYaz(); };
+      var yuzdeYaz=function(){
         var a=araTop(), tl=sayi(document.getElementById("f-ontl").value);
         document.getElementById("f-onyuzde").value=a? Math.round(Math.min(tl,a)/a*100) : 0;
         ozetYaz(true);
       };
       document.getElementById("f-onyuzde").addEventListener("input",tlYaz);
       document.getElementById("f-ontl").addEventListener("input",yuzdeYaz);
-      ["f-tutar","f-indirim"].forEach(function(id){
-        document.getElementById(id).addEventListener("input",tlYaz);
-      });
+      ["f-tutar","f-indirim"].forEach(function(id){ document.getElementById(id).addEventListener("input",tlYaz); });
       tlYaz();
     }
     isim.focus();
@@ -2323,19 +2485,43 @@
         note:document.getElementById("f-note").value.trim(),
         // Bakıcı tutarı görmez: gecelik fiyatlardan kendiliğinden hesaplanır.
         // Fiyatı girilmemiş gece varsa 0 kalır, sahip listede "tutar girilmedi" görür.
-        tutar:paraGorur()?sayi(document.getElementById("f-tutar").value):(h.eksik?0:h.toplam),
-        indirim:paraGorur()?sayi(document.getElementById("f-indirim").value):0,
-        onOdemeTutar:paraGorur()?sayi(document.getElementById("f-ontl").value):undefined,
-        onOdemeYuzde:paraGorur()?sayi(document.getElementById("f-onyuzde").value):undefined,
-        ekUcret:(paraGorur()||!h.eksik)?ekOn:0,
+        tutar:para0?sayi(document.getElementById("f-tutar").value):(h.eksik?0:h.toplam),
+        indirim:para0?sayi(document.getElementById("f-indirim").value):0,
+        onOdemeTutar:para0?sayi(document.getElementById("f-ontl").value):undefined,
+        onOdemeYuzde:para0?sayi(document.getElementById("f-onyuzde").value):undefined,
+        ekUcret:(para0||!h.eksik)?ekOn:0,
         odenen:0, odemeler:[] });
       var yeniRez=v.rez[v.rez.length-1];
-      var ilk=paraGorur()?sayi(document.getElementById("f-odenen").value):0;
+      var ilk=(para0 && kaporaAcik)?sayi(document.getElementById("f-odenen").value):0;
       if(ilk){ yeniRez.odemeler=[{id:uid(), tarih:fmt(today), tutar:ilk, not:"kapora"}];
                yeniRez.odenen=ilk; }
       S.taslak=null; kaydet(); kapat(); ciz();
     };
   }
+
+  // Tarih alanı: görünen metin "7 Kas 2026" biçiminde; altta telefonun kendi tarih seçicisi açılır
+  function tarihGoster(k){
+    if(!k) return "";
+    var d=parse(k); if(isNaN(d)) return "";
+    return d.getDate()+" "+AYLAR[d.getMonth()].slice(0,3)+" "+d.getFullYear();
+  }
+  function tarihInput(id,val){
+    return '<div class="tarihKutu"><span class="tarihYazi">'+esc(tarihGoster(val))+"</span>"+
+      '<input id="'+id+'" type="date" lang="tr" value="'+(val||"")+'"></div>';
+  }
+  (function(){
+    var guncelle=function(e){
+      var i=e.target;
+      if(i && i.type==="date" && i.parentNode && i.parentNode.classList.contains("tarihKutu"))
+        i.previousElementSibling.textContent=tarihGoster(i.value);
+    };
+    document.addEventListener("input",guncelle,true);
+    document.addEventListener("change",guncelle,true);
+    document.addEventListener("click",function(e){
+      var i=e.target;
+      if(i && i.type==="date" && i.closest && i.closest(".tarihKutu")){ try{ i.showPicker(); }catch(x){} }
+    },true);
+  })();
 
   function alan(id,lab,ph,tip,val){
     return '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">'+lab+"</div>"+
@@ -2359,7 +2545,7 @@
         kalemHTML(kalemler(aktif(),r), gece(r))+"</div>" : "")+
       (!paraGorur() && kalanGorur()? (function(){ var kl=kalemler(aktif(),r).kalan;
         return '<div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--line)">'+
-          '<div class="para net"><span>Girişte alınacak</span><span style="color:'+(kl>0?"#9B2C4A":"#0B5B57")+'">'+
+          '<div class="para net"><span>Kalan ödeme</span><span style="color:'+(kl>0?"#9B2C4A":"#0B5B57")+'">'+
           para(kl)+"</span></div></div>"; })() : "")+
       (duzenlenebilir()?'<button class="big ghost" id="d-duzenle" style="margin-top:1rem">Rezervasyonu düzenle</button>':"")+
       (paraGorur()?'<button class="big ghost" id="d-odeme" style="margin-top:.5rem">Ödeme al / güncelle</button>'+
@@ -2394,9 +2580,9 @@
       '<div class="sm muted" style="margin:.5rem 0 1.25rem">Tarihleri değiştirirseniz takvim güncellenir. Alınan ödemeler korunur.</div>'+
       '<div class="ikili">'+
         '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Giriş</div>'+
-        '<input id="dz-bas" type="date" value="'+r.start+'"></div>'+
+        tarihInput("dz-bas",r.start)+"</div>"+
         '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Çıkış</div>'+
-        '<input id="dz-bit" type="date" value="'+r.end+'"></div>'+
+        tarihInput("dz-bit",r.end)+"</div>"+
       "</div>"+
       alan("dz-guest","Ad soyad","","text",r.guest)+
       alan("dz-people","Kaç kişi","2","number",r.people)+
@@ -2477,15 +2663,19 @@
     var v=aktif();
     var kk=kalemler(v,r), kalan=kk.kalan;
     var gecmis=(r.odemeler||[]).slice().sort(function(x,y){return x.tarih<y.tarih?1:-1});
+    // Özet tek satır (depozito ayrı tutulur, ödemeye karışmaz); hazır tutar düğmeleri
+    var kTop=kk.araToplam, kKal=Math.max(0,kTop-kk.odenen), hz=[];
+    if(kKal>0) hz.push('<button class="big ghost" data-hz="'+kKal+'">'+esc(cev("Kalanın tamamı"))+" · "+para(kKal)+"</button>");
+    if(!kk.odenen && kk.onOdeme>0 && kk.onOdeme<kKal) hz.push('<button class="big ghost" data-hz="'+kk.onOdeme+'">'+esc(cev("Ön ödeme"))+" · "+para(kk.onOdeme)+"</button>");
     perde('<div class="head"><h2>Ödeme al</h2>'+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 1.25rem">'+esc(r.guest)+" · "+aralikMetni(r)+"</div>"+
-      '<div style="background:var(--soft);border-radius:.875rem;padding:1rem;margin-bottom:1.5rem">'+
-        kalemHTML(kk)+"</div>"+
-      '<div class="eyebrow" style="margin-bottom:.625rem">Ödeme al</div>'+
+      '<div class="odemeOzet">'+esc(cev("Toplam "+para(kTop)+" · Alınan "+para(kk.odenen)+" · Kalan "+para(kKal)))+
+        ((kk.dep && !kk.depAlindi)?'<div class="sm muted" style="margin-top:.25rem">'+esc(cev("Ayrıca "+para(kk.dep)+" hasar depozitosu alınacak (iade edilir)."))+"</div>":"")+"</div>"+
+      (hz.length?'<div class="hazirOdeme">'+hz.join("")+"</div>":"")+
       '<div class="ikili">'+
-        alan("o-tutar","Alınan tutar (₺)",kalan>0?String(kalan):"0","tel")+
+        alan("o-tutar","Alınan tutar (₺)","","tel")+
         '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Tarih</div>'+
-        '<input id="o-tarih" type="date" value="'+fmt(today)+'"></div>'+
+        tarihInput("o-tarih",fmt(today))+"</div>"+
       "</div>"+
       alan("o-not","Not","Örn. kapora, nakit, havale","text")+
       '<button class="big" id="o-ekle">Ödemeyi kaydet</button>'+
@@ -2498,15 +2688,21 @@
       '<div class="eyebrow" style="margin:1.75rem 0 .25rem">Hasar depozitosu</div>'+
       '<div class="anahtar"><span>Depozito alındı</span>'+
         '<span class="svic'+(r.depozito?" on":"")+'" id="o-dep"><i></i></span></div>'+
+      '<div class="sm muted" style="margin-top:.375rem">'+esc(cev("Misafirden alınan, çıkışta iade edilecek güvence parası. Gelire sayılmaz."))+"</div>"+
       '<div id="o-depAlan" class="'+(r.depozito?"":"hide")+'" style="margin-top:1rem">'+
         '<div class="ikili">'+
           alan("o-depTutar","Depozito tutarı (₺)",String((v.bilgi&&v.bilgi.depozito)||"5000"),"tel",
                r.depozito?String(r.depozito.tutar):String((v.bilgi&&v.bilgi.depozito)||""))+
           '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Alınma tarihi</div>'+
-          '<input id="o-depTarih" type="date" value="'+((r.depozito&&r.depozito.tarih)||fmt(today))+'"></div>'+
+          tarihInput("o-depTarih",((r.depozito&&r.depozito.tarih)||fmt(today)))+"</div>"+
         "</div></div>"+
       '<button class="big ghost" id="o-toplam" style="margin-top:1rem">Toplam tutarı düzenle</button>');
 
+    var oT=document.getElementById("o-tutar");
+    sayiBicimle(oT);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-hz]"),function(b){
+      b.onclick=function(){ oT.value=binlik(+b.dataset.hz); };
+    });
     var dep=!!r.depozito;
     var dsw=document.getElementById("o-dep"), dal=document.getElementById("o-depAlan");
     dsw.onclick=function(){
@@ -2601,8 +2797,8 @@
   function girisHata(m){ document.getElementById("g-hata").textContent=m||""; }
 
   var riza=false;
-  document.getElementById("g-riza").onclick=function(){
-    riza=!riza; this.className="svic"+(riza?" on":""); girisHata("");
+  document.getElementById("g-riza").onchange=function(){
+    riza=this.checked; girisHata("");
   };
   document.getElementById("g-mod").onclick=function(){
     girisMod=(girisMod==="giris")?"kayit":"giris";
@@ -2654,38 +2850,9 @@
   // ---------- hesap ----------
   document.getElementById("davetBtn").onclick=function(){ davetGirSheet(); };
 
-  document.getElementById("hesapBtn").onclick=function(){
-    var k=VT.kullanici();
-    perde('<div class="head"><h2>Hesabım</h2>'+kapatBtn()+"</div>"+
-      '<div class="sm muted" style="margin:.5rem 0 1.25rem">'+esc((k&&k.email)||"")+"</div>"+
-      '<div class="eyebrow" style="margin:.25rem 0 .625rem">Bilgilerim</div>'+
-      alan("h-ad2","Ad soyad","Adınız ve soyadınız","text",(VT.profil&&VT.profil.ad)||"")+
-      alan("h-tel","Telefon","0532 000 00 00","telefon",(VT.profil&&VT.profil.telefon)||"")+
-      '<div class="sm muted" style="margin:-.5rem 0 1rem">Bir sorun olduğunda size ulaşabilmemiz için. Misafirlerinizle paylaşılmaz.</div>'+
-      '<button class="big" id="h-bilgi">Bilgilerimi kaydet</button>'+
-      '<div class="eyebrow" style="margin:1.75rem 0 .625rem">Dil / Language</div>'+
-      '<div class="seg" id="h-dil" style="margin-bottom:1.5rem">'+
-        '<button data-d="tr"'+((!window.DIL||DIL.dil==="tr")?' class="on"':"")+'>Türkçe</button>'+
-        '<button data-d="en"'+((window.DIL&&DIL.dil==="en")?' class="on"':"")+'>English</button>'+
-      "</div>"+
-      '<div class="eyebrow" style="margin:1.75rem 0 .25rem">Bildirimler</div>'+
-      '<div class="anahtar"><span>Giriş, çıkış ve tahsilat hatırlatmaları'+
-        '<div class="sm muted" style="margin-top:.125rem">Bir gün önce ve o gün sabahı</div></span>'+
-        '<span class="svic" id="h-bildirim"><i></i></span></div>'+
-      '<div class="sm muted" id="h-bildirimNot" style="margin-top:.5rem"></div>'+
-      '<button class="big ghost" id="h-veri" style="margin-top:1.5rem">Verilerimi indir</button>'+
-      '<button class="big" id="h-cikis" style="margin-top:.5rem">Çıkış yap</button>'+
-      '<button id="h-sil" class="big tehlike">Hesabımı kalıcı olarak sil</button>'+
-      '<div class="sm muted" style="text-align:center;margin-top:1rem">'+
-        '<a href="gizlilik.html" target="_blank" rel="noopener">Gizlilik ve kişisel veriler</a></div>');
-    document.getElementById("h-dil").addEventListener("click",function(e){
-      var b=e.target.closest("[data-d]"); if(!b) return;
-      if(window.DIL && DIL.dil!==b.dataset.d) DIL.ayarla(b.dataset.d);
-    });
-
-    (function(){
-      var sw=document.getElementById("h-bildirim");
-      var not=document.getElementById("h-bildirimNot");
+  function bildirimAnahtari(){
+      var sw=document.getElementById("hs-bildirim");
+      var not=document.getElementById("hs-bildirimNot");
       var durum=VT.bildirimDestekli()? VT.bildirimDurumu() : "yok";
       var acik = durum==="granted" && store.get("villa-takvim-bildirim")==="acik";
       sw.className="svic"+(acik?" on":"");
@@ -2725,7 +2892,58 @@
           sw.className="svic"; not.textContent=e.message||"Bildirim açılamadı.";
         });
       };
-    })();
+    }
+  function cikisYap(){
+      VT.cikis().then(function(){
+        try{ localStorage.removeItem(K2); localStorage.removeItem(K1); }catch(e){}
+        S.villalar=[]; S.aktif=null; S.bulut=false; S.mod="rez"; S.start=null;
+        document.getElementById("hesapBtn").classList.add("hide");
+        document.getElementById("davetBtn").classList.add("hide");
+        document.getElementById("yoneticiBtn").classList.add("hide");
+        document.getElementById("yonetimBolum").classList.add("hide");
+        document.getElementById("villalar").innerHTML="";
+        document.getElementById("g-eposta").value="";
+        document.getElementById("g-sifre").value="";
+        kapat(); goster("giris"); bildir("Çıkış yapıldı, cihazdaki kayıtlar temizlendi.");
+      });
+    }
+
+  // Hesap sekmesi: buluta bağlı satırlar, dil seçici, destek
+  function hesapEkranCiz(){
+    var bulut=!!(S.bulut && window.VT && VT.girisli && VT.girisli());
+    document.getElementById("cikisBtn").classList[bulut?"remove":"add"]("hide");
+    document.getElementById("hsBildirimBolum").classList[bulut?"remove":"add"]("hide");
+    var no=String(DESTEK_WHATSAPP||"").replace(/\D/g,"");
+    document.getElementById("destekBtn").classList[no?"remove":"add"]("hide");
+    Array.prototype.forEach.call(document.querySelectorAll("#hs-dil button"),function(b){
+      b.classList[((window.DIL&&DIL.dil)||"tr")===b.dataset.d?"add":"remove"]("on"); });
+    if(bulut) bildirimAnahtari();
+  }
+  document.getElementById("hs-dil").addEventListener("click",function(e){
+    var b=e.target.closest("[data-d]"); if(!b) return;
+    if(window.DIL && DIL.dil!==b.dataset.d) DIL.ayarla(b.dataset.d);
+  });
+  document.getElementById("cikisBtn").onclick=function(){ cikisYap(); };
+  document.getElementById("destekBtn").onclick=function(){
+    var no=String(DESTEK_WHATSAPP||"").replace(/\D/g,""); if(!no) return;
+    window.open("https://wa.me/"+no+"?text="+encodeURIComponent("Merhaba, Villa Takvim hakkında yardım istiyorum."),"_blank");
+  };
+  document.getElementById("gelismisAc").onclick=function(){
+    var g=document.getElementById("gelismis"), ac=g.classList.contains("hide");
+    g.classList[ac?"remove":"add"]("hide"); this.classList[ac?"add":"remove"]("on");
+  };
+
+  document.getElementById("hesapBtn").onclick=function(){
+    var k=VT.kullanici();
+    perde('<div class="head"><h2>Hesabım</h2>'+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 1.25rem">'+esc((k&&k.email)||"")+"</div>"+
+      '<div class="eyebrow" style="margin:.25rem 0 .625rem">Bilgilerim</div>'+
+      alan("h-ad2","Ad soyad","Adınız ve soyadınız","text",(VT.profil&&VT.profil.ad)||"")+
+      alan("h-tel","Telefon","0532 000 00 00","telefon",(VT.profil&&VT.profil.telefon)||"")+
+      '<div class="sm muted" style="margin:-.5rem 0 1rem">Bir sorun olduğunda size ulaşabilmemiz için. Misafirlerinizle paylaşılmaz.</div>'+
+      '<button class="big" id="h-bilgi">Bilgilerimi kaydet</button>'+
+      '<button class="big ghost" id="h-veri" style="margin-top:1.5rem">Verilerimi indir</button>'+
+      '<button id="h-sil" class="big tehlike">Hesabımı kalıcı olarak sil</button>');
 
     document.getElementById("h-bilgi").onclick=function(){
       var b=this, ad=document.getElementById("h-ad2").value.trim();
@@ -2751,19 +2969,6 @@
       bildir("Verileriniz indirildi.");
     };
 
-    document.getElementById("h-cikis").onclick=function(){
-      VT.cikis().then(function(){
-        try{ localStorage.removeItem(K2); localStorage.removeItem(K1); }catch(e){}
-        S.villalar=[]; S.aktif=null; S.bulut=false; S.mod="rez"; S.start=null;
-        document.getElementById("hesapBtn").classList.add("hide");
-        document.getElementById("davetBtn").classList.add("hide");
-        document.getElementById("yoneticiBtn").classList.add("hide");
-        document.getElementById("villalar").innerHTML="";
-        document.getElementById("g-eposta").value="";
-        document.getElementById("g-sifre").value="";
-        kapat(); goster("giris"); bildir("Çıkış yapıldı, cihazdaki kayıtlar temizlendi.");
-      });
-    };
     document.getElementById("h-sil").onclick=function(){
       kapat();
       perde("<h2>Hesabınız silinsin mi?</h2>"+
@@ -2872,8 +3077,8 @@
   var KS={filtre:"tum", ara:""};
   function yoneticiKontrol(){
     var b=document.getElementById("yoneticiBtn");
-    if(!VT.onayci()){ b.classList.add("hide"); return; }
-    b.classList.remove("hide");
+    if(!VT.onayci()){ b.classList.add("hide"); document.getElementById("yonetimBolum").classList.add("hide"); return; }
+    b.classList.remove("hide"); document.getElementById("yonetimBolum").classList.remove("hide");
     var ad=b.querySelector("span");
     if(ad) ad.textContent = VT.yonetici() ? "Kullanıcılar" : "Onay bekleyenler";
     if(VT.yonetici()){
@@ -3199,7 +3404,7 @@
   function bakiciSheet(){
     var v=aktif();
     perde('<div class="head"><h2>Bakıcılar</h2>'+kapatBtn()+"</div>"+
-      '<div class="sm muted" style="margin:.5rem 0 1.25rem">Bakıcılar rezervasyonları görüp ekleyebilir, gider girebilir ve girişte tahsil edilecek kalan tutarı görür. Fiyatlar, ödemeler ve kazanç bilgileri onlara kapalıdır.</div>'+
+      '<div class="sm muted" style="margin:.5rem 0 1.25rem">Bakıcılar rezervasyonları görüp ekleyebilir, gider girebilir ve girişte alınacak kalan ödemeyi görür. Fiyatlar, ödemeler ve kazanç bilgileri onlara kapalıdır.</div>'+
       '<div id="bk-liste"><div class="sm muted">Yükleniyor…</div></div>'+
       '<button class="big" id="bk-uret" style="margin-top:1.25rem">Yeni bakıcı davet et</button>'+
       '<div id="bk-alan" style="margin-top:1rem"></div>');
@@ -3500,9 +3705,9 @@
                            : kisiler.length+" misafire sırayla gönderilecek.")+"</div>"+
       '<div class="ikili">'+
         '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Başlangıç</div>'+
-        '<input id="tk-bas" type="date" value="'+bas+'"></div>'+
+        tarihInput("tk-bas",bas)+"</div>"+
         '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Bitiş</div>'+
-        '<input id="tk-bit" type="date" value="'+bit+'"></div>'+
+        tarihInput("tk-bit",bit)+"</div>"+
       "</div>"+
       '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">İndirim (%)</div>'+
       '<input id="tk-ind" inputmode="numeric" placeholder="Örn. 10 · boş bırakabilirsiniz"></div>'+
@@ -3617,9 +3822,9 @@
     var a=kasaAralik(S.kasaMod,S.yil,S.kasaAy);
     var l=v.rez.filter(function(r){ return icinde(a,gunK(r.start)) && r.tutar>0 && sy(kalemler(v,r).araToplam)-sy(r.odenen)>0; })
       .sort(function(x,y){ return x.start<y.start?-1:1; });
-    perde('<div class="head"><h2>'+esc(cev("Alınacak ödemeler"))+"</h2>"+kapatBtn()+"</div>"+
+    perde('<div class="head"><h2>'+esc(cev("Kalan ödemeler"))+"</h2>"+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 1rem">'+esc(document.getElementById("donAd").textContent)+"</div>"+
-      (!l.length?'<div class="sm muted">'+esc(cev("Bu dönemde alınacak ödeme yok."))+"</div>":
+      (!l.length?'<div class="sm muted">'+esc(cev("Bu dönemde kalan ödeme yok."))+"</div>":
       '<div class="grup">'+l.map(function(r){
         var t=sy(kalemler(v,r).araToplam), kalan=t-sy(r.odenen);
         return '<button class="satirBtn" data-ar="'+esc(r.id)+'"><span>'+esc(r.guest)+
@@ -3895,7 +4100,7 @@
       '<div class="ikili">'+
         alan("h-tutar","Tutar (₺)","0","tel")+
         '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Tarih</div>'+
-        '<input id="h-tarih" type="date" value="'+fmt(today)+'"></div>'+
+        tarihInput("h-tarih",fmt(today))+"</div>"+
       "</div>"+
       '<div class="sonTutar" id="h-son"></div>'+
       (gelirMi?"":'<div class="eyebrow" style="margin-bottom:.5rem">Fiş / fatura <span style="text-transform:none;letter-spacing:0">· isteğe bağlı</span></div>'+
@@ -4193,7 +4398,7 @@
     var sil=document.getElementById("ftSil");
     sil.classList[FT.secMod?"remove":"add"]("hide");
     sil.textContent=cev(n ? n+" fotoğraf sil" : "Fotoğraf seçin");
-    sil.disabled=!n;
+
   }
 
   document.getElementById("fotolar").addEventListener("click",function(e){
@@ -4205,7 +4410,8 @@
   document.getElementById("ftEkle").onclick=function(){ if(aktif()) fotoInput.click(); };
   document.getElementById("ftSecModu").onclick=function(){ FT.secMod=!FT.secMod; FT.sec={}; cizFotolar(); };
   document.getElementById("ftSil").onclick=function(){
-    var v=aktif(), ids=Object.keys(FT.sec); if(!v || !ids.length || !fotoYonetir()) return;
+    var v=aktif(), ids=Object.keys(FT.sec); if(!v || !fotoYonetir()) return;
+    if(!ids.length) return bildir(cev("Silmek için önce fotoğraflara dokunarak seçin."));
     perde('<div class="head"><h2>'+esc(cev(ids.length+" fotoğraf silinsin mi?"))+"</h2>"+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Silinen fotoğraflar misafir sayfasından da kalkar."))+"</div>"+
       '<button class="big tehlike" id="fts-evet">'+esc(cev("Evet, sil"))+"</button>"+
@@ -4327,7 +4533,7 @@
       o.querySelector(".gX").onclick=function(){ kapat(); };
       if(yon){
         o.querySelector("#gKapak").onclick=function(){
-          if(i===0) return;
+          if(i===0) return bildir(cev("Bu fotoğraf zaten kapak."));
           var f=v.fotolar.splice(i,1)[0]; v.fotolar.unshift(f); i=0;
           kaydet(); fotoYenile(); ciz2(); bildir(cev("Kapak fotoğrafı değişti."));
         };
@@ -4343,7 +4549,7 @@
       var l=v.fotolar||[];
       o.querySelector("#gSay").textContent=(i+1)+" / "+l.length+(i===0?" · "+cev("Kapak"):"");
       var k=o.querySelector("#gKapak"), s=o.querySelector("#gSil");
-      if(k){ k.textContent=cev(i===0?"Kapak fotoğrafı":"Kapak yap"); k.disabled=(i===0); }
+      if(k) k.textContent=cev(i===0?"Kapak fotoğrafı":"Kapak yap");
       if(s) s.textContent=cev(emin?"Evet, sil":"Sil");
     }
     function tus(e){
@@ -4534,7 +4740,7 @@
     y+=6;
     x.strokeStyle=LIN; x.beginPath(); x.moveTo(RX+26,y-16); x.lineTo(RX+RW-26,y-16); x.stroke();
     y+=26;
-    yaz("Girişte alınacak",RX+26,y,20,INK,"600");
+    yaz("Kalan ödeme",RX+26,y,20,INK,"600");
     sag(para(K.kalan),RX+RW-26,y,24,K.kalan>0?KRM:OK,"600");
     if(K.dep){
       y+=40;
@@ -4652,7 +4858,7 @@
 
     var h=kasaHesap(v,a);
     var y=310;
-    var kutular=[["Tahsil edilen",para(h.gelir),OK],["Bekleyen",para(h.bekleyen),KRM],
+    var kutular=[["Tahsil edilen",para(h.gelir),OK],["Kalan ödemeler",para(h.bekleyen),KRM],
                  ["Gider",para(h.gider),INK],["Net",para(h.gelir-h.gider),OK]];
     var kw=(SW-3*18)/4;
     kutular.forEach(function(k,i){
@@ -4684,7 +4890,7 @@
     bolum("Rezervasyonlar", rezler.map(function(r2){
       var k=kalemler(v,r2);
       return [r2.guest, kisa(r2.start)+" – "+kisa(r2.end)+" · "+gece(r2)+" gece",
-              para(k.odenen)+(k.kalan>0? "  (kalan "+para(k.kalan)+")":""),
+              para(k.odenen)+(k.kalan>0? "  (kalan ödeme "+para(k.kalan)+")":""),
               k.kalan>0?KRM:INK];
     }), "Toplam tahsil edilen", para(rezler.reduce(function(t2,r2){return t2+(r2.odenen||0)},0)));
 

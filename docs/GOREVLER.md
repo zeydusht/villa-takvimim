@@ -174,54 +174,54 @@ Hedef: uçak güvenlik kartı gibi. Her ekranda "burada ne yapılır" tek bakı�
 açıklama gerekiyorsa tek kısa satır, ekranın en üstünde. Ortak çerçeveli stili koru,
 yazıları kalınlaştırma.
 
-- [ ] **6.1 Takvim sekmesi boş.** Alt menüdeki "Takvim" şu an Villalar ekranının aynısını
+- [x] **6.1 Takvim sekmesi boş.** Alt menüdeki "Takvim" şu an Villalar ekranının aynısını
   gösteriyor. Gerçek bir "Takvim" ekranı yap: üstte "Bugün", "Bu hafta", "Bu ay" seçici;
   altında tüm villaların giriş/çıkış olayları gün gün liste halinde
   ("Pzt 10 Kasım · Giriş · Villa Salta · Mehmet Demir · 16:00"). Giriş yeşil ok, çıkış gri ok,
   tahsil edilecek varsa kırmızı tutar. Satıra dokununca o rezervasyonun detayı açılsın.
   Olay yoksa: "Bu hafta giriş veya çıkış yok."
-- [ ] **6.2 Tek terim.** Aynı şeye 4 farklı ad veriliyor: "Tahsil edilecek", "Girişte alınacak",
+- [x] **6.2 Tek terim.** Aynı şeye 4 farklı ad veriliyor: "Tahsil edilecek", "Girişte alınacak",
   "Alınacak ödemeler", "kalan", "Bekleyen". Her yerde **"Kalan ödeme"** kullan
   (Gelir & gider'deki satır "Kalan ödemeler"). dil.js'i de güncelle.
-- [ ] **6.3 Rezervasyon ekleme adımları net olsun.** "+ Rezervasyon"a basınca çıkan
+- [x] **6.3 Rezervasyon ekleme adımları net olsun.** "+ Rezervasyon"a basınca çıkan
   "Giriş gününe dokunun" yazısı takvimin ALTINDA, görülmüyor. Takvimin ÜSTÜNDE sabit,
   yeşil zeminli bir yönerge şeridi olsun: önce "1/2 · Giriş gününe dokunun", seçince
   "2/2 · Çıkış gününe dokunun" + "Vazgeç". Seçilen giriş günü yeşil çerçeveyle işaretli kalsın.
-- [ ] **6.4 Rezervasyon formu sadeleşsin.** Şu an tek ekranda 9 alan var (tutar, indirim,
+- [x] **6.4 Rezervasyon formu sadeleşsin.** Şu an tek ekranda 9 alan var (tutar, indirim,
   ön ödeme %, ön ödeme ₺, kapora…). Yeni düzen:
   - Üstte: Ad soyad, Kişi sayısı (− 2 + butonlu), Telefon.
   - "Ücret" kartı: "1 gece · 7.000 ₺ (gecelik fiyatlardan hesaplandı)" + sağda "Değiştir".
   - "Kapora aldım" açma-kapama düğmesi; açılınca tek tutar alanı.
   - İndirim, ön ödeme yüzdesi/tutarı "Diğer ayrıntılar ›" altında kapalı dursun.
   - Not alanı en altta. Kaydet butonu altta sabit.
-- [ ] **6.5 Ödeme al paneli.** "Alınan tutar" alanında gri 32000 yazıyor; dolu mu boş mu
+- [x] **6.5 Ödeme al paneli.** "Alınan tutar" alanında gri 32000 yazıyor; dolu mu boş mu
   anlaşılmıyor. Alanı boş bırak, üstüne hazır düğmeler koy: "Kalanın tamamı · 32.000 ₺" ve
   (ön ödeme alınmadıysa) "Ön ödeme · 2.600 ₺"; dokununca alan dolsun. Üstteki özet tekrarı
   kısalsın: tek satır "Toplam 42.000 ₺ · Alınan 10.000 ₺ · Kalan 32.000 ₺".
   "Hasar depozitosu / Depozito alındı" düğmesinin altına bir satır açıklama:
   "Misafirden alınan, çıkışta iade edilecek güvence parası. Gelire sayılmaz."
-- [ ] **6.6 Tarihler Türkçe biçimde.** Tarih alanları "11/07/2026" (Amerikan) görünüyor;
+- [x] **6.6 Tarihler Türkçe biçimde.** Tarih alanları "11/07/2026" (Amerikan) görünüyor;
   Türkiye'de 7 Kasım'ı 11 Temmuz sanırlar. Tüm tarih seçicilerde ve gösterimlerde
   "7 Kas 2026" ya da "07.11.2026" kullan (input'larda lang="tr", görünen metin özel biçimli).
-- [ ] **6.7 Pasif butonlar.** "Villayı ekle" ad yazılmadan gri ve nedeni yazmıyor. Rezervasyon
+- [x] **6.7 Pasif butonlar.** "Villayı ekle" ad yazılmadan gri ve nedeni yazmıyor. Rezervasyon
   kaydet'te yaptığın gibi: buton aktif dursun, basınca eksik alanı kırmızı yapıp
   "Villa adını yazın" desin. Uygulamadaki diğer pasif butonlarda da aynı kural (Villayı sil
   hariç, o bilerek pasif).
-- [ ] **6.8 Hesap ekranı.** Normal kullanıcı için düzen:
+- [x] **6.8 Hesap ekranı.** Normal kullanıcı için düzen:
   - "Hesabım" altındaki önemli şeyler dışarı çıksın: Bildirimler, Dil, "Bize ulaşın"
     (WhatsApp, DESTEK_WHATSAPP sabiti), Gizlilik, Çıkış yap.
   - "Kullanıcılar" sadece yöneticiye görünsün (zaten öyleyse dokunma), başlığı "Yönetim".
   - "Villa davet kodu gir · Bakıcıysanız" → "Bakıcı olarak villaya katıl" + alt satır
     "Villa sahibinin gönderdiği 6 haneli kod".
   - "Yedek al / Geri yükle" teknik ve korkutucu; "Gelişmiş" başlığı altında kapalı dursun.
-- [ ] **6.9 Boş ana ekran (ilk giriş).** "Henüz villa yok" yerine karşılama kartı:
+- [x] **6.9 Boş ana ekran (ilk giriş).** "Henüz villa yok" yerine karşılama kartı:
   "Hoş geldiniz" + 3 numaralı adım (1 Villanızı ekleyin · 2 Gecelik fiyatları girin ·
   3 Rezervasyonları takvime işleyin) + büyük "Villa ekle" butonu. Altında küçük:
   "Bakıcı mısınız? Davet koduyla katılın".
-- [ ] **6.10 Takvim açıklaması.** Dolu günlerdeki harfler (AY, MD) açıklanmamış. Takvim
+- [x] **6.10 Takvim açıklaması.** Dolu günlerdeki harfler (AY, MD) açıklanmamış. Takvim
   altındaki renk açıklamasına ekle: "AY = misafirin baş harfleri". Geçmiş günler soluk,
   bugün yeşil daire: bunlar da açıklamada küçük ikonla.
-- [ ] **6.11 Gizlilik onayı.** Kayıt ekranındaki gizlilik onayı açma-kapama düğmesi;
+- [x] **6.11 Gizlilik onayı.** Kayıt ekranındaki gizlilik onayı açma-kapama düğmesi;
   onay için alışılmış olan kutucuk. Kare onay kutusu yap, "Gizlilik metnini" kelimeleri
   link olsun.
 
