@@ -17,6 +17,19 @@
   :root{
     color-scheme: light only;
     --ink:#101613; --muted:#5F6A64; --line:#D9DFDB; --cizgi:#C9D1CC; --soft:#F1F5F3; --uyari:#9B2C4A; --ok:#0B5B57;
+    /* Tıklanabilir öğeler: tek ortak stil (buradan değiştirin) */
+    --cerceve:#5F6A64;            /* kart, satır ve ikincil buton çerçevesi */
+    --cerceve-kalinlik:2px;
+    --kose:.75rem;                /* butonlar, kartlar ve satırlar aynı köşe */
+    --dokunma-yukseklik:3.25rem;  /* 52px: ana ve ikincil butonlar, satırlar */
+    --ok-isareti:#2E3833;         /* satırların sağındaki › */
+    --basili-cerceve:#0B5B57;     /* basınca çerçeve */
+    --basili-zemin:#E3EFEC;       /* basınca zemin */
+    --basili-olcek:.98;           /* basınca hafif küçülme */
+    --ana-basili:#084743;         /* yeşil ana buton basınca */
+    --tehlike-cerceve:#C4718A;    /* kırmızı butonların çerçevesi */
+    --tehlike-basili-zemin:#FBF1F4;
+    --gecis:120ms;
     --serif: ui-serif, Georgia, "Times New Roman", serif;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
@@ -55,6 +68,16 @@
   svg{display:block; flex:none}
   h1{font-family:var(--serif); font-size:2.25rem; letter-spacing:-.02em; font-weight:400; margin:0}
 
+  /* ---- tıklanabilir öğeler: ortak çerçeve ve basılı hal ---- */
+  .kart, .ekleKart, .fotoEkle, .satirBtn, .big.ghost, .ghost{
+    background:#fff; border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose);
+    transition:transform var(--gecis), background-color var(--gecis), border-color var(--gecis);
+    touch-action:manipulation}
+  .kart:active, .ekleKart:active, .fotoEkle:active, .satirBtn:active, .big.ghost:active, .ghost:active,
+  .kart.basili, .ekleKart.basili, .fotoEkle.basili, .satirBtn.basili, .big.ghost.basili{
+    border-color:var(--basili-cerceve); background-color:var(--basili-zemin);
+    transform:scale(var(--basili-olcek)); filter:none}
+
   /* ana ekran */
   .mark{width:2.5rem; height:2.5rem; margin:0 auto .875rem}
   #ana h1, #ozet{text-align:center}
@@ -84,22 +107,22 @@
   .adimMetin b{font-weight:600}
   .paylasSim{display:inline-flex; vertical-align:-4px; margin:0 .125rem; color:#007AFF}
   .kartlar{display:grid; gap:1.25rem; margin-top:1.75rem}
-  .kart{display:block; width:100%; padding:0}
+  .kart{display:block; width:100%; padding:0; overflow:hidden}
   .kapak{position:relative; display:flex; align-items:center; justify-content:center; width:100%;
-    aspect-ratio:16/10; border-radius:.875rem; background-size:cover; background-position:center;
+    aspect-ratio:16/10; border-radius:0; background-size:cover; background-position:center;
     background-color:var(--soft); overflow:hidden}
   .mono{font-family:var(--serif); font-size:2.75rem; color:#fff; opacity:.92; line-height:1}
   .rozet{position:absolute; top:.625rem; right:.625rem; background:rgba(255,255,255,.95);
     border-radius:99px; padding:.25rem .625rem .3rem; font-size:.75rem; display:flex;
     align-items:center; gap:.375rem; color:var(--ink); box-shadow:0 1px 3px rgba(16,22,19,.12)}
-  .kartAlt{display:block; padding:.75rem .125rem 0}
+  .kartAlt{display:block; padding:.75rem 1rem .875rem}
   .kad{font-family:var(--serif); font-size:1.25rem; letter-spacing:-.02em; display:block;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .kalt{font-size:.8125rem; color:var(--muted); display:block; margin-top:.1875rem;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-  .ekleKart{width:100%; padding:1.125rem 0; border:1px dashed #D5DCD8; border-radius:.875rem;
-    color:var(--muted); display:flex; align-items:center; justify-content:center; gap:.5rem;
-    font-size:.9375rem; background:#fff; margin-top:1.25rem}
+  .ekleKart{width:100%; min-height:var(--dokunma-yukseklik); padding:.875rem 0;
+    color:var(--ink); display:flex; align-items:center; justify-content:center; gap:.5rem;
+    font-size:.9375rem; margin-top:1.25rem}
 
   /* üst bar */
   .topbar{display:flex; align-items:center; gap:.5rem; margin-bottom:1rem}
@@ -159,26 +182,22 @@
     border-bottom:1px solid var(--line); width:100%}
   .row .name{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .row .meta{font-size:.875rem; color:var(--muted); flex:none}
-  .satirBtn{display:flex; align-items:center; gap:.75rem; width:100%; min-height:3.25rem;
-    padding:.875rem 1rem .875rem 1.125rem; background:var(--soft); border-radius:.875rem; margin-top:.5rem;
-    transition:background-color .12s}
-  .satirBtn:active{background:#E6ECE8}
+  .satirBtn{display:flex; align-items:center; gap:.75rem; width:100%; min-height:var(--dokunma-yukseklik);
+    padding:.75rem 1rem .75rem 1.125rem; margin-top:.5rem}
   .satirBtn > span:first-child{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .satirBtn .sag{color:#3F4843; font-size:.875rem; flex:none; text-align:right}
   .satirBtn::after{content:""; flex:none; width:.4375rem; height:.4375rem; margin:0 .25rem 0 -.125rem;
-    border-top:1.75px solid #8A948F; border-right:1.75px solid #8A948F; transform:rotate(45deg)}
-  .grup{background:var(--soft); border-radius:.875rem; overflow:hidden; margin-top:.75rem}
-  .grup .satirBtn{margin:0; border-radius:0; background:transparent}
-  .grup .satirBtn:active{background:#E6ECE8}
-  .grup .satirBtn + .satirBtn{box-shadow:inset 0 1px 0 #DCE2DE}
+    border-top:2px solid var(--ok-isareti); border-right:2px solid var(--ok-isareti); transform:rotate(45deg)}
+  .grup{display:grid; gap:.5rem; margin-top:.75rem}
+  .grup .satirBtn{margin:0}
 
   /* fotoğraflar */
   .fotolar{display:grid; grid-template-columns:1fr 1fr; gap:.5rem}
   .foto{aspect-ratio:4/3; border-radius:.75rem; background-size:cover; background-position:center;
     background-color:var(--soft); width:100%; padding:0}
-  .fotoEkle{aspect-ratio:4/3; border-radius:.75rem; border:1px dashed #D5DCD8; color:var(--muted);
+  .fotoEkle{aspect-ratio:4/3; color:var(--ink);
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.375rem;
-    font-size:.8125rem; width:100%; background:#fff}
+    font-size:.8125rem; width:100%}
   .sheetfoto{display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem}
   .sheetfoto .mini{width:3.5rem; height:3.5rem; border-radius:.5rem; background-size:cover;
     background-position:center; background-color:var(--soft)}
@@ -273,15 +292,19 @@
   .svic.on i{transform:translateX(1.125rem)}
   .svic i{box-shadow:0 1px 2px rgba(16,22,19,.25)}
   .svic::after{content:""; position:absolute; inset:-.5625rem -.375rem}
-  .big{width:100%; margin-top:1.5rem; min-height:3.25rem; padding:.875rem 0; border-radius:.75rem; font-size:1rem;
-    font-weight:600; color:#fff; text-align:center; background:var(--ok); border:2px solid transparent;
-    box-shadow:0 1px 2px rgba(16,22,19,.12); transition:filter .12s, background-color .12s}
-  .big:active{filter:brightness(.9)}
+  .big{width:100%; margin-top:1.5rem; min-height:var(--dokunma-yukseklik); padding:.75rem 0;
+    border-radius:var(--kose); font-size:1rem; font-weight:600; color:#fff; text-align:center;
+    background:var(--ok); border:var(--cerceve-kalinlik) solid transparent;
+    box-shadow:0 1px 2px rgba(16,22,19,.12); touch-action:manipulation;
+    transition:transform var(--gecis), background-color var(--gecis), border-color var(--gecis), filter var(--gecis)}
+  .big:active, .big.basili{background-color:var(--ana-basili); transform:scale(var(--basili-olcek))}
+  .big[style*="background"]:active, .big[style*="background"].basili{filter:brightness(.82)}
   .big:disabled{opacity:.35}
-  .big.ghost, .ghost{background:#fff; color:var(--ink); border:2px solid #8A968F; box-shadow:none}
-  .big.ghost:active, .ghost:active{filter:none; background:#EEF2EF; border-color:var(--ok)}
-  .big.tehlike{background:#fff; color:var(--uyari); border:2px solid #C4718A; box-shadow:none; margin-top:2.5rem}
-  .big.tehlike:active{filter:none; background:#FBF1F4; border-color:var(--uyari)}
+  .big.ghost, .ghost{color:var(--ink); box-shadow:none}
+  .big.tehlike{background:#fff; color:var(--uyari); border:var(--cerceve-kalinlik) solid var(--tehlike-cerceve);
+    box-shadow:none; margin-top:2.5rem}
+  .big.tehlike:active, .big.tehlike.basili{filter:none; background-color:var(--tehlike-basili-zemin); border-color:var(--uyari)}
+  .big:disabled, .big:disabled.basili{transform:none}
   .cols{display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.5rem; padding-top:1.25rem;
     border-top:1px solid var(--line)}
   .info{display:flex; align-items:center; gap:.75rem; margin-top:.75rem}
@@ -616,6 +639,28 @@
 
 </div>
 
+<script>
+/* Dokununca basılı hal anında görünsün: :active'e ek olarak "basili" sınıfı.
+   Parmak kayarsa (kaydırma) ya da kalkarsa sınıf kalkar. */
+(function(){
+  var SECICI=".kart,.ekleKart,.fotoEkle,.satirBtn,.big";
+  var el=null, x0=0, y0=0;
+  function birak(){ if(el){ el.classList.remove("basili"); el=null; } }
+  document.addEventListener("touchstart",function(e){
+    birak();
+    var t=e.target && e.target.closest ? e.target.closest(SECICI) : null;
+    if(!t || t.disabled) return;
+    el=t; x0=e.touches[0].clientX; y0=e.touches[0].clientY;
+    el.classList.add("basili");
+  },{passive:true});
+  document.addEventListener("touchmove",function(e){
+    if(el && (Math.abs(e.touches[0].clientX-x0)>10 || Math.abs(e.touches[0].clientY-y0)>10)) birak();
+  },{passive:true});
+  document.addEventListener("touchend",function(){ setTimeout(birak,80); },{passive:true});
+  document.addEventListener("touchcancel",birak,{passive:true});
+  window.addEventListener("scroll",birak,{passive:true});
+})();
+</script>
 <script src="config.js"></script>
 <script src="veri.js"></script>
 <script src="dil.js"></script>
