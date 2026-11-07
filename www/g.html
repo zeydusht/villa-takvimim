@@ -67,6 +67,7 @@
   .ambIkon{width:2rem;height:2rem;border-radius:99px;background:#fff;color:var(--yes);flex:none;
     display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(18,35,43,.06)}
   .ambIkon svg{width:17px;height:17px}
+  .ambIkon.emo{font-size:1.0625rem;line-height:1}
 
   /* dip bilgi */
   .dip{background:var(--soft);margin-top:2.5rem;padding:2rem 0 2.25rem;text-align:center}
@@ -143,7 +144,10 @@
   .ozetkutu{background:var(--soft);border-radius:.875rem;padding:1rem;margin-top:1rem;
     display:flex;align-items:center;justify-content:space-between;gap:1rem}
   .ozetkutu .top{font-family:var(--serif);font-size:1.25rem;letter-spacing:-.02em}
-  .temizle{font-size:.8125rem;color:var(--muted);text-decoration:underline}
+  .temizle{font-size:.875rem;color:var(--ink);background:#fff;border:2px solid #5F6A64;border-radius:.75rem;
+    min-height:44px;padding:.375rem .875rem;flex:none}
+  .temizle:active{border-color:#0B5B57;background:#E3EFEC}
+  .fiyatSor{font-size:1rem !important;line-height:1.35}
   .kisi{display:flex;align-items:center;gap:.75rem;font-size:.9375rem;
     justify-content:space-between;padding:.625rem 0;border-bottom:1px solid var(--line)}
   .kisi:last-of-type{border-bottom:0}
@@ -186,6 +190,7 @@
 <body>
 <div class="w" id="kok"><div class="yuk">Yükleniyor…</div></div>
 <script src="config.js"></script>
+<script src="ozellik.js"></script>
 <script>
 (function(){
   var C=window.VILLA_CONFIG||{};
@@ -208,6 +213,8 @@
     "Hasar depozitosu":"Damage deposit","Kısa konaklama ücreti":"Short-stay fee","Toplam":"Total",
     "Kalan ödeme":"Balance due","(eve girişte)":"(at check-in)",
     "Hasar depozitosu çıkışta iade edilir.":"The damage deposit is refunded at check-out.",
+    "Seçimi temizle":"Clear selection","Bu tarihlerin fiyatını villa sahibine sorun":"Ask the owner for the price of these dates",
+    "Fiyatı sorun":"Ask for price","Konaklama":"Stay",
     "Bu bağlantı artık geçerli değil.":"This link is no longer valid.",
     "Villa sahibinden yeni bir bağlantı isteyin.":"Please ask the owner for a new link.",
     "kişi":"guests","yatak odası":"bedrooms","banyo":"bathrooms","Havuz":"Pool","derinlik":"depth",
@@ -519,7 +526,8 @@
   }
   function amblemler(dizi){
     return '<div class="amblemler">'+dizi.map(function(o){
-      return '<div class="amb"><span class="ambIkon">'+amblem(o)+"</span><span>"+esc(CEV(o))+"</span></div>";
+      var em=(window.ozEmoji && window.ozEmoji(o)) || "";
+      return '<div class="amb"><span class="ambIkon'+(em?" emo":"")+'">'+(em||amblem(o))+"</span><span>"+esc(CEV(o))+"</span></div>";
     }).join("")+"</div>";
   }
 
@@ -661,8 +669,7 @@
     }
     var t=toplam(), gc=geceSay();
     var e2=D.ek||{}, ekU2=(e2.sinir&&e2.ucret&&gc<=e2.sinir)?e2.ucret:0;
-    var dep2=((D.bilgi||{}).depozito||0);
-    var satir=t.eksik? "Fiyat için sorun" : nf.format(t.tutar+ekU2+dep2)+" ₺";
+    var satir=t.eksik? CEV("Fiyatı sorun") : nf.format(t.tutar+ekU2)+" ₺";
     bar.innerHTML='<div class="ic">'+
       '<div class="altozet"><span><b>'+tarihMetni()+"</b> · "+gc+" gece · "+kisiOzet().join(", ")+"</span>"+
       "<b>"+satir+"</b></div>"+
@@ -685,16 +692,15 @@
         '<div style="color:var(--muted);font-size:.875rem;margin:.375rem 0 1rem">'+
           esc(D.ad||"Villa")+" · "+tarihMetni()+" · "+gc+" "+(EN?"nights":"gece")+"</div>"+
         '<div class="kisiler" id="onay-sayac">'+sayaclar(mx,b.evcil,"o")+"</div>"+
-        '<div class="ozetsatir"><span style="color:var(--muted)">Konaklama · '+gc+" gece</span><span>"+
+        '<div class="ozetsatir"><span style="color:var(--muted)">'+CEV("Konaklama")+" · "+gc+" "+(EN?"nights":"gece")+"</span><span>"+
           (t.eksik?"—":nf.format(t.tutar)+" ₺")+"</span></div>"+
         (ekU?'<div class="ozetsatir"><span style="color:var(--muted)">Kısa konaklama ücreti</span><span>'+
           nf.format(ekU)+" ₺</span></div>":"")+
-        (dep?'<div class="ozetsatir"><span style="color:var(--muted)">Hasar depozitosu</span><span>'+
-          nf.format(dep)+" ₺</span></div>":"")+
+
         '<div class="ozetsatir"><span style="color:var(--muted)">Misafir</span><span>'+esc(kisiMetin())+"</span></div>"+
-        '<div class="ozetsatir top"><span>Toplam</span><span>'+
-          (t.eksik?"Fiyat için sorun":nf.format(t.tutar+ekU+dep)+" ₺")+"</span></div>"+
-        (dep?'<div style="font-size:.75rem;color:var(--muted);margin-top:.25rem">Depozito, hasar yoksa çıkışta iade edilir.</div>':"")+
+        '<div class="ozetsatir top"><span>'+CEV("Toplam")+"</span><span"+(t.eksik?' class="fiyatSor"':"")+">"+
+          (t.eksik?CEV("Bu tarihlerin fiyatını villa sahibine sorun"):nf.format(t.tutar+ekU)+" ₺")+"</span></div>"+
+        (dep?'<div style="font-size:.8125rem;color:var(--muted);margin-top:.25rem">'+depNot(dep)+"</div>":"")+
         '<a class="onaybtn" href="https://wa.me/'+tel+'?text='+encodeURIComponent(mesaj)+
           '" target="_blank" rel="noopener">WhatsApp\'tan gönder</a>'+
         '<button class="vazgec" id="onay-kapat">Vazgeç</button></div>';
@@ -757,6 +763,11 @@
     sonra(); return true;
   }
 
+  // "Girişte 5.000 ₺ hasar depozitosu alınır, çıkışta iade edilir."
+  function depNot(dep){
+    return EN ? "A "+nf.format(dep)+" ₺ damage deposit is taken at check-in and refunded at check-out."
+              : "Girişte "+nf.format(dep)+" ₺ hasar depozitosu alınır, çıkışta iade edilir.";
+  }
   function secimKutusu(){
     var el=document.getElementById("secimAlan"); if(!el) return;
     var b=D.bilgi||{}, mx=parseInt(b.kapasite||"20",10)||20;
@@ -764,11 +775,8 @@
     var t=toplam(), gc=geceSay();
     var ek=(D.ek&&D.ek.sinir&&D.ek.ucret&&gc<=D.ek.sinir)?D.ek.ucret:0;
     var dep=(b.depozito)||0;
-    var araToplam=t.tutar+ek;
-    var tumToplam=araToplam+dep;
-    var yuzde=parseInt(b.onOdeme,10); if(!yuzde||yuzde<0||yuzde>100) yuzde=30;
-    var onOdeme=Math.round(araToplam*yuzde/100);
-    var girinceKalan=Math.max(0,tumToplam-onOdeme);
+    // Toplam = konaklama + kısa konaklama ücreti. Depozito toplama EKLENMEZ, ayrı satırda yazılır.
+    var konaklamaT=t.tutar+ek;
     var gecelik=gc?Math.round(t.tutar/gc):0;
     var sat=function(ad,deger){
       return '<div class="fs"><span>'+ad+"</span><span>"+deger+"</span></div>"; };
@@ -778,18 +786,14 @@
       h+='<div class="fiyatKutu">'+
         sat(nf.format(gecelik)+" ₺ / "+gc+" gece", nf.format(t.tutar)+" ₺")+
         (ek? sat(CEV("Kısa konaklama ücreti"), nf.format(ek)+" ₺") : "")+
-        (dep? sat(CEV("Hasar depozitosu"), nf.format(dep)+" ₺") : "")+
-        '<div class="fs fsTop"><span>'+CEV("Toplam")+'</span><span>'+nf.format(tumToplam)+" ₺</span></div>"+
-        sat((EN?"Prepayment ("+yuzde+"%)":"Ön ödeme tutarı (%"+yuzde+")"), nf.format(onOdeme)+" ₺")+
-        '<div class="fs"><span>'+CEV("Kalan ödeme")+'<br><span class="fsAlt">'+CEV("(eve girişte)")+'</span></span>'+
-          "<span>"+nf.format(girinceKalan)+" ₺</span></div>"+
-        (dep?'<div class="fsNot">'+CEV("Hasar depozitosu çıkışta iade edilir.")+"</div>":"")+
+        '<div class="fs fsTop"><span>'+CEV("Toplam")+'</span><span>'+nf.format(konaklamaT)+" ₺</span></div>"+
+        (dep?'<div class="fsNot">'+depNot(dep)+"</div>":"")+
       "</div>";
     }
     h+='<div class="ozetkutu"><div class="sol">'+
-      '<div class="top">'+(t.eksik?"Fiyat için sorun":nf.format(tumToplam)+" ₺")+"</div>"+
+      '<div class="top'+(t.eksik?" fiyatSor":"")+'">'+(t.eksik?CEV("Bu tarihlerin fiyatını villa sahibine sorun"):nf.format(konaklamaT)+" ₺")+"</div>"+
       '<div style="color:var(--muted)">'+tarihMetni()+" · "+gc+" gece</div></div>"+
-      '<button class="temizle" id="tmz">"+CEV("Temizle")+"</button></div>'+
+      '<button class="temizle" id="tmz">'+CEV("Seçimi temizle")+"</button></div>"+
       '<div class="kisiler">'+sayaclar(mx,b.evcil)+"</div>";
     el.innerHTML=h;
 

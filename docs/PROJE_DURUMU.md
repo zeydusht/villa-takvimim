@@ -132,8 +132,68 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       alınan ödemeyi düzenleme; tekrar eden butonlar kalktı; boş villada boş kutular, "—" ve hafta sonu gölgesi yok;
       "3 misafir", "Şu an konaklıyor · çıkış …", ana ekran hatırlatması "Çıkış 9 Kasım · … alınacak", avatar "Villa"yı atlar.
       Kalan: GOREV7 "Sonra" listesi (Zeyd seçecek).
+- [x] Görev 8 — para hesabı, kurulum rehberi, gezinme (docs/GOREV8.md, 19 madde) · Claude Code yaptı (8 Kasım),
+      sahte veriyle test edildi.
+      - Para: tek kural (konaklama ücreti = geceler + kısa konaklama; depozito ayrı, gelir değil; toplam = ikisi;
+        kalan = toplam − alınan). "Ön ödeme" ve "İndirim" kalktı; tek kavram "Kapora" (villada "Önerilen kapora %").
+        Eski kayıtlar açılışta taşınır: indirim tutardan düşülür; tarihli "depozito alındı" → "depozito" notlu ödeme.
+      - Rezervasyon formunun en üstünde ücret kartı + "Fiyatı mesajla gönder"; kapora + canlı "Kalan ödeme".
+      - Detay sade ("12.000 ₺ alınacak" / "✓ Ödemenin tamamı alındı"); "Alınan ödemeyi gir"; kalan depozito dahil.
+      - Çıkışta depozito iadesi kartı (İade ettim / Bir kısmını kestim / Hiç iade etmedim); kesilen gelir sayılır;
+        Takvim'de "Depozito iadesi bekliyor". Gelir & gider yeni kurala uydu.
+      - Kurulum sihirbazı (6 adım, tam ekran, kaldığı yerden devam), villa bilgilerinde "Fiyat ve iletişim" üstte,
+        özelliklere emoji (www/ozellik.js, misafir sayfası da kullanır), 4 kutulu fotoğraf alanı, "Villa sayfanız" kartı.
+      - Hitap "Hasan Bey / Beyza Hanım" (www/adlar.js ~690 ad), misafir kartında "Bey / Hanım / Sadece ad".
+      - Takvim'den detay Takvim'in üstünde açılır; destekten çıkınca Hesap → kullanıcıya dönülür; Takvim'de
+        "Giriş/Çıkış" etiketleri ve "Bugün/Yarın/2 gün sonra çıkış".
+      - Destek modu: üstte sarı şerit; uygulama tarafında sahip gibi tam yetki (veritabanı izni aşağıda).
+      - Bakıcı daveti bağlantılı (UYGULAMA_ADRESI sabiti, şimdilik GitHub Pages); ?davet=KOD hatırlanır, girişte katılır.
+      - X butonları çerçeveli + basınca dolan daire. Misafir sayfası: "Seçimi temizle" hatası düzeldi, toplamda depozito yok.
+      Kalan / emin olunamayan:
+      - Depozito iadesi seçimi ve hitap seçimi şimdilik SADECE o cihazda saklanıyor (veritabanında yeri yok, aşağıda).
+      - "Fiyat için sorun" nedeni kesinleşmedi: büyük ihtimalle yayınlanmış sayfa dosyası güncellenemiyor (depo izni).
+        Artık güncellenemezse villa ekranındaki "Villa sayfanız" kartında kırmızı yazıyla görünüyor.
+      - Bakıcının gördüğü kalan tutar sunucuda hesaplanıyor; yeni kurala uyması için aşağıdaki değişiklik gerekli.
+
+## Veritabanı için gerekenler (Görev 8)
+Claude sohbetten, Zeyd'in onayıyla yapacak. Taslaklar; tablo/fonksiyon adları canlı şemaya göre kontrol edilmeli.
+
+1. **Depozito iadesi kalıcı olsun.** Şu an "İade ettim / Kestim / Etmedim" seçimi cihazda (villa-takvim-depiade).
+   ```sql
+   alter table rezervasyon_mali
+     add column if not exists depozito_durum text check (depozito_durum in ('iade','kesildi','tutuldu')),
+     add column if not exists depozito_kesilen numeric default 0,
+     add column if not exists depozito_not text,
+     add column if not exists depozito_islem_tarih date;
+   ```
+   Sonra veri.js'te bu sütunlar okunup yazılacak (anlik/senkron/yükleme) — sütunlar eklenince Claude Code'a söyleyin.
+2. **Eski "depozito alındı" kayıtlarını tek seferde taşı** (uygulama sahibin cihazında da taşıyor; sunucu tarafı bakıcı hesabı için):
+   ```sql
+   insert into odemeler (id, villa_id, rezervasyon_id, tutar, tarih, aciklama)
+   select gen_random_uuid(), m.villa_id, m.rezervasyon_id, m.depozito_tutar, m.depozito_tarih, 'depozito'
+   from rezervasyon_mali m
+   where m.depozito_tarih is not null and m.depozito_tutar > 0
+     and not exists (select 1 from odemeler o where o.rezervasyon_id = m.rezervasyon_id
+                     and o.aciklama = 'depozito' and o.tutar = m.depozito_tutar);
+   update rezervasyon_mali set depozito_tarih = null where depozito_tarih is not null;
+   ```
+   Not: `depozito_tutar` artık "bu rezervasyonun depozito tutarı" demek (alındı işareti değil); `depozito_tarih` kullanılmıyor.
+3. **bakici_kalanlar yeni kurala göre:**
+   kalan = tutar + ek_ucret + coalesce(depozito_tutar, (villalar.bilgi->>'depozito')::numeric, 0) − sum(odemeler.tutar)
+   (0'dan küçük değil); depozito = kalanın depozito kısmı = least(depozito, greatest(0, kalan − greatest(0, tutar + ek_ucret − odenen))).
+   `depozito_tarih`'e bakmasın. İndirim sütunu kullanılmıyor.
+4. **Destek modunda yönetici tam yetkili:** destek oturumu açık yöneticiye bu villa için `villalar` (update),
+   `rezervasyonlar`, `rezervasyon_mali`, `odemeler`, `fiyatlar`, `giderler`, `gelirler`, `villa_fotograflar`
+   üzerinde select/insert/update/delete izni (mevcut destek kaydı/fonksiyonuyla koşullu). Uygulama hazır; izin yoksa
+   kayıtta "Buluta kaydedilemedi" hatası çıkar. Villa silme destek modunda bilerek kapalı.
+5. **Hitap kalıcı olsun:** `alter table misafir_notlari add column if not exists hitap text check (hitap in ('bey','hanim','ad'));`
+   Sonra veri.js'te okunup yazılacak (şu an cihazda: villa-takvim-hitap).
+6. **Villa sayfası güncellenebiliyor mu?** Sahip, `galeri/<ad>.json` dosyasının ÜZERİNE yazabilmeli (upsert/update izni).
+   "Fiyat için sorun" şikâyetinin en olası nedeni bu; kontrol edilmeli.
 
 ## Sonraki fazlar
+- Bakıcı davet bağlantısı yüklü uygulamayı doğrudan açsın (iOS universal link / Android app link). Şimdilik web adresi açılır.
+- UYGULAMA_ADRESI (index.html) şu an GitHub Pages test adresi; kalıcı adres belli olunca değiştirilecek.
 - **Faz 3 / bildirimler:** Web Push app içinde çalışmıyor. Firebase/APNs ile native bildirim
   (@capacitor/push-notifications) + Supabase edge function'ı buna göre güncellemek.
 - Şifre sıfırlama e-postası şu an siteye yönlendiriyor (çalışıyor ama app'e dönmüyor) → ileride deep link.

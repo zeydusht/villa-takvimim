@@ -328,7 +328,8 @@
               phone: r.telefon || "", people: r.kisi ? String(r.kisi) : "",
               note: r.aciklama || "", color: r.renk || "#0B5B57", kod: r.kod || undefined,
               tutar: say(mm.tutar), ekUcret: say(mm.ek_ucret),
-              depozito: mm.depozito_tutar ? { tutar: say(mm.depozito_tutar), tarih: mm.depozito_tarih } : undefined,
+              // depozito_tutar: bu rezervasyonun depozito tutarı (0 da geçerli); tarihli eski kayıtlar uygulamada taşınır
+              depozito: (mm.depozito_tutar !== null && mm.depozito_tutar !== undefined) ? { tutar: say(mm.depozito_tutar), tarih: mm.depozito_tarih || undefined } : undefined,
               odemeler: od, odenen: od.reduce(function (t, x) { return t + x.tutar; }, 0)
             });
           });
@@ -449,8 +450,18 @@
       api("giderler?select=*&villa_id=eq." + villaId),
       api("fiyatlar?select=*&villa_id=eq." + villaId),
       api("villa_fotograflar?select=*&villa_id=eq." + villaId + "&order=sira"),
-      api("misafir_notlari?select=*&villa_id=eq." + villaId)
+      api("misafir_notlari?select=*&villa_id=eq." + villaId),
+      // destek modunda yönetici sahip gibi: para bilgileri de okunur (izin yoksa boş gelir)
+      api("rezervasyon_mali?select=*&villa_id=eq." + villaId).catch(function () { return []; }),
+      api("odemeler?select=*&villa_id=eq." + villaId).catch(function () { return []; }),
+      api("gelirler?select=*&villa_id=eq." + villaId).catch(function () { return []; })
     ]).then(function (s) {
+      var maliHar = {}; (s[6] || []).forEach(function (x) { maliHar[x.rezervasyon_id] = x; });
+      var odemeHar = {};
+      (s[7] || []).forEach(function (o) {
+        (odemeHar[o.rezervasyon_id] = odemeHar[o.rezervasyon_id] || []).push({
+          id: o.id, tarih: o.tarih, tutar: say(o.tutar), not: o.aciklama || "" });
+      });
       var v0 = (s[0] || [])[0];
       if (!v0) throw new Error("Villa bulunamadı.");
       var m = {
@@ -465,8 +476,15 @@
           id: r.id, start: r.baslangic, end: r.bitis, guest: r.misafir,
           phone: r.telefon || "", people: r.kisi ? String(r.kisi) : "",
           note: r.aciklama || "", color: r.renk || "#0B5B57", kod: r.kod || undefined,
-          tutar: 0, ekUcret: 0, odemeler: [], odenen: 0
+          tutar: say((maliHar[r.id] || {}).tutar), ekUcret: say((maliHar[r.id] || {}).ek_ucret),
+          depozito: (maliHar[r.id] && maliHar[r.id].depozito_tutar !== null && maliHar[r.id].depozito_tutar !== undefined)
+            ? { tutar: say(maliHar[r.id].depozito_tutar), tarih: maliHar[r.id].depozito_tarih || undefined } : undefined,
+          odemeler: odemeHar[r.id] || [],
+          odenen: (odemeHar[r.id] || []).reduce(function (t, x) { return t + x.tutar; }, 0)
         });
+      });
+      (s[8] || []).forEach(function (g) {
+        m.gelirler.push({ id: g.id, aciklama: g.aciklama, tutar: say(g.tutar), tarih: g.tarih });
       });
       (s[3] || []).forEach(function (f) { m.fiyatlar[f.tarih] = say(f.tutar); });
       (s[2] || []).forEach(function (g) {
@@ -546,7 +564,8 @@
     var y = anlik(v), e = v.__anlik || { villa: "", rez: {}, mali: {}, odeme: {}, fiyat: {}, gider: {}, gelir: {}, foto: {}, not: {} };
     var isler = [];
 
-    if (y.villa !== e.villa && sahip) {
+    var destek = v.rol === "destek";
+    if (y.villa !== e.villa && (sahip || destek)) {
       isler.push(api("villalar?id=eq." + v.id, {
         method: "PATCH",
         body: { ad: v.ad, renk: v.color, bilgi: v.bilgi || {}, paylasim: v.paylasim || {},
@@ -570,7 +589,7 @@
     // Para bilgileri (mali, ödemeler) yalnız sahip yazar. Bakıcı hiç göndermez: tutarı sunucu hesaplar.
     // Destek modunda (yönetici) önceden de yazılmıyordu; değişmedi.
     var bakici = v.rol === "bakici";
-    var para = sahip;
+    var para = sahip || destek;   // destek modunda yönetici de yazar (izni veritabanı verir)
     if (para) {
       var ml = fark(e.mali, y.mali);
       ml.ekle.forEach(function (id) {
@@ -597,7 +616,7 @@
       od.sil.forEach(function (id) { isler.push(api("odemeler?id=eq." + id, { method: "DELETE" })); });
 
     }
-    if (sahip) {
+    if (sahip || destek) {
       var fy = fark(e.fiyat, y.fiyat);
       if (fy.ekle.length) {
         isler.push(api("fiyatlar", { method: "POST", donus: "resolution=merge-duplicates",
