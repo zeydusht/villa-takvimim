@@ -80,7 +80,7 @@
 
   /* villa ekranı: kurulum kartı, hızlı işlemler, ay özeti, takvim açıklaması */
   .kurulum{background:var(--soft); border-radius:var(--kose); padding:1rem; margin-top:1rem}
-  .kurulum .kBas{display:flex; justify-content:space-between; align-items:baseline; gap:.75rem}
+  .kurulum .kBas{display:flex; justify-content:space-between; align-items:center; gap:.75rem}
   .kurulum .kBaslik{font-family:var(--serif); font-size:1.1875rem; letter-spacing:-.02em}
   .kurulum .kSay{font-size:.875rem; color:var(--muted); font-variant-numeric:tabular-nums}
   .ilerleme{height:.375rem; border-radius:99px; background:#D3DAD6; overflow:hidden; margin:.625rem 0 .375rem}
@@ -90,12 +90,13 @@
     display:flex; align-items:center; justify-content:center; color:#fff}
   .tik.on{background:var(--ok); border-color:var(--ok)}
   .tikli .bitti{color:var(--muted)}
-  .kurulum .kGizle{flex:none; font-size:.8125rem; color:var(--muted); padding:.25rem 0 .25rem .5rem;
+  .kurulum .kGizle{flex:none; font-size:.8125rem; color:var(--muted); padding:0 .5rem; min-height:2.75rem; min-width:2.75rem;
+    display:inline-flex; align-items:center; justify-content:center; margin:-.75rem -.5rem -.75rem 0;
     text-decoration:underline; text-underline-offset:2px}
   .kurulum .kBasSol{display:flex; align-items:baseline; gap:.5rem; min-width:0}
   .kurulum.kapali{padding:.5rem; display:flex; align-items:center; gap:.5rem}
   .kurulum.kapali .satirBtn{margin:0; flex:1 1 auto; min-width:0}
-  .kurulum.kapali .kGizle{padding:.25rem .5rem}
+  .kurulum.kapali .kGizle{margin:0}
   .kTek{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
   .hizli{display:flex; gap:.5rem; margin-top:1rem}
   .hizli .big{flex:1 1 auto; width:auto}
@@ -118,7 +119,7 @@
     border-top:0; color:var(--ink)}
 
   /* alt sekme barı */
-  .sekmeler{position:fixed; left:0; right:0; bottom:0; z-index:44; background:rgba(255,255,255,.98);
+  .sekmeler{position:fixed; left:0; right:0; bottom:0; z-index:48; background:#fff; isolation:isolate;
     border-top:1px solid var(--line); display:flex; justify-content:center;
     padding:0 .5rem env(safe-area-inset-bottom)}
   .sekmeIc{display:flex; width:100%; max-width:28rem}
