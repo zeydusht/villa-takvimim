@@ -254,6 +254,50 @@
   .fotoEkle{aspect-ratio:4/3; color:var(--ink);
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.375rem;
     font-size:.8125rem; width:100%}
+  .fotoSerit{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.5rem}
+  .fotoMini{aspect-ratio:1; border-radius:.625rem; background-size:cover; background-position:center;
+    background-color:var(--soft); width:100%; padding:0; position:relative}
+  .fotoMini.arti{background:#fff; border:var(--cerceve-kalinlik) solid var(--cerceve); display:flex;
+    align-items:center; justify-content:center; font-size:1.125rem; color:var(--ink)}
+  .fotoMini .kapakEt{font-size:.5625rem; padding:.125rem .3125rem; top:.25rem; left:.25rem}
+  #fotoBas{display:flex; align-items:baseline; justify-content:space-between; gap:.75rem; margin-bottom:.75rem}
+  #fotoBas .tumu{font-size:.875rem; color:var(--ok); min-height:2.75rem; margin:-.875rem 0; padding:0 .25rem}
+  /* Fotoğraflar ekranı */
+  #fotoEkran{padding-bottom:7rem}
+  #fotoEkran h1{font-size:1.75rem}
+  #fotoEkran h1 .vad{color:var(--muted)}
+  .ftIzgara{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.375rem; margin-top:1rem; position:relative}
+  .fTile{aspect-ratio:1; border-radius:.5rem; background-size:cover; background-position:center;
+    background-color:var(--soft); width:100%; padding:0; position:relative; touch-action:manipulation;
+    -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; transition:transform .2s ease}
+  .fTile.sec{outline:3px solid var(--ok); outline-offset:-3px}
+  .fTile .tik{position:absolute; top:.375rem; right:.375rem; background:rgba(255,255,255,.9)}
+  .fTile .tik.on{background:var(--ok)}
+  .kapakEt{position:absolute; top:.375rem; left:.375rem; background:rgba(16,22,19,.72); color:#fff;
+    font-size:.6875rem; letter-spacing:.04em; padding:.1875rem .4375rem; border-radius:99px}
+  .ftIzgara.siraliyor .fTile{transition:transform .2s ease}
+  .ftIzgara .fTile.suruk{transition:none; z-index:5; box-shadow:0 12px 28px rgba(16,22,19,.32)}
+  .ftAlt{position:fixed; left:0; right:0; bottom:0; background:rgba(255,255,255,.97); border-top:1px solid var(--line);
+    padding:.75rem 1.25rem calc(.75rem + env(safe-area-inset-bottom)); z-index:40}
+  .ftAlt > div, .ftAlt > button{max-width:25.5rem; margin:0 auto}
+  #ftEkleSatir{display:flex; gap:.5rem}
+  #ftEkleSatir .big{margin-top:0; flex:1 1 0; display:flex; align-items:center; justify-content:center; gap:.375rem}
+  #ftSil{margin-top:0}
+  #ftSil:disabled{opacity:.5}
+  /* tam ekran görüntüleyici */
+  .overlay.gorucu{background:#0B0F0D; flex-direction:column; align-items:stretch; overflow:hidden; z-index:70}
+  .gUst{display:flex; align-items:center; justify-content:space-between; color:#fff;
+    padding:calc(.5rem + env(safe-area-inset-top)) .75rem .5rem 1.25rem}
+  .gSay{font-size:.9375rem}
+  .gX{color:#fff; width:2.75rem; height:2.75rem; display:flex; align-items:center; justify-content:center}
+  .gSerit{flex:1; display:flex; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none}
+  .gSerit::-webkit-scrollbar{display:none}
+  .gSayfa{flex:0 0 100%; scroll-snap-align:center; display:flex; align-items:center; justify-content:center; min-width:0}
+  .gSayfa img{max-width:100%; max-height:100%; object-fit:contain; display:block}
+  .gAlt{display:flex; gap:.5rem; padding:.75rem 1.25rem calc(.75rem + env(safe-area-inset-bottom))}
+  .gAlt .big.big{margin-top:0; flex:1 1 0}
+  .gAlt .big:disabled{opacity:.55}
   .sheetfoto{display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem}
   .sheetfoto .mini{width:3.5rem; height:3.5rem; border-radius:.5rem; background-size:cover;
     background-position:center; background-color:var(--soft)}
@@ -657,7 +701,7 @@
     </div>
 
     <div class="section">
-      <div class="eyebrow" style="margin-bottom:.75rem">Fotoğraflar</div>
+      <div id="fotoBas"><span class="eyebrow">Fotoğraflar</span></div>
       <div class="fotolar" id="fotolar"></div>
       <input type="file" id="fotoInput" accept="image/*" multiple style="display:none; width:auto">
     </div>
@@ -677,6 +721,28 @@
 
     <div class="section" id="silBolum">
       <button class="big tehlike" id="villaSil">Villayı sil</button>
+    </div>
+  </div>
+
+  <!-- FOTOĞRAFLAR -->
+  <div id="fotoEkran" class="hide">
+    <div class="topbar">
+      <button class="backbtn" id="ftGeri">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Villa</span>
+      </button>
+      <div style="flex:1"></div>
+      <button id="ftSecModu" class="sm" style="color:var(--ok);font-weight:600;min-height:2.75rem;min-width:2.75rem;padding:0 .5rem;margin-right:-.5rem;text-align:center">Seç</button>
+    </div>
+    <h1>Fotoğraflar <span class="vad" id="ftSay"></span></h1>
+    <div class="sm muted" id="ftIpucu" style="margin-top:.375rem"></div>
+    <div class="ftIzgara" id="ftIzgara"></div>
+    <div class="ftAlt">
+      <div id="ftEkleSatir">
+        <button class="big" id="ftEkle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="ftEkleYazi">Fotoğraf ekle</span></button>
+        <!-- "Drive'dan al" butonu buraya gelecek -->
+      </div>
+      <button class="big tehlike hide" id="ftSil">Fotoğraf seçin</button>
     </div>
   </div>
 
@@ -866,6 +932,8 @@
   }
   var nf=new Intl.NumberFormat((window.DIL&&DIL.ingilizce())?"en-US":"tr-TR");
   var para=function(n){ return nf.format(Math.round(n||0))+" ₺" };
+  // küçük resim adresi (CSS url('…') içinde tırnak bozmasın)
+  var kucukResim=function(f){ return String(f.thumb||f.tam||"").replace(/'/g,"%27"); };
   var kisaFiyat=function(n){
     return n>=100000 ? Math.round(n/1000)+"b₺" : nf.format(n)+"₺";
   };
@@ -1209,7 +1277,7 @@
   }
 
   function acikEkran(){
-    var l=["giris","sifre","onay","ana","takvim","kasa","misafirler","fiyatEkran"];
+    var l=["giris","sifre","onay","ana","takvim","kasa","misafirler","fiyatEkran","fotoEkran"];
     for(var i=0;i<l.length;i++){
       var e=document.getElementById(l[i]);
       if(e && !e.classList.contains("hide")) return l[i];
@@ -1223,6 +1291,7 @@
     if(e==="kasa"){ goster("takvim"); ciz(); return true; }
     if(e==="misafirler"){ goster("takvim"); ciz(); return true; }
     if(e==="fiyatEkran"){ goster("takvim"); ciz(); return true; }
+    if(e==="fotoEkran"){ goster("takvim"); ciz(); return true; }
     if(e==="takvim"){
       kilitBitir();
       if(S.destek){ var d=document.getElementById("destekCik"); if(d) d.click(); return true; }
@@ -1232,7 +1301,7 @@
   }
 
   function goster(id){
-    ["giris","sifre","onay","ana","ajanda","hesapEkran","takvim","kasa","misafirler","fiyatEkran"].forEach(function(x){
+    ["giris","sifre","onay","ana","ajanda","hesapEkran","takvim","kasa","misafirler","fiyatEkran","fotoEkran"].forEach(function(x){
       document.getElementById(x).classList[x===id?"remove":"add"]("hide"); });
     var sekmeli=(id==="ana"||id==="ajanda"||id==="hesapEkran");
     document.getElementById("sekmeler").classList[sekmeli?"remove":"add"]("hide");
@@ -1244,7 +1313,7 @@
     var bar=document.getElementById("appBar");
     if(bar) bar.classList[(id==="giris"||id==="onay"||id==="sifre")?"add":"remove"]("hide");
     var gb=document.getElementById("barGeri");
-    if(gb) gb.classList[(id==="takvim"||id==="kasa"||id==="misafirler"||id==="fiyatEkran")?"remove":"add"]("hide");
+    if(gb) gb.classList[(id==="takvim"||id==="kasa"||id==="misafirler"||id==="fiyatEkran"||id==="fotoEkran")?"remove":"add"]("hide");
     try{ window.scrollTo(0,0); }catch(e){}
   }
 
@@ -1630,13 +1699,23 @@
     var kh=kasaHesap(v,kasaAralik("yil",today.getFullYear()));
     document.getElementById("kasaOzet").textContent=today.getFullYear()+": "+para(kh.net);
 
-    var fh="";
-    (v.fotolar||[]).forEach(function(f){
-      fh+='<button class="foto" data-fid="'+f.id+'" style="background-image:url('+f.tam+')"></button>'; });
-    fh+='<button class="fotoEkle" id="fotoEkle">'+
+    var fl=v.fotolar||[], fh="", fe=document.getElementById("fotolar");
+    if(!fl.length){
+      fh='<button class="fotoEkle" id="fotoEkle">'+
         '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>'+
-        ((v.fotolar&&v.fotolar.length)?"Ekle":"Fotoğraf ekle")+"</button>";
-    document.getElementById("fotolar").innerHTML=fh;
+        esc(cev("Fotoğraf ekle"))+"</button>";
+      fe.className="fotolar";
+    } else {
+      fl.slice(0,3).forEach(function(f,i){
+        fh+='<button class="fotoMini" style="background-image:url(\''+kucukResim(f)+'\')" aria-label="'+esc(cev("Fotoğraflar"))+'">'+
+          (i===0?'<span class="kapakEt">'+esc(cev("Kapak"))+"</span>":"")+"</button>"; });
+      if(fl.length>3) fh+='<button class="fotoMini arti">+'+(fl.length-3)+"</button>";
+      fe.className="fotoSerit";
+    }
+    fe.innerHTML=fh;
+    document.getElementById("fotoBas").innerHTML='<span class="eyebrow">'+esc(cev("Fotoğraflar"))+(fl.length?" · "+fl.length:"")+"</span>"+
+      (fl.length?'<button class="tumu" id="fotoTumu">'+esc(cev("Tümünü gör"))+"</button>":"");
+    var ftu=document.getElementById("fotoTumu"); if(ftu) ftu.onclick=function(){ fotoEkranAc(); };
 
     var bb=v.bilgi||{}, dolu=0;
     ["konum","kapasite","oda","banyo","aciklama","whatsapp"].forEach(function(x){ if(bb[x]) dolu++; });
@@ -2305,6 +2384,7 @@
       kaydet(); kapat(); ciz();
       if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
         if(!document.getElementById("fiyatEkran").classList.contains("hide")) cizFiyat();
+        if(!document.getElementById("fotoEkran").classList.contains("hide")) cizFotolar();
       bildir(para(t)+" ödeme kaydedildi.");
     };
 
@@ -2324,6 +2404,7 @@
         kaydet(); kapat(); ciz();
         if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
         if(!document.getElementById("fiyatEkran").classList.contains("hide")) cizFiyat();
+        if(!document.getElementById("fotoEkran").classList.contains("hide")) cizFotolar();
       };
     });
 
@@ -2339,6 +2420,7 @@
         kaydet(); kapat(); ciz();
         if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
         if(!document.getElementById("fiyatEkran").classList.contains("hide")) cizFiyat();
+        if(!document.getElementById("fotoEkran").classList.contains("hide")) cizFotolar();
       };
     };
   }
@@ -3741,29 +3823,27 @@
   }
 
   var fotoInput=document.getElementById("fotoInput");
-  document.getElementById("fotolar").addEventListener("click",function(e){
-    if(!aktif()) return;
-    if(e.target.closest("#fotoEkle")){ fotoInput.click(); return; }
-    var b=e.target.closest(".foto"); if(!b) return;
-    var f=(aktif().fotolar||[]).filter(function(x){return x.id===b.dataset.fid})[0];
-    if(f) fotoGoster(f);
-  });
   fotoInput.onchange=function(){
     if(!aktif() || !fotoInput.files.length) return;
-    var btn=document.getElementById("fotoEkle"); if(btn) btn.textContent="Hazırlanıyor…";
+    var yaz=function(t){
+      var b1=document.getElementById("fotoEkle"); if(b1) b1.textContent=t;
+      var b2=document.getElementById("ftEkleYazi"); if(b2) b2.textContent=t;
+      var b3=document.getElementById("ftEkle"); if(b3) b3.disabled=!!t;
+    };
+    yaz(cev("Hazırlanıyor…"));
     fotolariIsle(fotoInput.files,function(yeni){
       var v=aktif();
       fotoInput.value="";
-      if(!yeni.length){ ciz(); return; }
+      var son=function(){ yaz(""); var b2=document.getElementById("ftEkleYazi"); if(b2) b2.textContent=cev("Fotoğraf ekle"); fotoYenile(); };
+      if(!yeni.length){ son(); return; }
 
       if(S.bulut && kurulu()){
         fotolariBulutaYukle(yeni,function(n,t){
-          var b=document.getElementById("fotoEkle");
-          if(b) b.textContent="Yükleniyor "+n+"/"+t;
+          yaz(cev("Yükleniyor "+n+"/"+t));
         },function(h){
-          if(h){ ciz(); bildir(h); return; }
+          if(h){ son(); bildir(h); return; }
           v.fotolar=(v.fotolar||[]).concat(yeni);
-          kaydet(); ciz(); bildir(yeni.length+" fotoğraf eklendi.");
+          kaydet(); son(); bildir(cev(yeni.length+" fotoğraf eklendi."));
         });
         return;
       }
@@ -3773,20 +3853,209 @@
         v.fotolar=v.fotolar.slice(0,v.fotolar.length-yeni.length); kaydet();
         uyari("Bu cihazda fotoğraf için yer kalmadı. Giriş yaparsanız fotoğraflar buluta yüklenir ve sınır kalkar.");
       }
-      ciz();
+      son();
     });
   };
-  function fotoGoster(f){
-    perde('<div class="head" style="margin-bottom:1rem"><h2>Fotoğraf</h2>'+kapatBtn()+"</div>"+
-      '<img class="buyuk" src="'+f.tam+'" alt="">'+
-      '<button class="big ghost" id="f-sil">Fotoğrafı sil</button>');
-    var btn=document.getElementById("f-sil"), emin=false;
-    btn.onclick=function(){
-      if(!emin){ emin=true; btn.textContent="Evet, fotoğrafı sil";
-        btn.className="big"; btn.style.background="#9B2C4A"; return; }
-      var v=aktif(); v.fotolar=v.fotolar.filter(function(x){return x.id!==f.id});
-      kaydet(); kapat(); ciz();
+  // ================= FOTOĞRAFLAR EKRANI =================
+  // Sahip: ekler, sıralar (basılı tut-sürükle), siler, kapak seçer. Bakıcı: görür ve ekler.
+  var FT={secMod:false, sec:{}};
+  var fotoYonetir=function(){ return sahipMi() && duzenlenebilir(); };
+
+  function fotoEkranAc(){
+    if(!aktif()) return;
+    FT.secMod=false; FT.sec={};
+    goster("fotoEkran"); cizFotolar();
+  }
+  function fotoYenile(){
+    if(!document.getElementById("fotoEkran").classList.contains("hide")) cizFotolar();
+    ciz();
+  }
+
+  function cizFotolar(){
+    var v=aktif(); if(!v) return;
+    var l=v.fotolar||[], yon=fotoYonetir();
+    if(!yon) FT.secMod=false;
+    document.getElementById("ftSay").textContent="· "+l.length;
+    var sm=document.getElementById("ftSecModu");
+    sm.classList[(yon && l.length)?"remove":"add"]("hide");
+    sm.textContent=cev(FT.secMod?"Vazgeç":"Seç");
+    document.getElementById("ftIpucu").textContent = !l.length ? cev("Henüz fotoğraf yok.")
+      : cev(yon ? (FT.secMod ? "Silmek istediğiniz fotoğraflara dokunun." : "İlk fotoğraf kapaktır. Sıralamak için basılı tutup sürükleyin.")
+                : "İlk fotoğraf misafir sayfasında kapak olarak görünür.");
+    document.getElementById("ftIzgara").innerHTML=l.map(function(f,i){
+      var s=!!FT.sec[f.id];
+      return '<button class="fTile'+(s?" sec":"")+'" data-fid="'+esc(f.id)+'" style="background-image:url(\''+kucukResim(f)+'\')">'+
+        (i===0?'<span class="kapakEt">'+esc(cev("Kapak"))+"</span>":"")+
+        (FT.secMod?'<span class="tik'+(s?" on":"")+'">'+(s?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>':"")+"</span>":"")+
+        "</button>";
+    }).join("");
+    var n=Object.keys(FT.sec).length;
+    document.getElementById("ftEkleSatir").classList[FT.secMod?"add":"remove"]("hide");
+    var sil=document.getElementById("ftSil");
+    sil.classList[FT.secMod?"remove":"add"]("hide");
+    sil.textContent=cev(n ? n+" fotoğraf sil" : "Fotoğraf seçin");
+    sil.disabled=!n;
+  }
+
+  document.getElementById("fotolar").addEventListener("click",function(e){
+    if(!aktif()) return;
+    if(e.target.closest("#fotoEkle")){ fotoInput.click(); return; }
+    fotoEkranAc();
+  });
+  document.getElementById("ftGeri").onclick=function(){ goster("takvim"); ciz(); };
+  document.getElementById("ftEkle").onclick=function(){ if(aktif()) fotoInput.click(); };
+  document.getElementById("ftSecModu").onclick=function(){ FT.secMod=!FT.secMod; FT.sec={}; cizFotolar(); };
+  document.getElementById("ftSil").onclick=function(){
+    var v=aktif(), ids=Object.keys(FT.sec); if(!v || !ids.length || !fotoYonetir()) return;
+    perde('<div class="head"><h2>'+esc(cev(ids.length+" fotoğraf silinsin mi?"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Silinen fotoğraflar misafir sayfasından da kalkar."))+"</div>"+
+      '<button class="big tehlike" id="fts-evet">'+esc(cev("Evet, sil"))+"</button>"+
+      '<button class="big ghost" data-kapat style="margin-top:.5rem">'+esc(cev("Vazgeç"))+"</button>");
+    document.getElementById("fts-evet").onclick=function(){
+      v.fotolar=(v.fotolar||[]).filter(function(f){ return !FT.sec[f.id]; });
+      kaydet(); kapat(); FT.secMod=false; FT.sec={}; fotoYenile();
+      bildir(cev(ids.length+" fotoğraf silindi."));
     };
+  };
+
+  // Izgara: dokun = tam ekran (seç modunda işaretle); basılı tut (300ms) = sürükleyerek sırala
+  (function(){
+    var izg=document.getElementById("ftIzgara");
+    var zaman=null, bas=null, el=null, aktifS=false, slots=[], kutular=[], hedef=0, ilk=0, sonSurukleme=0;
+    function noktaGrid(x,y){ var r=izg.getBoundingClientRect(); return {x:x-r.left, y:y-r.top}; }
+    function iptal(){ clearTimeout(zaman); zaman=null; }
+    function basla(t,x,y){
+      if(FT.secMod || !fotoYonetir()) return;
+      el=t; bas=noktaGrid(x,y); bas.cx=x; bas.cy=y;
+      iptal();
+      zaman=setTimeout(function(){
+        zaman=null; aktifS=true;
+        kutular=Array.prototype.slice.call(izg.children);
+        slots=kutular.map(function(k){ return {x:k.offsetLeft, y:k.offsetTop, w:k.offsetWidth, h:k.offsetHeight}; });
+        ilk=hedef=kutular.indexOf(el);
+        izg.classList.add("siraliyor"); el.classList.add("suruk");
+        try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){}
+      },300);
+    }
+    function hareket(x,y){
+      if(zaman && (Math.abs(x-bas.cx)>8 || Math.abs(y-bas.cy)>8)){ iptal(); el=null; return false; }
+      if(!aktifS) return false;
+      var p=noktaGrid(x,y);
+      el.style.transform="translate("+(p.x-bas.x)+"px,"+(p.y-bas.y)+"px) scale(1.08)";
+      // parmağa en yakın yuvayı bul
+      var en=0, d0=1e12;
+      slots.forEach(function(s,i){ var dx=s.x+s.w/2-p.x, dy=s.y+s.h/2-p.y, d=dx*dx+dy*dy; if(d<d0){ d0=d; en=i; } });
+      if(en!==hedef){
+        hedef=en;
+        var sira=kutular.map(function(_,i){ return i; }); sira.splice(ilk,1); sira.splice(hedef,0,ilk);
+        kutular.forEach(function(k,i){
+          if(i===ilk) return;
+          var yeni=sira.indexOf(i);
+          k.style.transform="translate("+(slots[yeni].x-slots[i].x)+"px,"+(slots[yeni].y-slots[i].y)+"px)";
+        });
+      }
+      // kenara yaklaşınca sayfayı kaydır
+      if(y<90) window.scrollBy(0,-12); else if(y>window.innerHeight-130) window.scrollBy(0,12);
+      return true;
+    }
+    function birak(){
+      iptal();
+      if(!aktifS){ el=null; return false; }
+      aktifS=false; sonSurukleme=Date.now();
+      izg.classList.remove("siraliyor");
+      var v=aktif();
+      if(v && hedef!==ilk){
+        var f=v.fotolar.splice(ilk,1)[0]; v.fotolar.splice(hedef,0,f);
+        kaydet();
+        if(hedef===0 || ilk===0) bildir(cev("Kapak fotoğrafı değişti."));
+      }
+      el=null; cizFotolar(); ciz();
+      return true;
+    }
+    // dokunmatik: sürükleme başlayınca sayfa kaymasın
+    izg.addEventListener("touchstart",function(e){
+      var t=e.target.closest(".fTile"); if(!t || e.touches.length!==1) return;
+      basla(t,e.touches[0].clientX,e.touches[0].clientY);
+    },{passive:true});
+    izg.addEventListener("touchmove",function(e){
+      if(!el) return;
+      if(hareket(e.touches[0].clientX,e.touches[0].clientY)) e.preventDefault();
+    },{passive:false});
+    izg.addEventListener("touchend",function(e){ if(birak()) e.preventDefault(); });
+    izg.addEventListener("touchcancel",function(){ birak(); });
+    // fare (bilgisayar)
+    izg.addEventListener("mousedown",function(e){
+      var t=e.target.closest(".fTile"); if(!t || e.button!==0) return;
+      basla(t,e.clientX,e.clientY);
+      function mm(ev){ if(hareket(ev.clientX,ev.clientY)) ev.preventDefault(); }
+      function mu(){ document.removeEventListener("mousemove",mm); document.removeEventListener("mouseup",mu); birak(); }
+      document.addEventListener("mousemove",mm); document.addEventListener("mouseup",mu);
+    });
+    izg.addEventListener("contextmenu",function(e){ if(e.target.closest(".fTile")) e.preventDefault(); });
+    izg.addEventListener("click",function(e){
+      var t=e.target.closest(".fTile"); if(!t || Date.now()-sonSurukleme<400) return;
+      var id=t.dataset.fid;
+      if(FT.secMod){ if(FT.sec[id]) delete FT.sec[id]; else FT.sec[id]=1; cizFotolar(); return; }
+      var l=aktif().fotolar||[];
+      for(var i=0;i<l.length;i++) if(l[i].id===id) return fotoGorucu(i);
+    });
+  })();
+
+  // Tam ekran görüntüleyici: sağa-sola kaydırarak geçiş; altta Kapak yap / Sil
+  function fotoGorucu(bas){
+    var v=aktif(); if(!v || !(v.fotolar||[]).length) return;
+    kapat();
+    var o=document.createElement("div");
+    o.className="overlay gorucu";
+    document.body.appendChild(o);
+    var i=bas, emin=false;
+    function ciz2(){
+      var l=v.fotolar||[];
+      if(!l.length){ kapat(); fotoYenile(); return; }
+      if(i>=l.length) i=l.length-1;
+      var yon=fotoYonetir();
+      o.innerHTML='<div class="gUst"><span class="gSay" id="gSay"></span>'+
+        '<button class="gX" aria-label="Kapat"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>'+
+        '<div class="gSerit" id="gSerit">'+l.map(function(f){
+          return '<div class="gSayfa"><img src="'+f.tam+'" alt="" loading="lazy" draggable="false"></div>'; }).join("")+"</div>"+
+        (yon?'<div class="gAlt"><button class="big ghost" id="gKapak"></button><button class="big tehlike" id="gSil"></button></div>':"");
+      var ser=o.querySelector("#gSerit");
+      ser.scrollLeft=i*ser.clientWidth;
+      ser.addEventListener("scroll",function(){
+        var y=Math.round(ser.scrollLeft/Math.max(1,ser.clientWidth));
+        if(y!==i){ i=y; emin=false; etiket(); }
+      },{passive:true});
+      o.querySelector(".gX").onclick=function(){ kapat(); };
+      if(yon){
+        o.querySelector("#gKapak").onclick=function(){
+          if(i===0) return;
+          var f=v.fotolar.splice(i,1)[0]; v.fotolar.unshift(f); i=0;
+          kaydet(); fotoYenile(); ciz2(); bildir(cev("Kapak fotoğrafı değişti."));
+        };
+        o.querySelector("#gSil").onclick=function(){
+          if(!emin){ emin=true; etiket(); return; }
+          v.fotolar.splice(i,1); emin=false;
+          kaydet(); fotoYenile(); bildir(cev("Fotoğraf silindi.")); ciz2();
+        };
+      }
+      etiket();
+    }
+    function etiket(){
+      var l=v.fotolar||[];
+      o.querySelector("#gSay").textContent=(i+1)+" / "+l.length+(i===0?" · "+cev("Kapak"):"");
+      var k=o.querySelector("#gKapak"), s=o.querySelector("#gSil");
+      if(k){ k.textContent=cev(i===0?"Kapak fotoğrafı":"Kapak yap"); k.disabled=(i===0); }
+      if(s) s.textContent=cev(emin?"Evet, sil":"Sil");
+    }
+    function tus(e){
+      if(!o.parentNode){ document.removeEventListener("keydown",tus); return; }
+      var ser=o.querySelector("#gSerit"); if(!ser) return;
+      if(e.key==="ArrowRight") ser.scrollBy({left:ser.clientWidth,behavior:"smooth"});
+      else if(e.key==="ArrowLeft") ser.scrollBy({left:-ser.clientWidth,behavior:"smooth"});
+      else if(e.key==="Escape") kapat();
+    }
+    document.addEventListener("keydown",tus);
+    ciz2();
   }
 
 
