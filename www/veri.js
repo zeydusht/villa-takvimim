@@ -288,7 +288,14 @@
 
       return Promise.all(sorgular).then(function (s) {
         // Silinen (çöp kutusundaki) villalar normal listede görünmez; sahibine "Silinen villalar"da gösterilir
-        VT.silinenler = (s[0] || []).filter(function (v) { return v.silindi_tarih && roller[v.id] === "sahip"; })
+        // 30 günü geçen silinmiş villalar: yalnız SAHİBİ açtığında kalıcı silinir (bakıcı için yapılmaz)
+        var SINIR = 30 * 864e5, simdi = Date.now();
+        var eskiMi = function (v) { return simdi - Date.parse(v.silindi_tarih) >= SINIR; };
+        (s[0] || []).forEach(function (v) {
+          if (v.silindi_tarih && roller[v.id] === "sahip" && eskiMi(v))
+            api("villalar?id=eq." + v.id + "&silindi_tarih=not.is.null", { method: "DELETE" }).catch(function () {});
+        });
+        VT.silinenler = (s[0] || []).filter(function (v) { return v.silindi_tarih && roller[v.id] === "sahip" && !eskiMi(v); })
           .map(function (v) { return { id: v.id, ad: v.ad, silindi_tarih: v.silindi_tarih }; });
         var villalar = (s[0] || []).filter(function (v) { return !v.silindi_tarih; }), rez = s[1] || [], gider = s[2] || [], fiyat = s[3] || [],
             foto = s[4] || [], notlar = s[5] || [], mali = s[6] || [], odeme = s[7] || [], gelir = s[8] || [];
