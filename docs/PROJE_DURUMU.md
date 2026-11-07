@@ -62,10 +62,10 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       "boş günleri WhatsApp'tan paylaş". Mesajı sohbette yazıldı.)
 - [ ] 5. bölüm — küçük kazanımlar
 - [ ] 1.6 — telefon bildirimleri (Firebase/Apple anahtarı gerekecek)
-- [ ] Fiyat girme yeniden tasarımı · Claude Code'a gönderildi: sarı "fiyat modu" kalkar, ayrı "Fiyatlar"
+- [x] Fiyat girme yeniden tasarımı · test edildi: sarı "fiyat modu" kalkar, ayrı "Fiyatlar"
       ekranı, "Aylar" (12 ay listesi, aya dokun → tüm aya fiyat, hafta sonu ayrı fiyat, çoklu ay seçimi)
       ve "Günler" (takvimde gün seç → fiyat gir) sekmeleri, son kullanılan fiyatlar, "Geri al".
-- [ ] Fotoğraflar ekranı · Claude Code'a gönderildi: villa ekranında ilk 3 foto + "+X", ayrı Fotoğraflar
+- [x] Fotoğraflar ekranı · test edildi: villa ekranında ilk 3 foto + "+X", ayrı Fotoğraflar
       ekranı (3'lü ızgara, kapak etiketi, basılı tut-sürükle sıralama, çoklu seçip silme, tam ekran
       görüntüleme + kapak yap). Bakıcı silemez/sıralayamaz.
 - [ ] Drive'dan fotoğraf alma (fotoğraf ekranından sonra, mesajı henüz yazılmadı). Plan: kullanıcı
@@ -73,17 +73,19 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       kontrolü, Google API anahtarı sır olarak) klasördeki görselleri listeler ve indirmeyi aracılık
       eder → istemci mevcut küçültme akışıyla (fotoHazirla) yükler, ilerleme gösterir, üst sınır ~60.
       Zeyd'in Google Cloud'da Drive API anahtarı oluşturması gerekecek (adım adım anlatılacak).
-- [ ] Villa silme güvenliği · Claude Code'a gönderildi: buton Villa bilgileri altına, adı yazarak onay,
+- [x] Villa silme güvenliği · test edildi: buton Villa bilgileri altına, adı yazarak onay,
       "Geri al", Hesap → Silinen villalar (30 gün). Veritabanı: villalar.silindi_tarih sütunu EKLENDİ
       (7 Kasım, Zeyd onayıyla). 30 gün sonra kalıcı silmeyi uygulama yapar (sahip açınca).
       Not: canlı Netlify sitesi eski sürüm, bu alanı bilmiyor.
-- [ ] Gelir & gider sadeleştirme + kalıcı alt menü · mesajı yazıldı (sırada): tek net kazanç kartı +
+- [x] Gelir & gider sadeleştirme + kalıcı alt menü · test edildi: tek net kazanç kartı +
       açıklama, 3 etiketli satır (Alınan / Alınacak / Giderler), 12 aylık SVG çubuk grafik, rezervasyon
       satırlarında Ödendi/Kısmen/Ödenmedi/Tutar girilmedi etiketleri, ortalama gecelik fiyat hesabı
       düzeltmesi (500 ₺ hatası), yeşil seçici. Alt menü iç ekranlarda da kalır (Villalar seçili).
-- [ ] Gelir & gider hızlı ekleme · mesajı yazıldı: satırlarda "+" butonları, hazır gider düğmeleri
+- [x] Gelir & gider hızlı ekleme · test edildi: satırlarda "+" butonları, hazır gider düğmeleri
       (Temizlik, Havuz bakımı…), son tutar önerisi, kaybolan başlık. KONTROL: Zeyd'in ekranında Villa
       Salta 2026 her şey 0 ₺ görünüyordu (önce 5.000/30.000/1.000 vardı) — hata olabilir, test et.
+- [ ] Küçük düzeltmeler (mesajı yazıldı): alt menünün arkasından içerik/grafik çubuğu görünüyor
+      (menü zemini opak + üstte olsun); kurulum kartındaki "Gizle" 24px, 44px olsun.
 - [ ] SIRADAKİ: Veritabanı güvenlik düzeltmeleri — Claude sohbetten Supabase'de yapacak, Zeyd'in onayıyla
       (detaylar inceleme raporunda, repo herkese açık olduğu için burada yok)
 
