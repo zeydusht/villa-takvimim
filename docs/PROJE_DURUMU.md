@@ -123,6 +123,15 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
 - [x] Bakıcı para bilgisi veritabanında da kapatıldı (Claude, 7 Kasım).
       Bakıcı kalan tutarı bakici_kalanlar fonksiyonundan alır; tutarı sunucu hesaplar; bakıcı sadece kendi giderlerini görür.
 - [ ] SIRADAKİ: Claude bakıcı hesabıyla test edecek, sonra 5. bölüm küçük kazanımlar.
+- [x] Görev 7 — İlk kullanım turu 2 (docs/GOREV7.md, 16 madde) · Claude Code yaptı, sahte veriyle test edildi.
+      Takvim sekmesi Bugün/7 gün/30 gün + "Şu an konaklayan"; "gelir" sadece alınan para ("Bu ayın rezervasyonları");
+      yazılar kalın değil; yazı alanları çerçeveli kutu, etiketler normal yazı; sayı alanlarında örnek yazı yok;
+      özellik düğmeleri ve misafir satırları çerçeveli; "Seç" → "Birden fazla (ay) seç" butonu; kesilen yazılar düzeldi;
+      "Fiyat girilmedi" gri; yüzde "%53"; doluluk ilk rezervasyondan; rezervasyon detayında "Ödeme al" en üstte,
+      ön ödeme "… eksik / ✓ alındı"; Ödeme al panelinde Toplam·Alınan·Kalan kutuları, "Ön ödeme kalanı" düğmesi,
+      alınan ödemeyi düzenleme; tekrar eden butonlar kalktı; boş villada boş kutular, "—" ve hafta sonu gölgesi yok;
+      "3 misafir", "Şu an konaklıyor · çıkış …", ana ekran hatırlatması "Çıkış 9 Kasım · … alınacak", avatar "Villa"yı atlar.
+      Kalan: GOREV7 "Sonra" listesi (Zeyd seçecek).
 
 ## Sonraki fazlar
 - **Faz 3 / bildirimler:** Web Push app içinde çalışmıyor. Firebase/APNs ile native bildirim

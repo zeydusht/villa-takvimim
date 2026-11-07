@@ -144,14 +144,14 @@
   .hSatir{display:flex; align-items:flex-start; gap:.625rem; padding:.75rem 1rem;
     border-top:1px solid var(--line); font-size:.875rem; line-height:1.45; width:100%; text-align:left}
   .hNokta{width:.5rem; height:.5rem; border-radius:99px; margin-top:.375rem; flex:none}
-  .hSatir b{font-weight:600}
+  .hSatir b{font-weight:500}
   .hSatir .hVilla{color:var(--muted); font-size:.75rem}
   .kurKart{display:flex; align-items:center; gap:.75rem; background:var(--soft);
     border-radius:.875rem; padding:.875rem 2.75rem .875rem 1rem; margin-top:1.5rem; position:relative}
   .kurIkon{width:2.5rem; height:2.5rem; flex:none}
   .kurIkon svg{width:100%; height:100%; border-radius:.625rem}
   .kurMetin{flex:1; min-width:0; padding-right:1rem}
-  .kurBas{font-size:.9375rem; font-weight:600}
+  .kurBas{font-size:.9375rem; font-weight:500}
   .kurAlt{font-size:.75rem; color:var(--muted); margin-top:.125rem}
   .kurBtn{flex:none; background:var(--ok); color:#fff; padding:.5rem 1rem; border-radius:.625rem;
     font-size:.875rem}
@@ -161,7 +161,7 @@
   .adimNo{width:1.5rem; height:1.5rem; border-radius:99px; background:var(--ok); color:#fff;
     font-size:.8125rem; display:flex; align-items:center; justify-content:center; flex:none}
   .adimMetin{font-size:.9375rem; line-height:1.5}
-  .adimMetin b{font-weight:600}
+  .adimMetin b{font-weight:500}
   .paylasSim{display:inline-flex; vertical-align:-4px; margin:0 .125rem; color:#007AFF}
   .kartlar{display:grid; gap:.75rem; margin-top:1.25rem}
   .kart{display:flex; align-items:stretch; width:100%; padding:0; overflow:hidden; text-align:left}
@@ -237,7 +237,8 @@
   .section{margin-top:2rem}
   .row{display:flex; align-items:center; gap:.75rem; padding:.75rem 0;
     border-bottom:1px solid var(--line); width:100%}
-  .row .name{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .row .name{flex:1; min-width:0; white-space:normal; overflow-wrap:anywhere}
+  .nw{white-space:nowrap}
   .row .meta{font-size:.875rem; color:var(--muted); flex:none}
   .satirBtn{display:flex; align-items:center; gap:.75rem; width:100%; min-height:var(--dokunma-yukseklik);
     padding:.75rem 1rem .75rem 1.125rem; margin-top:.5rem}
@@ -327,10 +328,11 @@
     border:var(--cerceve-kalinlik) solid var(--cerceve); touch-action:manipulation;
     transition:background-color var(--gecis), border-color var(--gecis), transform var(--gecis)}
   .seg button:active, #misFiltre button:active{background:var(--basili-zemin); border-color:var(--basili-cerceve); transform:scale(var(--basili-olcek))}
-  .seg button.on, #misFiltre button.on{background:var(--ok); border-color:var(--ok); color:#fff; font-weight:600}
+  .seg button.on, #misFiltre button.on{background:var(--ok); border-color:var(--ok); color:#fff}
   #misFiltre{display:flex; gap:.5rem; margin-top:.25rem}
   #misFiltre button{font-size:.875rem}
   /* ---- 6. bölüm: ilk kullanımda anlaşılırlık ---- */
+  .secBtn.big{width:auto; margin-top:.75rem; min-height:2.75rem; padding:.5rem 1rem; font-size:.9375rem}
   .ajIc{display:flex; align-items:flex-start; gap:.625rem}
   .ajOk{flex:none; width:1.75rem; height:1.75rem; border-radius:99px; display:flex; align-items:center; justify-content:center; margin-top:-.125rem}
   .ajOk.g{background:#E3EFEC; color:#0B5B57}
@@ -352,10 +354,11 @@
   .hazirOdeme{display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.75rem}
   .hazirOdeme .big{width:auto; flex:1 1 auto; margin:0; min-height:2.75rem; padding:.5rem .75rem; font-size:.9375rem}
   .odemeOzet{font-size:.9375rem; background:var(--soft); border-radius:.75rem; padding:.75rem .875rem; margin-bottom:1.25rem}
-  .tarihKutu{position:relative; border-bottom:1px solid var(--cizgi); padding:.125rem 0 .5rem; cursor:pointer}
+  .tarihKutu{position:relative; border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose);
+    padding:.6875rem .875rem; min-height:3rem; background:#fff; cursor:pointer}
   .tarihKutu .tarihYazi{display:block; min-height:1.5em}
   .tarihKutu input{position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; border:0; padding:0; margin:0}
-  .tarihKutu:focus-within{border-color:var(--ok); box-shadow:0 1px 0 var(--ok)}
+  .tarihKutu:focus-within{border-color:var(--ok); box-shadow:0 0 0 1px var(--ok)}
   .karsilama{background:var(--soft); border-radius:1rem; padding:1.25rem; margin-top:1.25rem}
   .karsilama h2{margin:0; font-size:1.5rem; font-family:var(--serif); font-weight:400; letter-spacing:-.02em}
   .karsilama ol{list-style:none; padding:0; margin:1rem 0 0; display:grid; gap:.75rem}
@@ -389,8 +392,8 @@
   #fiyatEkran h1{font-size:1.75rem}
   #fiyatEkran h1 .vad{color:var(--muted)}
   .fyAy .tikli{gap:.625rem}
-  .fyAy .fyEksik{display:block; font-size:.8125rem; color:var(--uyari); margin-top:.125rem}
-  .fyAy .sag.yok{color:var(--uyari)}
+  .fyAy .fyEksik{display:block; font-size:.8125rem; color:var(--muted); margin-top:.125rem}
+  .fyAy .sag.yok{color:var(--muted)}
   .fyIpucu{font-size:.875rem; color:var(--muted); margin:.75rem 0 .25rem}
   .fyGrid{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:.25rem; margin-top:.25rem}
   .fyGun{position:relative; height:3.75rem; border-radius:.625rem; display:flex; flex-direction:column;
@@ -414,7 +417,8 @@
   .fyPanel .fyNot{font-size:.875rem; color:var(--muted); margin:.25rem 0 1rem}
   .hazir{display:flex; gap:.5rem; margin-bottom:.75rem; flex-wrap:wrap}
   .hazir .big{margin-top:0; width:auto; flex:1 1 0; min-height:2.75rem; padding:.5rem .5rem; font-size:.9375rem}
-  .buyukSayi{display:flex; align-items:baseline; gap:.5rem; border-bottom:2px solid var(--cizgi); padding:.25rem 0 .375rem}
+  .buyukSayi{display:flex; align-items:baseline; gap:.5rem; border:var(--cerceve-kalinlik) solid var(--cerceve);
+    border-radius:var(--kose); padding:.375rem .875rem; background:#fff}
   .buyukSayi:focus-within{border-color:var(--ok)}
   .buyukSayi input{font-family:var(--serif); font-size:2.25rem; letter-spacing:-.02em; line-height:1.2; min-width:0}
   .buyukSayi span{color:var(--muted); white-space:nowrap}
@@ -427,8 +431,10 @@
     display:flex; align-items:center; justify-content:space-between; gap:1rem; z-index:40}
   .secBar button{background:var(--ok); color:#fff; padding:.625rem 1.125rem; border-radius:.75rem;
     font-size:.9375rem}
-  .misSatir{display:flex; align-items:center; gap:.75rem; width:100%; padding:.875rem 0;
-    border-bottom:1px solid var(--line)}
+  .misSatir{display:flex; align-items:center; gap:.75rem; width:100%; padding:.75rem 1rem; margin-top:.5rem;
+    background:#fff; border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose);
+    transition:transform var(--gecis), background-color var(--gecis), border-color var(--gecis)}
+  .misSatir:active{border-color:var(--basili-cerceve); background-color:var(--basili-zemin); transform:scale(var(--basili-olcek))}
   .kutucuk{width:1.375rem; height:1.375rem; border-radius:.375rem; border:1.5px solid var(--line);
     flex:none; display:flex; align-items:center; justify-content:center}
   .kutucuk.on{background:var(--ok); border-color:var(--ok); color:#fff}
@@ -497,21 +503,26 @@
     text-align:center; background:var(--soft); color:var(--ink)}
   .sheet{position:relative}
   .head{position:relative; padding-right:2.5rem}
+  /* 7.3: yazılar kalın değil; belirginlik çerçeveyle */
+  b, strong{font-weight:500}
+  button, .big, .satirBtn, .seg button{font-weight:500}
   .field{margin-bottom:1rem}
-  .field input{border-bottom:1px solid var(--cizgi); padding-bottom:.5rem; border-radius:0;
+  .field > .eyebrow{text-transform:none; letter-spacing:0; font-size:.9375rem; color:var(--ink)}
+  .field input, .field textarea, .field select{border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose);
+    padding:.6875rem .875rem; min-height:3rem; background:#fff; box-sizing:border-box;
     transition:border-color .15s, box-shadow .15s}
-  .field input:focus{border-color:var(--ok); box-shadow:0 1px 0 var(--ok)}
+  .field input:focus, .field textarea:focus, .field select:focus{border-color:var(--ok); box-shadow:0 0 0 1px var(--ok)}
   .field.hata input{border-color:var(--uyari)}
   .ikili{display:grid; grid-template-columns:1fr 1fr; gap:.75rem}
   .uclu{display:grid; grid-template-columns:1fr 1fr 1fr; gap:.75rem}
-  .field textarea{width:100%; font:inherit; color:inherit; background:none; border:0; outline:none;
-    border-bottom:1px solid var(--cizgi); padding:0 0 .5rem; resize:vertical; min-height:6rem;
+  .field textarea{width:100%; font:inherit; color:inherit; outline:none; resize:vertical; min-height:6rem;
     font-family:inherit; line-height:1.6}
-  .field textarea:focus{border-color:var(--ok); box-shadow:0 1px 0 var(--ok)}
   .cipler{display:flex; flex-wrap:wrap; gap:.5rem}
-  .cip{padding:.5rem .75rem; border-radius:99px; background:var(--soft); font-size:.8125rem;
-    color:var(--ink)}
-  .cip.on{background:var(--ok); color:#fff}
+  .cip{padding:.4375rem .875rem; border-radius:99px; background:#fff; font-size:.875rem; color:var(--ink);
+    border:var(--cerceve-kalinlik) solid var(--cerceve); min-height:2.5rem; display:inline-flex; align-items:center; gap:.375rem;
+    transition:background-color var(--gecis), border-color var(--gecis)}
+  .cip.on{background:var(--basili-zemin); border-color:var(--ok); color:var(--ink)}
+  .cip.on::before{content:"✓"; color:var(--ok)}
   .anahtar{display:flex; align-items:center; justify-content:space-between; padding:.75rem 0;
     border-bottom:1px solid var(--line); font-size:.9375rem}
   .svic{width:2.75rem; height:1.625rem; border-radius:99px; background:#B8C2BC; position:relative; cursor:pointer;
@@ -523,7 +534,7 @@
   .svic i{box-shadow:0 1px 2px rgba(16,22,19,.25)}
   .svic::after{content:""; position:absolute; inset:-.5625rem -.375rem}
   .big{width:100%; margin-top:1.5rem; min-height:var(--dokunma-yukseklik); padding:.75rem 0;
-    border-radius:var(--kose); font-size:1rem; font-weight:600; color:#fff; text-align:center;
+    border-radius:var(--kose); font-size:1rem; font-weight:500; color:#fff; text-align:center;
     background:var(--ok); border:var(--cerceve-kalinlik) solid transparent;
     box-shadow:0 1px 2px rgba(16,22,19,.12); touch-action:manipulation;
     transition:transform var(--gecis), background-color var(--gecis), border-color var(--gecis), filter var(--gecis)}
@@ -695,7 +706,7 @@
     <h1>Takvim</h1>
     <div class="sm muted" style="margin-top:.5rem">Tüm villaların giriş ve çıkışları</div>
     <div class="seg" id="ajSeg" style="margin-top:1rem">
-      <button data-m="gun">Bugün</button><button data-m="hafta">Bu hafta</button><button data-m="ay">Bu ay</button>
+      <button data-m="gun">Bugün</button><button data-m="7">7 gün</button><button data-m="30">30 gün</button>
     </div>
     <div id="ajandaListe" style="margin-top:.5rem"></div>
   </div>
@@ -808,7 +819,6 @@
       <div class="eyebrow">Fiyatlar</div>
       <button class="satirBtn" id="fiyatBtn" style="margin-top:.75rem">
         <span id="fiyatOzet">Fiyat belirle</span>
-        <span class="sag">Fiyat gir</span>
       </button>
     </div>
 
@@ -883,18 +893,17 @@
 
   <!-- FİYATLAR -->
   <div id="fiyatEkran" class="hide">
-    <div class="topbar">
+    <div class="topbar hide">
       <button class="backbtn" id="fyGeri">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
         <span id="fyGeriAd">Villa</span>
       </button>
-      <div style="flex:1"></div>
-      <button id="fySecModu" class="sm" style="color:var(--ok);font-weight:600;min-height:2.75rem;min-width:2.75rem;padding:0 .5rem;margin-right:-.5rem;text-align:center">Seç</button>
     </div>
     <h1>Fiyatlar <span class="vad" id="fyVillaAd"></span></h1>
     <div class="seg" id="fySeg" style="margin-top:1rem">
       <button data-g="ay">Aylar</button><button data-g="gun">Günler</button>
     </div>
+    <button class="big ghost secBtn" id="fySecModu">Birden fazla ay seç</button>
     <div id="fyAylar"></div>
     <div id="fyGunler" class="hide">
       <div class="fyIpucu" id="fyIpucu">Güne dokunun. Sonra başka bir güne dokunursanız arası seçilir. Tek tek eklemek için basılı tutun.</div>
@@ -917,16 +926,15 @@
 
   <!-- MİSAFİRLER -->
   <div id="misafirler" class="hide">
-    <div class="topbar">
+    <div class="topbar hide">
       <button class="backbtn" id="misGeri">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
         <span id="misGeriAd">Villa</span>
       </button>
-      <div style="flex:1"></div>
-      <button id="misSecModu" class="sm" style="color:var(--ok);font-weight:600;min-height:2.75rem;min-width:2.75rem;padding:0 .5rem;margin-right:-.5rem;text-align:center">Seç</button>
     </div>
     <h1 style="font-size:1.875rem">Misafirler</h1>
     <div class="sm muted" id="misOzet" style="margin-top:.25rem"></div>
+    <button class="big ghost secBtn" id="misSecModu">Birden fazla seç</button>
     <div class="field" style="margin-top:1.25rem">
       <input id="misAra" placeholder="İsim veya telefon ara" autocomplete="off">
     </div>
@@ -991,10 +999,6 @@
     <div class="section">
       <div class="eyebrow" style="margin-bottom:.75rem">Diğer gelir ve giderler</div>
       <div id="hareket"></div>
-      <div class="ikili" style="margin-top:1rem">
-        <button class="ekleKart" id="gelirEkle" style="margin-top:0">+ Gelir</button>
-        <button class="ekleKart" id="giderEkle" style="margin-top:0">+ Gider</button>
-      </div>
       <input type="file" id="fisInput" accept="image/*" style="display:none; width:auto">
     </div>
   </div>
@@ -1080,6 +1084,8 @@
   var para=function(n){ return nf.format(Math.round(n||0))+" ₺" };
   // küçük resim adresi (CSS url('…') içinde tırnak bozmasın)
   var kucukResim=function(f){ return String(f.thumb||f.tam||"").replace(/'/g,"%27"); };
+  // Türkçede "%53", İngilizcede "53%"
+  var yuzdeYaz=function(n){ return (window.DIL&&DIL.ingilizce&&DIL.ingilizce()) ? n+"%" : "%"+n; };
   var kisaFiyat=function(n){
     return n>=100000 ? Math.round(n/1000)+"b₺" : nf.format(n)+"₺";
   };
@@ -1333,18 +1339,23 @@
     return kalemler(v,r).kalan;
   }
 
-  function kalemHTML(k,gc){
+  function kalemHTML(k,gc,durum){
     var sat=function(ad,deger,renk){
       return '<div class="para"><span class="muted">'+ad+"</span><span"+
         (renk?' style="color:'+renk+'"':"")+">"+deger+"</span></div>";
     };
-    var h=sat("Konaklama"+(gc?" · "+gc+" gece":""), para(k.konaklama));
+    // Ek ücret, indirim ya da depozito yoksa "Konaklama" ile "Toplam" aynı rakam: sadece Toplam kalır
+    var h=(k.ek||k.indirim||k.dep) ? sat("Konaklama"+(gc?" · "+gc+" gece":""), para(k.konaklama)) : "";
     if(k.ek) h+=sat("Kısa konaklama ücreti", para(k.ek));
     if(k.indirim) h+=sat("İndirim", "−"+para(k.indirim), "#B0761A");
     if(k.indirim||k.ek) h+=sat("Ara toplam", para(k.araToplam));
     if(k.dep) h+=sat("Hasar depozitosu"+(k.depAlindi?" · alındı "+kisa(k.depTarih):""), para(k.dep));
     h+='<div class="para net"><span>Toplam</span><span>'+para(k.toplam)+"</span></div>";
-    h+=sat("Ön ödeme (%"+k.yuzde+")", para(k.onOdeme));
+    var onDurum="";
+    if(durum && k.onOdeme>0) onDurum = k.odenen>=k.onOdeme
+      ? ' <span style="color:#0B5B57">· '+esc(cev("✓ alındı"))+"</span>"
+      : ' <span style="color:#9B2C4A">· '+esc(cev(para(k.onOdeme-k.odenen)+" eksik"))+"</span>";
+    h+=sat("Ön ödeme ("+yuzdeYaz(k.yuzde)+")", para(k.onOdeme)+onDurum);
     if(k.alinan) h+=sat("Alınan", "−"+para(k.alinan), "#0B5B57");
     h+='<div class="para net"><span>Kalan ödeme</span><span style="color:'+
       (k.kalan>0?"#9B2C4A":"#0B5B57")+'">'+para(k.kalan)+"</span></div>";
@@ -1373,7 +1384,8 @@
       var sonraki=v.rez.filter(function(r){return r.start>tk0})
         .sort(function(a,b){return a.start<b.start?-1:1})[0];
       var alt=sonraki ? "Sıradaki: "+kisa(sonraki.start)+" · "+sonraki.guest : (bm.c ? "" : "Kayıtlı rezervasyon yok");
-      var harf=esc((v.ad||"?").trim().charAt(0).toLocaleUpperCase("tr")||"?");
+      // "Villa Salta" → S (baştaki "Villa" kelimesi atlanır)
+      var harf=esc(((v.ad||"?").trim().replace(/^villa\s+/i,"")||v.ad||"?").charAt(0).toLocaleUpperCase("tr")||"?");
       var foto=(v.fotolar&&v.fotolar.length) ? v.fotolar[0].tam : null;
       var kapak = foto
         ? '<span class="kapak" style="background-image:url('+foto+')"></span>'
@@ -1423,9 +1435,12 @@
       if(v.rol!=="destek"){
         (v.rez||[]).forEach(function(r){
           var kl=kalanTutar(v,r);
-          if(kl>0 && r.start<=yarinK && r.end>=bugunK)
+          if(kl>0 && r.start<=yarinK && r.end>=bugunK){
+            // neden burada: girişte ya da çıkışta alınacak para
+            var neGun=r.start>=bugunK ? "Giriş "+kisa(r.start) : "Çıkış "+kisa(r.end);
             sat.push({o:5,renk:"#9B2C4A",
-              m:"<b>Kalan ödeme</b> · "+esc(r.guest)+" · "+para(kl), v:villaAdi, r:r, vid:v.id});
+              m:"<b>"+esc(neGun)+"</b> · "+esc(r.guest)+" · "+para(kl)+" alınacak", v:villaAdi, r:r, vid:v.id});
+          }
         });
       }
     });
@@ -1505,15 +1520,15 @@
   });
 
   // Takvim sekmesi (6.1): tüm villaların giriş/çıkışları — Bugün / Bu hafta / Bu ay
-  var AJ={mod:"hafta"};
+  var AJ={mod:"7"};
   var GUN_KISA={tr:["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"], en:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]};
   function gunKisa(d){ return GUN_KISA[(window.DIL&&DIL.ingilizce&&DIL.ingilizce())?"en":"tr"][d.getDay()]; }
   function cizAjanda(){
     goster("ajanda");
     Array.prototype.forEach.call(document.querySelectorAll("#ajSeg button"),function(b){
       b.classList[b.dataset.m===AJ.mod?"add":"remove"]("on"); });
-    var sonD = AJ.mod==="gun" ? today
-      : (AJ.mod==="hafta" ? addDays(today,(7-today.getDay())%7) : new Date(today.getFullYear(),today.getMonth()+1,0));
+    // bugünden itibaren 7 / 30 gün (hafta sonuna değil)
+    var sonD = AJ.mod==="gun" ? today : addDays(today,(AJ.mod==="30"?30:7)-1);
     var bas=fmt(today), son=fmt(sonD), olaylar=[];
     S.villalar.forEach(function(v){
       (v.rez||[]).forEach(function(r){
@@ -1525,6 +1540,17 @@
     var okG='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
     var okC='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
     var h="", sonGun="";
+    // Şu an konaklayanlar (bugün giriş/çıkış yapanlar aşağıdaki listede)
+    var kalanlar=[];
+    S.villalar.forEach(function(v){ (v.rez||[]).forEach(function(r){ if(r.start<bas && r.end>bas) kalanlar.push({v:v,r:r}); }); });
+    kalanlar.sort(function(a,b){ return a.r.end<b.r.end?-1:1; });
+    if(kalanlar.length){
+      h+='<div class="gunBas">'+esc(cev("Şu an konaklayan"))+"</div>";
+      kalanlar.forEach(function(x,j){
+        h+='<button class="satirBtn" data-ak="'+j+'" style="margin-top:.5rem"><span><span>'+esc(x.v.ad||"Villa")+" · "+esc(x.r.guest)+"</span>"+
+          '<span class="satirAlt">'+esc(cev("çıkış "+kisa(x.r.end)))+"</span></span></button>";
+      });
+    }
     olaylar.forEach(function(o,i){
       if(o.k!==sonGun){
         sonGun=o.k;
@@ -1540,11 +1566,13 @@
          (kalan>0?'<span class="sag" style="color:#9B2C4A">'+para(kalan)+"</span>":"")+
          "</button>";
     });
-    if(!olaylar.length) h='<div class="sm muted" style="margin-top:1.25rem">'+
-      esc(cev({gun:"Bugün giriş veya çıkış yok.", hafta:"Bu hafta giriş veya çıkış yok.", ay:"Bu ay giriş veya çıkış yok."}[AJ.mod]))+"</div>";
+    if(!olaylar.length) h+='<div class="sm muted" style="margin-top:1.25rem">'+
+      esc(cev({gun:"Bugün giriş veya çıkış yok.", "7":"Önümüzdeki 7 günde giriş veya çıkış yok.", "30":"Önümüzdeki 30 günde giriş veya çıkış yok."}[AJ.mod]))+"</div>";
     var el=document.getElementById("ajandaListe");
     el.innerHTML=h;
     el.onclick=function(e){
+      var k=e.target.closest("[data-ak]");
+      if(k){ var x=kalanlar[+k.dataset.ak]; if(x){ ac(x.v.id); detay(x.r); } return; }
       var b=e.target.closest("[data-ai]"); if(!b) return;
       var o=olaylar[+b.dataset.ai]; if(!o) return;
       ac(o.v.id); detay(o.r);
@@ -1816,20 +1844,21 @@
     // ---- ay özeti: doluluk, bu ay gelir, sonraki giriş (gösterilen aya göre) ----
     var ayBas=fmt(new Date(y,m,1)), aySon=fmt(new Date(y,m,adet)), doluGece=0;
     for(var i=1;i<=adet;i++){ if(gun(fmt(new Date(y,m,i))).aksam) doluGece++; }
-    var ayGelir=0;
-    v.rez.forEach(function(r){ if(r.start>=ayBas && r.start<=aySon) ayGelir+=kalemler(v,r).araToplam; });
+    var ayRezTutar=0, ayAlinan=0;
+    v.rez.forEach(function(r){ if(r.start>=ayBas && r.start<=aySon){ ayRezTutar+=kalemler(v,r).araToplam; ayAlinan+=(r.odenen||0); } });
     var sgBas=ayBas>tk?ayBas:tk;
     var sg=v.rez.filter(function(r){ return r.start>=sgBas && r.start<=aySon; })
                 .sort(function(a,c){ return a.start<c.start?-1:1; })[0];
-    var kutular=['<div class="okutu"><div class="lab">Doluluk</div><div class="val">%'+Math.round(doluGece/adet*100)+
+    var kutular=['<div class="okutu"><div class="lab">Doluluk</div><div class="val">'+yuzdeYaz(Math.round(doluGece/adet*100))+
                  '</div><div class="alt">'+esc(cev(doluGece+" / "+adet+" gece"))+"</div></div>"];
-    if(paraGorur()) kutular.push('<div class="okutu"><div class="lab">Bu ay gelir</div><div class="val">'+para(ayGelir)+
-                 '</div><div class="alt">'+esc(cev(v.rez.filter(function(r){return r.start>=ayBas&&r.start<=aySon}).length+" rezervasyon"))+"</div></div>");
+    if(paraGorur()) kutular.push('<div class="okutu"><div class="lab">Bu ayın rezervasyonları</div><div class="val">'+para(ayRezTutar)+
+                 '</div><div class="alt">'+esc(cev("Alınan "+para(ayAlinan)))+"</div></div>");
     kutular.push('<div class="okutu"><div class="lab">Sonraki giriş</div><div class="val">'+(sg?esc(kisa(sg.start)):"—")+
                  '</div><div class="alt">'+(sg?esc(sg.guest):"&nbsp;")+"</div></div>");
     var ao=document.getElementById("ayOzet");
     ao.style.gridTemplateColumns="repeat("+kutular.length+",minmax(0,1fr))";
     ao.innerHTML=kutular.join("");
+    ao.classList[v.rez.length?"remove":"add"]("hide");  // 7.14: rezervasyonsuz villada boş kutular gösterilmez
 
     // ---- villa durumu + boş günleri paylaş + hızlı işlemler ----
     var dm=durum(v);
@@ -1887,6 +1916,10 @@
         kur.classList.remove("hide");
       } else kur.classList.add("hide");
     } else kur.classList.add("hide");
+    // Kurulum kartı açıkken üstteki "Fiyat gir" tekrar etmesin (kartta zaten var)
+    if(!kur.classList.contains("hide") && !kur.classList.contains("kapali")){
+      var hfb=document.querySelector('#bugun [data-is="fiyat"]'); if(hfb) hfb.remove();
+    }
 
     var h="";
     for(var j=0;j<lead;j++) h+="<div></div>";
@@ -1904,7 +1937,6 @@
       else if(ak) bg="linear-gradient("+SEAM+",transparent 49.5%,"+tint(ak.color,.38)+" 50.5%)";
       else if(k===S.start) bg="#F1F5F3";
       var onc=gun(fmt(addDays(date,-1))), son=gun(fmt(addDays(date,1))), col=(lead+d-1)%7;
-      if(bg==="transparent" && col>=5) bg="#F2F6F4"; // cumartesi-pazar
       var rl=!(sa&&onc.aksam&&onc.aksam.id===sa.id)||col===0;
       var rr=!(ak&&son.sabah&&son.sabah.id===ak.id)||col===6;
       var cls="cell"+((tam||tekGece)?" full":"")+(k===tk?" today":"")+(k===S.start?" sel":"")+(k<tk?" gecmis":"");
@@ -1912,7 +1944,7 @@
       var fi=paraGorur()?v.fiyatlar[k]:0;
       // dolu günde (akşamı dolu) fiyat yerine misafirin baş harfleri
       var etiket = ak ? '<span class="fy bh">'+esc(basHarf(ak.guest))+"</span>"
-                      : '<span class="fy">'+(fi?kisaFiyat(fi):((paraGorur() && !sa && k>=tk)?"—":""))+"</span>";
+                      : '<span class="fy">'+(fi?kisaFiyat(fi):"")+"</span>";
       h+='<button class="'+cls+'" data-k="'+k+'" style="'+st+'"><span class="gn">'+d+"</span>"+etiket+"</button>";
     }
     document.getElementById("grid").innerHTML=h;
@@ -1946,7 +1978,7 @@
       lh+='<button class="row" data-id="'+r.id+'"><span class="dot" style="background:'+r.color+'"></span>'+
           '<span class="name">'+esc(r.guest)+
           (tutarYok?' <span class="warn" style="font-size:.8125rem">'+esc(cev("· tutar girilmedi"))+"</span>":
-           (kalan>0?' <span class="muted" style="font-size:.8125rem">'+esc(cev("· kalan ödeme "+para(kalan)))+"</span>":""))+"</span>"+
+           (kalan>0?' <span class="muted" style="font-size:.8125rem">'+esc(cev("· kalan ödeme "+para(kalan))).replace(/ ₺/g,"&nbsp;₺")+"</span>":""))+"</span>"+
           '<span class="meta">'+aralikMetni(r)+"</span></button>";
     });
     document.getElementById("liste").innerHTML=lh;
@@ -1990,7 +2022,7 @@
 
     var ms=misafirler(v);
     document.getElementById("misafirOzet").textContent = ms.length
-      ? ms.length+" kişi" : "Henüz yok";
+      ? cev(ms.length+" misafir") : cev("Henüz yok");
 
     var kh=kasaHesap(v,kasaAralik("yil",today.getFullYear()));
     document.getElementById("kasaOzet").textContent=today.getFullYear()+": "+para(kh.net);
@@ -2152,7 +2184,7 @@
       b.classList[b.dataset.g===F.gor?"add":"remove"]("on"); });
     var sm=document.getElementById("fySecModu");
     sm.classList[F.gor==="ay"?"remove":"add"]("hide");
-    sm.textContent=cev(F.secMod?"Vazgeç":"Seç");
+    sm.textContent=cev(F.secMod?"Vazgeç":"Birden fazla ay seç");
     document.getElementById("fyAylar").classList[F.gor==="ay"?"remove":"add"]("hide");
     document.getElementById("fyGunler").classList[F.gor==="gun"?"remove":"add"]("hide");
 
@@ -2163,7 +2195,7 @@
         var g=ayGunleri(y,m), fl=[];
         g.forEach(function(k){ if(v.fiyatlar[k]) fl.push(v.fiyatlar[k]); });
         var eksik=g.length-fl.length, sag;
-        if(!fl.length) sag='<span class="sag yok">'+esc(cev("Fiyat yok"))+"</span>";
+        if(!fl.length) sag='<span class="sag yok">'+esc(cev("Fiyat girilmedi"))+"</span>";
         else{
           var mn=Math.min.apply(null,fl), mx=Math.max.apply(null,fl);
           sag='<span class="sag">'+esc(mn===mx?cev(binlik(mn)+" ₺ / gece"):binlik(mn)+" – "+binlik(mx)+" ₺")+"</span>";
@@ -2377,7 +2409,7 @@
     el.style.cssText="position:fixed;left:50%;bottom:calc("+((menu?4.75:1.5)+(cubuk?4.25:0))+"rem + env(safe-area-inset-bottom));transform:translateX(-50%);"+
       "background:#101613;color:#fff;padding:.375rem .375rem .375rem 1.125rem;border-radius:99px;font-size:.875rem;"+
       "z-index:60;max-width:92%;width:max-content;display:flex;align-items:center;gap:.75rem;line-height:1.35";
-    el.innerHTML='<span></span><button type="button" style="color:#9FE0C9;font-weight:600;padding:.625rem .875rem;'+
+    el.innerHTML='<span></span><button type="button" style="color:#9FE0C9;font-weight:500;padding:.625rem .875rem;'+
       'min-height:44px;border-radius:99px;white-space:nowrap;flex:none">Geri al</button>';
     el.firstChild.textContent=msg;
     var zaman=setTimeout(function(){ el.remove(); },5000);
@@ -2574,16 +2606,16 @@
           '</div><div style="color:'+r.color+'">'+CIKIS+"</div></div>"+
       "</div>"+
       (paraGorur()? '<div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--line)">'+
-        kalemHTML(kalemler(aktif(),r), gece(r))+"</div>" : "")+
+        kalemHTML(kalemler(aktif(),r), gece(r), true)+"</div>" : "")+
       (!paraGorur() && kalanGorur()? (function(){ var kl=kalanTutar(aktif(),r), dp=r.depozitoSunucu||0;
         return '<div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--line)">'+
           '<div class="para net"><span>Kalan ödeme</span><span style="color:'+(kl>0?"#9B2C4A":"#0B5B57")+'">'+
           para(kl)+"</span></div>"+
           (dp>0&&kl>0?'<div class="sm muted" style="text-align:right;margin-top:.125rem">'+esc(cev("("+para(dp)+" depozito dahil)"))+"</div>":"")+
           "</div>"; })() : "")+
-      (duzenlenebilir()?'<button class="big ghost" id="d-duzenle" style="margin-top:1rem">Rezervasyonu düzenle</button>':"")+
-      (paraGorur()?'<button class="big ghost" id="d-odeme" style="margin-top:.5rem">Ödeme al / güncelle</button>'+
-      '<button class="big ghost" id="d-form" style="margin-top:.5rem">Rezervasyon formu (PDF)</button>':"")+
+      (paraGorur()?'<button class="big" id="d-odeme" style="margin-top:1rem">Ödeme al</button>':"")+
+      (duzenlenebilir()?'<button class="big ghost" id="d-duzenle" style="margin-top:.5rem">Rezervasyonu düzenle</button>':"")+
+      (paraGorur()?'<button class="big ghost" id="d-form" style="margin-top:.5rem">Rezervasyon formu (PDF)</button>':"")+
       telButonlari(r.phone)+
       (r.note?'<div class="sm muted" style="margin-top:.75rem">'+esc(r.note)+"</div>":"")+
       '<button class="big tehlike" id="d-iptal">Rezervasyonu iptal et</button>');
@@ -2701,10 +2733,15 @@
     var kTop=kk.araToplam, kKal=Math.max(0,kTop-kk.odenen), hz=[];
     if(kKal>0) hz.push('<button class="big ghost" data-hz="'+kKal+'">'+esc(cev("Kalanın tamamı"))+" · "+para(kKal)+"</button>");
     if(!kk.odenen && kk.onOdeme>0 && kk.onOdeme<kKal) hz.push('<button class="big ghost" data-hz="'+kk.onOdeme+'">'+esc(cev("Ön ödeme"))+" · "+para(kk.onOdeme)+"</button>");
+    else if(kk.odenen>0 && kk.onOdeme>kk.odenen && kk.onOdeme-kk.odenen<kKal)
+      hz.push('<button class="big ghost" data-hz="'+(kk.onOdeme-kk.odenen)+'">'+esc(cev("Ön ödeme kalanı"))+" · "+para(kk.onOdeme-kk.odenen)+"</button>");
     perde('<div class="head"><h2>Ödeme al</h2>'+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 1.25rem">'+esc(r.guest)+" · "+aralikMetni(r)+"</div>"+
-      '<div class="odemeOzet">'+esc(cev("Toplam "+para(kTop)+" · Alınan "+para(kk.odenen)+" · Kalan "+para(kKal)))+
-        ((kk.dep && !kk.depAlindi)?'<div class="sm muted" style="margin-top:.25rem">'+esc(cev("Ayrıca "+para(kk.dep)+" hasar depozitosu alınacak (iade edilir)."))+"</div>":"")+"</div>"+
+      '<div class="ayOzet" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:0 0 .5rem">'+
+        '<div class="okutu"><div class="lab">'+esc(cev("Toplam"))+'</div><div class="val">'+para(kTop)+"</div></div>"+
+        '<div class="okutu"><div class="lab">'+esc(cev("Alınan"))+'</div><div class="val">'+para(kk.odenen)+"</div></div>"+
+        '<div class="okutu"><div class="lab">'+esc(cev("Kalan"))+'</div><div class="val"'+(kKal>0?' style="color:#9B2C4A"':"")+">"+para(kKal)+"</div></div></div>"+
+      ((kk.dep && !kk.depAlindi)?'<div class="sm muted" style="margin:0 0 1rem">'+esc(cev("Ayrıca "+para(kk.dep)+" hasar depozitosu alınacak (iade edilir)."))+"</div>":'<div style="height:.75rem"></div>')+
       (hz.length?'<div class="hazirOdeme">'+hz.join("")+"</div>":"")+
       '<div class="ikili">'+
         alan("o-tutar","Alınan tutar (₺)","","tel")+
@@ -2715,9 +2752,9 @@
       '<button class="big" id="o-ekle">Ödemeyi kaydet</button>'+
       (gecmis.length?'<div class="eyebrow" style="margin:1.75rem 0 .25rem">Alınan ödemeler</div>'+
         gecmis.map(function(o){
-          return '<button class="row" data-oid="'+o.id+'"><span class="name">'+para(o.tutar)+
-            (o.not?'<span class="muted" style="font-size:.8125rem"> · '+esc(o.not)+"</span>":"")+"</span>"+
-            '<span class="meta">'+kisa(o.tarih)+"</span></button>";
+          return '<button class="satirBtn" data-oid="'+o.id+'"><span>'+para(o.tutar)+
+            (o.not?'<span class="satirAlt">'+esc(o.not)+"</span>":"")+"</span>"+
+            '<span class="sag">'+kisa(o.tarih)+"</span></button>";
         }).join(""):"")+
       '<div class="eyebrow" style="margin:1.75rem 0 .25rem">Hasar depozitosu</div>'+
       '<div class="anahtar"><span>Depozito alındı</span>'+
@@ -2777,12 +2814,29 @@
     kutu.addEventListener("click",function(e){
       var row=e.target.closest("[data-oid]"); if(!row) return;
       var o=r.odemeler.filter(function(x){return x.id===row.dataset.oid})[0]; if(!o) return;
-      perde("<h2>Ödeme kaydı</h2>"+
-        '<div class="sm muted" style="margin-top:.5rem">'+para(o.tutar)+" · "+kisa(o.tarih)+
-          (o.not?" · "+esc(o.not):"")+"</div>"+
-        '<button class="big" id="os-sil" style="background:#9B2C4A">Bu ödemeyi sil</button>'+
+      var tazele=function(){
+        kaydet(); kapat(); ciz();
+        if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
+        odemeSheet(r);
+      };
+      perde('<div class="head"><h2>'+esc(cev("Ödeme kaydı"))+"</h2>"+kapatBtn()+"</div>"+
+        '<div style="margin-top:1rem"></div>'+
+        '<div class="ikili">'+alan("os-tutar","Tutar (₺)","","tel",binlik(o.tutar))+
+          '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Tarih</div>'+tarihInput("os-tarih",o.tarih)+"</div></div>"+
+        alan("os-not","Not","İsteğe bağlı","text",esc(o.not||""))+
+        '<button class="big" id="os-kaydet">'+esc(cev("Kaydet"))+"</button>"+
+        '<button class="big tehlike" id="os-sil" style="margin-top:.5rem">Bu ödemeyi sil</button>'+
         '<button class="big ghost" id="os-vaz" style="margin-top:.5rem">Vazgeç</button>');
+      sayiBicimle(document.getElementById("os-tutar"));
       document.getElementById("os-vaz").onclick=function(){ kapat(); odemeSheet(r); };
+      document.getElementById("os-kaydet").onclick=function(){
+        var t2=sayi(document.getElementById("os-tutar").value);
+        if(!t2) return uyari("Alınan tutarı girin.");
+        o.tutar=t2; o.tarih=document.getElementById("os-tarih").value||o.tarih;
+        o.not=document.getElementById("os-not").value.trim();
+        r.odenen=r.odemeler.reduce(function(a,x){return a+x.tutar},0);
+        tazele(); bildir(cev("Ödeme güncellendi."));
+      };
       document.getElementById("os-sil").onclick=function(){
         r.odemeler=r.odemeler.filter(function(x){return x.id!==o.id});
         r.odenen=r.odemeler.reduce(function(a,x){return a+x.tutar},0);
@@ -3574,6 +3628,8 @@
   // "2 konaklama · son 5 Ağustos 2026" ya da gelecek konaklama varsa "· sıradaki …"
   function misTarihMetni(g){
     var tk=fmt(today);
+    var simdi=g.rez.filter(function(r){ return r.start<=tk && tk<r.end; })[0];
+    if(simdi) return cev("Şu an konaklıyor · çıkış "+kisa(simdi.end));
     var gelecek=g.rez.filter(function(r){ return r.start>=tk; })
                      .sort(function(a,b){ return a.start<b.start?-1:1; })[0];
     var k=gelecek ? gelecek.start : g.son;
@@ -3618,7 +3674,7 @@
                    : "Rezervasyon ekledikçe misafirleriniz burada birikir";
     Array.prototype.forEach.call(document.getElementById("misFiltre").children,function(b){
       b.className=(b.dataset.fk===MS.filtre)?"on":""; });
-    document.getElementById("misSecModu").textContent=MS.mod?"Vazgeç":"Seç";
+    document.getElementById("misSecModu").textContent=cev(MS.mod?"Vazgeç":"Birden fazla seç");
 
     var h="";
     if(MS.mod && liste.length){
@@ -3955,8 +4011,8 @@
       else if(al>0) et='<span class="durumEt kismen">'+esc(cev("Kısmen"))+"</span> "+nf.format(al)+" / "+para(t);
       else et='<span class="durumEt yok">'+esc(cev("Ödenmedi"))+"</span> "+para(t);
       th+='<button class="row" data-id="'+r.id+'"'+(!(r.tutar>0)?' data-tutarsiz="1"':"")+'>'+
-        '<span class="name">'+esc(r.guest)+'<span class="muted" style="font-size:.8125rem"> · '+aralikMetni(r)+"</span></span>"+
-        '<span class="meta" style="display:flex;align-items:center;gap:.375rem;color:var(--ink)">'+et+"</span></button>";
+        '<span class="name">'+esc(r.guest)+' <span class="muted nw" style="font-size:.8125rem">· '+aralikMetni(r)+"</span></span>"+
+        '<span class="meta nw" style="display:flex;align-items:center;gap:.375rem;color:var(--ink)">'+et+"</span></button>";
     });
     document.getElementById("tahsilat").innerHTML=th;
 
@@ -4019,7 +4075,7 @@
       var bx=x+(slot-2*bw-2)/2;
       if(gel[i]) h+='<rect x="'+bx+'" y="'+(H-alt-Math.max(2,hg))+'" width="'+bw+'" height="'+Math.max(2,hg)+'" rx="2" fill="#0B5B57"/>';
       if(gid[i]) h+='<rect x="'+(bx+bw+2)+'" y="'+(H-alt-Math.max(2,hd))+'" width="'+bw+'" height="'+Math.max(2,hd)+'" rx="2" fill="#C4718A"/>';
-      h+='<text x="'+(x+slot/2)+'" y="'+(H-4)+'" text-anchor="middle" font-size="9.5" fill="'+(sec?"#0B5B57":"#5F6A64")+'"'+(sec?' font-weight="600"':"")+">"+esc(AYLAR[i].slice(0,3))+"</text>";
+      h+='<text x="'+(x+slot/2)+'" y="'+(H-4)+'" text-anchor="middle" font-size="9.5" fill="'+(sec?"#0B5B57":"#5F6A64")+'"'+(sec?' font-weight="500"':"")+">"+esc(AYLAR[i].slice(0,3))+"</text>";
       h+='<rect class="ayKutu" data-ay="'+i+'" x="'+x+'" y="0" width="'+slot+'" height="'+H+'" fill="transparent"/>';
     }
     h+='<line x1="0" x2="'+W+'" y1="'+(H-alt)+'" y2="'+(H-alt)+'" stroke="#D9DFDB" stroke-width="1"/>';
@@ -4058,13 +4114,16 @@
     var bugunIcinde = a && today>=parse(a.bas) && today<bit;
     var sinir = bugunIcinde ? today : bit;
     var M=harita(v.rez), doluGece=0, ileriDolu=0, ileriToplam=0, aylik={};
+    // Geçmiş doluluk villanın ilk rezervasyonundan itibaren sayılır (1 Ocak'tan değil)
+    var ilkRez=(v.rez||[]).map(function(r){ return r.start; }).sort()[0];
+    var dBas=(ilkRez && parse(ilkRez)>bas) ? parse(ilkRez) : bas;
     for(var d=new Date(bas); d<bit; d=addDays(d,1)){
       var o=M.get(fmt(d)), dolu=!!(o && o.aksam);
       if(dolu) aylik[d.getMonth()]=(aylik[d.getMonth()]||0)+1;
-      if(d<sinir){ if(dolu) doluGece++; }
+      if(d<sinir){ if(dolu && d>=dBas) doluGece++; }
       else { ileriToplam++; if(dolu) ileriDolu++; }
     }
-    var toplamGece=Math.max(1,Math.round((sinir-bas)/86400000));
+    var toplamGece=Math.max(1,Math.round((sinir-dBas)/86400000));
     var oran=Math.round(doluGece/toplamGece*100);
     var dolulukAd = bugunIcinde ? "Doluluk (bugüne kadar)" : (a && bas>today ? "Doluluk (rezervasyonlara göre)" : "Doluluk");
 
@@ -4094,7 +4153,7 @@
 
     el.innerHTML=
       '<div class="sz"><span class="szAd">'+esc(cev(dolulukAd))+'</span><span class="szDeger">'+
-        oran+"% · "+doluGece+" / "+toplamGece+" gece</span></div>"+
+        yuzdeYaz(oran)+" · "+doluGece+" / "+toplamGece+" gece</span></div>"+
       '<div class="szCubuk"><i style="width:'+Math.min(100,oran)+'%"></i></div>'+
       (bugunIcinde && ileriToplam?'<div class="sz" style="margin-top:.5rem"><span class="szAd">'+esc(cev("Önümüzdeki geceler"))+'</span><span class="szDeger">'+
         esc(cev(ileriDolu+" / "+ileriToplam+" gece dolu"))+"</span></div>":"")+
@@ -4205,10 +4264,7 @@
       cizKasa();
     };
   }
-  document.getElementById("giderEkle").onclick=function(){
-    if(!aktif()) return; hareketSheet("gider"); };
-  document.getElementById("gelirEkle").onclick=function(){
-    if(!aktif()) return; hareketSheet("gelir"); };
+
 
   document.getElementById("hareket").addEventListener("click",function(e){
     if(!aktif()) return;
@@ -5394,11 +5450,11 @@
       alan("b-konum","Konum","Örn. Kalkan, İslamlar","text",b.konum)+
       alan("b-sahip","Ev sahibi adı soyadı","Rezervasyon formunda görünür","text",b.sahip)+
       '<div class="uclu">'+
-        alan("b-kapasite","Kişi","8","tel",b.kapasite)+
-        alan("b-oda","Yatak odası","4","tel",b.oda)+
-        alan("b-banyo","Banyo","4","tel",b.banyo)+
+        alan("b-kapasite","Kişi","","tel",b.kapasite)+
+        alan("b-oda","Yatak odası","","tel",b.oda)+
+        alan("b-banyo","Banyo","","tel",b.banyo)+
       "</div>"+
-      alan("b-m2","Büyüklük (m²)","180","tel",b.m2)+
+      alan("b-m2","Büyüklük (m²)","","tel",b.m2)+
       '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Ev hakkında</div>'+
         '<textarea id="b-aciklama" placeholder="Villanızı tanıtın: konumu, manzarası, öne çıkan yanları…">'+
         esc(b.aciklama||"")+"</textarea></div>"+
@@ -5416,13 +5472,13 @@
         '<textarea id="b-odalar" placeholder="Her satıra bir oda yazın. Örn:&#10;Salon · Zemin kat · Klima, TV&#10;1. Yatak Odası · Zemin kat · Çift kişilik yatak, duş">'+
         esc(b.odalar||"")+"</textarea></div>"+
       '<div class="ikili">'+
-        alan("b-havuzBoyut","Havuz ölçüsü","12m x 4m","text",b.havuzBoyut)+
-        alan("b-havuzDerinlik","Havuz derinliği","1.55 m","text",b.havuzDerinlik)+
+        alan("b-havuzBoyut","Havuz ölçüsü","","text",b.havuzBoyut)+
+        alan("b-havuzDerinlik","Havuz derinliği","","text",b.havuzDerinlik)+
       "</div>"+
       '<div class="eyebrow" style="margin:1.5rem 0 .625rem">Yakınlarda ne var (km)</div>'+
       '<div class="ikili">'+
         MESAFELER.map(function(m){
-          return alan("b-m-"+m[0],m[1],"—","tel",(b.mesafeler||{})[m[0]]||"");
+          return alan("b-m-"+m[0],m[1],"","tel",(b.mesafeler||{})[m[0]]||"");
         }).join("")+
       "</div>"+
       alan("b-harita","Konum bağlantısı","Google Haritalar linki","text",b.harita)+
@@ -5433,12 +5489,12 @@
       anahtar("b-su","Su bedeli fiyata dahil",b.su!==false)+
       anahtar("b-elektrik","Elektrik bedeli fiyata dahil",b.elektrik!==false)+
       '<div style="margin-top:1.25rem"></div>'+
-      alan("b-depozito","Hasar depozitosu (₺)","5000","tel",b.depozito)+
-      alan("b-onOdeme","Ön ödeme oranı (%)","30","tel",b.onOdeme||30)+
+      alan("b-depozito","Hasar depozitosu (₺)","","tel",b.depozito)+
+      alan("b-onOdeme","Ön ödeme oranı (%)","","tel",b.onOdeme||30)+
       '<div class="sm muted" style="margin:-.5rem 0 1rem">Misafir sayfasında ve rezervasyon hesabında ön ödeme bu orandan hesaplanır.</div>'+
       '<div class="ikili">'+
-        alan("b-kisaSinir","Kısa konaklama sınırı (gece)","4","tel",b.kisaSinir||"")+
-        alan("b-kisaUcret","Kısa konaklama ücreti (₺)","5000","tel",b.kisaUcret||"")+
+        alan("b-kisaSinir","Kısa konaklama sınırı (gece)","","tel",b.kisaSinir||"")+
+        alan("b-kisaUcret","Kısa konaklama ücreti (₺)","","tel",b.kisaUcret||"")+
       "</div>"+
       '<div class="sm muted" style="margin:-.5rem 0 1rem">Bu gece sayısı ve altındaki konaklamalara ek ücret eklenir. Boş bırakırsanız uygulanmaz.</div>'+
       alan("b-whatsapp","WhatsApp numarası","0532 000 00 00","telefon",b.whatsapp)+
@@ -5575,7 +5631,7 @@
       '<div class="sm muted" style="margin:.5rem 0 1rem">Yayınlayınca bir bağlantı oluşur. Bu bağlantıyı gönderdiğiniz kişi şunları görür:</div>'+
       kapak+
       '<div style="background:var(--soft);border-radius:.75rem;padding:1rem;margin-top:.75rem">'+
-        '<div style="font-weight:600">'+esc(v.ad||"Villa")+"</div>"+
+        '<div style="font-weight:500">'+esc(v.ad||"Villa")+"</div>"+
         '<div class="sm muted" style="margin-top:.25rem">'+esc(cev(fotoSay+" fotoğraf"))+" · "+
           esc(cev("Boş günler ve fiyatlar"))+(b.konum?" · "+esc(b.konum):"")+"</div></div>"+
       (uyarilar.length ? '<div class="sm warn" style="margin-top:1rem;line-height:1.5">'+
