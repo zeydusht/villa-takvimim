@@ -53,13 +53,15 @@ Gerçek veritabanına bağlı. Canlı site (villatakvim.netlify.app) hâlâ eski
   gibi tek bakışta anlaşılır; yazılar kalınlaştırılmaz, tıklanabilir öğeler çerçeveli.
 
 ## SIRADAKİ ADIMLAR
-1. **TestFlight kurulumu:** App Store Connect'te uygulama kaydı (bundle ID com.zeydtekin.villatakvim,
+1. **Sürekli UX iterasyonu (ŞU ANKİ İŞ).** Yukarıdaki felsefe: ekranları ilk kez kullanan gözüyle gez,
+   karmaşık / kullanışsız / okunmayan yerleri bul, Claude Code mesajı yaz, test et, tekrarla.
+2. Fotoğrafsız villada "Drive'dan al"a ulaşılamıyor → düzeltme mesajı yazılmıştı, yapıldı mı kontrol et.
+3. Bakıcı para bilgisini veritabanında kapatma (plan Zeyd'in onayına sunulacak).
+4. **TestFlight — SADECE Zeyd "hazırız" deyince.** Uygulama bitmeden kurulmayacak.
+   Kurulum notu: App Store Connect'te uygulama kaydı (bundle ID com.zeydtekin.villatakvim,
    ad "Villa Takvimim"), App Store Connect API anahtarı (Admin) + Team ID → GitHub repo Secrets
    (APPLE_TEAM_ID, ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8). ios.yml anahtar ekliyse otomatik yükler.
    Zeyd'e İngilizce menü adlarıyla adım adım anlat (konsol İngilizce).
-2. Fotoğrafsız villada "Drive'dan al"a ulaşılamıyor → düzeltme mesajı yazılmıştı, yapıldı mı kontrol et.
-3. Bakıcı para bilgisini veritabanında kapatma (plan Zeyd'in onayına sunulacak).
-4. Sürekli UX iterasyonu (yukarıdaki felsefe).
 
 ## Çalışma şekli
 Claude (sohbette) ürün yöneticisi: `docs/GOREVLER.md`'den bir bölüm seçip Claude Code'a mesaj yazar.
