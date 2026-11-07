@@ -1800,7 +1800,12 @@
     document.getElementById("h-veri").onclick=function(){
       var d={ hesap:(k&&k.email)||"", tarih:new Date().toISOString(), villalar:S.villalar };
       var blob=new Blob([JSON.stringify(d,null,2)],{type:"application/json"});
-      if(dosyaVer(blob,"villa-takvim-verilerim-"+fmt(new Date())+".json")) return;
+      var ad="villa-takvim-verilerim-"+fmt(new Date())+".json";
+      if(dosyaVer(blob,ad)) return;
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      a.download=ad;
+      a.click(); setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
       bildir("Verileriniz indirildi.");
     };
 
