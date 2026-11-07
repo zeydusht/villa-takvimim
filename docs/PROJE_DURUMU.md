@@ -77,6 +77,10 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       "Geri al", Hesap → Silinen villalar (30 gün). Veritabanı: villalar.silindi_tarih sütunu EKLENDİ
       (7 Kasım, Zeyd onayıyla). 30 gün sonra kalıcı silmeyi uygulama yapar (sahip açınca).
       Not: canlı Netlify sitesi eski sürüm, bu alanı bilmiyor.
+- [ ] Gelir & gider sadeleştirme + kalıcı alt menü · mesajı yazıldı (sırada): tek net kazanç kartı +
+      açıklama, 3 etiketli satır (Alınan / Alınacak / Giderler), 12 aylık SVG çubuk grafik, rezervasyon
+      satırlarında Ödendi/Kısmen/Ödenmedi/Tutar girilmedi etiketleri, ortalama gecelik fiyat hesabı
+      düzeltmesi (500 ₺ hatası), yeşil seçici. Alt menü iç ekranlarda da kalır (Villalar seçili).
 - [ ] SIRADAKİ: Veritabanı güvenlik düzeltmeleri — Claude sohbetten Supabase'de yapacak, Zeyd'in onayıyla
       (detaylar inceleme raporunda, repo herkese açık olduğu için burada yok)
 
