@@ -68,11 +68,14 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
 - [x] Fotoğraflar ekranı · test edildi: villa ekranında ilk 3 foto + "+X", ayrı Fotoğraflar
       ekranı (3'lü ızgara, kapak etiketi, basılı tut-sürükle sıralama, çoklu seçip silme, tam ekran
       görüntüleme + kapak yap). Bakıcı silemez/sıralayamaz.
-- [ ] Drive'dan fotoğraf alma (fotoğraf ekranından sonra, mesajı henüz yazılmadı). Plan: kullanıcı
+- [ ] Drive'dan fotoğraf alma · sunucu fonksiyonu yazıldı: supabase/functions/drive-aktar/index.ts
+      (Claude sohbetten deploy edemedi, engellendi → Claude Code `npx supabase functions deploy` ile yükler).
+      Zeyd: Google Cloud'da API anahtarı + Supabase'de GOOGLE_API_KEY sırrı. Arayüz Claude Code'a gönderildi.
+      (Eski not: Plan: kullanıcı
       herkese açık Drive klasör linkini yapıştırır → Supabase edge function (girişli + villaya erişim
       kontrolü, Google API anahtarı sır olarak) klasördeki görselleri listeler ve indirmeyi aracılık
       eder → istemci mevcut küçültme akışıyla (fotoHazirla) yükler, ilerleme gösterir, üst sınır ~60.
-      Zeyd'in Google Cloud'da Drive API anahtarı oluşturması gerekecek (adım adım anlatılacak).
+      Zeyd'in Google Cloud'da Drive API anahtarı oluşturması gerekecek (adım adım anlatılacak).)
 - [x] Villa silme güvenliği · test edildi: buton Villa bilgileri altına, adı yazarak onay,
       "Geri al", Hesap → Silinen villalar (30 gün). Veritabanı: villalar.silindi_tarih sütunu EKLENDİ
       (7 Kasım, Zeyd onayıyla). 30 gün sonra kalıcı silmeyi uygulama yapar (sahip açınca).
@@ -86,7 +89,7 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Salta 2026 her şey 0 ₺ görünüyordu (önce 5.000/30.000/1.000 vardı) — hata olabilir, test et.
 - [ ] Küçük düzeltmeler (mesajı yazıldı): alt menünün arkasından içerik/grafik çubuğu görünüyor
       (menü zemini opak + üstte olsun); kurulum kartındaki "Gizle" 24px, 44px olsun.
-- [ ] GOREVLER.md 6. bölüm — "ilk kez kullanan anlasın" (11 madde: Takvim sekmesi boş, tek terim
+- [x] GOREVLER.md 6. bölüm — "ilk kez kullanan anlasın" (11 madde: Takvim sekmesi boş, tek terim
       "Kalan ödeme", rezervasyon adım şeridi, sade form, ödeme paneli, Türkçe tarih, Hesap düzeni,
       karşılama kartı…) · Claude Code'a gönderilecek
 - [ ] SIRADAKİ: Veritabanı güvenlik düzeltmeleri — Claude sohbetten Supabase'de yapacak, Zeyd'in onayıyla
