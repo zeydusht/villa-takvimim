@@ -110,7 +110,22 @@ Deno.serve(async (req) => {
     const m = await fetch(`${DRIVE}/${dosya_id}?fields=id,mimeType,size,parents&supportsAllDrives=true&key=${KEY}`);
     if (!m.ok) return hata(await driveHata(m), 400);
     const bilgi = await m.json();
-    const ayniKlasor = kaynak.tur === "dosya" ? bilgi.id === kaynak.id : (bilgi.parents || []).includes(kaynak.id);
+    let ayniKlasor = kaynak.tur === "dosya" ? bilgi.id === kaynak.id : (bilgi.parents || []).includes(kaynak.id);
+    // Google, anahtarla yapılan isteklerde "parents" bilgisini bazen boş döndürür.
+    // O durumda klasörün içeriğini listeleyip dosyanın orada olup olmadığına bakarız.
+    if (!ayniKlasor && kaynak.tur === "klasor" && !(bilgi.parents || []).length) {
+      const q = encodeURIComponent(`'${kaynak.id}' in parents and trashed = false`);
+      let sayfa = "";
+      for (let i = 0; i < 5 && !ayniKlasor; i++) {
+        const r = await fetch(`${DRIVE}?q=${q}&fields=nextPageToken,files(id)&pageSize=200` +
+          `&supportsAllDrives=true&includeItemsFromAllDrives=true&key=${KEY}` + (sayfa ? `&pageToken=${sayfa}` : ""));
+        if (!r.ok) break;
+        const d = await r.json();
+        ayniKlasor = (d.files || []).some((f: any) => f.id === dosya_id);
+        if (!d.nextPageToken) break;
+        sayfa = d.nextPageToken;
+      }
+    }
     if (!ayniKlasor) return hata("Bu dosya verilen klasörde değil.", 403);
     if (!String(bilgi.mimeType || "").startsWith("image/")) return hata("Bu dosya bir fotoğraf değil.");
     if (Number(bilgi.size || 0) > EN_BUYUK) return hata("Fotoğraf çok büyük (25 MB üstü).");
