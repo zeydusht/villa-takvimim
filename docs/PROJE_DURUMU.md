@@ -69,7 +69,7 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       ekranı (3'lü ızgara, kapak etiketi, basılı tut-sürükle sıralama, çoklu seçip silme, tam ekran
       görüntüleme + kapak yap). Bakıcı silemez/sıralayamaz.
 - [ ] Drive'dan fotoğraf alma · sunucu fonksiyonu yazıldı: supabase/functions/drive-aktar/index.ts
-      (Claude sohbetten deploy edemedi, engellendi → Claude Code `npx supabase functions deploy` ile yükler).
+      SUPABASE'E YÜKLENDİ (7 Kasım, Claude, Zeyd onayıyla; verify_jwt açık).
       Zeyd: Google Cloud'da API anahtarı + Supabase'de GOOGLE_API_KEY sırrı. Arayüz Claude Code'a gönderildi.
       (Eski not: Plan: kullanıcı
       herkese açık Drive klasör linkini yapıştırır → Supabase edge function (girişli + villaya erişim
