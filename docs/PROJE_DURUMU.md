@@ -32,6 +32,9 @@ Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
 - [ ] App Store Connect API anahtarı (Admin) + Team ID → GitHub repo Secrets:
       `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`
 
+## İnceleme raporu (7 Kasım)
+Bulgular ve öncelik sırası claude.ai'daki "Villa Takvimim — Uygulama İnceleme Raporu" dokümanında.
+
 ## Sonraki fazlar
 - **Faz 3 / bildirimler:** Web Push app içinde çalışmıyor. Firebase/APNs ile native bildirim
   (@capacitor/push-notifications) + Supabase edge function'ı buna göre güncellemek.
