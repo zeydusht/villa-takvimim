@@ -301,6 +301,7 @@
     "Rezervasyon iptal edildi.":"Reservation cancelled.", "Geri al":"Undo",
     "Rezervasyon geri alındı.":"Reservation restored.",
     "Misafir adını yazın":"Enter the guest's name",
+    "· tutar girilmedi":"· no amount entered",
 
     // Uyarı paneli ve dosya paylaşımı
     "Anladım":"OK", "Dosya paylaşılamadı.":"The file could not be shared.",

@@ -16,7 +16,7 @@
 <style>
   :root{
     color-scheme: light only;
-    --ink:#101613; --muted:#7A857F; --line:#E7EBE8; --soft:#F1F5F3; --uyari:#9B2C4A; --ok:#0B5B57;
+    --ink:#101613; --muted:#5F6A64; --line:#D9DFDB; --cizgi:#C9D1CC; --soft:#F1F5F3; --uyari:#9B2C4A; --ok:#0B5B57;
     --serif: ui-serif, Georgia, "Times New Roman", serif;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
@@ -38,7 +38,8 @@
     padding:calc(.6875rem + env(safe-area-inset-top)) 1.25rem .6875rem}
   .appBarIc{width:100%; max-width:25.5rem; display:flex; align-items:center; gap:.5rem;
     font-family:var(--serif); font-size:1.0625rem; letter-spacing:-.01em}
-  .barGeri{flex:none; color:#fff; padding:.25rem .5rem .25rem 0; margin-left:-.25rem; line-height:0}
+  .barGeri{flex:none; color:#fff; width:2.75rem; height:2.75rem; margin:-.5rem 0 -.5rem -.75rem;
+    display:flex; align-items:center; justify-content:center; line-height:0}
   .barGeri:active{opacity:.6}
   .wrap{width:100%; max-width:28rem; padding:2rem 1.25rem calc(2.5rem + env(safe-area-inset-bottom))}
   .hide{display:none !important}
@@ -49,9 +50,10 @@
     -webkit-appearance:none; appearance:none; background-clip:padding-box; border-radius:0;
     -webkit-tap-highlight-color:transparent}
   input{font:inherit; color:inherit; background:none; border:0; outline:none; width:100%}
+  input::placeholder, textarea::placeholder{color:#8E9893; opacity:1}
   a{color:inherit}
   svg{display:block; flex:none}
-  h1{font-family:var(--serif); font-size:2.25rem; letter-spacing:-.02em; font-weight:400; margin:0}
+  h1{font-family:var(--serif); font-size:2.25rem; letter-spacing:-.015em; font-weight:600; margin:0}
 
   /* ana ekran */
   .mark{width:2.5rem; height:2.5rem; margin:0 auto .875rem}
@@ -65,7 +67,7 @@
   .hSatir b{font-weight:600}
   .hSatir .hVilla{color:var(--muted); font-size:.75rem}
   .kurKart{display:flex; align-items:center; gap:.75rem; background:var(--soft);
-    border-radius:.875rem; padding:.875rem 1rem; margin-top:1.5rem; position:relative}
+    border-radius:.875rem; padding:.875rem 2.75rem .875rem 1rem; margin-top:1.5rem; position:relative}
   .kurIkon{width:2.5rem; height:2.5rem; flex:none}
   .kurIkon svg{width:100%; height:100%; border-radius:.625rem}
   .kurMetin{flex:1; min-width:0; padding-right:1rem}
@@ -73,8 +75,8 @@
   .kurAlt{font-size:.75rem; color:var(--muted); margin-top:.125rem}
   .kurBtn{flex:none; background:var(--ok); color:#fff; padding:.5rem 1rem; border-radius:.625rem;
     font-size:.875rem}
-  .kurKapat{position:absolute; top:.375rem; right:.375rem; padding:.25rem; line-height:0;
-    color:var(--muted)}
+  .kurKapat{position:absolute; top:0; right:0; width:2.75rem; height:2.75rem; line-height:0;
+    color:var(--muted); display:flex; align-items:center; justify-content:center}
   .adim{display:flex; gap:.75rem; align-items:flex-start; margin-bottom:1rem}
   .adimNo{width:1.5rem; height:1.5rem; border-radius:99px; background:var(--ok); color:#fff;
     font-size:.8125rem; display:flex; align-items:center; justify-content:center; flex:none}
@@ -91,7 +93,7 @@
     border-radius:99px; padding:.25rem .625rem .3rem; font-size:.75rem; display:flex;
     align-items:center; gap:.375rem; color:var(--ink); box-shadow:0 1px 3px rgba(16,22,19,.12)}
   .kartAlt{display:block; padding:.75rem .125rem 0}
-  .kad{font-family:var(--serif); font-size:1.1875rem; letter-spacing:-.02em; display:block;
+  .kad{font-family:var(--serif); font-size:1.25rem; font-weight:600; letter-spacing:-.01em; display:block;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .kalt{font-size:.8125rem; color:var(--muted); display:block; margin-top:.1875rem;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
@@ -101,13 +103,14 @@
 
   /* üst bar */
   .topbar{display:flex; align-items:center; gap:.5rem; margin-bottom:1rem}
-  .backbtn{display:none; align-items:center; gap:.25rem; padding:.5rem .75rem .5rem .25rem;
+  .backbtn{display:none; align-items:center; gap:.25rem; min-height:2.75rem; padding:.5rem .75rem .5rem .25rem;
     margin-left:-.25rem; border-radius:99px; color:var(--muted); font-size:.9375rem}
-  .icobtn{padding:.5rem; border-radius:99px; line-height:0; color:var(--muted)}
-  #villaAd{font-family:var(--serif); font-size:1.875rem; letter-spacing:-.02em; padding:0}
+  .icobtn{min-width:2.75rem; min-height:2.75rem; padding:.5rem; border-radius:99px; line-height:0; color:var(--muted);
+    display:inline-flex; align-items:center; justify-content:center}
+  #villaAd{font-family:var(--serif); font-size:1.875rem; font-weight:600; letter-spacing:-.015em; padding:0}
   #villaAd::placeholder{color:#C7CFCB}
   .today{padding-bottom:1.5rem; margin:.75rem 0 1.5rem; border-bottom:1px solid var(--line)}
-  .durumBas{font-family:var(--serif); font-size:1.375rem; letter-spacing:-.02em;
+  .durumBas{font-family:var(--serif); font-size:1.375rem; font-weight:600; letter-spacing:-.01em;
     display:flex; align-items:center; gap:.5rem}
   .durumAlt{font-size:.875rem; color:var(--muted); margin-top:.375rem; line-height:1.5}
   .fmod{background:#FEF6EC; border:1px solid #F0D9B8; border-radius:.75rem; padding:.75rem .875rem;
@@ -119,9 +122,11 @@
 
   /* takvim */
   .monthbar{display:flex; align-items:center; justify-content:space-between}
-  .monthbar .m{font-family:var(--serif); font-size:1.125rem; letter-spacing:-.02em}
+  .monthbar .m{font-family:var(--serif); font-size:1.1875rem; font-weight:600; letter-spacing:-.01em}
   .nav{display:flex; gap:.25rem}
-  .nav button{padding:.5rem; border-radius:99px; line-height:0}
+  .nav button{width:2.75rem; height:2.75rem; border-radius:99px; line-height:0; color:var(--ink);
+    display:flex; align-items:center; justify-content:center; margin-right:-.375rem}
+  .nav button:active{background:var(--soft)}
   .dow{display:grid; grid-template-columns:repeat(7,1fr); margin:1.25rem 0 .25rem}
   .dow div{text-align:center; font-size:.75rem; text-transform:uppercase; letter-spacing:.14em;
     color:var(--muted); padding:.5rem 0}
@@ -154,9 +159,18 @@
     border-bottom:1px solid var(--line); width:100%}
   .row .name{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .row .meta{font-size:.875rem; color:var(--muted); flex:none}
-  .satirBtn{display:flex; align-items:center; justify-content:space-between; width:100%;
-    padding:1rem 1.125rem; background:var(--soft); border-radius:.875rem; margin-top:.5rem}
-  .satirBtn .sag{color:var(--muted); font-size:.875rem}
+  .satirBtn{display:flex; align-items:center; gap:.75rem; width:100%; min-height:3.25rem;
+    padding:.875rem 1rem .875rem 1.125rem; background:var(--soft); border-radius:.875rem; margin-top:.5rem;
+    transition:background-color .12s}
+  .satirBtn:active{background:#E6ECE8}
+  .satirBtn > span:first-child{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .satirBtn .sag{color:#3F4843; font-size:.875rem; flex:none; text-align:right}
+  .satirBtn::after{content:""; flex:none; width:.4375rem; height:.4375rem; margin:0 .25rem 0 -.125rem;
+    border-top:1.75px solid #8A948F; border-right:1.75px solid #8A948F; transform:rotate(45deg)}
+  .grup{background:var(--soft); border-radius:.875rem; overflow:hidden; margin-top:.75rem}
+  .grup .satirBtn{margin:0; border-radius:0; background:transparent}
+  .grup .satirBtn:active{background:#E6ECE8}
+  .grup .satirBtn + .satirBtn{box-shadow:inset 0 1px 0 #DCE2DE}
 
   /* fotoğraflar */
   .fotolar{display:grid; grid-template-columns:1fr 1fr; gap:.5rem}
@@ -183,7 +197,7 @@
   .kutular{display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-top:1.25rem}
   .kutu{background:var(--soft); border-radius:.875rem; padding:1rem}
   .kutu .lab{font-size:.75rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted)}
-  .kutu .val{font-family:var(--serif); font-size:1.375rem; letter-spacing:-.02em; margin-top:.375rem}
+  .kutu .val{font-family:var(--serif); font-size:1.375rem; font-weight:600; letter-spacing:-.01em; margin-top:.375rem}
   .seg{display:flex; gap:.5rem}
   .seg button{flex:1; min-height:2.875rem; padding:.75rem .25rem; border-radius:.75rem;
     font-size:.9375rem; background:var(--soft); color:var(--muted); text-align:center}
@@ -218,46 +232,66 @@
   .sheet{width:100%; max-width:28rem; background:#fff; border-radius:1rem 1rem 0 0; padding:1.5rem;
     padding-bottom:calc(1.5rem + env(safe-area-inset-bottom)); margin-top:auto}
   @media(min-width:640px){ .sheet{border-radius:1rem; margin:auto} }
-  .sheet h2{font-family:var(--serif); font-size:1.5rem; letter-spacing:-.02em; margin:0; font-weight:400}
-  .sheet h3{font-family:var(--serif); font-size:1.875rem; letter-spacing:-.02em; margin:0; font-weight:400}
-  .x{position:absolute; top:0; right:0; padding:.25rem; line-height:0; color:var(--muted)}
+  .sheet h2, .sheet h3{font-family:var(--serif); font-size:1.5rem; letter-spacing:-.01em; margin:0;
+    font-weight:600; line-height:1.25}
+  .x{position:absolute; top:-.625rem; right:-.75rem; width:2.75rem; height:2.75rem; line-height:0;
+    color:var(--muted); display:flex; align-items:center; justify-content:center; border-radius:99px}
+  .x:active{background:var(--soft)}
+  .sheet > .x{top:.75rem; right:.75rem}
+  .sheet > .x ~ h2{padding-right:2.5rem}
+  .sheet::before{content:""; position:absolute; top:.5rem; left:50%; width:2.25rem; height:.3125rem;
+    margin-left:-1.125rem; border-radius:99px; background:#D3DAD6}
+  @media(min-width:640px){ .sheet::before{display:none} }
+  .sheet.cekiliyor{transition:none}
+  .sheet{transition:transform .2s ease-out}
   .kapatAlt{width:100%; margin-top:.5rem; padding:.875rem 0; border-radius:.75rem; font-size:1rem;
     text-align:center; background:var(--soft); color:var(--ink)}
   .sheet{position:relative}
-  .head{position:relative; padding-right:2rem}
+  .head{position:relative; padding-right:2.5rem}
   .field{margin-bottom:1rem}
-  .field input{border-bottom:1px solid var(--line); padding-bottom:.5rem; border-radius:0}
-  .field input:focus{border-color:var(--ink)}
+  .field input{border-bottom:1px solid var(--cizgi); padding-bottom:.5rem; border-radius:0;
+    transition:border-color .15s, box-shadow .15s}
+  .field input:focus{border-color:var(--ok); box-shadow:0 1px 0 var(--ok)}
   .field.hata input{border-color:var(--uyari)}
   .ikili{display:grid; grid-template-columns:1fr 1fr; gap:.75rem}
   .uclu{display:grid; grid-template-columns:1fr 1fr 1fr; gap:.75rem}
   .field textarea{width:100%; font:inherit; color:inherit; background:none; border:0; outline:none;
-    border-bottom:1px solid var(--line); padding:0 0 .5rem; resize:vertical; min-height:6rem;
+    border-bottom:1px solid var(--cizgi); padding:0 0 .5rem; resize:vertical; min-height:6rem;
     font-family:inherit; line-height:1.6}
+  .field textarea:focus{border-color:var(--ok); box-shadow:0 1px 0 var(--ok)}
   .cipler{display:flex; flex-wrap:wrap; gap:.5rem}
   .cip{padding:.5rem .75rem; border-radius:99px; background:var(--soft); font-size:.8125rem;
     color:var(--ink)}
   .cip.on{background:var(--ok); color:#fff}
   .anahtar{display:flex; align-items:center; justify-content:space-between; padding:.75rem 0;
     border-bottom:1px solid var(--line); font-size:.9375rem}
-  .svic{width:2.75rem; height:1.625rem; border-radius:99px; background:var(--line); position:relative;
+  .svic{width:2.75rem; height:1.625rem; border-radius:99px; background:#B8C2BC; position:relative; cursor:pointer;
     transition:background .2s; flex:none}
   .svic.on{background:var(--ok)}
   .svic i{position:absolute; top:.1875rem; left:.1875rem; width:1.25rem; height:1.25rem;
     border-radius:99px; background:#fff; transition:transform .2s}
   .svic.on i{transform:translateX(1.125rem)}
-  .big{width:100%; margin-top:1.5rem; padding:.875rem 0; border-radius:.75rem; font-size:1rem;
-    color:#fff; text-align:center; background:var(--ok)}
+  .svic i{box-shadow:0 1px 2px rgba(16,22,19,.25)}
+  .svic::after{content:""; position:absolute; inset:-.5625rem -.375rem}
+  .big{width:100%; margin-top:1.5rem; min-height:3.25rem; padding:.875rem 0; border-radius:.75rem; font-size:1rem;
+    font-weight:600; color:#fff; text-align:center; background:var(--ok); border:1.5px solid transparent;
+    box-shadow:0 1px 2px rgba(16,22,19,.12); transition:filter .12s, background-color .12s}
+  .big:active{filter:brightness(.9)}
   .big:disabled{opacity:.35}
-  .ghost{background:var(--soft); color:var(--ink)}
+  .big.ghost, .ghost{background:#fff; color:var(--ink); border:1.5px solid var(--cizgi); box-shadow:none}
+  .big.ghost:active, .ghost:active{filter:none; background:#EEF2EF; border-color:#AEB9B3}
+  .big.tehlike{background:#fff; color:var(--uyari); border:1.5px solid #E4C3CD; box-shadow:none; margin-top:2.5rem}
+  .big.tehlike:active{filter:none; background:#FBF1F4}
   .cols{display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.5rem; padding-top:1.25rem;
     border-top:1px solid var(--line)}
   .info{display:flex; align-items:center; gap:.75rem; margin-top:.75rem}
+  .info a{display:inline-flex; align-items:center; min-height:2.75rem; font-weight:500}
   .para{display:flex; justify-content:space-between; padding:.5rem 0; font-size:.9375rem}
   .para.net{border-top:1px solid var(--line); margin-top:.25rem; padding-top:.75rem}
   .foot{margin-top:2.5rem; padding-top:1.25rem; border-top:1px solid var(--line);
     display:flex; gap:1.25rem; font-size:.8125rem; color:var(--muted)}
-  .foot button{text-decoration:underline}
+  .foot button{text-decoration:underline; min-height:2.75rem; padding:0 .25rem; margin:0 -.25rem;
+    color:#3F4843}
 </style>
 </head>
 <body>
@@ -429,10 +463,6 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
         Villalarım
       </button>
-      <div style="flex:1"></div>
-      <button class="icobtn" id="villaSil" aria-label="Villayı sil" style="margin-right:-.5rem">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
-      </button>
     </div>
     <input id="villaAd" placeholder="Villa adı" autocomplete="off">
     <div class="today" id="bugun"><div class="durumBas">Villa boş</div><div class="durumAlt"></div></div><div class="fmod hide" id="fmod"><span><b>Fiyat modu</b> · gün aralığı seçin</span><span><button id="fmodAy">Tüm ay</button> &nbsp;<button id="fmodCik">Bitir</button></span></div>
@@ -457,12 +487,17 @@
       <div id="liste"></div>
     </div>
 
-    <div class="section">
+    <div class="section" id="fiyatBolum">
       <div class="eyebrow">Fiyatlar</div>
-      <button class="satirBtn" id="fiyatBtn">
+      <button class="satirBtn" id="fiyatBtn" style="margin-top:.75rem">
         <span id="fiyatOzet">Fiyat belirle</span>
         <span class="sag">Fiyat gir</span>
       </button>
+    </div>
+
+    <div class="section">
+      <div class="eyebrow">Villa yönetimi</div>
+      <div class="grup">
       <button class="satirBtn" id="bilgiBtn">
         <span>Villa bilgileri</span>
         <span class="sag" id="bilgiOzet"></span>
@@ -479,6 +514,7 @@
         <span>Gelir &amp; gider</span>
         <span class="sag" id="kasaOzet"></span>
       </button>
+      </div>
     </div>
 
     <div class="section">
@@ -499,6 +535,10 @@
         <span class="sag">Misafirin gördüğü hâli</span>
       </button>
     </div>
+
+    <div class="section" id="silBolum">
+      <button class="big tehlike" id="villaSil">Villayı sil</button>
+    </div>
   </div>
 
   <!-- MİSAFİRLER -->
@@ -509,7 +549,7 @@
         <span id="misGeriAd">Villa</span>
       </button>
       <div style="flex:1"></div>
-      <button id="misSecModu" class="sm" style="color:var(--ok)">Seç</button>
+      <button id="misSecModu" class="sm" style="color:var(--ok);font-weight:600;min-height:2.75rem;min-width:2.75rem;padding:0 .5rem;margin-right:-.5rem;text-align:center">Seç</button>
     </div>
     <h1 style="font-size:1.875rem">Misafirler</h1>
     <div class="sm muted" id="misOzet" style="margin-top:.25rem"></div>
@@ -1180,8 +1220,11 @@
     if(!yak.length) lh='<div class="sm muted">Henüz rezervasyon yok. Takvimden tarih aralığı seçerek başlayın.</div>';
     else yak.forEach(function(r){
       var kalan=kalanGorur()?kalemler(v,r).kalan:0;
+      var tutarYok=paraGorur() && !(r.tutar>0);
       lh+='<button class="row" data-id="'+r.id+'"><span class="dot" style="background:'+r.color+'"></span>'+
-          '<span class="name">'+esc(r.guest)+(kalan>0?' <span class="muted" style="font-size:.8125rem">'+esc(cev("· kalan "+para(kalan)))+"</span>":"")+"</span>"+
+          '<span class="name">'+esc(r.guest)+
+          (tutarYok?' <span class="warn" style="font-size:.8125rem">'+esc(cev("· tutar girilmedi"))+"</span>":
+           (kalan>0?' <span class="muted" style="font-size:.8125rem">'+esc(cev("· kalan "+para(kalan)))+"</span>":""))+"</span>"+
           '<span class="meta">'+aralikMetni(r)+"</span></button>";
     });
     document.getElementById("liste").innerHTML=lh;
@@ -1201,6 +1244,7 @@
     var sahip=sahipMi(), duz=duzenlenebilir();
     document.getElementById("kasaBtn").classList[sahip?"remove":"add"]("hide");
     document.getElementById("fiyatBtn").classList[(sahip&&duz)?"remove":"add"]("hide");
+    document.getElementById("fiyatBolum").classList[(sahip&&duz)?"remove":"add"]("hide");
     document.getElementById("bakiciBtn").classList[(S.bulut&&sahip&&!S.destek)?"remove":"add"]("hide");
     if(S.bulut && sahip){
       var bel=document.getElementById("bakiciOzet");
@@ -1215,6 +1259,7 @@
       }
     }
     document.getElementById("villaSil").classList[(sahip&&duz)?"remove":"add"]("hide");
+    document.getElementById("silBolum").classList[(sahip&&duz)?"remove":"add"]("hide");
     if(!sahip && S.mod==="fiyat") fiyatModu(false);
 
     var ms=misafirler(v);
@@ -1450,11 +1495,13 @@
         people:document.getElementById("f-people").value||"",
         phone:document.getElementById("f-phone").value.trim(),
         note:document.getElementById("f-note").value.trim(),
-        tutar:paraGorur()?sayi(document.getElementById("f-tutar").value):0,
+        // Bakıcı tutarı görmez: gecelik fiyatlardan kendiliğinden hesaplanır.
+        // Fiyatı girilmemiş gece varsa 0 kalır, sahip listede "tutar girilmedi" görür.
+        tutar:paraGorur()?sayi(document.getElementById("f-tutar").value):(h.eksik?0:h.toplam),
         indirim:paraGorur()?sayi(document.getElementById("f-indirim").value):0,
         onOdemeTutar:paraGorur()?sayi(document.getElementById("f-ontl").value):undefined,
         onOdemeYuzde:paraGorur()?sayi(document.getElementById("f-onyuzde").value):undefined,
-        ekUcret:paraGorur()?ekOn:0,
+        ekUcret:(paraGorur()||!h.eksik)?ekOn:0,
         odenen:0, odemeler:[] });
       var yeniRez=v.rez[v.rez.length-1];
       var ilk=paraGorur()?sayi(document.getElementById("f-odenen").value):0;
@@ -1491,9 +1538,9 @@
       (duzenlenebilir()?'<button class="big ghost" id="d-duzenle" style="margin-top:1rem">Rezervasyonu düzenle</button>':"")+
       (paraGorur()?'<button class="big ghost" id="d-odeme" style="margin-top:.5rem">Ödeme al / güncelle</button>'+
       '<button class="big ghost" id="d-form" style="margin-top:.5rem">Rezervasyon formu (PDF)</button>':"")+
-      (r.phone?'<div class="info" style="margin-top:1.25rem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7A857F" stroke-width="1.5"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg><a href="tel:'+esc(r.phone)+'">'+esc(r.phone)+"</a></div>":"")+
+      (r.phone?'<div class="info" style="margin-top:1.25rem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5F6A64" stroke-width="1.5"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg><a href="tel:'+esc(r.phone)+'">'+esc(r.phone)+"</a></div>":"")+
       (r.note?'<div class="sm muted" style="margin-top:.75rem">'+esc(r.note)+"</div>":"")+
-      '<button class="big ghost" id="d-iptal">Rezervasyonu iptal et</button>');
+      '<button class="big tehlike" id="d-iptal">Rezervasyonu iptal et</button>');
 
     var dDz=document.getElementById("d-duzenle");
     if(dDz) dDz.onclick=function(){ duzenleSheet(r); };
@@ -1796,7 +1843,7 @@
       '<div class="sm muted" id="h-bildirimNot" style="margin-top:.5rem"></div>'+
       '<button class="big ghost" id="h-veri" style="margin-top:1.5rem">Verilerimi indir</button>'+
       '<button class="big" id="h-cikis" style="margin-top:.5rem">Çıkış yap</button>'+
-      '<button id="h-sil" class="sm muted" style="width:100%;margin-top:1.5rem;text-align:center;text-decoration:underline">Hesabımı kalıcı olarak sil</button>'+
+      '<button id="h-sil" class="big tehlike">Hesabımı kalıcı olarak sil</button>'+
       '<div class="sm muted" style="text-align:center;margin-top:1rem">'+
         '<a href="gizlilik.html" target="_blank" rel="noopener">Gizlilik ve kişisel veriler</a></div>');
     document.getElementById("h-dil").addEventListener("click",function(e){
@@ -2562,7 +2609,7 @@
     perde('<div class="head"><h2>'+esc(g.ad)+"</h2>"+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin-top:.375rem">'+g.sayi+" konaklama · "+g.gece+" gece"+
         (paraGorur()?" · toplam "+para(g.odenen):"")+"</div>"+
-      (g.tel?'<div class="info" style="margin-top:1rem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7A857F" stroke-width="1.5"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg><a href="tel:'+esc(g.tel)+'">'+esc(g.tel)+"</a></div>":"")+
+      (g.tel?'<div class="info" style="margin-top:1rem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5F6A64" stroke-width="1.5"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.3a2 2 0 012.1-.4c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg><a href="tel:'+esc(g.tel)+'">'+esc(g.tel)+"</a></div>":"")+
       '<div class="eyebrow" style="margin:1.5rem 0 .5rem">Konaklamalar</div>'+
       g.rez.slice().sort(function(a,b){return a.start<b.start?1:-1}).map(function(r){
         return '<div class="row"><span class="name">'+aralikMetni(r)+" "+parse(r.start).getFullYear()+
@@ -3171,7 +3218,7 @@
     c.width=W; c.height=H;
     var x=c.getContext("2d");
     var b=v.bilgi||{};
-    var INK="#101613", MUT="#7A857F", LIN="#E7EBE8", SOF="#F6F8F7", OK="#0B5B57", KRM="#9B2C4A";
+    var INK="#101613", MUT="#5F6A64", LIN="#E7EBE8", SOF="#F6F8F7", OK="#0B5B57", KRM="#9B2C4A";
     var SANS='-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif';
     var SERIF='Georgia,"Times New Roman",serif';
 
@@ -3417,7 +3464,7 @@
     var W=1240, H=1754, c=document.createElement("canvas");
     c.width=W; c.height=H;
     var x=c.getContext("2d");
-    var INK="#101613", MUT="#7A857F", LIN="#E7EBE8", SOF="#F6F8F7", OK="#0B5B57", KRM="#9B2C4A";
+    var INK="#101613", MUT="#5F6A64", LIN="#E7EBE8", SOF="#F6F8F7", OK="#0B5B57", KRM="#9B2C4A";
     var SANS='-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif';
     var SERIF='Georgia,"Times New Roman",serif';
     x.fillStyle="#fff"; x.fillRect(0,0,W,H);
@@ -3934,7 +3981,7 @@
         esc(link)+"</div>"+
       '<button class="big" id="ls-paylas">Linki paylaş</button>'+
       '<button class="big ghost" id="ls-kopyala" style="margin-top:.5rem">Kopyala</button>'+
-      '<button id="ls-kaldir" class="sm muted" style="width:100%;margin-top:1.25rem;text-align:center;text-decoration:underline">Paylaşımı kaldır</button>'+
+      '<button id="ls-kaldir" class="big tehlike">Paylaşımı kaldır</button>'+
       '<div class="sm muted" id="ls-durum" style="margin-top:.75rem"></div>');
 
     document.getElementById("ls-paylas").onclick=function(){
@@ -3973,13 +4020,37 @@
     kapat();
     var o=document.createElement("div");
     o.className="overlay";
-    o.innerHTML='<div class="sheet">'+html+
-      (altKapat===false?"":'<button class="kapatAlt" data-kapat="1">Kapat</button>')+"</div>";
+    o.innerHTML='<div class="sheet">'+html+"</div>";
+    var sh=o.firstChild;
+    // Tek kapatma yolu: sağ üstteki X. Başlığında X olmayan panellere de eklenir.
+    if(altKapat!==false && !sh.querySelector(".x")) sh.insertAdjacentHTML("afterbegin",kapatBtn());
     o.addEventListener("click",function(e){ if(e.target.closest("[data-kapat]")) kapat(); });
     o.addEventListener("click",function(e){ if(e.target===o) kapat(); });
     document.body.appendChild(o);
     var x=o.querySelector(".x"); if(x) x.onclick=kapat;
+    asagiCekKapat(o,sh);
     return o;
+  }
+  // Panelin üst kısmından (tutamaç / başlık) aşağı çekince kapanır.
+  function asagiCekKapat(o,sh){
+    var y0=null, dy=0;
+    sh.addEventListener("touchstart",function(e){
+      if(o.scrollTop>0 || e.touches.length!==1) return;
+      var ust=sh.getBoundingClientRect().top;
+      if(e.touches[0].clientY-ust>72 || e.target.closest("input,textarea,select")) return;
+      y0=e.touches[0].clientY; dy=0; sh.classList.add("cekiliyor");
+    },{passive:true});
+    sh.addEventListener("touchmove",function(e){
+      if(y0===null) return;
+      dy=Math.max(0,e.touches[0].clientY-y0);
+      sh.style.transform="translateY("+dy+"px)";
+    },{passive:true});
+    sh.addEventListener("touchend",function(){
+      if(y0===null) return;
+      y0=null; sh.classList.remove("cekiliyor");
+      if(dy>90){ if(o.parentNode) o.remove(); }
+      else sh.style.transform="";
+    });
   }
   function kapat(){ var l=document.querySelectorAll(".overlay"); if(l.length) l[l.length-1].remove(); }
   // Tarayıcının alert() kutusu yerine uygulamanın kendi paneli.

@@ -108,31 +108,31 @@ gerçek verilerde test kaydı açarsan sonunda sil.
 
 Hedef: daha net, daha "premium" ama aynı sade dil. Renk paleti ve yeşil (#0B5B57) kalsın.
 
-- [ ] **3.1 Gri yazılar koyulaşsın.** `--muted:#7A857F` beyazda kontrast 3,8 (sınır 4,5).
+- [x] **3.1 Gri yazılar koyulaşsın.** `--muted:#7A857F` beyazda kontrast 3,8 (sınır 4,5).
   `#5F6A64` civarına çek; açık gri zeminde de 4,5'i geçtiğini doğrula.
-- [ ] **3.2 İkincil butonlar (`.big.ghost`).** Şu an açık gri dolgu, kenarsız, normal yazı.
+- [x] **3.2 İkincil butonlar (`.big.ghost`).** Şu an açık gri dolgu, kenarsız, normal yazı.
   Yap: beyaz zemin, 1.5px `#C9D1CC` kenarlık, `font-weight:600`, basılınca hafif koyulaşma.
   Ana buton (`.big`) dolu yeşil, `font-weight:600`.
-- [ ] **3.3 Tehlikeli butonlar** (Rezervasyonu iptal et, Villayı sil, Hesabımı sil, Paylaşımı
+- [x] **3.3 Tehlikeli butonlar** (Rezervasyonu iptal et, Villayı sil, Hesabımı sil, Paylaşımı
   kaldır): kırmızı yazı (`--uyari`), en alta ayrık. Villa ekranında çöp kutusu başlığın
   yanında duruyor; onu sayfanın en altına "Villayı sil" butonu olarak taşı.
-- [ ] **3.4 Çizgiler ve form alanları.** `--line:#E7EBE8` beyazda neredeyse görünmüyor (1,2).
+- [x] **3.4 Çizgiler ve form alanları.** `--line:#E7EBE8` beyazda neredeyse görünmüyor (1,2).
   Ayırıcılar için `#D9DFDB`, form alt çizgisi için `#C9D1CC`; odaktaki alan yeşil alt çizgi.
-- [ ] **3.5 Açma-kapama düğmeleri (`.svic`).** Kapalıyken zemin `--line` ile aynı, görünmüyor.
+- [x] **3.5 Açma-kapama düğmeleri (`.svic`).** Kapalıyken zemin `--line` ile aynı, görünmüyor.
   Kapalı: `#B8C2BC` zemin; açık: yeşil.
-- [ ] **3.6 Dokunma alanları en az 44×44 px.** Ölçülenler: Yedek al / Geri yükle (18 px yükseklik),
+- [x] **3.6 Dokunma alanları en az 44×44 px.** Ölçülenler: Yedek al / Geri yükle (18 px yükseklik),
   Hesabımı sil (19), Paylaşımı kaldır (19), Misafirler "Seç" (19), rezervasyon detayındaki telefon
   linki (20), banner kapatma X (24), sheet kapatma X (28), geri oku (30), çöp kutusu (34),
   takvim ay okları (36), toggle (26).
-- [ ] **3.7 Liste satırları** (Villa bilgileri, Bakıcılar, Misafirler, Gelir & gider): sağa `›`
+- [x] **3.7 Liste satırları** (Villa bilgileri, Bakıcılar, Misafirler, Gelir & gider): sağa `›`
   ok işareti, sağdaki değer koyu gri.
-- [ ] **3.8 Bölüm başlıkları.** Villa ekranında "FİYATLAR" başlığının altında villa bilgileri,
+- [x] **3.8 Bölüm başlıkları.** Villa ekranında "FİYATLAR" başlığının altında villa bilgileri,
   bakıcılar, misafirler, gelir-gider de duruyor. Gruplar: "Fiyatlar" (fiyat satırı) ·
   "Villa yönetimi" (bilgiler, bakıcılar, misafirler, gelir & gider) · "Fotoğraflar" ·
   "Villa sayfası".
-- [ ] **3.9 Tek kapatma.** Sheet'lerde hem sağ üstte X hem altta "Kapat" var. Altta "Kapat"ı kaldır,
+- [x] **3.9 Tek kapatma.** Sheet'lerde hem sağ üstte X hem altta "Kapat" var. Altta "Kapat"ı kaldır,
   X'i 44 px yap. (Asıl eylem butonu olan sheet'lerde aşağı kaydırarak kapatma da iyi olur.)
-- [ ] **3.10 Başlıklar.** Serif başlıklar ince duruyor; `font-weight:600`. Villa kartı ve sheet
+- [x] **3.10 Başlıklar.** Serif başlıklar ince duruyor; `font-weight:600`. Villa kartı ve sheet
   başlıkları için ölçü tutarlı olsun.
 
 ## 4. Ekran düzeni
