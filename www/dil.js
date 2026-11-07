@@ -306,6 +306,7 @@
     // Alt sekmeler, Takvim sekmesi, telefon, onay ekranı
     "Villanızı hazırlayın":"Get your villa ready", "Gecelik fiyat gir":"Enter nightly prices",
     "Villa sayfasını paylaş":"Share the villa page", "+ Rezervasyon":"+ Reservation",
+    "Rezervasyon":"Reservation", "Gizle":"Hide", "Kart gizlendi.":"Card hidden.",
     "Bu ay gelir":"Income this month", "Sonraki giriş":"Next check-in",
     "Giriş/çıkış":"Check-in/out", "Boş günleri paylaş":"Share free days", "Dolu":"Booked", "Boş":"Free",
     "Giriş gününe dokunun.":"Tap the check-in day.",

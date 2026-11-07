@@ -90,8 +90,20 @@
     display:flex; align-items:center; justify-content:center; color:#fff}
   .tik.on{background:var(--ok); border-color:var(--ok)}
   .tikli .bitti{color:var(--muted)}
-  .hizli{display:grid; gap:.5rem; margin-top:1rem}
-  .hizli .big{margin-top:0; font-size:.9375rem; padding:.75rem .25rem}
+  .kurulum .kGizle{flex:none; font-size:.8125rem; color:var(--muted); padding:.25rem 0 .25rem .5rem;
+    text-decoration:underline; text-underline-offset:2px}
+  .kurulum .kBasSol{display:flex; align-items:baseline; gap:.5rem; min-width:0}
+  .kurulum.kapali{padding:.5rem; display:flex; align-items:center; gap:.5rem}
+  .kurulum.kapali .satirBtn{margin:0; flex:1 1 auto; min-width:0}
+  .kurulum.kapali .kGizle{padding:.25rem .5rem}
+  .kTek{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .hizli{display:flex; gap:.5rem; margin-top:1rem}
+  .hizli .big{flex:1 1 auto; width:auto}
+  .hizli .big{margin-top:0; font-size:.875rem; padding:.75rem .375rem; white-space:nowrap;
+    display:flex; align-items:center; justify-content:center; gap:.3125rem; min-width:0; overflow:hidden}
+  .hizli .big span{overflow:hidden; text-overflow:ellipsis}
+  .hizli .big svg{flex:none}
+  @media (max-width:360px){ .hizli .big{font-size:.8125rem; padding:.75rem .25rem; gap:.25rem} }
   .ayOzet{display:grid; gap:.5rem; margin-top:.875rem}
   .okutu{background:var(--soft); border-radius:var(--kose); padding:.625rem .75rem; min-width:0}
   .okutu .lab{font-size:.6875rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
@@ -1252,7 +1264,7 @@
   document.getElementById("kilitTekrar").onclick=function(){ if(S.aktif) kilitBaslat(S.aktif); };
 
   function ac(id){
-    S.aktif=id; S.start=null; S.uyari=""; S.mod="rez"; S.salt=false; S.rezModu=false;
+    S.aktif=id; S.start=null; S.uyari=""; S.mod="rez"; S.salt=false; S.rezModu=false; S.kurAcik=false;
     document.getElementById("fmod").classList.add("hide");
     document.getElementById("kilitBar").classList.add("hide");
     S.cursor=new Date(today.getFullYear(),today.getMonth(),1);
@@ -1413,17 +1425,23 @@
         '<span class="sag" style="color:var(--ok)">Boş günleri paylaş</span></button>';
     }
     var hz=[];
-    if(duz0) hz.push('<button class="big ghost" data-is="rez">+ Rezervasyon</button>');
-    if(sahip0 && duz0) hz.push('<button class="big ghost" data-is="fiyat">Fiyat gir</button>');
-    if(sahip0 && kurulu()) hz.push('<button class="big ghost" data-is="paylas">Paylaş</button>');
+    var ik=function(d){ return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+d+"</svg>"; };
+    if(duz0) hz.push('<button class="big ghost" data-is="rez">'+ik('<path d="M12 5v14M5 12h14"/>')+"<span>"+esc(cev("Rezervasyon"))+"</span></button>");
+    if(sahip0 && duz0) hz.push('<button class="big ghost" data-is="fiyat"><span>'+esc(cev("Fiyat gir"))+"</span></button>");
+    if(sahip0 && kurulu()) hz.push('<button class="big ghost" data-is="paylas"><span>'+esc(cev("Paylaş"))+"</span></button>");
     document.getElementById("bugun").innerHTML=
       '<div class="durumBas">'+(dm.renk?'<span class="dot" style="background:'+dm.renk+'"></span>':"")+
       esc(dm.bas)+'</div><div class="durumAlt">'+esc(dm.alt)+"</div>"+bosSatir+
-      (hz.length?'<div class="hizli" style="grid-template-columns:repeat('+hz.length+',minmax(0,1fr))">'+hz.join("")+"</div>":"");
+      (hz.length?'<div class="hizli">'+hz.join("")+"</div>":"");
 
     // ---- kurulum kartı (sadece sahip; 4 madde bitince gizlenir) ----
     var kur=document.getElementById("kurulum");
-    if(sahip0 && duz0){
+    // Rezervasyonu olan villada kart takvimin altına iner ve kapalı (tek satır) durur
+    var rezVar=v.rez.length>0;
+    var kurYeri=rezVar?document.getElementById("liste").parentNode:document.getElementById("bugun");
+    if(kur.nextElementSibling!==kurYeri) kurYeri.parentNode.insertBefore(kur,kurYeri);
+    kur.style.marginTop=rezVar?"2rem":"";
+    if(sahip0 && duz0 && !(v.bilgi && v.bilgi.kurulumGizli)){
       var bb0=v.bilgi||{}, bd=0;
       ["konum","kapasite","oda","banyo","aciklama","whatsapp"].forEach(function(x){ if(bb0[x]) bd++; });
       if(bb0.ozellikler && bb0.ozellikler.length) bd++;
@@ -1432,9 +1450,16 @@
                {k:"bilgi", t:"Villa bilgilerini doldur", ok:bd>=6}];
       if(kurulu()) mad.push({k:"paylas", t:"Villa sayfasını paylaş", ok:!!(v.paylasim && v.paylasim.yayin)});
       var biten=mad.filter(function(x){ return x.ok; }).length;
-      if(biten<mad.length){
-        kur.innerHTML='<div class="kBas"><span class="kBaslik">Villanızı hazırlayın</span>'+
-          '<span class="kSay">'+biten+"/"+mad.length+"</span></div>"+
+      var gizleBtn='<button class="kGizle" data-kk="gizle">'+esc(cev("Gizle"))+"</button>";
+      var kapali=rezVar && !S.kurAcik;
+      kur.classList.toggle("kapali",biten<mad.length && kapali);
+      if(biten<mad.length && kapali){
+        kur.innerHTML='<button class="satirBtn" data-kk="ac"><span class="kTek">'+
+          esc(cev("Villanızı hazırlayın"))+" · "+biten+"/"+mad.length+"</span></button>"+gizleBtn;
+        kur.classList.remove("hide");
+      } else if(biten<mad.length){
+        kur.innerHTML='<div class="kBas"><span class="kBasSol"><span class="kBaslik">Villanızı hazırlayın</span>'+
+          '<span class="kSay">'+biten+"/"+mad.length+"</span></span>"+gizleBtn+"</div>"+
           '<div class="ilerleme"><i style="width:'+Math.round(biten/mad.length*100)+'%"></i></div>'+
           mad.map(function(x){
             return '<button class="satirBtn" data-kk="'+x.k+'"><span class="tikli">'+
@@ -1631,7 +1656,13 @@
   });
   document.getElementById("kurulum").addEventListener("click",function(e){
     var b=e.target.closest("[data-kk]"); if(!b || !aktif()) return;
-    var kk=b.dataset.kk;
+    var kk=b.dataset.kk, v=aktif();
+    if(kk==="ac"){ S.kurAcik=true; ciz(); return; }
+    if(kk==="gizle"){
+      v.bilgi=v.bilgi||{}; v.bilgi.kurulumGizli=true; kaydet(); ciz();
+      geriAlBildir(cev("Kart gizlendi."),function(){ delete v.bilgi.kurulumGizli; kaydet(); ciz(); });
+      return;
+    }
     if(kk==="fiyat") fiyatModu(true);
     else if(kk==="foto") document.getElementById("fotoInput").click();
     else if(kk==="bilgi") bilgiSheet(false);
