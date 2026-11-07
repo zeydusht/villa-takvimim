@@ -155,6 +155,8 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
         Artık güncellenemezse villa ekranındaki "Villa sayfanız" kartında kırmızı yazıyla görünüyor.
       - Bakıcının gördüğü kalan tutar sunucuda hesaplanıyor; yeni kurala uyması için aşağıdaki değişiklik gerekli.
 
+- [x] Görev 8 sonrası giriş hatası düzeltildi (davetBekleyenKullan kapsam hatası).
+
 ## Veritabanı için gerekenler (Görev 8)
 Claude sohbetten, Zeyd'in onayıyla yapacak. Taslaklar; tablo/fonksiyon adları canlı şemaya göre kontrol edilmeli.
 

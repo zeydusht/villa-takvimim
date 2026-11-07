@@ -1124,23 +1124,6 @@
         history.replaceState(null,"",location.pathname+location.hash); }
     }catch(e){}
   })();
-  // "Villa Salta" → "Villa Salta'ya", "Defne" → "Defne'ye"
-  function ekE(ad){
-    var t=String(ad||"").trim(), unlu="aeıioöuü", son="";
-    for(var i=t.length-1;i>=0;i--){ var c=t.charAt(i).toLocaleLowerCase("tr"); if(unlu.indexOf(c)>=0){ son=c; break; } }
-    var ek=("aıou".indexOf(son)>=0)?"a":"e";
-    if(unlu.indexOf(t.slice(-1).toLocaleLowerCase("tr"))>=0) ek="y"+ek;
-    return t+"'"+ek;
-  }
-  function davetBekleyenKullan(){
-    var k=store.get(DAVET_BEKLEYEN); if(!k || !window.VT || !VT.girisli || !VT.girisli()) return;
-    store.set(DAVET_BEKLEYEN,"");
-    VT.davetiKullan(k).then(function(r){
-      var ad=(r&&r[0]&&r[0].villa_ad)||"Villa";
-      bildir(cev(ekE(ad)+" bakıcı olarak katıldınız ✓"));
-      bulutYukle();
-    }).catch(function(e){ uyari(cev("Davet kodu kullanılamadı.")+" "+((e&&e.message)||"")); });
-  }
 (function(){
   "use strict";
   var PALET=["#0B5B57","#A8431E","#3C4E8C","#7A4B8C","#4F6B22","#B0761A","#9B2C4A","#2E6E8E"];
@@ -1197,6 +1180,24 @@
     get:function(k){try{return varLS?localStorage.getItem(k):(mem[k]||null)}catch(e){return null}},
     set:function(k,v){try{ varLS?localStorage.setItem(k,v):(mem[k]=v); return true }catch(e){ return false }}
   };
+  // "Villa Salta" → "Villa Salta'ya", "Defne" → "Defne'ye"
+  function ekE(ad){
+    var t=String(ad||"").trim(), unlu="aeıioöuü", son="";
+    for(var i=t.length-1;i>=0;i--){ var c=t.charAt(i).toLocaleLowerCase("tr"); if(unlu.indexOf(c)>=0){ son=c; break; } }
+    var ek=("aıou".indexOf(son)>=0)?"a":"e";
+    if(unlu.indexOf(t.slice(-1).toLocaleLowerCase("tr"))>=0) ek="y"+ek;
+    return t+"'"+ek;
+  }
+  // Bekleyen davet kodu (?davet=KOD ile gelindiyse) girişten sonra kullanılır
+  function davetBekleyenKullan(){
+    var k=store.get(DAVET_BEKLEYEN); if(!k || !window.VT || !VT.girisli || !VT.girisli()) return;
+    store.set(DAVET_BEKLEYEN,"");
+    VT.davetiKullan(k).then(function(r){
+      var ad=(r&&r[0]&&r[0].villa_ad)||"Villa";
+      bildir(cev(ekE(ad)+" bakıcı olarak katıldınız ✓"));
+      bulutYukle();
+    }).catch(function(e){ uyari(cev("Davet kodu kullanılamadı.")+" "+((e&&e.message)||"")); });
+  }
 
   var today=new Date(); today.setHours(0,0,0,0);
   var S={ villalar:[], aktif:null, cursor:new Date(today.getFullYear(),today.getMonth(),1),
@@ -6335,7 +6336,11 @@
       var kurtarilan=yerelKayitlariKurtar();
       var duzeltilen=kimlikDuzelt();
       if(kurtarilan || duzeltilen) kaydet();
-      cizAna(); tasimaSor(); yoneticiKontrol(); fotoTasi(); silinenGuncelle(); davetBekleyenKullan();
+      cizAna();
+      // Yan işler: biri hata verse bile yükleme bozulmasın ("Bağlantı kurulamadı" çıkmasın)
+      [tasimaSor, yoneticiKontrol, fotoTasi, silinenGuncelle, davetBekleyenKullan].forEach(function(is){
+        try{ is(); }catch(e){ try{ console.error("yan iş hatası:", is.name, e); }catch(x){} }
+      });
       // destek modundan çıkılınca, girilen yere (Hesap → Kullanıcılar) geri dön
       if(S.hesabaDon){ var hu=S.hesabaDon; S.hesabaDon=null; hesapEkranCiz(); goster("hesapEkran"); try{ kullaniciDetay(hu); }catch(x){} }
       if(kurtarilan) bildir(kurtarilan+" kayıt buluta aktarılıyor.");
