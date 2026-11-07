@@ -81,6 +81,9 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       açıklama, 3 etiketli satır (Alınan / Alınacak / Giderler), 12 aylık SVG çubuk grafik, rezervasyon
       satırlarında Ödendi/Kısmen/Ödenmedi/Tutar girilmedi etiketleri, ortalama gecelik fiyat hesabı
       düzeltmesi (500 ₺ hatası), yeşil seçici. Alt menü iç ekranlarda da kalır (Villalar seçili).
+- [ ] Gelir & gider hızlı ekleme · mesajı yazıldı: satırlarda "+" butonları, hazır gider düğmeleri
+      (Temizlik, Havuz bakımı…), son tutar önerisi, kaybolan başlık. KONTROL: Zeyd'in ekranında Villa
+      Salta 2026 her şey 0 ₺ görünüyordu (önce 5.000/30.000/1.000 vardı) — hata olabilir, test et.
 - [ ] SIRADAKİ: Veritabanı güvenlik düzeltmeleri — Claude sohbetten Supabase'de yapacak, Zeyd'in onayıyla
       (detaylar inceleme raporunda, repo herkese açık olduğu için burada yok)
 
