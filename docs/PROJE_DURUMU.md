@@ -68,7 +68,9 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
 - [x] Fotoğraflar ekranı · test edildi: villa ekranında ilk 3 foto + "+X", ayrı Fotoğraflar
       ekranı (3'lü ızgara, kapak etiketi, basılı tut-sürükle sıralama, çoklu seçip silme, tam ekran
       görüntüleme + kapak yap). Bakıcı silemez/sıralayamaz.
-- [ ] Drive'dan fotoğraf alma · sunucu fonksiyonu yazıldı: supabase/functions/drive-aktar/index.ts
+- [x] Drive'dan fotoğraf alma · TAMAM (arayüz test edildi, sahte klasörle). GOOGLE_API_KEY Zeyd tarafından eklendi.
+      Açık: fotoğrafsız villada Drive'a ulaşılamıyordu → düzeltme Claude Code'a gönderildi. Zeyd gerçek
+      klasörle deneyecek. · sunucu fonksiyonu yazıldı: supabase/functions/drive-aktar/index.ts
       SUPABASE'E YÜKLENDİ (7 Kasım, Claude, Zeyd onayıyla; verify_jwt açık).
       Zeyd: Google Cloud'da API anahtarı + Supabase'de GOOGLE_API_KEY sırrı. Arayüz Claude Code'a gönderildi.
       (Eski not: Plan: kullanıcı
