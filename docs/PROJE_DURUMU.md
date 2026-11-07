@@ -62,6 +62,9 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       "boş günleri WhatsApp'tan paylaş". Mesajı sohbette yazıldı.)
 - [ ] 5. bölüm — küçük kazanımlar
 - [ ] 1.6 — telefon bildirimleri (Firebase/Apple anahtarı gerekecek)
+- [ ] Fiyat girme yeniden tasarımı · Claude Code'a gönderildi: sarı "fiyat modu" kalkar, ayrı "Fiyatlar"
+      ekranı, "Aylar" (12 ay listesi, aya dokun → tüm aya fiyat, hafta sonu ayrı fiyat, çoklu ay seçimi)
+      ve "Günler" (takvimde gün seç → fiyat gir) sekmeleri, son kullanılan fiyatlar, "Geri al".
 - [ ] SIRADAKİ: Veritabanı güvenlik düzeltmeleri — Claude sohbetten Supabase'de yapacak, Zeyd'in onayıyla
       (detaylar inceleme raporunda, repo herkese açık olduğu için burada yok)
 
