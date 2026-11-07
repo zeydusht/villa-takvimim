@@ -304,6 +304,11 @@
     "· tutar girilmedi":"· no amount entered",
 
     // Alt sekmeler, Takvim sekmesi, telefon, onay ekranı
+    "Villanızı hazırlayın":"Get your villa ready", "Gecelik fiyat gir":"Enter nightly prices",
+    "Villa sayfasını paylaş":"Share the villa page", "+ Rezervasyon":"+ Reservation",
+    "Bu ay gelir":"Income this month", "Sonraki giriş":"Next check-in",
+    "Giriş/çıkış":"Check-in/out", "Boş günleri paylaş":"Share free days", "Dolu":"Booked", "Boş":"Free",
+    "Giriş gününe dokunun.":"Tap the check-in day.",
     "Villalar":"Villas", "Takvim":"Calendar", "Hesap":"Account", "Ara":"Call", "Yedek":"Backup",
     "Yarın":"Tomorrow", "Ana menü":"Main menu",
     "Tüm villaların önümüzdeki 30 gündeki giriş ve çıkışları":"Check-ins and check-outs for all villas in the next 30 days",
@@ -387,6 +392,8 @@
 
   var K = [
     [/^· kalan (.+)$/, "· balance $1"],
+    [/^Bu ay (\d+) gece boş$/, "$1 free nights this month"],
+    [/^(\d+) \/ (\d+) gece$/, "$1 of $2 nights"],
     [/^Giriş (\d+:\d+) · (.+)$/, "Check-in $1 · $2"],
     [/^Çıkış (\d+:\d+) · (.+)$/, "Check-out $1 · $2"],
     [/^(Bugün|Yarın) · (.+)$/, function (_, a, b) { return (a === "Bugün" ? "Today" : "Tomorrow") + " · " + b; }],

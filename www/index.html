@@ -78,6 +78,33 @@
     border-color:var(--basili-cerceve); background-color:var(--basili-zemin);
     transform:scale(var(--basili-olcek)); filter:none}
 
+  /* villa ekranı: kurulum kartı, hızlı işlemler, ay özeti, takvim açıklaması */
+  .kurulum{background:var(--soft); border-radius:var(--kose); padding:1rem; margin-top:1rem}
+  .kurulum .kBas{display:flex; justify-content:space-between; align-items:baseline; gap:.75rem}
+  .kurulum .kBaslik{font-family:var(--serif); font-size:1.1875rem; letter-spacing:-.02em}
+  .kurulum .kSay{font-size:.875rem; color:var(--muted); font-variant-numeric:tabular-nums}
+  .ilerleme{height:.375rem; border-radius:99px; background:#D3DAD6; overflow:hidden; margin:.625rem 0 .375rem}
+  .ilerleme i{display:block; height:100%; background:var(--ok); border-radius:99px; transition:width .3s}
+  .tikli{display:flex; align-items:center; gap:.75rem}
+  .tik{flex:none; width:1.5rem; height:1.5rem; border-radius:99px; border:2px solid var(--cerceve);
+    display:flex; align-items:center; justify-content:center; color:#fff}
+  .tik.on{background:var(--ok); border-color:var(--ok)}
+  .tikli .bitti{color:var(--muted)}
+  .hizli{display:grid; gap:.5rem; margin-top:1rem}
+  .hizli .big{margin-top:0; font-size:.9375rem; padding:.75rem .25rem}
+  .ayOzet{display:grid; gap:.5rem; margin-top:.875rem}
+  .okutu{background:var(--soft); border-radius:var(--kose); padding:.625rem .75rem; min-width:0}
+  .okutu .lab{font-size:.6875rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+    line-height:1.3; min-height:1.8em}
+  .okutu .val{font-size:1.0625rem; margin-top:.25rem; white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis; font-variant-numeric:tabular-nums}
+  .okutu .alt{font-size:.75rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .lejant{display:flex; gap:1rem; flex-wrap:wrap; font-size:.75rem; color:var(--muted); margin-top:.75rem}
+  .lejant span{display:flex; align-items:center; gap:.375rem}
+  .lejant i{width:.875rem; height:.875rem; border-radius:.25rem; display:inline-block}
+  .hint.vurgu{background:var(--basili-zemin); border-radius:var(--kose); padding:.75rem .875rem;
+    border-top:0; color:var(--ink)}
+
   /* alt sekme barı */
   .sekmeler{position:fixed; left:0; right:0; bottom:0; z-index:44; background:rgba(255,255,255,.98);
     border-top:1px solid var(--line); display:flex; justify-content:center;
@@ -176,18 +203,18 @@
     align-self:stretch; margin:0; padding:0; border:0;
     -webkit-appearance:none; appearance:none; background-clip:padding-box;
     box-sizing:border-box; overflow:hidden;
-    display:grid; grid-template-rows:1.125rem .875rem;
+    display:grid; grid-template-rows:1.625rem .875rem;
     align-content:center; justify-items:center; border-radius:10px; font-size:1rem;
     transition:opacity .15s; line-height:1}
   .cell:active{opacity:.7}
-  .cell .gn{line-height:1.125rem}
+  .cell .gn{line-height:1.625rem}
   .cell .fy{line-height:.875rem; font-size:.6875rem; letter-spacing:-.02em;
     opacity:.7; font-variant-numeric:tabular-nums; white-space:nowrap}
   .cell .fy.bh{opacity:.95; letter-spacing:.04em}
   .cell.gecmis{opacity:.38}
   .cell.full .fy{opacity:.85}
-  .cell.today .gn{font-weight:700}
-  .cell.today{box-shadow:inset 0 0 0 2.5px #fff, inset 0 0 0 4px rgba(16,22,19,.45)}
+  .cell.today .gn{display:flex; align-items:center; justify-content:center; width:1.625rem; height:1.625rem;
+    border-radius:99px; background:var(--ok); color:#fff; line-height:1}
   .cell.today.sel{box-shadow:inset 0 0 0 2.5px #fff, inset 0 0 0 4.5px var(--ink)}
   .cell.sel{box-shadow:inset 0 0 0 1.5px var(--ink)}
   .cell.full{color:#fff}
@@ -525,12 +552,13 @@
       </button>
     </div>
     <input id="villaAd" placeholder="Villa adı" autocomplete="off">
+    <div class="kurulum hide" id="kurulum"></div>
     <div class="today" id="bugun"><div class="durumBas">Villa boş</div><div class="durumAlt"></div></div><div class="fmod hide" id="fmod"><span><b>Fiyat modu</b> · gün aralığı seçin</span><span><button id="fmodAy">Tüm ay</button> &nbsp;<button id="fmodCik">Bitir</button></span></div>
 
     <div class="monthbar">
       <div>
         <div class="m" id="ayad"></div>
-        <div class="sm muted" id="aystat" style="margin-top:.125rem"></div>
+
       </div>
       <div class="nav">
         <button id="prev" aria-label="Önceki ay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
@@ -538,8 +566,14 @@
       </div>
     </div>
 
+    <div class="ayOzet" id="ayOzet"></div>
     <div class="dow" id="dow"><div>Pt</div><div>Sa</div><div>Ça</div><div>Pe</div><div>Cu</div><div>Ct</div><div>Pz</div></div>
     <div class="grid" id="grid"></div>
+    <div class="lejant">
+      <span><i style="background:var(--ok)"></i>Dolu</span>
+      <span><i style="background:linear-gradient(110deg,#fff 49.5%,#9DBDB9 50.5%);box-shadow:inset 0 0 0 1px #9DBDB9"></i>Giriş/çıkış</span>
+      <span><i style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--cerceve)"></i>Boş</span>
+    </div>
     <div class="hint" id="hint"></div>
 
     <div class="section">
@@ -1218,7 +1252,7 @@
   document.getElementById("kilitTekrar").onclick=function(){ if(S.aktif) kilitBaslat(S.aktif); };
 
   function ac(id){
-    S.aktif=id; S.start=null; S.uyari=""; S.mod="rez"; S.salt=false;
+    S.aktif=id; S.start=null; S.uyari=""; S.mod="rez"; S.salt=false; S.rezModu=false;
     document.getElementById("fmod").classList.add("hide");
     document.getElementById("kilitBar").classList.add("hide");
     S.cursor=new Date(today.getFullYear(),today.getMonth(),1);
@@ -1347,14 +1381,69 @@
     var tk=fmt(today);
 
     document.getElementById("ayad").textContent=AYLAR[m]+" "+y;
-    var dolu=0;
-    for(var i=1;i<=adet;i++){ var o=gun(fmt(new Date(y,m,i))); if(o.sabah||o.aksam) dolu++; }
-    document.getElementById("aystat").textContent=dolu+" / "+adet+" gün dolu";
+    var sahip0=sahipMi(), duz0=duzenlenebilir();
 
+    // ---- ay özeti: doluluk, bu ay gelir, sonraki giriş (gösterilen aya göre) ----
+    var ayBas=fmt(new Date(y,m,1)), aySon=fmt(new Date(y,m,adet)), doluGece=0;
+    for(var i=1;i<=adet;i++){ if(gun(fmt(new Date(y,m,i))).aksam) doluGece++; }
+    var ayGelir=0;
+    v.rez.forEach(function(r){ if(r.start>=ayBas && r.start<=aySon) ayGelir+=kalemler(v,r).araToplam; });
+    var sgBas=ayBas>tk?ayBas:tk;
+    var sg=v.rez.filter(function(r){ return r.start>=sgBas && r.start<=aySon; })
+                .sort(function(a,c){ return a.start<c.start?-1:1; })[0];
+    var kutular=['<div class="okutu"><div class="lab">Doluluk</div><div class="val">%'+Math.round(doluGece/adet*100)+
+                 '</div><div class="alt">'+esc(cev(doluGece+" / "+adet+" gece"))+"</div></div>"];
+    if(paraGorur()) kutular.push('<div class="okutu"><div class="lab">Bu ay gelir</div><div class="val">'+para(ayGelir)+
+                 '</div><div class="alt">'+esc(cev(v.rez.filter(function(r){return r.start>=ayBas&&r.start<=aySon}).length+" rezervasyon"))+"</div></div>");
+    kutular.push('<div class="okutu"><div class="lab">Sonraki giriş</div><div class="val">'+(sg?esc(kisa(sg.start)):"—")+
+                 '</div><div class="alt">'+(sg?esc(sg.guest):"&nbsp;")+"</div></div>");
+    var ao=document.getElementById("ayOzet");
+    ao.style.gridTemplateColumns="repeat("+kutular.length+",minmax(0,1fr))";
+    ao.innerHTML=kutular.join("");
+
+    // ---- villa durumu + boş günleri paylaş + hızlı işlemler ----
     var dm=durum(v);
+    var iceride=v.rez.some(function(r){ return r.start<=tk && tk<r.end; });
+    var bosSatir="";
+    if(!iceride){
+      var aySonu=new Date(today.getFullYear(),today.getMonth()+1,0), bosGece=0;
+      for(var dd=new Date(today); dd<=aySonu; dd=addDays(dd,1)) if(!gun(fmt(dd)).aksam) bosGece++;
+      if(bosGece) bosSatir='<button class="satirBtn" data-is="bos" style="margin-top:1rem">'+
+        "<span>"+esc(cev("Bu ay "+bosGece+" gece boş"))+"</span>"+
+        '<span class="sag" style="color:var(--ok)">Boş günleri paylaş</span></button>';
+    }
+    var hz=[];
+    if(duz0) hz.push('<button class="big ghost" data-is="rez">+ Rezervasyon</button>');
+    if(sahip0 && duz0) hz.push('<button class="big ghost" data-is="fiyat">Fiyat gir</button>');
+    if(sahip0 && kurulu()) hz.push('<button class="big ghost" data-is="paylas">Paylaş</button>');
     document.getElementById("bugun").innerHTML=
       '<div class="durumBas">'+(dm.renk?'<span class="dot" style="background:'+dm.renk+'"></span>':"")+
-      esc(dm.bas)+'</div><div class="durumAlt">'+esc(dm.alt)+"</div>";
+      esc(dm.bas)+'</div><div class="durumAlt">'+esc(dm.alt)+"</div>"+bosSatir+
+      (hz.length?'<div class="hizli" style="grid-template-columns:repeat('+hz.length+',minmax(0,1fr))">'+hz.join("")+"</div>":"");
+
+    // ---- kurulum kartı (sadece sahip; 4 madde bitince gizlenir) ----
+    var kur=document.getElementById("kurulum");
+    if(sahip0 && duz0){
+      var bb0=v.bilgi||{}, bd=0;
+      ["konum","kapasite","oda","banyo","aciklama","whatsapp"].forEach(function(x){ if(bb0[x]) bd++; });
+      if(bb0.ozellikler && bb0.ozellikler.length) bd++;
+      var mad=[{k:"fiyat", t:"Gecelik fiyat gir", ok:Object.keys(v.fiyatlar||{}).length>0},
+               {k:"foto", t:"Fotoğraf ekle", ok:(v.fotolar||[]).length>0},
+               {k:"bilgi", t:"Villa bilgilerini doldur", ok:bd>=6}];
+      if(kurulu()) mad.push({k:"paylas", t:"Villa sayfasını paylaş", ok:!!(v.paylasim && v.paylasim.yayin)});
+      var biten=mad.filter(function(x){ return x.ok; }).length;
+      if(biten<mad.length){
+        kur.innerHTML='<div class="kBas"><span class="kBaslik">Villanızı hazırlayın</span>'+
+          '<span class="kSay">'+biten+"/"+mad.length+"</span></div>"+
+          '<div class="ilerleme"><i style="width:'+Math.round(biten/mad.length*100)+'%"></i></div>'+
+          mad.map(function(x){
+            return '<button class="satirBtn" data-kk="'+x.k+'"><span class="tikli">'+
+              '<span class="tik'+(x.ok?" on":"")+'">'+(x.ok?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>':"")+"</span>"+
+              '<span class="'+(x.ok?"bitti":"")+'">'+esc(cev(x.t))+"</span></span></button>";
+          }).join("");
+        kur.classList.remove("hide");
+      } else kur.classList.add("hide");
+    } else kur.classList.add("hide");
 
     var h="";
     for(var j=0;j<lead;j++) h+="<div></div>";
@@ -1372,6 +1461,7 @@
       else if(ak) bg="linear-gradient("+SEAM+",transparent 49.5%,"+tint(ak.color,.38)+" 50.5%)";
       else if(k===S.start) bg="#F1F5F3";
       var onc=gun(fmt(addDays(date,-1))), son=gun(fmt(addDays(date,1))), col=(lead+d-1)%7;
+      if(bg==="transparent" && col>=5) bg="#F2F6F4"; // cumartesi-pazar
       var rl=!(sa&&onc.aksam&&onc.aksam.id===sa.id)||col===0;
       var rr=!(ak&&son.sabah&&son.sabah.id===ak.id)||col===6;
       var cls="cell"+((tam||tekGece)?" full":"")+(k===tk?" today":"")+(k===S.start?" sel":"")+(k<tk?" gecmis":"");
@@ -1379,7 +1469,7 @@
       var fi=paraGorur()?v.fiyatlar[k]:0;
       // dolu günde (akşamı dolu) fiyat yerine misafirin baş harfleri
       var etiket = ak ? '<span class="fy bh">'+esc(basHarf(ak.guest))+"</span>"
-                      : '<span class="fy">'+(fi?kisaFiyat(fi):"")+"</span>";
+                      : '<span class="fy">'+(fi?kisaFiyat(fi):((paraGorur() && !sa && k>=tk)?"—":""))+"</span>";
       h+='<button class="'+cls+'" data-k="'+k+'" style="'+st+'"><span class="gn">'+d+"</span>"+etiket+"</button>";
     }
     document.getElementById("grid").innerHTML=h;
@@ -1390,9 +1480,11 @@
       ? "<span>Başlangıç: "+kisa(S.start)+" — bitiş gününü seçin.</span><u id='vazgec'>Vazgeç</u>"
       : "<span>Fiyat vermek istediğiniz ilk ve son güne dokunun. Tek gün için aynı güne iki kez dokunun.</span>";
     else if(S.start) hint.innerHTML="<span>Giriş: "+kisa(S.start)+" ("+GIRIS+") — çıkış gününü seçin.</span><u id='vazgec'>Vazgeç</u>";
+    else if(S.rezModu) hint.innerHTML="<span>Giriş gününe dokunun.</span><u id='vazgec'>Vazgeç</u>";
     else hint.innerHTML="<span>Boş güne dokunup tarih seçin. Dolu güne dokununca rezervasyon açılır. Giriş "+GIRIS+", çıkış "+CIKIS+".</span>";
     var vz=document.getElementById("vazgec");
-    if(vz) vz.onclick=function(){ S.start=null; ciz(); };
+    if(vz) vz.onclick=function(){ S.start=null; S.rezModu=false; ciz(); };
+    hint.classList[(S.rezModu||S.start||S.mod==="fiyat")?"add":"remove"]("vurgu");
 
     var yak=v.rez.filter(function(r){return parse(r.end)>=today})
                  .sort(function(a,c){return a.start<c.start?-1:1}).slice(0,6);
@@ -1475,7 +1567,7 @@
 
   document.getElementById("grid").addEventListener("click",function(ev){
     var b=ev.target.closest(".cell"); if(!b) return;
-    var k=b.dataset.k; S.uyari="";
+    var k=b.dataset.k; S.uyari=""; S.rezModu=false;
     if(S.salt && !gun(k).sabah && !gun(k).aksam){
       S.uyari="Villa şu anda başkası tarafından düzenleniyor."; ciz(); return;
     }
@@ -1525,6 +1617,44 @@
     S.cursor=new Date(S.cursor.getFullYear(),S.cursor.getMonth()+1,1); S.start=null; S.uyari=""; ciz(); };
 
   // ================= FİYAT =================
+  document.getElementById("bugun").addEventListener("click",function(e){
+    var b=e.target.closest("[data-is]"); if(!b || !aktif()) return;
+    var is=b.dataset.is;
+    if(is==="rez"){
+      if(S.mod==="fiyat"){ S.mod="rez"; document.getElementById("fmod").classList.add("hide"); }
+      S.start=null; S.rezModu=true; ciz();
+      try{ document.getElementById("ayad").scrollIntoView({block:"start",behavior:"smooth"}); }catch(x){}
+    }
+    else if(is==="fiyat") fiyatModu(true);
+    else if(is==="paylas") document.getElementById("paylasBtn").click();
+    else if(is==="bos") bosGunPaylas(aktif());
+  });
+  document.getElementById("kurulum").addEventListener("click",function(e){
+    var b=e.target.closest("[data-kk]"); if(!b || !aktif()) return;
+    var kk=b.dataset.kk;
+    if(kk==="fiyat") fiyatModu(true);
+    else if(kk==="foto") document.getElementById("fotoInput").click();
+    else if(kk==="bilgi") bilgiSheet(false);
+    else if(kk==="paylas") document.getElementById("paylasBtn").click();
+  });
+
+  // Boş tarih aralıkları + gecelik fiyatlarla hazır WhatsApp mesajı (numarasız: kişi WhatsApp'ta seçilir)
+  function bosGunPaylas(v){
+    var ar=bosAralikBul(v,fmt(today),fmt(addDays(today,60))).slice(0,8);
+    var t="Merhaba! "+(v.ad||"Villamız")+" için boş tarihler:\n\n";
+    if(!ar.length) t+="Önümüzdeki iki ayda boş tarih görünmüyor.\n";
+    ar.forEach(function(a){
+      var g=Math.round((parse(a.s)-parse(a.b))/86400000), mn=0, mx=0;
+      for(var d=parse(a.b); d<parse(a.s); d=addDays(d,1)){
+        var f=v.fiyatlar[fmt(d)]; if(f){ mn=mn?Math.min(mn,f):f; mx=Math.max(mx,f); } }
+      t+="• "+aralikYazi(a)+" ("+g+" gece)"+
+         ((paraGorur() && mn)?" · gecelik "+(mn===mx?para(mn):para(mn)+" – "+para(mx)):"")+"\n";
+    });
+    if(v.paylasim && v.paylasim.yayin) t+="\nFotoğraflar ve güncel takvim: "+sayfaLink(v)+"\n";
+    t+="\nRezervasyon için bu mesaja yanıt verebilirsiniz.";
+    window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");
+  }
+
   document.getElementById("fiyatBtn").onclick=function(){
     if(!aktif()) return; fiyatModu(true); };
   document.getElementById("fmodCik").onclick=function(){ fiyatModu(false); };
