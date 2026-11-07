@@ -41,6 +41,26 @@ Bulgular ve öncelik sırası claude.ai'daki "Villa Takvimim — Uygulama İncel
 https://zeydusht.github.io/villa-takvimim/ — GitHub Pages, main'e her gönderimde güncellenir.
 Gerçek veritabanına bağlı. Canlı site (villatakvim.netlify.app) hâlâ eski sürüm.
 
+## Yön ve kararlar (Zeyd, 7 Kasım)
+- **Netlify güncellenmeyecek.** villatakvim.netlify.app eski sürümde kalabilir. Hedef web sitesi değil,
+  **uygulama**: istenen sürüme getirip **TestFlight**'a atmak.
+- Güvenlik C adımı (klasörsüz eski yola yüklemeyi kapatmak) eski Netlify sitesinde fotoğraf yüklemeyi
+  bozar. Netlify eski kalacağı için C'yi uygulamadan önce Zeyd'e sor (eski sitede yükleme bozulur, kabul mü?).
+- **Çalışma felsefesi:** Sürekli iterasyon. Her turda ekranlara ilk kez kullanan biri gözüyle bakılır:
+  ne eklenebilir, ne daha iyi olur, ne kötü görünüyor, ne karmaşık, ne kullanışsız, ne okunmuyor.
+  Claude (ürün yöneticisi) bunları bulur ve Claude Code'a net mesaj yazar; Zeyd yapıştırır; Claude
+  GitHub'dan çekip test eder, ekran görüntüsü gösterir; tekrar. Tarz: sade, net, "uçak güvenlik kartı"
+  gibi tek bakışta anlaşılır; yazılar kalınlaştırılmaz, tıklanabilir öğeler çerçeveli.
+
+## SIRADAKİ ADIMLAR
+1. **TestFlight kurulumu:** App Store Connect'te uygulama kaydı (bundle ID com.zeydtekin.villatakvim,
+   ad "Villa Takvimim"), App Store Connect API anahtarı (Admin) + Team ID → GitHub repo Secrets
+   (APPLE_TEAM_ID, ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8). ios.yml anahtar ekliyse otomatik yükler.
+   Zeyd'e İngilizce menü adlarıyla adım adım anlat (konsol İngilizce).
+2. Fotoğrafsız villada "Drive'dan al"a ulaşılamıyor → düzeltme mesajı yazılmıştı, yapıldı mı kontrol et.
+3. Bakıcı para bilgisini veritabanında kapatma (plan Zeyd'in onayına sunulacak).
+4. Sürekli UX iterasyonu (yukarıdaki felsefe).
+
 ## Çalışma şekli
 Claude (sohbette) ürün yöneticisi: `docs/GOREVLER.md`'den bir bölüm seçip Claude Code'a mesaj yazar.
 Zeyd mesajı Claude Code'a yapıştırır (yerel klasör: İndirilenler\Villa Takvimim). Claude Code
