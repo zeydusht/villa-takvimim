@@ -51,16 +51,18 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       bakıcının eklediği rezervasyonun tutarı gecelik fiyatlardan otomatik hesaplanır.
 - [x] 3. bölüm — görsel tasarım · test edildi (rezervasyon detayı belirgin iyileşti; ana ekran
       düzeni 4. bölümde)
-- [ ] 4. bölüm — ekran düzeni (ana ekran, alt sekme barı, takvim) · Claude Code'a gönderildi
+- [x] 4. bölüm — ekran düzeni · test edildi (kompakt kartlar, alt sekme barı, Pt-Pz, baş harfler)
 - [x] Zeyd'in isteği (7 Kasım, yapıldı ve test edildi): yazılar kalın değil, butonların ÇERÇEVESİ belirgin olsun. Tıklanabilir
       kart/satır/butonlar 2px koyu (#5F6A64) çerçeve, basınca yeşil çerçeve + açık yeşil zemin +
       hafif küçülme (banka uygulaması netliği). Claude Code'a gönderildi.
-- [ ] Villa ekranı boş durumu (4. bölümden sonra gönderilecek): kurulum kartı (fiyat · fotoğraf ·
+- [x] Villa ekranı boş durumu · test edildi. Düzeltme Claude Code'a gönderildi: kurulum kartı
+      rezervasyonu olan villada kapalı tek satır + takvimin altına; "+ Rezervasyon" butonu tek satır.
+      (Eski not:: kurulum kartı (fiyat · fotoğraf ·
       bilgiler · paylaş), hızlı işlem butonları, ay özeti kutuları, takvim iyileştirmeleri,
-      "boş günleri WhatsApp'tan paylaş". Mesajı sohbette yazıldı.
+      "boş günleri WhatsApp'tan paylaş". Mesajı sohbette yazıldı.)
 - [ ] 5. bölüm — küçük kazanımlar
 - [ ] 1.6 — telefon bildirimleri (Firebase/Apple anahtarı gerekecek)
-- [ ] Veritabanı güvenlik düzeltmeleri — Claude sohbetten Supabase'de yapacak, Zeyd'in onayıyla
+- [ ] SIRADAKİ: Veritabanı güvenlik düzeltmeleri — Claude sohbetten Supabase'de yapacak, Zeyd'in onayıyla
       (detaylar inceleme raporunda, repo herkese açık olduğu için burada yok)
 
 ## Sonraki fazlar
