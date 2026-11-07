@@ -441,6 +441,10 @@
   .big.ghost, .ghost{color:var(--ink); box-shadow:none}
   .big.tehlike{background:#fff; color:var(--uyari); border:var(--cerceve-kalinlik) solid var(--tehlike-cerceve);
     box-shadow:none; margin-top:2.5rem}
+  .big.tehlike:disabled{opacity:.45; filter:none; transform:none; background-color:#fff; border-color:var(--tehlike-cerceve)}
+  .silinenSatir{display:flex; align-items:center; gap:.75rem; padding:.875rem 0; border-bottom:1px solid var(--line)}
+  .silinenSatir .bilgi{flex:1; min-width:0}
+  .silinenSatir .big{margin-top:0; width:auto; flex:none; padding:.5rem 1rem; min-height:2.75rem}
   .big.tehlike:active, .big.tehlike.basili{filter:none; background-color:var(--tehlike-basili-zemin); border-color:var(--uyari)}
   .big:disabled, .big:disabled.basili{transform:none}
   .cols{display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.5rem; padding-top:1.25rem;
@@ -617,6 +621,10 @@
       <span>Hesabım</span>
       <span class="sag" id="hesapAd"></span>
     </button>
+    <button class="satirBtn hide" id="silinenBtn">
+      <span>Silinen villalar</span>
+      <span class="sag" id="silinenSay"></span>
+    </button>
     <div class="eyebrow" style="margin:1.75rem 0 0">Yedek</div>
     <button class="satirBtn" id="yedek" style="margin-top:.75rem"><span>Yedek al</span></button>
     <button class="satirBtn" id="geriyukle"><span>Geri yükle</span></button>
@@ -719,9 +727,6 @@
       </button>
     </div>
 
-    <div class="section" id="silBolum">
-      <button class="big tehlike" id="villaSil">Villayı sil</button>
-    </div>
   </div>
 
   <!-- FOTOĞRAFLAR -->
@@ -1327,7 +1332,7 @@
     var hedef=b.dataset.sekme;
     if(hedef==="ana") cizAna();
     else if(hedef==="ajanda") cizAjanda();
-    else goster("hesapEkran");
+    else { silinenGuncelle(); goster("hesapEkran"); }
   });
 
   // Takvim sekmesi: tüm villaların önümüzdeki 30 gündeki giriş ve çıkışları
@@ -1469,21 +1474,110 @@
     };
   };
 
-  document.getElementById("villaSil").onclick=function(){
-    if(!aktif()) return;
-    var v=aktif();
-    perde("<h2>"+esc(v.ad||"Villa")+" silinsin mi?</h2>"+
-      '<div class="sm muted" style="margin-top:.5rem">'+v.rez.length+" rezervasyon, fiyatlar ve giderler birlikte silinecek. Bu işlem geri alınamaz.</div>"+
-      '<button class="big" id="s-evet" style="background:#9B2C4A">Evet, villayı sil</button>'+
-      '<button class="big ghost" id="s-hayir" style="margin-top:.5rem">Vazgeç</button>');
-    document.getElementById("s-hayir").onclick=kapat;
-    document.getElementById("s-evet").onclick=function(){
-      S.villalar=S.villalar.filter(function(x){return x.id!==v.id});
-      S.aktif=null; kaydet();
-      if(S.bulut) VT.villaSil(v).catch(function(){});
-      kapat(); cizAna();
+  // ================= VİLLA SİLME (30 gün geri alınabilir) =================
+  // Bulutta: villalar.silindi_tarih doldurulur. Yerel kullanımda: villa bu cihazda ayrı bir listede bekler.
+  var SILINEN_YEREL="villa-takvim-silinen", SILME_GUN=30;
+  function yerelSilinenler(){
+    try{ var l=JSON.parse(store.get(SILINEN_YEREL)||"[]"); if(!Array.isArray(l)) return [];
+      // 30 günü geçenler kalıcı silinir
+      var simdi=Date.now(), kalan=l.filter(function(x){ return simdi-Date.parse(x.silindi_tarih) < SILME_GUN*864e5; });
+      if(kalan.length!==l.length) store.set(SILINEN_YEREL,JSON.stringify(kalan));
+      return kalan;
+    }catch(e){ return []; }
+  }
+  function silinenler(){
+    if(S.bulut) return (VT.silinenler||[]).slice();
+    return yerelSilinenler().map(function(x){ return {id:x.villa.id, ad:x.villa.ad, silindi_tarih:x.silindi_tarih}; });
+  }
+  function kalanGun(t){
+    return SILME_GUN-Math.floor((Date.now()-Date.parse(t))/864e5);
+  }
+  function silinenGuncelle(){
+    var l=silinenler(), b=document.getElementById("silinenBtn");
+    if(!b) return;
+    b.classList[l.length?"remove":"add"]("hide");
+    document.getElementById("silinenSay").textContent=cev(l.length+" villa");
+  }
+
+  function villaSilSor(v){
+    var ad=(v.ad||"").trim()||"Villa";
+    var kucuk=function(x){ return String(x||"").trim().toLocaleLowerCase("tr"); };
+    perde('<div class="head"><h2>'+esc(cev(ad+" silinsin mi?"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 1.5rem">'+esc(cev("Rezervasyonlar, ödemeler, fiyatlar ve fotoğraflar 30 gün boyunca Silinen villalar'da saklanır, sonra kalıcı silinir."))+"</div>"+
+      alan("s-ad",esc(cev("Onaylamak için villanın adını yazın")),esc(ad),"text","")+
+      '<button class="big tehlike" id="s-evet" disabled>'+esc(cev("Villayı sil"))+"</button>"+
+      '<button class="big ghost" data-kapat style="margin-top:.5rem">'+esc(cev("Vazgeç"))+"</button>");
+    var inp=document.getElementById("s-ad"), btn=document.getElementById("s-evet");
+    inp.setAttribute("autocomplete","off");
+    inp.addEventListener("input",function(){ btn.disabled = kucuk(inp.value)!==kucuk(ad); });
+    btn.onclick=function(){
+      if(kucuk(inp.value)!==kucuk(ad)) return;
+      kapat(); villaSil(v);
     };
-  };
+  }
+
+  function villaSil(v){
+    var simdi=new Date().toISOString();
+    S.villalar=S.villalar.filter(function(x){ return x.id!==v.id; });
+    if(S.aktif===v.id){ kilitBitir(); S.aktif=null; }
+    kaydet(); cizAna();
+    if(S.bulut){
+      VT.villaSil(v).then(function(d){
+        if(Array.isArray(d) && !d.length) throw new Error(cev("Bu villayı silme yetkiniz yok."));
+        VT.silinenler=(VT.silinenler||[]).filter(function(x){ return x.id!==v.id; });
+        VT.silinenler.push({id:v.id, ad:v.ad, silindi_tarih:simdi});
+        silinenGuncelle();
+      }).catch(function(e){
+        // sunucu kabul etmediyse villayı geri koy
+        if(!S.villalar.some(function(x){ return x.id===v.id; })) S.villalar.push(v);
+        kaydet(); cizAna(); uyari(cev("Villa silinemedi.")+" "+(e.message||""));
+      });
+    } else {
+      var l=yerelSilinenler().filter(function(x){ return x.villa.id!==v.id; });
+      l.push({villa:v, silindi_tarih:simdi});
+      if(!store.set(SILINEN_YEREL,JSON.stringify(l))){
+        S.villalar.push(v); kaydet(); cizAna();
+        return uyari("Bu cihazda yer kalmadığı için villa silinemedi.");
+      }
+      silinenGuncelle();
+    }
+    geriAlBildir(cev("Villa silindi"),function(){ villaGeriGetir(v.id); });
+  }
+
+  function villaGeriGetir(id,sonra){
+    if(S.bulut){
+      VT.villaGeriGetir(id).then(function(){
+        VT.silinenler=(VT.silinenler||[]).filter(function(x){ return x.id!==id; });
+        sonra && sonra();
+        villalariGetir();
+        bildir(cev("Villa geri getirildi."));
+      }).catch(function(e){ uyari(cev("Villa geri getirilemedi.")+" "+(e.message||"")); });
+      return;
+    }
+    var l=yerelSilinenler(), x=l.filter(function(y){ return y.villa.id===id; })[0];
+    if(!x) return;
+    store.set(SILINEN_YEREL,JSON.stringify(l.filter(function(y){ return y.villa.id!==id; })));
+    if(!S.villalar.some(function(y){ return y.id===id; })) S.villalar.push(x.villa);
+    kaydet(); silinenGuncelle(); sonra && sonra();
+    cizAna(); bildir(cev("Villa geri getirildi."));
+  }
+
+  function silinenlerSheet(){
+    var l=silinenler();
+    if(!l.length){ kapat(); silinenGuncelle(); return; }
+    perde('<div class="head"><h2>'+esc(cev("Silinen villalar"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 .75rem">'+esc(cev("Silinen villalar 30 gün sonra kalıcı olarak silinir."))+"</div>"+
+      l.map(function(x){
+        var g=kalanGun(x.silindi_tarih);
+        return '<div class="silinenSatir"><div class="bilgi"><div>'+esc(x.ad||"Villa")+"</div>"+
+          '<div class="sm muted">'+esc(cev(g>=1?g+" gün sonra kalıcı silinecek":"Bugün kalıcı silinecek"))+"</div></div>"+
+          '<button class="big ghost" data-gg="'+esc(x.id)+'">'+esc(cev("Geri getir"))+"</button></div>";
+      }).join(""));
+    Array.prototype.forEach.call(document.querySelectorAll("[data-gg]"),function(b){
+      b.onclick=function(){ b.disabled=true; villaGeriGetir(b.dataset.gg,function(){ kapat(); }); };
+    });
+  }
+  document.getElementById("silinenBtn").onclick=silinenlerSheet;
 
   var vad=document.getElementById("villaAd");
   vad.addEventListener("input",function(){ if(aktif()){ aktif().ad=vad.value; kaydet(); } });
@@ -1689,8 +1783,6 @@
         }).catch(function(){ delete bakiciSoruldu[v.id]; });
       }
     }
-    document.getElementById("villaSil").classList[(sahip&&duz)?"remove":"add"]("hide");
-    document.getElementById("silBolum").classList[(sahip&&duz)?"remove":"add"]("hide");
 
     var ms=misafirler(v);
     document.getElementById("misafirOzet").textContent = ms.length
@@ -4694,7 +4786,11 @@
       '<div class="sm muted" style="margin:-.5rem 0 1rem">Bu gece sayısı ve altındaki konaklamalara ek ücret eklenir. Boş bırakırsanız uygulanmaz.</div>'+
       alan("b-whatsapp","WhatsApp numarası","0532 000 00 00","telefon",b.whatsapp)+
       '<div class="sm muted" style="margin:-.5rem 0 1rem">Paylaşılan sayfada "WhatsApp\'tan bilgi al" butonu olarak çıkar. Boş bırakırsanız buton görünmez.</div>'+
-      '<button class="big" id="b-kaydet">Kaydet</button>');
+      '<button class="big" id="b-kaydet">Kaydet</button>'+
+      ((!yeni && sahipMi())?'<div class="eyebrow" style="margin-top:2.5rem">Tehlikeli işlemler</div>'+
+        '<button class="big tehlike" id="b-villaSil" style="margin-top:.75rem">Villayı sil</button>':""));
+    var bvs=document.getElementById("b-villaSil");
+    if(bvs) bvs.onclick=function(){ villaSilSor(v); };
 
     document.getElementById("b-ozellikler").addEventListener("click",function(e){
       var c=e.target.closest(".cip"); if(!c) return;
@@ -4733,6 +4829,7 @@
         whatsapp:al("b-whatsapp"),
         kisaSinir:sayi(al("b-kisaSinir")), kisaUcret:sayi(al("b-kisaUcret"))
       };
+      if(b.kurulumGizli) v.bilgi.kurulumGizli=true;
       kaydet(); kapat(); ciz(); bildir("Villa bilgileri kaydedildi.");
     };
   }
@@ -5128,7 +5225,7 @@
       var kurtarilan=yerelKayitlariKurtar();
       var duzeltilen=kimlikDuzelt();
       if(kurtarilan || duzeltilen) kaydet();
-      cizAna(); tasimaSor(); yoneticiKontrol(); fotoTasi();
+      cizAna(); tasimaSor(); yoneticiKontrol(); fotoTasi(); silinenGuncelle();
       if(kurtarilan) bildir(kurtarilan+" kayıt buluta aktarılıyor.");
     }).catch(function(e){
       S.yukleniyor=false;

@@ -258,6 +258,7 @@
 
   VT.villalariYukle = function () {
     var k = VT.kullanici();
+    VT.silinenler = [];
     if (!k) return Promise.resolve([]);
     return api("villa_erisim?select=villa_id,rol&kullanici=eq." + k.id).then(function (er) {
       if (!er || !er.length) return [];
@@ -286,7 +287,10 @@
       ];
 
       return Promise.all(sorgular).then(function (s) {
-        var villalar = s[0] || [], rez = s[1] || [], gider = s[2] || [], fiyat = s[3] || [],
+        // Silinen (çöp kutusundaki) villalar normal listede görünmez; sahibine "Silinen villalar"da gösterilir
+        VT.silinenler = (s[0] || []).filter(function (v) { return v.silindi_tarih && roller[v.id] === "sahip"; })
+          .map(function (v) { return { id: v.id, ad: v.ad, silindi_tarih: v.silindi_tarih }; });
+        var villalar = (s[0] || []).filter(function (v) { return !v.silindi_tarih; }), rez = s[1] || [], gider = s[2] || [], fiyat = s[3] || [],
             foto = s[4] || [], notlar = s[5] || [], mali = s[6] || [], odeme = s[7] || [], gelir = s[8] || [];
 
         var maliHar = {}; mali.forEach(function (m) { maliHar[m.rezervasyon_id] = m; });
@@ -605,8 +609,18 @@
     return Promise.all(isler).then(function () { v.__anlik = y; });
   };
 
+  // Kalıcı silme yok: silindi_tarih doldurulur, 30 gün "Silinen villalar"da kalır
+  VT.silinenler = [];
   VT.villaSil = function (v) {
-    return api("villalar?id=eq." + v.id, { method: "DELETE" });
+    return api("villalar?id=eq." + v.id, { method: "PATCH", donus: "return=representation",
+      body: { silindi_tarih: new Date().toISOString() } });
+  };
+  VT.villaGeriGetir = function (id) {
+    return api("villalar?id=eq." + id, { method: "PATCH", donus: "return=representation",
+      body: { silindi_tarih: null } }).then(function (d) {
+      if (Array.isArray(d) && !d.length) throw new Error("Bu villayı geri getirme yetkiniz yok.");
+      return d;
+    });
   };
 
   // ---------------- davet ----------------
