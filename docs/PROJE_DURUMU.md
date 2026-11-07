@@ -31,6 +31,8 @@ Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
 - [ ] App Store Connect'te uygulama kaydı (bundle ID: com.zeydtekin.villatakvim)
 - [ ] App Store Connect API anahtarı (Admin) + Team ID → GitHub repo Secrets:
       `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`
+- [ ] Veritabanı Adım C: canlı site (villatakvim.netlify.app) yeni sürüme geçirildikten SONRA Claude
+      sohbetten yapacak. Önce yapılırsa canlı sitede fotoğraf yükleme çalışmaz.
 
 ## İnceleme raporu (7 Kasım)
 Bulgular ve öncelik sırası claude.ai'daki "Villa Takvimim — Uygulama İnceleme Raporu" dokümanında.
@@ -94,8 +96,9 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
 - [x] GOREVLER.md 6. bölüm — "ilk kez kullanan anlasın" (11 madde: Takvim sekmesi boş, tek terim
       "Kalan ödeme", rezervasyon adım şeridi, sade form, ödeme paneli, Türkçe tarih, Hesap düzeni,
       karşılama kartı…) · Claude Code'a gönderilecek
-- [ ] SIRADAKİ: Veritabanı güvenlik düzeltmeleri — Claude sohbetten Supabase'de yapacak, Zeyd'in onayıyla
-      (detaylar inceleme raporunda, repo herkese açık olduğu için burada yok)
+- [x] Veritabanı güvenlik düzeltmeleri — 1. bölüm (Claude, 7 Kasım).
+      Fotoğraflar artık <villa id>/f/ klasörüne yükleniyor.
+- [ ] SIRADAKİ: Bakıcının para bilgilerini veritabanında da kapatmak (plan sohbette onaylanacak).
 
 ## Sonraki fazlar
 - **Faz 3 / bildirimler:** Web Push app içinde çalışmıyor. Firebase/APNs ile native bildirim

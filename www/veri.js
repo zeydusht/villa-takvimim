@@ -510,6 +510,17 @@
     }).then(function (d) { v.rol = "sahip"; v.__anlik = anlik(v); return d; });
   };
 
+  // İlk paylaşımda: sayfa dosyası yüklenmeden önce paylaşım bilgisi villa kaydına yazılır
+  VT.paylasimYaz = function (v) {
+    return api("villalar?id=eq." + v.id, {
+      method: "PATCH", donus: "return=representation",
+      body: { paylasim: v.paylasim || {}, guncelleme: new Date().toISOString() }
+    }).then(function (d) {
+      if (Array.isArray(d) && !d.length) throw new Error("Paylaşım bilgisi kaydedilemedi.");
+      return d;
+    });
+  };
+
   VT.senkron = function (v) {
     if (!VT.girisli() || !v) return Promise.resolve();
     var sahip = v.rol === "sahip";

@@ -1634,10 +1634,12 @@
       }
       if(S.bulut){
         v.id=VT.yeniId();
-        VT.villaYaz(v).then(function(){
+        var kayit=VT.villaYaz(v);
+        villaKayitBekle[v.id]=kayit;
+        kayit.then(function(){
           if(!(v.fotolar||[]).length || !kurulu()) return VT.senkron(v);
           return new Promise(function(coz){
-            fotolariBulutaYukle(v.fotolar,null,function(h){
+            fotolariBulutaYukle(v.fotolar,v.id,null,function(h){
               if(h) bildir("Fotoğraflar yüklenemedi: "+h);
               kaydet(); ciz(); coz(VT.senkron(v));
             });
@@ -4238,25 +4240,35 @@
   }
 
   // buluta yükle: cihazda base64 tutma, yalnız adres sakla
-  function fotoYukleBulut(f,cb){
-    var t=jeton(12);
-    sbYaz("f/"+t+".jpg", dataBlob(f.tam), "image/jpeg", function(h){
-      if(h) return cb(h);
-      sbYaz("f/"+t+"k.jpg", dataBlob(f.thumb), "image/jpeg", function(h2){
-        if(h2) return cb(h2);
-        f.url=dosyaLink("f/"+t+".jpg");
-        f.tam=f.url;
-        f.thumb=dosyaLink("f/"+t+"k.jpg");
-        cb(null);
-      });
-    });
+  // Fotoğraflar villanın klasörüne yüklenir: "<villa bulut id>/f/<rastgele>.jpg" (+ "k.jpg" önizleme).
+  // Villa henüz buluta kaydedilmediyse (uuid yok ya da kayıt sürüyor) önce kaydın bitmesi beklenir.
+  var villaKayitBekle={};
+  function villaHazir(villaId){
+    if(!UUIDMI.test(String(villaId||""))) return Promise.reject(new Error("Villa henüz buluta kaydedilmedi. Biraz sonra tekrar deneyin."));
+    return (villaKayitBekle[villaId]||Promise.resolve()).then(function(){ delete villaKayitBekle[villaId]; },
+      function(){ throw new Error("Villa buluta kaydedilemedi, fotoğraf yüklenmedi."); });
   }
-  function fotolariBulutaYukle(liste,ilerle,bitti){
+  function fotoYukleBulut(f,villaId,cb){
+    villaHazir(villaId).then(function(){
+      var t=jeton(12), kok=villaId+"/f/";
+      sbYaz(kok+t+".jpg", dataBlob(f.tam), "image/jpeg", function(h){
+        if(h) return cb(h);
+        sbYaz(kok+t+"k.jpg", dataBlob(f.thumb), "image/jpeg", function(h2){
+          if(h2) return cb(h2);
+          f.url=dosyaLink(kok+t+".jpg");
+          f.tam=f.url;
+          f.thumb=dosyaLink(kok+t+"k.jpg");
+          cb(null);
+        });
+      });
+    },function(e){ cb(e.message); });
+  }
+  function fotolariBulutaYukle(liste,villaId,ilerle,bitti){
     var i=0;
     (function sira(){
       if(i>=liste.length) return bitti(null);
       ilerle && ilerle(i+1,liste.length);
-      fotoYukleBulut(liste[i++],function(h){
+      fotoYukleBulut(liste[i++],villaId,function(h){
         if(h) return bitti(h);
         sira();
       });
@@ -4321,7 +4333,8 @@
     S.villalar.forEach(function(v){
       var eksik=(v.fotolar||[]).filter(function(f){
         return !f.url && f.tam && f.tam.indexOf("data:")===0; });
-      if(eksik.length) isler.push({v:v, liste:eksik});
+      // buluta kaydedilmemiş (uuid'siz) villanın fotoğrafları şimdilik cihazda bekler
+      if(eksik.length && UUIDMI.test(String(v.id))) isler.push({v:v, liste:eksik});
     });
     if(!isler.length) return;
     var i=0;
@@ -4333,7 +4346,7 @@
         return;
       }
       var is=isler[i++];
-      fotolariBulutaYukle(is.liste,null,function(h){ sira(); });
+      fotolariBulutaYukle(is.liste,is.v.id,null,function(h){ sira(); });
     })();
   }
 
@@ -4353,7 +4366,7 @@
       if(!yeni.length){ son(); return; }
 
       if(S.bulut && kurulu()){
-        fotolariBulutaYukle(yeni,function(n,t){
+        fotolariBulutaYukle(yeni,v.id,function(n,t){
           yaz(cev("Yükleniyor "+n+"/"+t));
         },function(h){
           if(h){ son(); bildir(h); return; }
@@ -4633,7 +4646,7 @@
         // HEIC gibi tarayıcının açamadığı biçimlerde fotoHazirla null döner → atlanır
         fotoHazirla(dosya,function(f){
           if(!f) return tamam(i,null);
-          fotoYukleBulut(f,function(h){ tamam(i, h?null:f); });
+          fotoYukleBulut(f,v.id,function(h){ tamam(i, h?null:f); });
         });
       }).catch(function(){ tamam(i,null); });
     }
@@ -5172,7 +5185,7 @@
     var t=(metin||"").toLowerCase();
     if(t.indexOf("row-level security")>=0 || kod===403){
       return (window.VT && VT.girisli())
-        ? "Yükleme izni alınamadı. Çıkış yapıp tekrar giriş yapın."
+        ? "Bu işlem için yetkiniz yok. Fotoğrafı sadece villa sahibi veya yükleyen kişi silebilir."
         : "Paylaşım için giriş yapmanız gerekiyor.";
     }
     if(t.indexOf("bucket not found")>=0 || kod===404) return "Sunucu kurulumu eksik görünüyor.";
@@ -5222,9 +5235,17 @@
   function yayinla(v,ilerle,bitti0){
     yayinSurer=true;
     var bitti=function(h){ yayinSurer=false; bitti0(h); };
-    if(!v.paylasim) v.paylasim={ ad:slug(v.ad)+"-"+jeton(6) };
-    var eksik=v.fotolar.filter(function(f){return !f.url}), i=0;
-    (function sira(){
+    var yeniAd=!v.paylasim;
+    if(yeniAd) v.paylasim={ ad:slug(v.ad)+"-"+jeton(6) };
+    var eksik=(v.fotolar||[]).filter(function(f){return !f.url}), i=0;
+    var bulutta=!!(S.bulut && window.VT && VT.girisli && VT.girisli());
+    // İlk paylaşımda sayfa adı, .json yüklenmeden önce villa kaydına yazılır (ve beklenir)
+    var once = (yeniAd && bulutta) ? villaHazir(v.id).then(function(){ return VT.paylasimYaz(v); }) : Promise.resolve();
+    once.then(function(){ sira(); }, function(e){
+      if(yeniAd) delete v.paylasim;
+      bitti((e && e.message) || "Paylaşım bilgisi kaydedilemedi.");
+    });
+    function sira(){
       if(i>=eksik.length){
         ilerle("Sayfa hazırlanıyor…");
         return sbYaz(v.paylasim.ad+".json", galeriVeri(v), "application/json", function(h){
@@ -5234,12 +5255,14 @@
       }
       var f=eksik[i++];
       ilerle("Fotoğraflar yükleniyor "+i+"/"+eksik.length);
-      var yol="f/"+jeton(10)+".jpg";
-      sbYaz(yol, dataBlob(f.tam), "image/jpeg", function(h){
-        if(h) return bitti(h);
-        f.url=dosyaLink(yol); kaydet(); sira();
-      });
-    })();
+      villaHazir(v.id).then(function(){
+        var yol=v.id+"/f/"+jeton(10)+".jpg";
+        sbYaz(yol, dataBlob(f.tam), "image/jpeg", function(h){
+          if(h) return bitti(h);
+          f.url=dosyaLink(yol); kaydet(); sira();
+        });
+      },function(e){ bitti(e.message); });
+    }
   }
 
   // Yayındaki villa sayfası, kayıttan birkaç saniye sonra arka planda
@@ -5522,8 +5545,7 @@
       d.textContent="Kaldırılıyor…";
       sbSil(v.paylasim.ad+".json",function(hata){
         if(hata){ d.innerHTML='<span class="warn">'+esc(hata)+"</span>"; return; }
-        (v.fotolar||[]).forEach(function(f){
-          if(f.url){ sbSil(f.url.split("/"+KOVA+"/")[1],function(){}); delete f.url; } });
+        // Fotoğraflar uygulamadaki villa fotoğraflarıyla aynı dosyalar; silinmez.
         delete v.paylasim; kaydet(); ciz(); kapat(); bildir("Paylaşım kaldırıldı.");
       });
     };
