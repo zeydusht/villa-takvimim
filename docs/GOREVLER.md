@@ -6,6 +6,18 @@ Bu dosya Claude Code için yazıldı. Görevleri **sırayla** yap, her bölüm b
 commit at ve kutuyu işaretle. Kullanıcı (Zeyd) yazılımcı değil: bir şeyi
 denemesi gerekirse ona adım adım, basit dille anlat.
 
+## 0. Başlamadan önce (kod bu klasörde yoksa)
+Bu dosya boş bir klasörde tek başına duruyorsa, önce uygulamanın kodunu buraya indir:
+```
+git init
+git remote add origin https://github.com/zeydusht/villa-takvimim
+git fetch origin
+git checkout -f -B main origin/main
+npm install
+```
+Sonra bu dosyanın (GOREVLER.md) kökteki kopyasıyla `docs/GOREVLER.md` aynıysa kökteki kopyayı sil.
+iPhone derlemesi GitHub'da yapıldığı için işler bitince `git push` şart.
+
 ## Çalışma kuralları
 - Uygulama kodu `www/` içinde. `index.html` (~4000 satır, tek dosya), `veri.js` (Supabase katmanı),
   `dil.js` (TR→EN çeviri sözlüğü, anahtar = Türkçe metin), `g.html` (misafire açılan villa sayfası),
