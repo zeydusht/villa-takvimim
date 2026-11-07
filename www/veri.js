@@ -144,6 +144,9 @@
       .then(function (d) { oturumYaz(d); return d; });
   }
 
+  // Uygulama, sunucu fonksiyonlarına (ör. drive-aktar) giderken süresi dolan oturumu yenileyebilsin
+  VT.jetonYenile = tokenYenile;
+
   function jetonGecerliMi(t) {
     try {
       var g = JSON.parse(atob(t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));

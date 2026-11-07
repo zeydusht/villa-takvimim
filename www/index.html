@@ -373,6 +373,17 @@
   .lejant .lj-harf{font-size:.6875rem; letter-spacing:.04em; background:var(--ok); color:#fff; border-radius:3px; padding:0 .25rem; margin-right:.375rem}
   .lejant .lj-bugun{background:var(--ok)!important; border-radius:99px!important}
 
+  /* Drive'dan al */
+  .drYon{list-style:none; padding:0; margin:1rem 0 1.25rem; display:grid; gap:.625rem}
+  .drYon li{display:flex; align-items:flex-start; gap:.75rem; font-size:.9375rem; line-height:1.4}
+  .drYon .no{flex:none; width:1.5rem; height:1.5rem; border-radius:99px; background:var(--ok); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:.8125rem}
+  .drLink{display:flex; align-items:flex-end; gap:.5rem}
+  .drLink .big{width:auto; margin:0; min-height:2.75rem; padding:.5rem .875rem; flex:none}
+  .drBulundu{font-size:1.0625rem}
+  .drDurum{font-size:1rem; font-variant-numeric:tabular-nums}
+  #ftEkleSatir .big span{white-space:nowrap}
+
   /* ---- Fiyatlar ekranı ---- */
   #fiyatEkran{padding-bottom:6rem}
   #fiyatEkran h1{font-size:1.75rem}
@@ -860,7 +871,7 @@
     <div class="ftAlt">
       <div id="ftEkleSatir">
         <button class="big" id="ftEkle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="ftEkleYazi">Fotoğraf ekle</span></button>
-        <!-- "Drive'dan al" butonu buraya gelecek -->
+        <button class="big ghost hide" id="ftDrive"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3h8l6 11-4 7H6l-4-7z"/><path d="M8 3l10 18M16 3L6 21M2 14h20"/></svg><span>Drive'dan al</span></button>
       </div>
       <button class="big tehlike hide" id="ftSil">Fotoğraf seçin</button>
     </div>
@@ -4395,6 +4406,7 @@
     }).join("");
     var n=Object.keys(FT.sec).length;
     document.getElementById("ftEkleSatir").classList[FT.secMod?"add":"remove"]("hide");
+    document.getElementById("ftDrive").classList[driveKullanilir()?"remove":"add"]("hide");
     var sil=document.getElementById("ftSil");
     sil.classList[FT.secMod?"remove":"add"]("hide");
     sil.textContent=cev(n ? n+" fotoğraf sil" : "Fotoğraf seçin");
@@ -4505,6 +4517,148 @@
       for(var i=0;i<l.length;i++) if(l[i].id===id) return fotoGorucu(i);
     });
   })();
+
+  // ================= GOOGLE DRIVE'DAN FOTOĞRAF AL =================
+  // Sunucu: drive-aktar (liste / indir). Giriş yapmış herkes (bakıcı dahil) kullanabilir.
+  var driveKullanilir=function(){ return !!(S.bulut && kurulu() && window.VT && VT.girisli && VT.girisli()); };
+  function driveIstek(govde,tekrar){
+    var jt=(VT.oturum && VT.oturum.access_token) || "";
+    return fetch(S.cfg.url+"/functions/v1/drive-aktar",{
+      method:"POST",
+      headers:{ "Authorization":"Bearer "+jt, "apikey":S.cfg.key, "Content-Type":"application/json" },
+      body:JSON.stringify(govde)
+    }).then(function(r){
+      // oturum süresi dolduysa bir kez yenileyip tekrar dene
+      if(r.status===401 && !tekrar && VT.jetonYenile) return VT.jetonYenile().then(function(){ return driveIstek(govde,true); });
+      return r;
+    });
+  }
+  function driveHataOku(r){
+    return r.json().then(function(d){ return (d && d.hata) || cev("Bir sorun oldu, tekrar deneyin."); },
+                         function(){ return cev("Bir sorun oldu, tekrar deneyin."); });
+  }
+
+  function driveSheet(){
+    var v=aktif(); if(!v) return;
+    if(!driveKullanilir()) return uyari("Drive'dan almak için giriş yapmış olmanız gerekiyor.");
+    perde('<div class="head"><h2>'+esc(cev("Google Drive'dan al"))+"</h2>"+kapatBtn()+"</div>"+
+      '<ol class="drYon">'+
+        "<li><span class=\"no\">1</span><span>"+esc(cev("Drive'da klasöre basılı tutun → Paylaş"))+"</span></li>"+
+        "<li><span class=\"no\">2</span><span>"+esc(cev("'Bağlantıya sahip olan herkes' seçin"))+"</span></li>"+
+        "<li><span class=\"no\">3</span><span>"+esc(cev("Bağlantıyı kopyalayıp buraya yapıştırın"))+"</span></li>"+
+      "</ol>"+
+      '<div class="drLink"><div class="field" style="flex:1;min-width:0;margin:0"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Drive bağlantısı"))+"</div>"+
+        '<input id="dr-link" type="url" inputmode="url" autocomplete="off" placeholder="https://drive.google.com/drive/folders/…"></div>'+
+        '<button class="big ghost" id="dr-yapistir">'+esc(cev("Yapıştır"))+"</button></div>"+
+      '<div class="sm warn" id="dr-hata" style="min-height:1.25rem;margin-top:.5rem"></div>'+
+      '<button class="big" id="dr-bul" style="margin-top:.5rem">'+esc(cev("Fotoğrafları bul"))+"</button>"+
+      '<div id="dr-sonuc" class="hide" style="margin-top:1.5rem"></div>');
+    var link=document.getElementById("dr-link"), hataEl=document.getElementById("dr-hata");
+    var bul=document.getElementById("dr-bul"), sonuc=document.getElementById("dr-sonuc");
+    var hataYaz=function(m){ hataEl.textContent=m||""; };
+    link.addEventListener("input",function(){ hataYaz(""); });
+
+    document.getElementById("dr-yapistir").onclick=function(){
+      if(!(navigator.clipboard && navigator.clipboard.readText)){
+        hataYaz(cev("Panoya erişilemedi. Alana basılı tutup Yapıştır'ı seçin.")); link.focus(); return; }
+      navigator.clipboard.readText().then(function(t){ link.value=String(t||"").trim(); hataYaz(""); })
+        .catch(function(){ hataYaz(cev("Panoya erişilemedi. Alana basılı tutup Yapıştır'ı seçin.")); link.focus(); });
+    };
+
+    bul.onclick=function(){
+      var l=link.value.trim();
+      if(!l){ link.parentNode.classList.add("hata"); hataYaz(cev("Drive bağlantısını yapıştırın.")); link.focus(); return; }
+      link.parentNode.classList.remove("hata");
+      hataYaz(""); sonuc.classList.add("hide");
+      bul.disabled=true; bul.textContent=cev("Aranıyor…");
+      driveIstek({islem:"liste", villa_id:v.id, link:l}).then(function(r){
+        if(!r.ok) return driveHataOku(r).then(function(m){ throw new Error(m); });
+        return r.json();
+      }).then(function(d){
+        var l2=(d && d.dosyalar) || [];
+        if(!l2.length) throw new Error(cev("Klasörde fotoğraf bulunamadı."));
+        var toplam=d.toplam||l2.length;
+        sonuc.innerHTML='<div class="drBulundu">'+esc(cev(toplam+" fotoğraf bulundu"))+
+            (d.fazla?'<span class="sm muted"> · '+esc(cev("ilk "+l2.length+" alınacak"))+"</span>":"")+"</div>"+
+          '<button class="big" id="dr-ekle">'+esc(cev("Hepsini ekle"))+"</button>";
+        sonuc.classList.remove("hide");
+        document.getElementById("dr-ekle").onclick=function(){ driveAktar(v,l,l2,sonuc,[bul,link]); };
+      }).catch(function(e){
+        hataYaz((e && e.message && !/Failed to fetch|NetworkError|Load failed/i.test(e.message)) ? e.message
+          : cev("Bağlantı kurulamadı. İnternetinizi kontrol edin."));
+      }).then(function(){ bul.disabled=false; bul.textContent=cev("Fotoğrafları bul"); });
+    };
+  }
+
+  // Dosyaları en fazla 3'er 3'er indir → küçült → buluta yükle → Drive'daki sırayla villaya ekle
+  function driveAktar(v,link,dosyalar,kutu,kilitle){
+    var n=dosyalar.length, sira=0, aktifIs=0, biten=0, eklenen=0, olmayan=0, durdu=false, bittiMi=false;
+    var sonuclar=new Array(n), eklenecek=0;
+    kilitle.forEach(function(x){ x.disabled=true; });
+    kutu.innerHTML='<div class="drDurum" id="dr-durum"></div>'+
+      '<div class="ilerleme"><i id="dr-cubuk" style="width:0"></i></div>'+
+      '<button class="big ghost" id="dr-durdur" style="margin-top:.75rem">'+esc(cev("Durdur"))+"</button>";
+    var durumEl=document.getElementById("dr-durum"), cubuk=document.getElementById("dr-cubuk");
+    var durdurBtn=document.getElementById("dr-durdur");
+    var yaz=function(){
+      if(!document.body.contains(durumEl)) return;
+      durumEl.textContent=cev(biten+" / "+n+" ekleniyor");
+      cubuk.style.width=Math.round(biten/n*100)+"%";
+    };
+    yaz();
+    durdurBtn.onclick=function(){ durdu=true; durdurBtn.disabled=true; durdurBtn.textContent=cev("Durduruluyor…"); };
+
+    // sıradaki hazır sonuçları sırayla villaya ekle
+    function sirayaEkle(){
+      var degisti=false;
+      while(eklenecek<n && sonuclar[eklenecek]!==undefined){
+        var f=sonuclar[eklenecek++];
+        if(f){ v.fotolar=(v.fotolar||[]).concat([f]); eklenen++; degisti=true; }
+      }
+      if(degisti){ kaydet(); fotoYenile(); }
+    }
+    function tamam(i,f){
+      sonuclar[i]=f||null; if(!f) olmayan++;
+      biten++; aktifIs--; yaz(); sirayaEkle(); calis();
+    }
+    function bir(i){
+      var d=dosyalar[i];
+      aktifIs++;
+      driveIstek({islem:"indir", villa_id:v.id, link:link, dosya_id:d.id}).then(function(r){
+        if(!r.ok) throw new Error("indir");
+        return r.blob();
+      }).then(function(blob){
+        var tur=blob.type || d.tur || "image/jpeg";
+        var dosya; try{ dosya=new File([blob], d.ad||"drive.jpg", {type:tur}); }catch(e){ dosya=blob; dosya.name=d.ad; }
+        // HEIC gibi tarayıcının açamadığı biçimlerde fotoHazirla null döner → atlanır
+        fotoHazirla(dosya,function(f){
+          if(!f) return tamam(i,null);
+          fotoYukleBulut(f,function(h){ tamam(i, h?null:f); });
+        });
+      }).catch(function(){ tamam(i,null); });
+    }
+    function calis(){
+      while(!durdu && aktifIs<3 && sira<n) bir(sira++);
+      if(aktifIs===0 && (durdu || sira>=n)) bitir();
+    }
+    function bitir(){
+      if(bittiMi) return; bittiMi=true;
+      // durdurulduysa başlanmamış dosyalar sayılmaz
+      for(var j=eklenecek;j<n;j++) if(sonuclar[j]===undefined) sonuclar[j]=false;
+      sirayaEkle();
+      kilitle.forEach(function(x){ x.disabled=false; });
+      if(!document.body.contains(kutu)){
+        bildir(cev(eklenen+" fotoğraf eklendi"+(olmayan?", "+olmayan+" eklenemedi":"")+"."));
+        return;
+      }
+      kutu.innerHTML='<div class="drBulundu">'+esc(cev(eklenen+" fotoğraf eklendi"+(olmayan?", "+olmayan+" eklenemedi":"")+"."))+"</div>"+
+        (olmayan?'<div class="sm muted" style="margin-top:.25rem">'+esc(cev("Eklenemeyenler genelde iPhone'un HEIC biçimindeki ya da çok büyük fotoğraflardır."))+"</div>":"")+
+        (durdu&&sira<n?'<div class="sm muted" style="margin-top:.25rem">'+esc(cev("Aktarım durduruldu."))+"</div>":"")+
+        '<button class="big" data-kapat>'+esc(cev("Tamam"))+"</button>";
+    }
+    calis();
+  }
+  document.getElementById("ftDrive").onclick=function(){ driveSheet(); };
 
   // Tam ekran görüntüleyici: sağa-sola kaydırarak geçiş; altta Kapak yap / Sil
   function fotoGorucu(bas){
