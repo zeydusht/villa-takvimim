@@ -258,6 +258,12 @@
 
   // ---------------- villaları yükle ----------------
   function say(x) { var n = parseInt(x, 10); return isNaN(n) ? 0 : n; }
+  // Çıkışta depozito iadesi (rezervasyon_mali.depozito_durum / _kesilen / _not / _islem_tarih)
+  function depIadeOku(mm) {
+    if (!mm || !mm.depozito_durum) return undefined;
+    return { durum: mm.depozito_durum, kesilen: say(mm.depozito_kesilen), not: mm.depozito_not || "",
+             tarih: mm.depozito_islem_tarih || undefined };
+  }
 
   VT.villalariYukle = function () {
     var k = VT.kullanici();
@@ -330,6 +336,7 @@
               tutar: say(mm.tutar), ekUcret: say(mm.ek_ucret),
               // depozito_tutar: bu rezervasyonun depozito tutarı (0 da geçerli); tarihli eski kayıtlar uygulamada taşınır
               depozito: (mm.depozito_tutar !== null && mm.depozito_tutar !== undefined) ? { tutar: say(mm.depozito_tutar), tarih: mm.depozito_tarih || undefined } : undefined,
+              depIade: depIadeOku(mm),
               odemeler: od, odenen: od.reduce(function (t, x) { return t + x.tutar; }, 0)
             });
           });
@@ -479,6 +486,7 @@
           tutar: say((maliHar[r.id] || {}).tutar), ekUcret: say((maliHar[r.id] || {}).ek_ucret),
           depozito: (maliHar[r.id] && maliHar[r.id].depozito_tutar !== null && maliHar[r.id].depozito_tutar !== undefined)
             ? { tutar: say(maliHar[r.id].depozito_tutar), tarih: maliHar[r.id].depozito_tarih || undefined } : undefined,
+          depIade: depIadeOku(maliHar[r.id]),
           odemeler: odemeHar[r.id] || [],
           odenen: (odemeHar[r.id] || []).reduce(function (t, x) { return t + x.tutar; }, 0)
         });
@@ -508,8 +516,10 @@
               rez: {}, mali: {}, odeme: {}, fiyat: {}, gider: {}, gelir: {}, foto: {}, not: {} };
     (v.rez || []).forEach(function (r) {
       o.rez[r.id] = JSON.stringify([r.start, r.end, r.guest, r.phone, r.people, r.note, r.color, r.kod]);
+      var di = r.depIade || {};
       o.mali[r.id] = JSON.stringify([r.tutar || 0, r.ekUcret || 0,
-        r.depozito ? r.depozito.tutar : null, r.depozito ? r.depozito.tarih : null]);
+        r.depozito ? r.depozito.tutar : null, r.depozito ? r.depozito.tarih : null,
+        di.durum || null, di.kesilen || 0, di.not || null, di.tarih || null]);
       (r.odemeler || []).forEach(function (x) {
         o.odeme[x.id] = JSON.stringify([r.id, x.tutar, x.tarih, x.not || ""]);
       });
@@ -598,7 +608,12 @@
         isler.push(api("rezervasyon_mali", { method: "POST", donus: "resolution=merge-duplicates",
           body: [{ rezervasyon_id: r.id, villa_id: v.id, tutar: r.tutar || 0, ek_ucret: r.ekUcret || 0,
                    depozito_tutar: r.depozito ? r.depozito.tutar : null,
-                   depozito_tarih: r.depozito ? r.depozito.tarih : null }] }));
+                   depozito_tarih: r.depozito ? r.depozito.tarih : null,
+                   // bakıcı bu satırı hiç göndermez (para yalnız sahip / destek)
+                   depozito_durum: r.depIade ? r.depIade.durum : null,
+                   depozito_kesilen: r.depIade ? (r.depIade.kesilen || 0) : 0,
+                   depozito_not: r.depIade ? (r.depIade.not || null) : null,
+                   depozito_islem_tarih: r.depIade ? (r.depIade.tarih || null) : null }] }));
       });
 
       var od = fark(e.odeme, y.odeme);

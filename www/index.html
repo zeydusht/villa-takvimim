@@ -1248,8 +1248,6 @@
         r.depozito={tutar:dt};
         r.odenen=r.odemeler.reduce(function(t,o){return t+(o.tutar||0)},0);
       }
-      // depozito iadesi durumu (cihazda saklanan)
-      if(!r.depIade){ var dm=depIadeOku()[r.id]; if(dm) r.depIade=dm; }
       return r; });
   }
   function yukle(){
@@ -1263,6 +1261,10 @@
       }
     }catch(e){ S.villalar=[]; }
     S.villalar.forEach(duzelt);
+    // girişsiz (yalnız bu cihazda) kullanımda eski depozito iadesi seçimleri hemen aktarılır;
+    // girişli kullanıcıda buluttan yükleme sonrası aktarılır
+    var oturumVar=false; try{ oturumVar=!!localStorage.getItem("villa-takvim-oturum"); }catch(e){}
+    if(!oturumVar) depIadeAktar();
     if(S.villalar.length) kaydet();
   }
   var senkZaman=null;
@@ -1455,13 +1457,21 @@
       l.push({tarih:String(r.depIade.tarih||r.end).slice(0,10), gelir:r.depIade.kesilen, tutar:0, dep:0, kesinti:true});
     return l;
   }
-  // Depozito iadesi durumu: veritabanında yeri olana kadar bu cihazda saklanır
+  // Depozito iadesi artık veritabanında (rezervasyon_mali). Eskiden cihazda saklanan seçimler
+  // bir kez villalara aktarılır (kaydet → buluta gider), sonra cihazdan silinir.
   var DEPIADE="villa-takvim-depiade";
-  function depIadeOku(){ try{ return JSON.parse(store.get(DEPIADE)||"{}")||{}; }catch(e){ return {}; } }
-  function depIadeYaz(r){
-    var m=depIadeOku();
-    if(r.depIade) m[r.id]=r.depIade; else delete m[r.id];
-    store.set(DEPIADE,JSON.stringify(m));
+  function depIadeAktar(){
+    var m; try{ m=JSON.parse(store.get(DEPIADE)||"null"); }catch(e){ m=null; }
+    if(!m) return false;
+    var degisti=false;
+    S.villalar.forEach(function(v){
+      if(S.bulut && v.rol==="bakici") return;   // bakıcı para alanlarını yazmaz
+      (v.rez||[]).forEach(function(r){
+        if(m[r.id] && !r.depIade){ r.depIade=m[r.id]; degisti=true; }
+      });
+    });
+    try{ localStorage.removeItem(DEPIADE); }catch(e){}
+    return degisti;
   }
 
   // Kalan ödeme: bakıcı için sunucunun hesapladığı tutar (depozito dahil); destek modunda gösterilmez
@@ -2847,7 +2857,7 @@
   function depIadeBagla(r){
     var v=aktif(); if(!v) return;
     var bitir=function(){
-      depIadeYaz(r); kaydet(); ciz();
+      kaydet(); ciz();
       if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
       if(!document.getElementById("ajanda").classList.contains("hide")) cizAjanda();
       detay(r);
@@ -6327,6 +6337,7 @@
     document.getElementById("villalar").innerHTML="";
     VT.villalariYukle().then(function(liste){
       S.villalar=liste; S.villalar.forEach(duzelt);
+      if(depIadeAktar()) kaydet();
       S.yukleniyor=false;
       var k=VT.kullanici();
       document.getElementById("hesapBtn").classList.remove("hide");

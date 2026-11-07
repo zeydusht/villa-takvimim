@@ -157,10 +157,11 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
 
 - [x] Görev 8 sonrası giriş hatası düzeltildi (davetBekleyenKullan kapsam hatası).
 
-## Veritabanı için gerekenler (Görev 8)
-Claude sohbetten, Zeyd'in onayıyla yapacak. Taslaklar; tablo/fonksiyon adları canlı şemaya göre kontrol edilmeli.
+## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
+Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
 
-1. **Depozito iadesi kalıcı olsun.** Şu an "İade ettim / Kestim / Etmedim" seçimi cihazda (villa-takvim-depiade).
+1. ✅ **Depozito iadesi kalıcı.** rezervasyon_mali'ye 4 sütun eklendi; uygulama okuyup yazıyor (bakıcı yazmaz).
+   Cihazda kalmış eski seçimler ilk açılışta veritabanına aktarılıp cihazdan siliniyor.
    ```sql
    alter table rezervasyon_mali
      add column if not exists depozito_durum text check (depozito_durum in ('iade','kesildi','tutuldu')),
@@ -168,8 +169,7 @@ Claude sohbetten, Zeyd'in onayıyla yapacak. Taslaklar; tablo/fonksiyon adları 
      add column if not exists depozito_not text,
      add column if not exists depozito_islem_tarih date;
    ```
-   Sonra veri.js'te bu sütunlar okunup yazılacak (anlik/senkron/yükleme) — sütunlar eklenince Claude Code'a söyleyin.
-2. **Eski "depozito alındı" kayıtlarını tek seferde taşı** (uygulama sahibin cihazında da taşıyor; sunucu tarafı bakıcı hesabı için):
+2. ⏭️ **Gerek kalmadı, eski kayıt yoktu.** (Taslak kayıt için:) Eski "depozito alındı" kayıtlarını tek seferde taşı (uygulama sahibin cihazında da taşıyor; sunucu tarafı bakıcı hesabı için):
    ```sql
    insert into odemeler (id, villa_id, rezervasyon_id, tutar, tarih, aciklama)
    select gen_random_uuid(), m.villa_id, m.rezervasyon_id, m.depozito_tutar, m.depozito_tarih, 'depozito'
@@ -180,17 +180,17 @@ Claude sohbetten, Zeyd'in onayıyla yapacak. Taslaklar; tablo/fonksiyon adları 
    update rezervasyon_mali set depozito_tarih = null where depozito_tarih is not null;
    ```
    Not: `depozito_tutar` artık "bu rezervasyonun depozito tutarı" demek (alındı işareti değil); `depozito_tarih` kullanılmıyor.
-3. **bakici_kalanlar yeni kurala göre:**
+3. ✅ **bakici_kalanlar yeni kurala göre güncellendi:**
    kalan = tutar + ek_ucret + coalesce(depozito_tutar, (villalar.bilgi->>'depozito')::numeric, 0) − sum(odemeler.tutar)
    (0'dan küçük değil); depozito = kalanın depozito kısmı = least(depozito, greatest(0, kalan − greatest(0, tutar + ek_ucret − odenen))).
    `depozito_tarih`'e bakmasın. İndirim sütunu kullanılmıyor.
-4. **Destek modunda yönetici tam yetkili:** destek oturumu açık yöneticiye bu villa için `villalar` (update),
+4. ✅ **Destek modunda yönetici tam yetkili** (gelirler ve fiyatlar için yazma izni eklendi; uygulama zaten hazırdı): destek oturumu açık yöneticiye bu villa için `villalar` (update),
    `rezervasyonlar`, `rezervasyon_mali`, `odemeler`, `fiyatlar`, `giderler`, `gelirler`, `villa_fotograflar`
    üzerinde select/insert/update/delete izni (mevcut destek kaydı/fonksiyonuyla koşullu). Uygulama hazır; izin yoksa
    kayıtta "Buluta kaydedilemedi" hatası çıkar. Villa silme destek modunda bilerek kapalı.
-5. **Hitap kalıcı olsun:** `alter table misafir_notlari add column if not exists hitap text check (hitap in ('bey','hanim','ad'));`
+5. ⏳ **Hitap kalıcı olsun (henüz yapılmadı):** `alter table misafir_notlari add column if not exists hitap text check (hitap in ('bey','hanim','ad'));`
    Sonra veri.js'te okunup yazılacak (şu an cihazda: villa-takvim-hitap).
-6. **Villa sayfası güncellenebiliyor mu?** Sahip, `galeri/<ad>.json` dosyasının ÜZERİNE yazabilmeli (upsert/update izni).
+6. ⏳ **Villa sayfası güncellenebiliyor mu? (kontrol edilecek)** Sahip, `galeri/<ad>.json` dosyasının ÜZERİNE yazabilmeli (upsert/update izni).
    "Fiyat için sorun" şikâyetinin en olası nedeni bu; kontrol edilmeli.
 
 ## Sonraki fazlar
