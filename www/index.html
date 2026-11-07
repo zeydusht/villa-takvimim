@@ -192,11 +192,6 @@
   .durumBas{font-family:var(--serif); font-size:1.375rem; letter-spacing:-.02em;
     display:flex; align-items:center; gap:.5rem}
   .durumAlt{font-size:.875rem; color:var(--muted); margin-top:.375rem; line-height:1.5}
-  .fmod{background:#FEF6EC; border:1px solid #F0D9B8; border-radius:.75rem; padding:.75rem .875rem;
-    margin-top:1rem; font-size:.875rem; display:flex; align-items:center; justify-content:space-between;
-    gap:.75rem}
-  .fmod b{font-weight:600}
-  .fmod button{text-decoration:underline; flex:none; font-size:.875rem}
   .dot{width:.5rem; height:.5rem; border-radius:99px; flex:none}
 
   /* takvim */
@@ -286,6 +281,44 @@
   #misFiltre button{flex:1; min-height:2.875rem; padding:.75rem .25rem; border-radius:.75rem;
     font-size:.875rem; text-align:center; background:var(--soft); color:var(--muted)}
   #misFiltre button.on{background:var(--ink); color:#fff}
+  /* ---- Fiyatlar ekranı ---- */
+  #fiyatEkran{padding-bottom:6rem}
+  #fiyatEkran h1{font-size:1.75rem}
+  #fiyatEkran h1 .vad{color:var(--muted)}
+  .fyAy .tikli{gap:.625rem}
+  .fyAy .fyEksik{display:block; font-size:.8125rem; color:var(--uyari); margin-top:.125rem}
+  .fyAy .sag.yok{color:var(--uyari)}
+  .fyIpucu{font-size:.875rem; color:var(--muted); margin:.75rem 0 .25rem}
+  .fyGrid{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:.25rem; margin-top:.25rem}
+  .fyGun{position:relative; height:3.75rem; border-radius:.625rem; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:.125rem; background:#fff; border:2px solid transparent;
+    -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; touch-action:manipulation;
+    transition:background-color var(--gecis), border-color var(--gecis)}
+  .fyGun .gn{font-size:1rem; line-height:1.25rem}
+  .fyGun .fy{font-size:.6875rem; color:#3F4843; letter-spacing:-.02em; line-height:.875rem}
+  .fyGun .fy.yok{color:#8E9893}
+  .fyGun .bh{position:absolute; top:.1875rem; right:.25rem; font-size:.5625rem; letter-spacing:.04em; opacity:.5}
+  .fyGun.hs{background:#F2F6F4}
+  .fyGun.dolu{background:#F4EFE6}
+  .fyGun.bugunG .gn{color:var(--ok); text-decoration:underline; text-underline-offset:3px}
+  .fyGun.gecmis{opacity:.35; pointer-events:none}
+  .fyGun.sec{border-color:var(--ok); background:var(--basili-zemin)}
+  .fyGun:active{border-color:var(--basili-cerceve)}
+  .fyBar{display:flex; align-items:center; gap:.5rem}
+  .fyBar .fySay{flex:1; min-width:0; font-size:.9375rem}
+  .fyBar .big{margin-top:0; width:auto; padding:.625rem 1rem; min-height:2.875rem; white-space:nowrap}
+  .fyBar .big:not(.ghost){background:var(--ok); color:#fff}
+  .fyPanel .fyNot{font-size:.875rem; color:var(--muted); margin:.25rem 0 1rem}
+  .hazir{display:flex; gap:.5rem; margin-bottom:.75rem; flex-wrap:wrap}
+  .hazir .big{margin-top:0; width:auto; flex:1 1 0; min-height:2.75rem; padding:.5rem .5rem; font-size:.9375rem}
+  .buyukSayi{display:flex; align-items:baseline; gap:.5rem; border-bottom:2px solid var(--cizgi); padding:.25rem 0 .375rem}
+  .buyukSayi:focus-within{border-color:var(--ok)}
+  .buyukSayi input{font-family:var(--serif); font-size:2.25rem; letter-spacing:-.02em; line-height:1.2; min-width:0}
+  .buyukSayi span{color:var(--muted); white-space:nowrap}
+  .buyukSayi.kucuk input{font-size:1.625rem}
+  .fyLab{font-size:.75rem; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin:1rem 0 .25rem}
+  .hsAc::after{transform:rotate(135deg) !important}
+  .hsAc.on::after{transform:rotate(-45deg) !important}
   .secBar{position:fixed; left:0; right:0; bottom:0; background:rgba(255,255,255,.97);
     border-top:1px solid var(--line); padding:.875rem 1.25rem calc(.875rem + env(safe-area-inset-bottom));
     display:flex; align-items:center; justify-content:space-between; gap:1rem; z-index:40}
@@ -565,7 +598,7 @@
     </div>
     <input id="villaAd" placeholder="Villa adı" autocomplete="off">
     <div class="kurulum hide" id="kurulum"></div>
-    <div class="today" id="bugun"><div class="durumBas">Villa boş</div><div class="durumAlt"></div></div><div class="fmod hide" id="fmod"><span><b>Fiyat modu</b> · gün aralığı seçin</span><span><button id="fmodAy">Tüm ay</button> &nbsp;<button id="fmodCik">Bitir</button></span></div>
+    <div class="today" id="bugun"><div class="durumBas">Villa boş</div><div class="durumAlt"></div></div>
 
     <div class="monthbar">
       <div>
@@ -644,6 +677,40 @@
 
     <div class="section" id="silBolum">
       <button class="big tehlike" id="villaSil">Villayı sil</button>
+    </div>
+  </div>
+
+  <!-- FİYATLAR -->
+  <div id="fiyatEkran" class="hide">
+    <div class="topbar">
+      <button class="backbtn" id="fyGeri">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg>
+        <span id="fyGeriAd">Villa</span>
+      </button>
+      <div style="flex:1"></div>
+      <button id="fySecModu" class="sm" style="color:var(--ok);font-weight:600;min-height:2.75rem;min-width:2.75rem;padding:0 .5rem;margin-right:-.5rem;text-align:center">Seç</button>
+    </div>
+    <h1>Fiyatlar <span class="vad" id="fyVillaAd"></span></h1>
+    <div class="seg" id="fySeg" style="margin-top:1rem">
+      <button data-g="ay">Aylar</button><button data-g="gun">Günler</button>
+    </div>
+    <div id="fyAylar"></div>
+    <div id="fyGunler" class="hide">
+      <div class="fyIpucu" id="fyIpucu">Güne dokunun. Sonra başka bir güne dokunursanız arası seçilir. Tek tek eklemek için basılı tutun.</div>
+      <div class="monthbar">
+        <div><div class="m" id="fyAyAd"></div></div>
+        <div class="nav">
+          <button id="fyPrev" aria-label="Önceki ay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button id="fyNext" aria-label="Sonraki ay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="dow" id="fyDow"><div>Pt</div><div>Sa</div><div>Ça</div><div>Pe</div><div>Cu</div><div>Ct</div><div>Pz</div></div>
+      <div class="fyGrid" id="fyGrid"></div>
+    </div>
+    <div class="secBar fyBar hide" id="fyBar">
+      <span class="fySay" id="fySay"></span>
+      <button class="big ghost" id="fyTemizle">Temizle</button>
+      <button class="big" id="fyGir">Fiyat gir</button>
     </div>
   </div>
 
@@ -1142,7 +1209,7 @@
   }
 
   function acikEkran(){
-    var l=["giris","sifre","onay","ana","takvim","kasa","misafirler"];
+    var l=["giris","sifre","onay","ana","takvim","kasa","misafirler","fiyatEkran"];
     for(var i=0;i<l.length;i++){
       var e=document.getElementById(l[i]);
       if(e && !e.classList.contains("hide")) return l[i];
@@ -1155,6 +1222,7 @@
     var e=acikEkran();
     if(e==="kasa"){ goster("takvim"); ciz(); return true; }
     if(e==="misafirler"){ goster("takvim"); ciz(); return true; }
+    if(e==="fiyatEkran"){ goster("takvim"); ciz(); return true; }
     if(e==="takvim"){
       kilitBitir();
       if(S.destek){ var d=document.getElementById("destekCik"); if(d) d.click(); return true; }
@@ -1164,7 +1232,7 @@
   }
 
   function goster(id){
-    ["giris","sifre","onay","ana","ajanda","hesapEkran","takvim","kasa","misafirler"].forEach(function(x){
+    ["giris","sifre","onay","ana","ajanda","hesapEkran","takvim","kasa","misafirler","fiyatEkran"].forEach(function(x){
       document.getElementById(x).classList[x===id?"remove":"add"]("hide"); });
     var sekmeli=(id==="ana"||id==="ajanda"||id==="hesapEkran");
     document.getElementById("sekmeler").classList[sekmeli?"remove":"add"]("hide");
@@ -1172,10 +1240,11 @@
     Array.prototype.forEach.call(document.querySelectorAll("#sekmeler [data-sekme]"),function(b){
       b.classList[b.dataset.sekme===id?"add":"remove"]("on");
       b.setAttribute("aria-current", b.dataset.sekme===id ? "page" : "false"); });
+    if(id!=="fiyatEkran"){ var fb=document.getElementById("fyBar"); if(fb) fb.classList.add("hide"); }
     var bar=document.getElementById("appBar");
     if(bar) bar.classList[(id==="giris"||id==="onay"||id==="sifre")?"add":"remove"]("hide");
     var gb=document.getElementById("barGeri");
-    if(gb) gb.classList[(id==="takvim"||id==="kasa"||id==="misafirler")?"remove":"add"]("hide");
+    if(gb) gb.classList[(id==="takvim"||id==="kasa"||id==="misafirler"||id==="fiyatEkran")?"remove":"add"]("hide");
     try{ window.scrollTo(0,0); }catch(e){}
   }
 
@@ -1265,7 +1334,6 @@
 
   function ac(id){
     S.aktif=id; S.start=null; S.uyari=""; S.mod="rez"; S.salt=false; S.rezModu=false; S.kurAcik=false;
-    document.getElementById("fmod").classList.add("hide");
     document.getElementById("kilitBar").classList.add("hide");
     S.cursor=new Date(today.getFullYear(),today.getMonth(),1);
     goster("takvim");
@@ -1501,15 +1569,12 @@
 
     var hint=document.getElementById("hint");
     if(S.uyari) hint.innerHTML='<span class="warn">'+esc(S.uyari)+"</span>";
-    else if(S.mod==="fiyat") hint.innerHTML = S.start
-      ? "<span>Başlangıç: "+kisa(S.start)+" — bitiş gününü seçin.</span><u id='vazgec'>Vazgeç</u>"
-      : "<span>Fiyat vermek istediğiniz ilk ve son güne dokunun. Tek gün için aynı güne iki kez dokunun.</span>";
     else if(S.start) hint.innerHTML="<span>Giriş: "+kisa(S.start)+" ("+GIRIS+") — çıkış gününü seçin.</span><u id='vazgec'>Vazgeç</u>";
     else if(S.rezModu) hint.innerHTML="<span>Giriş gününe dokunun.</span><u id='vazgec'>Vazgeç</u>";
     else hint.innerHTML="<span>Boş güne dokunup tarih seçin. Dolu güne dokununca rezervasyon açılır. Giriş "+GIRIS+", çıkış "+CIKIS+".</span>";
     var vz=document.getElementById("vazgec");
     if(vz) vz.onclick=function(){ S.start=null; S.rezModu=false; ciz(); };
-    hint.classList[(S.rezModu||S.start||S.mod==="fiyat")?"add":"remove"]("vurgu");
+    hint.classList[(S.rezModu||S.start)?"add":"remove"]("vurgu");
 
     var yak=v.rez.filter(function(r){return parse(r.end)>=today})
                  .sort(function(a,c){return a.start<c.start?-1:1}).slice(0,6);
@@ -1557,7 +1622,6 @@
     }
     document.getElementById("villaSil").classList[(sahip&&duz)?"remove":"add"]("hide");
     document.getElementById("silBolum").classList[(sahip&&duz)?"remove":"add"]("hide");
-    if(!sahip && S.mod==="fiyat") fiyatModu(false);
 
     var ms=misafirler(v);
     document.getElementById("misafirOzet").textContent = ms.length
@@ -1595,14 +1659,6 @@
     var k=b.dataset.k; S.uyari=""; S.rezModu=false;
     if(S.salt && !gun(k).sabah && !gun(k).aksam){
       S.uyari="Villa şu anda başkası tarafından düzenleniyor."; ciz(); return;
-    }
-
-    if(S.mod==="fiyat"){
-      if(!S.start){ S.start=k; ciz(); return; }
-      var x=parse(S.start), z=parse(k);
-      var b1=x<=z?S.start:k, b2=x<=z?k:S.start;
-      S.start=null; ciz(); fiyatSheet(b1,b2);
-      return;
     }
 
     var o=gun(k), tam=!!(o.sabah&&o.aksam);
@@ -1646,11 +1702,10 @@
     var b=e.target.closest("[data-is]"); if(!b || !aktif()) return;
     var is=b.dataset.is;
     if(is==="rez"){
-      if(S.mod==="fiyat"){ S.mod="rez"; document.getElementById("fmod").classList.add("hide"); }
       S.start=null; S.rezModu=true; ciz();
       try{ document.getElementById("ayad").scrollIntoView({block:"start",behavior:"smooth"}); }catch(x){}
     }
-    else if(is==="fiyat") fiyatModu(true);
+    else if(is==="fiyat") fiyatEkranAc();
     else if(is==="paylas") document.getElementById("paylasBtn").click();
     else if(is==="bos") bosGunPaylas(aktif());
   });
@@ -1663,7 +1718,7 @@
       geriAlBildir(cev("Kart gizlendi."),function(){ delete v.bilgi.kurulumGizli; kaydet(); ciz(); });
       return;
     }
-    if(kk==="fiyat") fiyatModu(true);
+    if(kk==="fiyat") fiyatEkranAc();
     else if(kk==="foto") document.getElementById("fotoInput").click();
     else if(kk==="bilgi") bilgiSheet(false);
     else if(kk==="paylas") document.getElementById("paylasBtn").click();
@@ -1686,50 +1741,245 @@
     window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");
   }
 
-  document.getElementById("fiyatBtn").onclick=function(){
-    if(!aktif()) return; fiyatModu(true); };
-  document.getElementById("fmodCik").onclick=function(){ fiyatModu(false); };
-  document.getElementById("fmodAy").onclick=function(){
-    if(!aktif()) return;
-    var y=S.cursor.getFullYear(), m=S.cursor.getMonth();
-    fiyatSheet(fmt(new Date(y,m,1)), fmt(new Date(y,m+1,0)));
+  // ================= FİYATLAR EKRANI =================
+  // Veri yapısı aynı: v.fiyatlar["YYYY-AA-GG"] = gecelik tutar. Bakıcı bu ekranı açamaz.
+  var F={gor:"ay", secMod:false, secAy:{}, secGun:{}, capa:null, imlec:null};
+  var SONFIYAT="villa-takvim-sonfiyat";
+  var binlik=function(n){ return nf.format(Math.round(n||0)); };
+
+  function fiyatEkranAc(){
+    var v=aktif(); if(!v || !sahipMi()) return;
+    if(!duzenlenebilir()) return uyari("Villa şu anda başkası tarafından düzenleniyor.");
+    F.gor="ay"; F.secMod=false; F.secAy={}; F.secGun={}; F.capa=null;
+    F.imlec=new Date(today.getFullYear(),today.getMonth(),1);
+    goster("fiyatEkran"); cizFiyat();
+  }
+  document.getElementById("fiyatBtn").onclick=function(){ fiyatEkranAc(); };
+  document.getElementById("fyGeri").onclick=function(){ goster("takvim"); ciz(); };
+
+  // Bir ayın fiyatlanacak günleri: bugünden önceki günler hariç
+  function ayGunleri(y,m){
+    var l=[], d=new Date(y,m,1), son=new Date(y,m+1,0);
+    if(d<today) d=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    for(; d<=son; d=addDays(d,1)) l.push(fmt(d));
+    return l;
+  }
+  function ayAnahtar(k){ var p=k.split("-"); return {y:+p[0], m:+p[1]}; }
+
+  function cizFiyat(){
+    var v=aktif(); if(!v) return;
+    document.getElementById("fyGeriAd").textContent=v.ad||"Villa";
+    document.getElementById("fyVillaAd").textContent="· "+(v.ad||"Villa");
+    Array.prototype.forEach.call(document.querySelectorAll("#fySeg button"),function(b){
+      b.classList[b.dataset.g===F.gor?"add":"remove"]("on"); });
+    var sm=document.getElementById("fySecModu");
+    sm.classList[F.gor==="ay"?"remove":"add"]("hide");
+    sm.textContent=cev(F.secMod?"Vazgeç":"Seç");
+    document.getElementById("fyAylar").classList[F.gor==="ay"?"remove":"add"]("hide");
+    document.getElementById("fyGunler").classList[F.gor==="gun"?"remove":"add"]("hide");
+
+    if(F.gor==="ay"){
+      var h='<div class="grup" style="margin-top:1rem">';
+      for(var i=0;i<12;i++){
+        var t=new Date(today.getFullYear(),today.getMonth()+i,1), y=t.getFullYear(), m=t.getMonth();
+        var g=ayGunleri(y,m), fl=[];
+        g.forEach(function(k){ if(v.fiyatlar[k]) fl.push(v.fiyatlar[k]); });
+        var eksik=g.length-fl.length, sag;
+        if(!fl.length) sag='<span class="sag yok">'+esc(cev("Fiyat yok"))+"</span>";
+        else{
+          var mn=Math.min.apply(null,fl), mx=Math.max.apply(null,fl);
+          sag='<span class="sag">'+esc(mn===mx?cev(binlik(mn)+" ₺ / gece"):binlik(mn)+" – "+binlik(mx)+" ₺")+"</span>";
+        }
+        var key=y+"-"+(m+1), sec=!!F.secAy[key];
+        h+='<button class="satirBtn fyAy" data-ay="'+key+'"><span class="tikli">'+
+          (F.secMod?'<span class="tik'+(sec?" on":"")+'">'+(sec?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>':"")+"</span>":"")+
+          "<span>"+esc(AYLAR[m]+" "+y)+
+          ((eksik && fl.length)?'<span class="fyEksik">'+esc(cev(eksik+" gün fiyatsız"))+"</span>":"")+
+          "</span></span>"+sag+"</button>";
+      }
+      document.getElementById("fyAylar").innerHTML=h+"</div>";
+    } else {
+      var y2=F.imlec.getFullYear(), m2=F.imlec.getMonth(), adet=new Date(y2,m2+1,0).getDate();
+      document.getElementById("fyAyAd").textContent=AYLAR[m2]+" "+y2;
+      var buAy=(y2===today.getFullYear() && m2===today.getMonth());
+      document.getElementById("fyPrev").style.visibility=buAy?"hidden":"";
+      var M=harita(v.rez), tk=fmt(today), lead=(new Date(y2,m2,1).getDay()+6)%7, gh="";
+      for(var j=0;j<lead;j++) gh+="<div></div>";
+      for(var d=1; d<=adet; d++){
+        var k=fmt(new Date(y2,m2,d)), col=(lead+d-1)%7, o=M.get(k)||{}, fi=v.fiyatlar[k];
+        var cls="fyGun"+(col>=5?" hs":"")+(o.aksam?" dolu":"")+(k<tk?" gecmis":"")+(k===tk?" bugunG":"")+(F.secGun[k]?" sec":"");
+        gh+='<button class="'+cls+'" data-k="'+k+'">'+
+          (o.aksam?'<span class="bh">'+esc(basHarf(o.aksam.guest))+"</span>":"")+
+          '<span class="gn">'+d+"</span>"+
+          (k<tk?"":'<span class="fy'+(fi?"":" yok")+'">'+(fi?kisaFiyat(fi):"—")+"</span>")+"</button>";
+      }
+      document.getElementById("fyGrid").innerHTML=gh;
+    }
+
+    // alttaki sabit çubuk
+    var bar=document.getElementById("fyBar"), n, yaz;
+    if(F.gor==="ay"){ n=Object.keys(F.secAy).length; yaz=n+" ay seçildi"; }
+    else { n=Object.keys(F.secGun).length; yaz=n+" gün seçildi"; }
+    document.getElementById("fySay").textContent=cev(yaz);
+    document.getElementById("fyTemizle").classList[F.gor==="gun"?"remove":"add"]("hide");
+    bar.classList[(n && (F.gor==="gun" || F.secMod))?"remove":"add"]("hide");
+  }
+
+  document.getElementById("fySeg").addEventListener("click",function(e){
+    var b=e.target.closest("[data-g]"); if(!b) return;
+    F.gor=b.dataset.g; F.secMod=false; F.secAy={}; F.secGun={}; F.capa=null; cizFiyat();
+  });
+  document.getElementById("fySecModu").onclick=function(){ F.secMod=!F.secMod; F.secAy={}; cizFiyat(); };
+  document.getElementById("fyAylar").addEventListener("click",function(e){
+    var b=e.target.closest("[data-ay]"); if(!b) return;
+    var key=b.dataset.ay;
+    if(F.secMod){ if(F.secAy[key]) delete F.secAy[key]; else F.secAy[key]=1; cizFiyat(); return; }
+    fiyatPanel({aylar:[key]});
+  });
+  document.getElementById("fyPrev").onclick=function(){
+    F.imlec=new Date(F.imlec.getFullYear(),F.imlec.getMonth()-1,1); cizFiyat(); };
+  document.getElementById("fyNext").onclick=function(){
+    F.imlec=new Date(F.imlec.getFullYear(),F.imlec.getMonth()+1,1); cizFiyat(); };
+  document.getElementById("fyTemizle").onclick=function(){ F.secGun={}; F.capa=null; cizFiyat(); };
+  document.getElementById("fyGir").onclick=function(){
+    if(F.gor==="ay"){
+      var l=Object.keys(F.secAy).sort(function(a,b){ var x=ayAnahtar(a), z=ayAnahtar(b); return (x.y*12+x.m)-(z.y*12+z.m); });
+      if(l.length) fiyatPanel({aylar:l});
+    } else {
+      var g=Object.keys(F.secGun).sort();
+      if(g.length) fiyatPanel({gunler:g});
+    }
   };
 
-  function fiyatModu(ac){
-    S.mod=ac?"fiyat":"rez"; S.start=null; S.uyari="";
-    document.getElementById("fmod").classList[ac?"remove":"add"]("hide");
-    ciz();
-    if(ac) try{ document.getElementById("fmod").scrollIntoView({block:"center",behavior:"smooth"}); }catch(e){}
+  // Günler: dokun = seç / kaldır; seçili günden sonra başka güne dokunmak arayı seçer; basılı tutmak tek gün ekler
+  (function(){
+    var grid=document.getElementById("fyGrid"), zaman=null, uzun=0, x0=0, y0=0;
+    function tekGun(k){ if(F.secGun[k]) delete F.secGun[k]; else F.secGun[k]=1; F.capa=null; cizFiyat(); }
+    function dokun(k){
+      if(F.secGun[k]){ delete F.secGun[k]; if(F.capa===k) F.capa=null; }
+      else if(F.capa && F.secGun[F.capa]){
+        var a=parse(F.capa), b=parse(k), bas=a<b?a:b, bit=a<b?b:a;
+        for(var d=bas; d<=bit; d=addDays(d,1)) if(d>=today || fmt(d)===fmt(today)) F.secGun[fmt(d)]=1;
+        F.capa=null;
+      }
+      else { F.secGun[k]=1; F.capa=k; }
+      cizFiyat();
+    }
+    function iptal(){ clearTimeout(zaman); zaman=null; }
+    grid.addEventListener("pointerdown",function(e){
+      var c=e.target.closest(".fyGun"); if(!c) return;
+      x0=e.clientX; y0=e.clientY; iptal();
+      zaman=setTimeout(function(){
+        zaman=null; uzun=Date.now(); tekGun(c.dataset.k);
+        try{ if(navigator.vibrate) navigator.vibrate(10); }catch(x){}
+      },450);
+    });
+    grid.addEventListener("pointermove",function(e){
+      if(zaman && (Math.abs(e.clientX-x0)>10 || Math.abs(e.clientY-y0)>10)) iptal(); });
+    ["pointerup","pointercancel","pointerleave"].forEach(function(t){ grid.addEventListener(t,iptal); });
+    grid.addEventListener("contextmenu",function(e){ if(e.target.closest(".fyGun")) e.preventDefault(); });
+    grid.addEventListener("click",function(e){
+      var c=e.target.closest(".fyGun"); if(!c) return;
+      if(uzun && Date.now()-uzun<1000){ uzun=0; return; }
+      dokun(c.dataset.k);
+    });
+  })();
+
+  function sonFiyatlar(){ try{ var l=JSON.parse(store.get(SONFIYAT)||"[]"); return Array.isArray(l)?l.filter(function(x){return x>0}).slice(0,3):[]; }catch(e){ return []; } }
+  function sonFiyatEkle(f){
+    var l=sonFiyatlar().filter(function(x){ return x!==f; }); l.unshift(f);
+    store.set(SONFIYAT,JSON.stringify(l.slice(0,3)));
+  }
+  function fiyatYenile(){
+    if(!document.getElementById("fiyatEkran").classList.contains("hide")) cizFiyat();
+    else if(!document.getElementById("takvim").classList.contains("hide")) ciz();
+  }
+  function fiyatGeriYukle(v,eski){
+    Object.keys(eski).forEach(function(k){ if(eski[k]) v.fiyatlar[k]=eski[k]; else delete v.fiyatlar[k]; });
+    kaydet(); fiyatYenile();
+  }
+  function sayiBicimle(inp){
+    inp.addEventListener("input",function(){
+      var n=sayi(inp.value); inp.value=n?binlik(n):"";
+    });
   }
 
-  function fiyatSheet(bas,bit){
-    var v=aktif(), n=0, mevcut=null, ayni=true;
-    for(var d=parse(bas); d<=parse(bit); d=addDays(d,1)){
-      n++; var f=v.fiyatlar[fmt(d)]||0;
-      if(mevcut===null) mevcut=f; else if(mevcut!==f) ayni=false;
+  // Alttan açılan fiyat paneli: {aylar:["2026-11",...]} ya da {gunler:["2026-11-07",...]}
+  function fiyatPanel(o){
+    var v=aktif(), keys=[], baslik, not="";
+    if(o.aylar){
+      o.aylar.forEach(function(a){ var x=ayAnahtar(a); keys=keys.concat(ayGunleri(x.y,x.m-1)); });
+      if(o.aylar.length===1){ var x0=ayAnahtar(o.aylar[0]); baslik=AYLAR[x0.m-1]+" "+x0.y+" için gecelik fiyat"; }
+      else{
+        baslik=o.aylar.length+" ay için gecelik fiyat";
+        not=o.aylar.map(function(a){ var x=ayAnahtar(a); return AYLAR[x.m-1]+" "+x.y; }).join(", ");
+      }
+      not=(not?not+" · ":"")+cev(keys.length+" gün");
+    } else {
+      keys=o.gunler.slice();
+      baslik=keys.length+" gün için gecelik fiyat";
+      not = keys.length<=4 ? keys.map(kisa).join(", ") : kisa(keys[0])+" – "+kisa(keys[keys.length-1]);
     }
-    var a=parse(bas), z=parse(bit);
-    var etiket = bas===bit ? kisa(bas)
-      : (a.getMonth()===z.getMonth() && a.getFullYear()===z.getFullYear())
-        ? a.getDate()+" – "+z.getDate()+" "+AYLAR[z.getMonth()]
-        : kisa(bas)+" – "+kisa(bit);
-    perde('<div class="head"><h2>Gecelik fiyat</h2>'+kapatBtn()+"</div>"+
-      '<div class="sm muted" style="margin:.5rem 0 1.5rem">'+etiket+" · "+n+" gün</div>"+
-      alan("p-tutar","Gecelik fiyat (₺)","15000","tel",(ayni&&mevcut)?String(mevcut):"")+
-      '<button class="big" id="p-uygula">Fiyatı uygula</button>'+
-      '<button class="big ghost" id="p-sil" style="margin-top:.5rem">Bu günlerin fiyatını sil</button>');
-    document.getElementById("p-tutar").focus();
-    document.getElementById("p-uygula").onclick=function(){
-      var f=sayi(document.getElementById("p-tutar").value);
-      if(!f) return uyari("Gecelik fiyat girin.");
-      for(var d=parse(bas); d<=parse(bit); d=addDays(d,1)) v.fiyatlar[fmt(d)]=f;
-      kaydet(); kapat(); ciz(); bildir(n+" gün için "+para(f)+" yazıldı.");
+    var ilk=null, ayni=true;
+    keys.forEach(function(k){ var f=v.fiyatlar[k]||0; if(ilk===null) ilk=f; else if(ilk!==f) ayni=false; });
+    var hz=sonFiyatlar();
+    var sayiAlan=function(id,kucuk,val){
+      return '<div class="buyukSayi'+(kucuk?" kucuk":"")+'"><input id="'+id+'" type="text" inputmode="numeric" autocomplete="off" placeholder="0" value="'+(val?binlik(val):"")+'">'+
+        "<span>"+esc(cev("₺ / gece"))+"</span></div>";
     };
-    document.getElementById("p-sil").onclick=function(){
-      for(var d=parse(bas); d<=parse(bit); d=addDays(d,1)) delete v.fiyatlar[fmt(d)];
-      kaydet(); kapat(); ciz(); bildir("Fiyatlar silindi.");
+    perde('<div class="fyPanel"><div class="head"><h2>'+esc(cev(baslik))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="fyNot">'+esc(not)+"</div>"+
+      (hz.length?'<div class="hazir">'+hz.map(function(f){
+        return '<button class="big ghost" data-hf="'+f+'">'+binlik(f)+" ₺</button>"; }).join("")+"</div>":"")+
+      sayiAlan("fp-tutar",false,(ayni&&ilk)?ilk:0)+
+      (o.aylar?'<button class="satirBtn hsAc" id="fp-hsAc" style="margin-top:1rem"><span>'+esc(cev("Hafta sonu farklı fiyat"))+"</span></button>"+
+        '<div id="fp-hsKutu" class="hide"><div class="fyLab">'+esc(cev("Cuma ve Cumartesi geceleri"))+"</div>"+sayiAlan("fp-hs",true,0)+"</div>":"")+
+      '<button class="big" id="fp-uygula">'+esc(cev(o.aylar?(o.aylar.length===1?"Tüm aya uygula":o.aylar.length+" aya uygula"):"Uygula"))+"</button>"+
+      (o.gunler?'<button class="big ghost" id="fp-sil" style="margin-top:.5rem">'+esc(cev("Bu günlerin fiyatını sil"))+"</button>":"")+
+      "</div>");
+    var ana=document.getElementById("fp-tutar"), hs=document.getElementById("fp-hs"), son=ana;
+    sayiBicimle(ana); if(hs) sayiBicimle(hs);
+    ana.addEventListener("focus",function(){ son=ana; });
+    if(hs) hs.addEventListener("focus",function(){ son=hs; });
+    try{ ana.focus(); }catch(e){}
+    Array.prototype.forEach.call(document.querySelectorAll("[data-hf]"),function(b){
+      b.onclick=function(){ son.value=binlik(+b.dataset.hf); };
+    });
+    var hsAc=document.getElementById("fp-hsAc");
+    if(hsAc) hsAc.onclick=function(){
+      var k=document.getElementById("fp-hsKutu"), acik=k.classList.contains("hide");
+      k.classList[acik?"remove":"add"]("hide"); hsAc.classList[acik?"add":"remove"]("on");
+      if(acik) try{ hs.focus(); }catch(e){} else son=ana;
+    };
+    function bitir(eski,msg){
+      kaydet(); kapat();
+      F.secMod=false; F.secAy={}; F.secGun={}; F.capa=null; fiyatYenile();
+      geriAlBildir(cev(msg),function(){ fiyatGeriYukle(v,eski); });
+    }
+    document.getElementById("fp-uygula").onclick=function(){
+      var f=sayi(ana.value);
+      if(!f) return uyari("Gecelik fiyat girin.");
+      var hsAcik=hs && !document.getElementById("fp-hsKutu").classList.contains("hide");
+      var fh=hsAcik?sayi(hs.value):0;
+      if(hsAcik && !fh) return uyari("Hafta sonu fiyatını girin.");
+      var eski={};
+      keys.forEach(function(k){
+        eski[k]=v.fiyatlar[k]||0;
+        var g=parse(k).getDay();
+        v.fiyatlar[k]=(fh && (g===5||g===6))?fh:f;
+      });
+      if(fh) sonFiyatEkle(fh); sonFiyatEkle(f);
+      bitir(eski, (fh && fh!==f) ? keys.length+" gün fiyatlandı · hafta içi "+binlik(f)+" ₺, hafta sonu "+binlik(fh)+" ₺"
+                                  : keys.length+" gün "+binlik(f)+" ₺ yapıldı");
+    };
+    var sil=document.getElementById("fp-sil");
+    if(sil) sil.onclick=function(){
+      var eski={};
+      keys.forEach(function(k){ eski[k]=v.fiyatlar[k]||0; delete v.fiyatlar[k]; });
+      bitir(eski, keys.length+" günün fiyatı silindi");
     };
   }
+
 
   // Uygulamada (iPhone/Android) dosyayı paylaş menüsüyle verir; true dönerse iş bitti.
   // Web sitesinde false döner ve eski indirme yolu çalışır.
@@ -1743,11 +1993,12 @@
     var eski=document.getElementById("geriAlKutu"); if(eski) eski.remove();
     var el=document.createElement("div");
     el.id="geriAlKutu";
-    el.style.cssText="position:fixed;left:50%;bottom:calc(2rem + env(safe-area-inset-bottom));transform:translateX(-50%);"+
+    var fyb=document.getElementById("fyBar"), cubuk=fyb && !fyb.classList.contains("hide");
+    el.style.cssText="position:fixed;left:50%;bottom:calc("+(cubuk?"5.75rem":"2rem")+" + env(safe-area-inset-bottom));transform:translateX(-50%);"+
       "background:#101613;color:#fff;padding:.375rem .375rem .375rem 1.125rem;border-radius:99px;font-size:.875rem;"+
-      "z-index:60;max-width:92%;display:flex;align-items:center;gap:.75rem;white-space:nowrap";
+      "z-index:60;max-width:92%;width:max-content;display:flex;align-items:center;gap:.75rem;line-height:1.35";
     el.innerHTML='<span></span><button type="button" style="color:#9FE0C9;font-weight:600;padding:.625rem .875rem;'+
-      'min-height:44px;border-radius:99px">Geri al</button>';
+      'min-height:44px;border-radius:99px;white-space:nowrap;flex:none">Geri al</button>';
     el.firstChild.textContent=msg;
     var zaman=setTimeout(function(){ el.remove(); },5000);
     el.querySelector("button").onclick=function(){ clearTimeout(zaman); el.remove(); geriAl(); };
@@ -2053,6 +2304,7 @@
       r.odenen=r.odemeler.reduce(function(a,o){return a+o.tutar},0);
       kaydet(); kapat(); ciz();
       if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
+        if(!document.getElementById("fiyatEkran").classList.contains("hide")) cizFiyat();
       bildir(para(t)+" ödeme kaydedildi.");
     };
 
@@ -2071,6 +2323,7 @@
         r.odenen=r.odemeler.reduce(function(a,x){return a+x.tutar},0);
         kaydet(); kapat(); ciz();
         if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
+        if(!document.getElementById("fiyatEkran").classList.contains("hide")) cizFiyat();
       };
     });
 
@@ -2085,6 +2338,7 @@
         r.ekUcret=sayi(document.getElementById("t-ek").value);
         kaydet(); kapat(); ciz();
         if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
+        if(!document.getElementById("fiyatEkran").classList.contains("hide")) cizFiyat();
       };
     };
   }
