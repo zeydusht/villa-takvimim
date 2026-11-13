@@ -1,6 +1,6 @@
 # Villa Takvim — Proje Durumu
 
-_Son güncelleme: 7 Kasım 2026_
+_Son güncelleme: 14 Kasım 2026_
 
 ## Ne bu?
 Villa Takvim'in (villatakvim.netlify.app) iPhone/Android uygulaması. App adı: **Villa Takvimim**.
@@ -33,19 +33,19 @@ Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
       `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`
 - [ ] Veritabanı Adım C: canlı site (villatakvim.netlify.app) yeni sürüme geçirildikten SONRA Claude
       sohbetten yapacak. Önce yapılırsa canlı sitede fotoğraf yükleme çalışmaz.
+      **Not (14 Kasım): Netlify güncellendi, artık yapılabilir — Claude yapacak.**
 
 ## İnceleme raporu (7 Kasım)
 Bulgular ve öncelik sırası claude.ai'daki "Villa Takvimim — Uygulama İnceleme Raporu" dokümanında.
 
 ## Test linki
 https://zeydusht.github.io/villa-takvimim/ — GitHub Pages, main'e her gönderimde güncellenir.
-Gerçek veritabanına bağlı. Canlı site (villatakvim.netlify.app) hâlâ eski sürüm.
+Gerçek veritabanına bağlı. Canlı site (villatakvim.netlify.app) de 14 Kasım'dan beri yeni sürümde.
 
 ## Yön ve kararlar (Zeyd, 7 Kasım)
-- **Netlify güncellenmeyecek.** villatakvim.netlify.app eski sürümde kalabilir. Hedef web sitesi değil,
-  **uygulama**: istenen sürüme getirip **TestFlight**'a atmak.
-- Güvenlik C adımı (klasörsüz eski yola yüklemeyi kapatmak) eski Netlify sitesinde fotoğraf yüklemeyi
-  bozar. Netlify eski kalacağı için C'yi uygulamadan önce Zeyd'e sor (eski sitede yükleme bozulur, kabul mü?).
+- **14 Kasım: Netlify yeni sürümde; her görevden sonra deploy edilir** (`npx netlify-cli deploy --prod --dir www`).
+  Misafir paylaşım linkleri villatakvim.netlify.app'e gidiyor, site her zaman GitHub ile aynı tutulur.
+  Hedef yine **uygulama**: istenen sürüme getirip **TestFlight**'a atmak.
 - **Çalışma felsefesi:** Sürekli iterasyon. Her turda ekranlara ilk kez kullanan biri gözüyle bakılır:
   ne eklenebilir, ne daha iyi olur, ne kötü görünüyor, ne karmaşık, ne kullanışsız, ne okunmuyor.
   Claude (ürün yöneticisi) bunları bulur ve Claude Code'a net mesaj yazar; Zeyd yapıştırır; Claude
@@ -168,6 +168,24 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       ay değişince kısa solma. "Hareketi Azalt" açıksa kayma/büyüme yok. Dokunma alanları en az 48px; "Gizle",
       "Şimdilik atla", "değiştir", "Şifremi unuttum", "Seçimi temizle" çerçeveli küçük butonlar.
       Denenecek: telefonda titreşim (APK / iPhone), panel aç-kapa ve aşağı çekerek kapatma, sihirbaz geçişleri.
+
+- [x] Görev 10 — netlik ve vurgu (docs/GOREV10.md, 16 madde) · Claude Code yaptı (14 Kasım), sahte veriyle 390 ve 320px'te test edildi.
+      Renk sistemi: koyu yeşil = ana eylem / dolu / tamam; açık yeşil + yeşil çerçeve = ikincil eylem; turuncu = boş / eksik;
+      kırmızı sadece alınacak para ve hata. Villa ekranı: çerçeveli başlık kartı (ad, konum, "● Dolu · Ad" / "● Boş" etiketi),
+      "+ Rezervasyon" dolu yeşil, "Fiyat gir"/"Paylaş" açık yeşil; "Bu ay N gece boş" butonların altında açık turuncu satır.
+      Ay özeti "BU AY · X ₺ alındı", yazılar kesilmez. Geri ve ay okları 44px yuvarlak çerçeveli, basınca dolar. Geçmiş günler soluk
+      (dolu blok %50). Bölüm başlıkları her yerde normal yazımla, 19px, koyu. Yaklaşan rezervasyonlar çerçeveli kartlar,
+      "Sıradaki 6", 7 günden yakına turuncu "N gün sonra", 6'dan fazlaysa "Tümünü gör (N)" (ay ay gruplu panel).
+      Kurulum durumu sihirbazın 6 adımına göre (ad+konum, kişi/oda, özellik, fiyat, fotoğraf, WhatsApp+paylaşım):
+      "Villa bilgileri" satırı "✓ Tamam" ya da "Eksik · 4/6" (dokununca sihirbaz eksik ilk adımdan); sihirbazda
+      "Tüm villa bilgileri" butonu (villa silme vb. her zaman ulaşılır). "Gizle" kartı tek satıra küçültür ("Villa kurulumu · 4/6 · Göster"),
+      6/6 olunca kart kalkar. Misafirler/Gelir & gider/Bakıcılar satırlarında sayı yok. Ana ekran: "● 1 dolu" / "● 2 boş"
+      etiketleri listeyi süzer; villa kartlarında aynı etiket. Alt menüde kayan açık yeşil kabarcık (dokununca kayar,
+      sürükleyince parmağı izler). Misafir sayfası fiyat özeti: "3 gece" (farklı fiyatlarda dokununca gece gece döküm),
+      "+ kısa konaklama", "Toplam" depozitosuz, altında depozito notu; seçim kutusu ve "Kaç kişi" panelinde aynı.
+      iPhone'un tarihleri bağlantı gibi altını çizmesi kapatıldı (format-detection). sw.js sürümü artırıldı.
+      Denenecek: villa ekranının üstü, alt menü kabarcığı (dokunarak ve sürükleyerek), kurulum kartını gizleyip geri açma,
+      ana ekrandaki dolu/boş etiketleri.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).

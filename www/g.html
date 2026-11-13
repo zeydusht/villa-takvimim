@@ -7,6 +7,7 @@
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#0B5B57">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
 <title>Villa</title>
 <style>
   :root{--ink:#12232B;--muted:#6B7C85;--line:#E3E9EC;--soft:#F4F7F8;--dolu:#DDE4E7;--dip:#A3B0B6;
@@ -141,6 +142,15 @@
   .fsTop span:first-child{color:var(--ink)}
   .fsAlt{font-size:.75rem}
   .fsNot{font-size:.75rem; color:var(--muted); margin-top:.5rem; line-height:1.5}
+  /* 10.15 "3 gece" satırı: dokununca gece gece döküm */
+  button.fs{width:100%; background:none; border:0; font:inherit; color:inherit; text-align:left; cursor:pointer;
+    -webkit-appearance:none; appearance:none; min-height:2.75rem; padding:.4375rem 0}
+  .fsGece span:first-child{display:inline-flex; align-items:center; gap:.375rem; color:var(--ink)}
+  .fsGece .ok{display:inline-block; width:.4375rem; height:.4375rem; border-right:2px solid currentColor;
+    border-bottom:2px solid currentColor; transform:rotate(45deg) translateY(-2px); transition:transform .15s ease-out}
+  .fsGece[aria-expanded="true"] .ok{transform:rotate(225deg) translate(-1px,-1px)}
+  .fsDokum{padding:0 0 .25rem .75rem; border-left:2px solid var(--line); margin:.125rem 0 .375rem}
+  .fsDokum .fs{padding:.25rem 0; font-size:.875rem}
   .ozetkutu{background:var(--soft);border-radius:.875rem;padding:1rem;margin-top:1rem;
     display:flex;align-items:center;justify-content:space-between;gap:1rem}
   .ozetkutu .top{font-family:var(--serif);font-size:1.25rem;letter-spacing:-.02em}
@@ -684,28 +694,20 @@
     o.className="onay"; o.id="onay";
     function ciz2(){
       var t=toplam(), gc=geceSay();
-      var e=D.ek||{}, ekU=(e.sinir&&e.ucret&&gc<=e.sinir)?e.ucret:0;
-      var dep=(b.depozito||0);
       var mesaj=(D.ad||"Villa")+" için "+tarihMetni()+" tarihleri arasında ("+gc+" gece) "+
         kisiMetin()+" ile rezervasyon yapmak istiyorum. Uygunluk ve fiyat için bilgi alabilir miyim?";
       o.innerHTML='<div class="onaykutu"><h3>Kaç kişi geliyorsunuz?</h3>'+
         '<div style="color:var(--muted);font-size:.875rem;margin:.375rem 0 1rem">'+
           esc(D.ad||"Villa")+" · "+tarihMetni()+" · "+gc+" "+(EN?"nights":"gece")+"</div>"+
         '<div class="kisiler" id="onay-sayac">'+sayaclar(mx,b.evcil,"o")+"</div>"+
-        '<div class="ozetsatir"><span style="color:var(--muted)">'+CEV("Konaklama")+" · "+gc+" "+(EN?"nights":"gece")+"</span><span>"+
-          (t.eksik?"—":nf.format(t.tutar)+" ₺")+"</span></div>"+
-        (ekU?'<div class="ozetsatir"><span style="color:var(--muted)">Kısa konaklama ücreti</span><span>'+
-          nf.format(ekU)+" ₺</span></div>":"")+
-
         '<div class="ozetsatir"><span style="color:var(--muted)">Misafir</span><span>'+esc(kisiMetin())+"</span></div>"+
-        '<div class="ozetsatir top"><span>'+CEV("Toplam")+"</span><span"+(t.eksik?' class="fiyatSor"':"")+">"+
-          (t.eksik?CEV("Bu tarihlerin fiyatını villa sahibine sorun"):nf.format(t.tutar+ekU)+" ₺")+"</span></div>"+
-        (dep?'<div style="font-size:.8125rem;color:var(--muted);margin-top:.25rem">'+depNot(dep)+"</div>":"")+
+        '<div class="fiyatKutu" id="onay-fiyat">'+fiyatOzet()+"</div>"+
         '<a class="onaybtn" href="https://wa.me/'+tel+'?text='+encodeURIComponent(mesaj)+
           '" target="_blank" rel="noopener">WhatsApp\'tan gönder</a>'+
         '<button class="vazgec" id="onay-kapat">Vazgeç</button></div>';
       o.querySelector("#onay-kapat").onclick=function(){ o.remove(); secimKutusu(); altCiz(); };
       o.querySelector("#onay-sayac").onclick=function(e){ sayacTikla(e,mx,ciz2); };
+      o.querySelector("#onay-fiyat").onclick=function(e){ dokumTikla(e,ciz2); };
     }
     ciz2();
     o.addEventListener("click",function(e){ if(e.target===o){ o.remove(); secimKutusu(); altCiz(); } });
@@ -763,6 +765,40 @@
     sonra(); return true;
   }
 
+  // 10.15 Fiyat özeti (seçim kutusu ve "Kaç kişi geliyorsunuz?" panelinde aynı):
+  //   3 gece            3.400 ₺   ← gece fiyatları farklıysa dokununca gece gece döküm
+  //   Kısa konaklama   +5.000 ₺
+  //   Toplam            8.400 ₺   ← depozito toplama EKLENMEZ
+  //   Girişte 5.000 ₺ hasar depozitosu alınır, çıkışta iade edilir.
+  var dokumAcik=false;
+  function fiyatOzet(){
+    var t=toplam(), gc=geceSay(), b=D.bilgi||{};
+    var ek=(D.ek&&D.ek.sinir&&D.ek.ucret&&gc<=D.ek.sinir)?D.ek.ucret:0;
+    var dep=b.depozito||0, gece=gc+" "+(EN?(gc===1?"night":"nights"):"gece");
+    var not=dep?'<div class="fsNot">'+depNot(dep)+"</div>":"";
+    if(t.eksik) return '<div class="fs fsTop"><span>'+CEV("Toplam")+'</span><span class="fiyatSor" style="white-space:normal">'+
+      CEV("Bu tarihlerin fiyatını villa sahibine sorun")+"</span></div>"+not;
+    var gunler=[], d=new Date(sec.bas);
+    while(fmt(d)<sec.bit){ gunler.push({d:new Date(d), f:(D.fiyat||{})[fmt(d)]}); d.setDate(d.getDate()+1); }
+    var ayni=gunler.every(function(g){ return g.f===gunler[0].f; });
+    var h;
+    if(ayni || gc<2){
+      h='<div class="fs"><span style="color:var(--ink)">'+gece+(gc>1?" × "+nf.format(gunler[0].f)+" ₺":"")+"</span><span>"+nf.format(t.tutar)+" ₺</span></div>";
+    } else {
+      h='<button class="fs fsGece" data-dokum aria-expanded="'+dokumAcik+'"><span>'+gece+'<i class="ok" aria-hidden="true"></i></span><span>'+nf.format(t.tutar)+" ₺</span></button>"+
+        (dokumAcik?'<div class="fsDokum">'+gunler.map(function(g){
+          return '<div class="fs"><span>'+g.d.getDate()+" "+AYLAR[g.d.getMonth()].slice(0,3)+"</span><span>"+nf.format(g.f)+" ₺</span></div>";
+        }).join("")+"</div>":"");
+    }
+    if(ek) h+='<div class="fs"><span>'+CEV("Kısa konaklama ücreti")+"</span><span>+"+nf.format(ek)+" ₺</span></div>";
+    h+='<div class="fs fsTop"><span>'+CEV("Toplam")+"</span><span>"+nf.format(t.tutar+ek)+" ₺</span></div>"+not;
+    return h;
+  }
+  function dokumTikla(e,sonra){
+    if(!e.target.closest("[data-dokum]")) return false;
+    dokumAcik=!dokumAcik; sonra(); return true;
+  }
+
   // "Girişte 5.000 ₺ hasar depozitosu alınır, çıkışta iade edilir."
   function depNot(dep){
     return EN ? "A "+nf.format(dep)+" ₺ damage deposit is taken at check-in and refunded at check-out."
@@ -774,22 +810,11 @@
     if(!sec.bas||!sec.bit){ el.innerHTML=""; return; }
     var t=toplam(), gc=geceSay();
     var ek=(D.ek&&D.ek.sinir&&D.ek.ucret&&gc<=D.ek.sinir)?D.ek.ucret:0;
-    var dep=(b.depozito)||0;
     // Toplam = konaklama + kısa konaklama ücreti. Depozito toplama EKLENMEZ, ayrı satırda yazılır.
     var konaklamaT=t.tutar+ek;
-    var gecelik=gc?Math.round(t.tutar/gc):0;
-    var sat=function(ad,deger){
-      return '<div class="fs"><span>'+ad+"</span><span>"+deger+"</span></div>"; };
 
     var h="";
-    if(!t.eksik){
-      h+='<div class="fiyatKutu">'+
-        sat(nf.format(gecelik)+" ₺ / "+gc+" gece", nf.format(t.tutar)+" ₺")+
-        (ek? sat(CEV("Kısa konaklama ücreti"), nf.format(ek)+" ₺") : "")+
-        '<div class="fs fsTop"><span>'+CEV("Toplam")+'</span><span>'+nf.format(konaklamaT)+" ₺</span></div>"+
-        (dep?'<div class="fsNot">'+depNot(dep)+"</div>":"")+
-      "</div>";
-    }
+    if(!t.eksik) h+='<div class="fiyatKutu">'+fiyatOzet()+"</div>";
     h+='<div class="ozetkutu"><div class="sol">'+
       '<div class="top'+(t.eksik?" fiyatSor":"")+'">'+(t.eksik?CEV("Bu tarihlerin fiyatını villa sahibine sorun"):nf.format(konaklamaT)+" ₺")+"</div>"+
       '<div style="color:var(--muted)">'+tarihMetni()+" · "+gc+" gece</div></div>"+
@@ -800,6 +825,7 @@
     document.getElementById("tmz").onclick=function(){
       sec={bas:null,bit:null}; takvimCiz(); altCiz(); secimKutusu(); };
     el.onclick=function(e){
+      if(dokumTikla(e,secimKutusu)) return;
       sayacTikla(e,mx,function(){ secimKutusu(); altCiz(); });
     };
   }

@@ -1,12 +1,21 @@
 /* Villa Takvim — bildirim servisi
    Uygulama kapalıyken bile bildirimleri karşılar ve ekrana getirir. */
 
+// Sürüm: her yayında artırılır. Dosya değişince telefonlar yeni servisi kurar;
+// açılışta eski sürümlerden kalan önbellekler silinir, böylece eski ekran kalmaz.
+var SURUM = "vt-2026-11-14-g10";
+
 self.addEventListener("install", function (e) {
   self.skipWaiting();
 });
 
 self.addEventListener("activate", function (e) {
-  e.waitUntil(self.clients.claim());
+  e.waitUntil(
+    (self.caches ? caches.keys().then(function (adlar) {
+      return Promise.all(adlar.filter(function (a) { return a !== SURUM; })
+        .map(function (a) { return caches.delete(a); }));
+    }) : Promise.resolve()).then(function () { return self.clients.claim(); })
+  );
 });
 
 self.addEventListener("push", function (e) {

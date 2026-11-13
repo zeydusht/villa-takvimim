@@ -227,5 +227,6 @@ yazıları kalınlaştırma.
 
 ## Bitince
 1. `npx cap sync`, commit, `git push` → GitHub'da Android ve iOS derlemeleri kendiliğinden başlar.
+   Her push'tan sonra: `npx netlify-cli deploy --prod --dir www` (canlı site her zaman GitHub ile aynı kalsın).
 2. `docs/PROJE_DURUMU.md`'yi güncelle: ne yapıldı, ne kaldı.
 3. Zeyd'e neyin değiştiğini 5-6 maddede, teknik olmayan dille yaz; denemesi gereken yerleri söyle.
