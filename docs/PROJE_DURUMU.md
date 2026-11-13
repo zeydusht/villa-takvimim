@@ -157,6 +157,18 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
 
 - [x] Görev 8 sonrası giriş hatası düzeltildi (davetBekleyenKullan kapsam hatası).
 
+- [x] Görev 9 — his ve hız (docs/GOREV9.md, 10 madde) · Claude Code yaptı (14 Kasım), sahte veriyle test edildi.
+      Hareket süreleri tek yerde (--hiz-bas 100 / --hiz-ac 220 / --hiz-kapa 180 / --hiz-ekran 200 ms; hiçbiri 300ms üstü değil).
+      Kaydedince panel hemen kapanır, kayıt arkada gider; buluta yazılamazsa "Tekrar dene" + "Değişikliği geri al".
+      "Yükleniyor…" yerine gri iskelet satırlar (400ms'den kısa yüklemede görünmez). Başarı bildirimleri "✓ …" ve
+      aşağıdan belirip solar; ödeme sonrası detaya dönülür ve değişen satır bir kez yeşil parlar.
+      Gerçek titreşim: @capacitor/haptics (VTNative.titret): başarı / uyarı / silme; Hesap → Titreşim aç/kapa (yalnız uygulamada).
+      Paneller aşağıdan kayar, arka plan %40 kararır, aşağı çekerek kapanır. Yeni rezervasyon takvimde parlar; listelere
+      eklenen satır yukarıdan açılır. Sihirbaz adımları sağdan/soldan kayar. Alt menü, seçiciler, aç-kapa düğmeleri hareketsiz;
+      ay değişince kısa solma. "Hareketi Azalt" açıksa kayma/büyüme yok. Dokunma alanları en az 48px; "Gizle",
+      "Şimdilik atla", "değiştir", "Şifremi unuttum", "Seçimi temizle" çerçeveli küçük butonlar.
+      Denenecek: telefonda titreşim (APK / iPhone), panel aç-kapa ve aşağı çekerek kapatma, sihirbaz geçişleri.
+
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
 

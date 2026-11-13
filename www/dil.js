@@ -453,6 +453,19 @@
     "Davet kodu kullanılamadı.":"The invite code could not be used.",
     "WhatsApp'ta gönder":"Send on WhatsApp",
     "Mesajı kopyala":"Copy message",
+    "Rezervasyon kaydedildi":"Reservation saved",
+    "Rezervasyon güncellendi":"Reservation updated",
+    "Ödeme güncellendi":"Payment updated",
+    "Bilgileriniz kaydedildi":"Your details were saved",
+    "Villa bilgileri kaydedildi":"Villa details saved",
+    "Gelir kaydedildi":"Income saved",
+    "Gider kaydedildi":"Expense saved",
+    "Gelir güncellendi":"Income updated",
+    "Gider güncellendi":"Expense updated",
+    "Değişikliği geri al":"Undo the change",
+    "Geri alırsanız buluttaki son hâle dönülür; kaydedilemeyen değişiklik silinir.":"If you undo, the app returns to the last saved cloud version; the unsaved change is removed.",
+    "Titreşim":"Vibration",
+    "Kayıt ve uyarılarda telefon hafifçe titresin":"Vibrate gently on saves and warnings",
     "Kapak":"Cover", "Kapak yap":"Make cover", "Kapak fotoğrafı":"Cover photo", "Tümünü gör":"See all",
     "Fotoğraf seçin":"Select photos", "Henüz fotoğraf yok.":"No photos yet.",
     "Silmek istediğiniz fotoğraflara dokunun.":"Tap the photos you want to delete.",
@@ -551,6 +564,9 @@
   var GORELI = "(bugün|yarın|\\d+ gün sonra)";
 
   var K = [
+    // "✓ …" ile başlayan başarı mesajları: işaret kalır, gerisi çevrilir
+    [/^✓ (.+)$/, function (_, a) { return "✓ " + D.cevir(a); }],
+    [/^(.+) ödeme kaydedildi$/, "$1 payment saved"],
     [/^· kalan (.+)$/, "· balance $1"],
     [/^Bu ay (\d+) gece boş$/, "$1 free nights this month"],
     [/^(\d+) ay seçildi$/, "$1 months selected"],

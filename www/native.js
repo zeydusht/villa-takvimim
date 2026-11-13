@@ -121,6 +121,18 @@
   window.VTNative = window.VTNative || {};
   window.VTNative.dosyaPaylas = dosyaPaylas;
 
+  // Gerçek titreşim (iPhone'da navigator.vibrate çalışmaz). Sadece uygulama içinde; web'de bu dosya hiçbir şey yapmaz.
+  //   "basari" → notification success, "uyari" → notification warning, "sil" → impact medium
+  window.VTNative.titret = function (tur) {
+    var H = P.Haptics;
+    if (!H) return;
+    try {
+      if (tur === "basari") H.notification({ type: "SUCCESS" }).catch(function () {});
+      else if (tur === "uyari") H.notification({ type: "WARNING" }).catch(function () {});
+      else if (tur === "sil") H.impact({ style: "MEDIUM" }).catch(function () {});
+    } catch (e) {}
+  };
+
   // Sayfadaki navigator.share({files}) çağrıları da aynı yoldan gitsin.
   if (P.Filesystem && P.Share) {
     var eskiShare = navigator.share ? navigator.share.bind(navigator) : null;
