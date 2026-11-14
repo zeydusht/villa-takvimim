@@ -85,7 +85,7 @@ _Hazırlayan: Claude (ürün yöneticisi), 14 Kasım 2026. Zeyd'in iPhone'da ger
 
 Karar (Zeyd, 14 Kasım): villatakvim.netlify.app artık yeni sürüme geçiyor. Misafir paylaşım linkleri oraya gidiyor ve şu an eski fiyat ekranını gösteriyor. Şu an sadece 2-3 tanıdık kullanıyor, sorun yok.
 
-- [ ] **10.16 Netlify'a yeni sürümü yükle.**
+- [x] **10.16 Netlify'a yeni sürümü yükle.**
   1. `npx netlify-cli login` → tarayıcı açılır. Zeyd'e "Tarayıcıda açılan Netlify sayfasında **Authorize** butonuna bas" de ve bekle.
   2. `npx netlify-cli link` → **villatakvim** sitesini seç (adı villatakvim.netlify.app olan). Bulamazsan `npx netlify-cli sites:list` ile listele ve Zeyd'e sor.
   3. `npx netlify-cli deploy --prod --dir www`

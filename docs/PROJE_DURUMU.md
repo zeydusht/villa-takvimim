@@ -33,20 +33,19 @@ Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
       `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`
 - [ ] Veritabanı Adım C: canlı site (villatakvim.netlify.app) yeni sürüme geçirildikten SONRA Claude
       sohbetten yapacak. Önce yapılırsa canlı sitede fotoğraf yükleme çalışmaz.
-      **Not (14 Kasım): Netlify HENÜZ güncellenmedi (yapılmadı). Netlify deploy edildikten sonra Claude yapacak.**
+      **Not (14 Kasım): Netlify güncellendi, artık yapılabilir — Claude yapacak.**
 
 ## İnceleme raporu (7 Kasım)
 Bulgular ve öncelik sırası claude.ai'daki "Villa Takvimim — Uygulama İnceleme Raporu" dokümanında.
 
 ## Test linki
 https://zeydusht.github.io/villa-takvimim/ — GitHub Pages, main'e her gönderimde güncellenir.
-Gerçek veritabanına bağlı. Canlı site (villatakvim.netlify.app) hâlâ eski sürüm (Netlify deploy yapılmadı).
+Gerçek veritabanına bağlı. Canlı site (villatakvim.netlify.app) de 14 Kasım'dan beri yeni sürümde.
 
 ## Yön ve kararlar (Zeyd, 7 Kasım)
-- **14 Kasım kararı: Netlify yeni sürüme geçecek; sonra her görevden sonra deploy edilecek**
-  (`npx netlify-cli deploy --prod --dir www`). Misafir paylaşım linkleri villatakvim.netlify.app'e gidiyor.
-  **Durum: YAPILMADI.** Netlify girişi (netlify-cli login) üç kez denendi, tarayıcıda onay verilemeden süre doldu;
-  klasör siteye bağlanmadı, canlı site hâlâ eski sürüm. Sıradaki turda tekrar denenecek (Görev 10 madde 10.16).
+- **14 Kasım: Netlify yeni sürümde; her görevden sonra deploy edilir** (`npx netlify-cli deploy --prod --dir www`).
+  Misafir paylaşım linkleri villatakvim.netlify.app'e gidiyor, site her zaman GitHub ile aynı tutulur.
+  Proje klasörü villatakvim sitesine bağlı (`.netlify/`, GitHub'a gönderilmez). Canlıda sw.js sürümü kontrol edilir.
   Hedef yine **uygulama**: istenen sürüme getirip **TestFlight**'a atmak.
 - **Çalışma felsefesi:** Sürekli iterasyon. Her turda ekranlara ilk kez kullanan biri gözüyle bakılır:
   ne eklenebilir, ne daha iyi olur, ne kötü görünüyor, ne karmaşık, ne kullanışsız, ne okunmuyor.
@@ -171,8 +170,8 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       "Şimdilik atla", "değiştir", "Şifremi unuttum", "Seçimi temizle" çerçeveli küçük butonlar.
       Denenecek: telefonda titreşim (APK / iPhone), panel aç-kapa ve aşağı çekerek kapatma, sihirbaz geçişleri.
 
-- [ ] Görev 10 — netlik ve vurgu (docs/GOREV10.md) · 10.1–10.15 yapıldı (14 Kasım), sahte veriyle 390 ve 320px'te test edildi.
-      **10.16 Netlify deploy YAPILMADI** (giriş onayı alınamadı); canlı site eski sürümde.
+- [x] Görev 10 — netlik ve vurgu (docs/GOREV10.md, 16 madde) · Claude Code yaptı (14 Kasım), sahte veriyle 390 ve 320px'te test edildi.
+      10.16: Netlify'a yüklendi (14 Kasım); canlıda sw.js sürümü "vt-2026-11-14-g10", paylaşım linki yeni misafir sayfasını açıyor.
       Renk sistemi: koyu yeşil = ana eylem / dolu / tamam; açık yeşil + yeşil çerçeve = ikincil eylem; turuncu = boş / eksik;
       kırmızı sadece alınacak para ve hata. Villa ekranı: çerçeveli başlık kartı (ad, konum, "● Dolu · Ad" / "● Boş" etiketi),
       "+ Rezervasyon" dolu yeşil, "Fiyat gir"/"Paylaş" açık yeşil; "Bu ay N gece boş" butonların altında açık turuncu satır.
