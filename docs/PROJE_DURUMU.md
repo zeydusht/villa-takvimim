@@ -189,6 +189,11 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Denenecek: villa ekranının üstü, alt menü kabarcığı (dokunarak ve sürükleyerek), kurulum kartını gizleyip geri açma,
       ana ekrandaki dolu/boş etiketleri.
 
+- [x] Görev 11.9 — çizimler (14 Kasım) · 6 görsel Codex CLI ile üretildi (docs/CODEX_GORSELLER.md), 800px WebP (19–51 KB) olarak
+      `www/img/` içinde: bos-villa (ana ekran "Hoş geldiniz" üstü), bos-rezervasyon (rezervasyonsuz villa), bos-foto (fotoğrafsız villa),
+      sihirbaz-hosgeldin (sihirbaz 1. adım), sihirbaz-hazir ("Villanız hazır!"), bos-takvim (Takvim sekmesinde olay yoksa).
+      Netlify'a yüklendi. Görev 11'in diğer maddeleri bu turda yapılmadı.
+
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
 

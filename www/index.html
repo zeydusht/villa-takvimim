@@ -344,6 +344,9 @@
   .shAlt{display:flex; gap:.5rem; margin-top:1.5rem; position:sticky; bottom:0; background:#fff; padding:.75rem 0; z-index:3}
   .shAlt .big{margin-top:0; flex:1 1 0}
   .shAlt .big.gizli{visibility:hidden}
+  /* 11.9 çizimler: en fazla ekranın %60'ı, ortada, altında mevcut metin */
+  .cizim{display:block; width:60%; max-width:60vw; height:auto; aspect-ratio:1/1; margin:0 auto .75rem}
+  .shSon .cizim{margin-bottom:0}
   .shSon{text-align:center; padding-top:2rem}
   .shEmoji{font-size:3.5rem; line-height:1}
   .shSon h1{margin-top:.75rem}
@@ -1081,6 +1084,7 @@
 
     <div class="section">
       <div id="fotoBas"><span class="eyebrow">Fotoğraflar</span></div>
+      <img class="cizim hide" id="fotoCizim" src="img/bos-foto.webp" alt="" aria-hidden="true" width="800" height="800" decoding="async" loading="lazy">
       <div class="fotolar" id="fotolar"></div>
       <input type="file" id="fotoInput" accept="image/*" multiple style="display:none; width:auto">
     </div>
@@ -1743,7 +1747,7 @@
          durumEtiket(!!ic, ic&&ic.guest)+
          (alt?'<span class="kalt">'+esc(alt)+"</span>":"")+"</span></button>";
     });
-    if(!S.villalar.length) h='<div class="karsilama"><h2>'+esc(cev("Hoş geldiniz"))+"</h2>"+
+    if(!S.villalar.length) h='<div style="margin-top:1.5rem">'+cizimImg("bos-villa")+"</div>"+'<div class="karsilama"><h2>'+esc(cev("Hoş geldiniz"))+"</h2>"+
       "<ol>"+
         '<li><span class="no">1</span><span>'+esc(cev("Villanızı ekleyin"))+"</span></li>"+
         '<li><span class="no">2</span><span>'+esc(cev("Gecelik fiyatları girin"))+"</span></li>"+
@@ -1997,7 +2001,7 @@
          (kalan>0?'<span class="sag" style="color:#9B2C4A">'+para(kalan)+"</span>":"")+
          "</button>";
     });
-    if(!olaylar.length) h+='<div class="sm muted" style="margin-top:1.25rem">'+
+    if(!olaylar.length) h+='<div style="margin-top:1.5rem">'+cizimImg("bos-takvim")+"</div>"+'<div class="sm muted" style="text-align:center">'+
       esc(cev({gun:"Bugün giriş veya çıkış yok.", "7":"Önümüzdeki 7 günde giriş veya çıkış yok.", "30":"Önümüzdeki 30 günde giriş veya çıkış yok."}[AJ.mod]))+"</div>";
     var el=document.getElementById("ajandaListe");
     el.innerHTML=h;
@@ -2260,6 +2264,9 @@
     return h.toLocaleUpperCase("tr");
   }
 
+  // 11.9 boş ekran çizimleri (www/img/*.webp)
+  function cizimImg(ad){ return '<img class="cizim" src="img/'+ad+'.webp" alt="" aria-hidden="true" width="800" height="800" decoding="async">'; }
+
   // Kurulum sihirbazının 6 adımı (villa ekranındaki kurulum kartı ve "Villa bilgileri" satırı da kullanır)
   var SH_ADIM=6;
   var SH_BASLIK=["Villa adı ve konumu","Kaç kişilik?","Nesi var?","Fiyatlar","Fotoğraflar","İletişim ve paylaşım"];
@@ -2454,7 +2461,7 @@
     // Bugünden sonraki ilk 6 rezervasyon; fazlası "Tümünü gör" panelinde (ay ay)
     var tumYak=yaklasanlar(v), yak=tumYak.slice(0,6);
     var lh="";
-    if(!yak.length) lh='<div class="sm muted" style="margin-top:.5rem">Henüz rezervasyon yok. Takvimden tarih aralığı seçerek başlayın.</div>';
+    if(!yak.length) lh='<div style="margin-top:1rem">'+cizimImg("bos-rezervasyon")+'</div><div class="sm muted" style="text-align:center">Henüz rezervasyon yok. Takvimden tarih aralığı seçerek başlayın.</div>';
     else yak.forEach(function(r){ lh+=rezKartHTML(v,r,true); });
     if(tumYak.length>6) lh+='<button class="big ghost tumuBtn" id="tumRezBtn">'+esc(cev("Tümünü gör ("+tumYak.length+")"))+"</button>";
     document.getElementById("listeNot").textContent = yak.length ? cev("Sıradaki "+yak.length) : "";
@@ -2501,6 +2508,7 @@
       fe.className="fotoSerit";
     }
     fe.innerHTML=fh;
+    document.getElementById("fotoCizim").classList[fl.length?"add":"remove"]("hide");
     document.getElementById("fotoBas").innerHTML='<span class="eyebrow">'+
       (fl.length<4 ? esc(cev("En az 4 fotoğraf ekleyin"))+" · "+fl.length+"/4" : esc(cev("Fotoğraflar"))+" · "+fl.length)+"</span>"+
       (fl.length?'<button class="tumu" id="fotoTumu">'+esc(cev("Tümünü gör"))+"</button>":"");
@@ -5126,7 +5134,7 @@
     document.getElementById("shGeri").classList[a===1?"add":"remove"]("gizli");
     document.getElementById("shIleri").textContent=cev(a===SH_ADIM?"Bitir":"İleri");
     if(bitti){
-      el.innerHTML='<div class="shSon"><div class="shEmoji">🎉</div><h1>'+esc(cev("Villanız hazır!"))+"</h1>"+
+      el.innerHTML='<div class="shSon">'+cizimImg("sihirbaz-hazir")+"<h1>"+esc(cev("Villanız hazır!"))+"</h1>"+
         '<div class="sm muted" style="margin-top:.5rem">'+esc(cev("Eksik kalan bir şey olursa villa ekranındaki kart size hatırlatır."))+"</div>"+
         '<button class="big" id="shTakvim">'+esc(cev("Takvime git"))+"</button>"+
         '<button class="big ghost" id="shYeni" style="margin-top:.5rem">'+esc(cev("Başka villa ekle"))+"</button></div>";
@@ -5134,6 +5142,7 @@
       document.getElementById("shYeni").onclick=function(){ S.aktif=null; cizAna(); document.getElementById("villaEkle").click(); };
       return;
     }
+    if(a===1) h+=cizimImg("sihirbaz-hosgeldin");
     h+='<h1 class="shBaslik">'+esc(cev(SH_BASLIK[a-1]))+"</h1>";
     if(a===1){
       h+=alan("sh-ad","Villa adı","Örn. Villa Salta","text",esc(v.ad||""))+
