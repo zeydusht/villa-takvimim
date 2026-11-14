@@ -582,7 +582,12 @@
       h+=bolum(CEV("Ev olanakları"),amblemler(b.olanaklar),"ev");
 
     // ---- konum (13.1): konum adı, mesafeler (havalimanı uçak, diğerleri iğne ikonu), Haritada aç ----
-    var haritaAdres=guvenliAdres(b.haritaLink||b.harita);
+    // "Haritada aç": konum biliniyorsa her zaman koordinattan Google Haritalar (Apple bağlantısı kayıtlı olsa bile);
+    // yoksa eski kayıtlı bağlantı
+    var hD=D.harita, haritaAdres="";
+    if(hD && hD.google && /^https:\/\/www\.google\.com\/maps\//.test(hD.google)) haritaAdres=hD.google;
+    else if(hD && hD.tip==="tam" && typeof hD.lat==="number") haritaAdres="https://www.google.com/maps/search/?api=1&query="+hD.lat.toFixed(6)+","+hD.lng.toFixed(6);
+    if(!haritaAdres) haritaAdres=guvenliAdres(b.haritaLink||b.harita);
     var mList=Array.isArray(b.mesafeListe) ? b.mesafeListe : (function(){
       var ms=b.mesafeler||{}, mAd={havaalani:"Havaalanına",merkez:"Merkeze",plaj:"Plaja",
         market:"Markete",restoran:"Restorana",toplutasima:"Toplu taşımaya"}, l=[];
