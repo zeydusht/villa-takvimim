@@ -34,6 +34,9 @@ Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
 - [ ] Veritabanı Adım C: canlı site (villatakvim.netlify.app) yeni sürüme geçirildikten SONRA Claude
       sohbetten yapacak. Önce yapılırsa canlı sitede fotoğraf yükleme çalışmaz.
       **Not (14 Kasım): Netlify güncellendi, artık yapılabilir — Claude yapacak.**
+      Not (14 Kasım, GOREV11 madde 11.10'daki bilgiye göre — sohbetteki Claude): "eski klasörsüz yola yükleme kapandı
+      (galeri_yukleyebilir: else → yalnız yönetici). Eski dosyalar okunmaya devam ediyor." Claude Code veritabanına bakmadı,
+      bunu doğrulamadı; kutu, Zeyd veya sohbetteki Claude doğrulayınca işaretlenmeli.
 
 ## İnceleme raporu (7 Kasım)
 Bulgular ve öncelik sırası claude.ai'daki "Villa Takvimim — Uygulama İnceleme Raporu" dokümanında.
@@ -192,7 +195,26 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
 - [x] Görev 11.9 — çizimler (14 Kasım) · 6 görsel Codex CLI ile üretildi (docs/CODEX_GORSELLER.md), 800px WebP (19–51 KB) olarak
       `www/img/` içinde: bos-villa (ana ekran "Hoş geldiniz" üstü), bos-rezervasyon (rezervasyonsuz villa), bos-foto (fotoğrafsız villa),
       sihirbaz-hosgeldin (sihirbaz 1. adım), sihirbaz-hazir ("Villanız hazır!"), bos-takvim (Takvim sekmesinde olay yoksa).
-      Netlify'a yüklendi. Görev 11'in diğer maddeleri bu turda yapılmadı.
+      Netlify'a yüklendi.
+
+- [x] Görev 11 — renk ve ikon sistemi (docs/GOREV11.md, 11.1–11.8 ve 11.11) · Claude Code yaptı (14 Kasım), sahte veriyle test edildi.
+      Lucide ikonları `www/ikonlar.js` içine gömülü (72 ikon, 14 KB, internetsiz çalışır): `ikon("cuzdan",{boy:22})`;
+      iş → renk/ikon tablosu tek nesnede (`IS`). HTML'de `data-ik` (buton ikonu), `data-ikk="iş:ikon"` (satır ikon kutusu),
+      `data-iki` (başlık ikonu) yazılır, küçük bir gözlemci ikonu yerleştirir. Elle yazılmış SVG'ler ikon()'a taşındı (logo ve grafik hariç).
+      Dört buton türü: ana (dolu yeşil, ekranda en fazla 1) · renkli (iş rengi zemin/çerçeve/ikon) · sade (beyaz; sadece Vazgeç/Geri/Kapat/Tümünü gör türü) ·
+      tehlikeli (beyaz, kırmızı çerçeve + çöp ikonu, hep en altta). Satırlar iPhone Ayarlar gibi: 36×36 renkli ikon kutusu, aynı bölüm tek kartta.
+      Rezervasyon satırları: misafir renginde baş harf, yeşil giriş / gri çıkış ikonu, kalan ödeme altın cüzdan + kırmızı tutar.
+      Detayda giriş/çıkış/kişi/telefon/not ikonlu; "alınacak" altın cüzdan, "tamamı alındı" yeşil tik. Ay özeti kutuları renkli.
+      Alt menüde seçili sekmenin ikonu dolu. Kırmızı dolu "Evet, sil" onayları tehlikeli butona çevrildi (Vazgeç üstte, sil en altta).
+      **11.11 sayım:** `grep -c "big ghost" www/index.html` = **15** (önce 67). Ekran ekran beyaz (sade) buton:
+        Ana ekran 0 · Villa ekranı 1 (Tümünü gör; 6'dan fazla rezervasyonda) · Takvim sekmesi 0 · Hesap 0 · Hesabım 0 · Kullanıcılar 0 ·
+        Silinen villalar 0 · Rezervasyon detayı 0 · Yeni rezervasyon 0 · Rezervasyonu düzenle 0 · Alınan ödemeyi gir 0 ·
+        Ödeme kaydı 1 (Vazgeç) · Toplam tutar 0 · Rezervasyon formu 0 · Teklif hazırla 0 · Gelir & gider 0 · Gelir/Gider ekle 0 ·
+        Gelir/gider kaydı 1 (Kapat) · Kalan ödemeler 0 · Giderlerim 0 · Depozitodan kesilen 0 · Fiyatlar 0 (seçim modunda 1: Temizle) ·
+        Fotoğraflar 0 · Fotoğraf ekle 0 · Google Drive'dan al 0 (yüklerken 1: Durdur) · Villa bilgileri 0 · Villa sayfası/Paylaşım 0 ·
+        Bakıcılar 0 · Davet kodu 0 · Misafirler 0 · Kurulum sihirbazı 1 (Geri) · Silme onayları 1 (Vazgeç).
+        Her ekranda en fazla 1 dolu yeşil buton (testle sayıldı).
+      11.10 (Veritabanı Adım C notu) işaretlenmedi: Claude Code veritabanına bakmadı, kapandığını doğrulayamadı (aşağıdaki maddeye bakın).
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).

@@ -465,6 +465,8 @@
     "Değişikliği geri al":"Undo the change",
     "Geri alırsanız buluttaki son hâle dönülür; kaydedilemeyen değişiklik silinir.":"If you undo, the app returns to the last saved cloud version; the unsaved change is removed.",
     "Titreşim":"Vibration",
+    // Görev 11
+    "Ödemenin tamamı alındı":"Fully paid", "— kişi":"— guests",
     // Görev 10
     "Göster":"Show", "Villa kurulumu":"Villa setup", "Eksik":"Incomplete", "İsimsiz villa":"Unnamed villa",
     "Tüm villa bilgileri":"All villa details", "Rezervasyonlarınızı villa villa takip edin":"Track your bookings villa by villa",

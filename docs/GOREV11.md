@@ -32,35 +32,44 @@ _Hazırlayan: Claude (ürün yöneticisi), 14 Kasım 2026. Zeyd: "Çoğu yerde b
 
 ## A. Buton düzeni (en önemli kısım)
 
-- [ ] **11.1 Dört buton türü, başka tür yok.**
+- [x] **11.1 Dört buton türü, başka tür yok.**
   1. **Ana buton**: dolu koyu yeşil, beyaz yazı + ikon. **Bir ekranda en fazla 1 tane** (o ekranın asıl işi: "Rezervasyonu kaydet", "Alınan ödemeyi gir", "+ Rezervasyon").
   2. **Renkli buton**: kendi iş renginin %12 açık zemini, aynı rengin çerçevesi, ikon ve yazı o renkte. Örn. "Fiyat gir" altın, "Paylaş" petrol, "WhatsApp" yeşil, "Ara" yeşil.
   3. **Sade buton**: beyaz zemin, gri çerçeve. Sadece "Vazgeç", "Daha fazla", "Tümünü gör" gibi önemsiz işler.
   4. **Tehlikeli buton**: beyaz zemin, kırmızı çerçeve ve yazı + `trash-2`. Hep ekranın en altında, araya boşluk.
   - Uygulamadaki bütün butonları bu dört türe göre düzenle. Beyaz buton sayısı belirgin şekilde azalmalı.
 
-- [ ] **11.2 Her butonda ikon.** Ana ve renkli butonlarda yazının solunda 20px ikon (tablodaki). Örn.: `calendar-plus` Rezervasyon · `tag` Fiyat gir · `share-2` Paylaş · `wallet` Alınan ödemeyi gir · `pencil` Rezervasyonu düzenle · `file-text` Rezervasyon formu (PDF) · `phone` Ara · `message-circle` WhatsApp.
+- [x] **11.2 Her butonda ikon.** Ana ve renkli butonlarda yazının solunda 20px ikon (tablodaki). Örn.: `calendar-plus` Rezervasyon · `tag` Fiyat gir · `share-2` Paylaş · `wallet` Alınan ödemeyi gir · `pencil` Rezervasyonu düzenle · `file-text` Rezervasyon formu (PDF) · `phone` Ara · `message-circle` WhatsApp.
 
 ## B. Satırlar (iPhone Ayarlar düzeni)
 
-- [ ] **11.3 İkon kutulu satırlar.** Gidilebilen tüm satırlar (Villa bilgileri, Misafirler, Gelir & gider, Bakıcılar, Fiyatlar, Hesap ekranındaki tüm satırlar, Takvim sekmesi satırları…):
+- [x] **11.3 İkon kutulu satırlar.** Gidilebilen tüm satırlar (Villa bilgileri, Misafirler, Gelir & gider, Bakıcılar, Fiyatlar, Hesap ekranındaki tüm satırlar, Takvim sekmesi satırları…):
   - Solda 36×36 yuvarlak köşeli kare: iş renginin %15 açık zemini, içinde o renkte 20px ikon.
   - Ortada başlık (+ isteğe bağlı küçük alt satır), sağda ok.
   - Aynı bölümdeki satırlar tek bir beyaz kartta, aralarında ince çizgi (ayrı ayrı kutu değil). Kartın dışında tek çerçeve.
 
-- [ ] **11.4 Rezervasyon satırları.** Yaklaşan rezervasyonlar ve Takvim sekmesi: solda misafirin rengiyle baş harfli yuvarlak (AY), giriş satırında küçük yeşil `log-in`, çıkışta gri `log-out` ikonu; kalan ödeme varsa sağda altın `wallet` + tutar (kırmızı rakam kalsın).
+- [x] **11.4 Rezervasyon satırları.** Yaklaşan rezervasyonlar ve Takvim sekmesi: solda misafirin rengiyle baş harfli yuvarlak (AY), giriş satırında küçük yeşil `log-in`, çıkışta gri `log-out` ikonu; kalan ödeme varsa sağda altın `wallet` + tutar (kırmızı rakam kalsın).
 
 ## C. Bilgi alanları
 
-- [ ] **11.5 Rezervasyon detayı ikonlu.** Giriş (`log-in`), Çıkış (`log-out`), Kişi (`users`), Telefon (`phone`), Not (`sticky-note`). "12.000 ₺ alınacak" satırının solunda altın `wallet`; "Ödemenin tamamı alındı" satırında yeşil `circle-check`.
+- [x] **11.5 Rezervasyon detayı ikonlu.** Giriş (`log-in`), Çıkış (`log-out`), Kişi (`users`), Telefon (`phone`), Not (`sticky-note`). "12.000 ₺ alınacak" satırının solunda altın `wallet`; "Ödemenin tamamı alındı" satırında yeşil `circle-check`.
 
-- [ ] **11.6 Bölüm başlıklarında ikon.** Villa ekranındaki bölüm başlıkları ("Yaklaşan rezervasyonlar", "Fiyatlar", "Villa yönetimi", "Fotoğraflar") başında 18px renkli ikon.
+- [x] **11.6 Bölüm başlıklarında ikon.** Villa ekranındaki bölüm başlıkları ("Yaklaşan rezervasyonlar", "Fiyatlar", "Villa yönetimi", "Fotoğraflar") başında 18px renkli ikon.
 
-- [ ] **11.7 Ay özeti kutuları renkli.** "Doluluk" kutusu açık yeşil zemin + `calendar`, "Bu ay" kutusu açık altın zemin + `wallet`, "Sonraki giriş" kutusu açık lacivert zemin + `log-in`.
+- [x] **11.7 Ay özeti kutuları renkli.** "Doluluk" kutusu açık yeşil zemin + `calendar`, "Bu ay" kutusu açık altın zemin + `wallet`, "Sonraki giriş" kutusu açık lacivert zemin + `log-in`.
 
 ## D. Alt menü
 
-- [ ] **11.8** Seçili sekmede ikon dolu (fill) çizilsin, diğerlerinde çizgi. Kabarcık (Görev 10) kalsın.
+- [x] **11.8** Seçili sekmede ikon dolu (fill) çizilsin, diğerlerinde çizgi. Kabarcık (Görev 10) kalsın.
+
+- [x] **11.11 Ekran ekran kontrol listesi.** Şu an kodda 67 tane beyaz "big ghost" buton var; hedef en fazla 15 (sadece Vazgeç / Tümünü gör / Daha fazla türü). 11.1–11.8'i bitirince aşağıdaki her ekranı tek tek aç ve kuralları uygula. Her ekranda **en fazla 1 dolu yeşil buton**, gerisi renkli ya da ikonlu satır:
+  - Ana ekran (Villalarım) · Villa ekranı · Takvim sekmesi · Hesap ekranı (Hesabım, Kullanıcılar, Onay bekleyenler, Silinen villalar)
+  - Rezervasyon detayı · Yeni rezervasyon · Rezervasyonu düzenle · Alınan ödemeyi gir · Ödeme kaydı · Toplam tutar · Rezervasyon formu · Teklif hazırla
+  - Gelir & gider · Gelir/Gider ekle-düzenle · Kalan ödemeler · Giderlerim (bakıcı) · Depozitodan kesilen
+  - Fiyatlar · Fotoğraflar · Fotoğraf ekle · Google Drive'dan al
+  - Villa bilgileri · Villa sayfası / Paylaşım ayarları / Villa sayfanız hazır · Bakıcılar · Davet kodu · Misafirler
+  - Kurulum sihirbazı (6 adım)
+  Bitince `grep -c "big ghost" www/index.html` sonucunu ve her ekranda kaç beyaz buton kaldığını PROJE_DURUMU'na yaz.
 
 ## E. Çizimler (Codex ile hazırlanacak)
 
