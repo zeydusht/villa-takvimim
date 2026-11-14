@@ -467,6 +467,15 @@
     "Titreşim":"Vibration",
     // Görev 11
     "Ödemenin tamamı alındı":"Fully paid", "— kişi":"— guests",
+    // Görev 12
+    "girecek":"checks in", "çıkacak":"checks out",
+    "Tüm aylara fiyat gir":"Set prices for all months", "Pazar – Perşembe geceleri":"Sunday – Thursday nights",
+    "Villa sayfasını yayından kaldır":"Unpublish villa page",
+    "Paylaştığınız bağlantı çalışmaz. Fotoğraflar ve bilgiler silinmez, istediğiniz zaman yeniden yayınlayabilirsiniz.":
+      "The link you shared will stop working. Photos and details are not deleted; you can publish again any time.",
+    "Villa sayfası yayından kaldırılsın mı?":"Unpublish the villa page?", "Evet, yayından kaldır":"Yes, unpublish",
+    "Villa sayfası yayından kaldırıldı.":"Villa page unpublished.",
+    "Kapasite":"Capacity", "Kurallar":"Rules", "Azalt":"Decrease", "Artır":"Increase",
     // Görev 10
     "Göster":"Show", "Villa kurulumu":"Villa setup", "Eksik":"Incomplete", "İsimsiz villa":"Unnamed villa",
     "Tüm villa bilgileri":"All villa details", "Rezervasyonlarınızı villa villa takip edin":"Track your bookings villa by villa",
@@ -570,6 +579,7 @@
   var GORELI = "(bugün|yarın|\\d+ gün sonra)";
 
   var K = [
+    [/^(\d+) gün sonra$/, "In $1 days"],
     // "✓ …" ile başlayan başarı mesajları: işaret kalır, gerisi çevrilir
     [/^✓ (.+)$/, function (_, a) { return "✓ " + D.cevir(a); }],
     [/^(.+) ödeme kaydedildi$/, "$1 payment saved"],

@@ -48,9 +48,9 @@
     padding:.75rem .875rem; margin-bottom:1rem; display:flex; align-items:center;
     justify-content:space-between; gap:.75rem; font-size:.875rem; line-height:1.4}
   .kilitBar button{flex:none; text-decoration:underline; font-size:.875rem}
-  .destekBar{position:sticky; z-index:44; background:#FFE38A; border-bottom:2px solid #E0B94A;
+  .destekBar{position:sticky; z-index:44; background:#E8EAF1; border-bottom:2px solid #AEB6D2;
     margin:-1.5rem -1.25rem 1rem; padding:.5rem 1.25rem; display:flex; align-items:center;
-    justify-content:space-between; gap:.75rem; font-size:.9375rem; line-height:1.35; color:#3A2E00}
+    justify-content:space-between; gap:.75rem; font-size:.9375rem; line-height:1.35; color:#24305A}
   .destekBar .big{flex:none; width:auto; margin:0; min-height:3rem; padding:.25rem 1rem; background:#fff}
   .appBar{position:sticky; top:0; z-index:45; background:var(--ok); color:#fff;
     margin:-2rem -1.25rem 1.5rem; display:flex; justify-content:center;
@@ -195,7 +195,7 @@
     margin-left:-.25rem; border-radius:99px; color:var(--muted); font-size:.9375rem}
   .icobtn{min-width:3rem; min-height:3rem; padding:.5rem; border-radius:99px; line-height:0; color:var(--muted);
     display:inline-flex; align-items:center; justify-content:center}
-  .today{padding-bottom:1.5rem; margin:.75rem 0 1.5rem; border-bottom:1px solid var(--line)}
+  div.today{padding-bottom:1.5rem; margin:.75rem 0 1.5rem; border-bottom:1px solid var(--line)}
   .durumBas{font-family:var(--serif); font-size:1.375rem; letter-spacing:-.02em;
     display:flex; align-items:center; gap:.5rem}
   .durumAlt{font-size:.875rem; color:var(--muted); margin-top:.375rem; line-height:1.5}
@@ -288,8 +288,9 @@
   .ftAlt{position:fixed; left:0; right:0; bottom:0; background:rgba(255,255,255,.97); border-top:1px solid var(--line);
     padding:.75rem 1.25rem calc(.75rem + env(safe-area-inset-bottom)); z-index:40}
   .ftAlt > div, .ftAlt > button{max-width:25.5rem; margin:0 auto}
-  #ftEkleSatir{display:flex; gap:.5rem}
-  #ftEkleSatir .big{margin-top:0; flex:1 1 0; display:flex; align-items:center; justify-content:center; gap:.375rem}
+  .ftUst{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1rem}
+  .ftUst .big{margin-top:0; flex:1 1 auto; width:auto; min-height:3rem; padding:.5rem .75rem; font-size:.9375rem; gap:.375rem}
+  .ftUst .big.hide{display:none}
   #ftSil{margin-top:0}
   #ftSil:disabled{opacity:.5}
   /* tam ekran görüntüleyici */
@@ -350,7 +351,6 @@
   .shSon{text-align:center; padding-top:2rem}
   .shEmoji{font-size:3.5rem; line-height:1}
   .shSon h1{margin-top:.75rem}
-  .cip .emo{font-size:1rem; line-height:1}
   /* fotoğraf şeridi: çerçeveli kutular */
   .fotoMini{border:var(--cerceve-kalinlik) solid var(--cerceve)}
   .fotoMini.bos{background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.25rem;
@@ -371,9 +371,9 @@
   .ajEt.giris{border-color:var(--ok); color:#0B5B57; background:#E3EFEC}
   .ajEt.cikis{border-color:#9AA49F; color:#4A544F; background:#fff}
   .ajEt.kirmizi{border-color:#C4718A; color:#9B2C4A; background:#FBF1F4}
-  .ajEt.turuncu{border-color:#E0B070; color:#8A5410; background:#FBF0E1}
+  .ajEt.lacivert{border-color:var(--lacivert-cerceve); color:var(--lacivert); background:var(--lacivert-zemin)}
   .ajEt.gri{border-color:#C9D1CC; color:#5F6A64; background:#fff}
-  .ajDep{display:block; color:#8A5410; margin-top:.125rem}
+  .ajDep{display:block; color:var(--lacivert); margin-top:.125rem}
   .ajOk{flex:none; width:1.75rem; height:1.75rem; border-radius:99px; display:flex; align-items:center; justify-content:center; margin-top:-.125rem}
   .ajOk.g{background:#E3EFEC; color:#0B5B57}
   .ajOk.c{background:var(--soft); color:#7A857F}
@@ -398,7 +398,7 @@
   .hazirOdeme .big{flex-direction:column}
   .alinacakBuyuk{font-size:1.5rem; color:#9B2C4A; margin-bottom:.5rem}
   .alindiTamam{font-size:1.25rem; color:#0B5B57; margin-bottom:.5rem}
-  .depKart{background:#FEF6EC; border:2px solid #E9C48E; border-radius:var(--kose); padding:1rem; margin-top:1rem; font-size:1rem}
+  .depKart{background:var(--lacivert-zemin); border:2px solid var(--lacivert-cerceve); border-radius:var(--kose); padding:1rem; margin-top:1rem; font-size:1rem}
   .depBtn{display:grid; gap:.5rem; margin-top:.75rem}
   .depBtn .big{margin:0}
   .depDurum{margin-top:1rem; font-size:.9375rem; color:var(--muted)}
@@ -463,15 +463,20 @@
   .fyGun .fy.yok{color:#8E9893}
   .fyGun .bh{position:absolute; top:.1875rem; right:.25rem; font-size:.5625rem; letter-spacing:.04em; opacity:.5}
   .fyGun.hs{background:#F2F6F4}
-  .fyGun.dolu{background:#F4EFE6}
+  .fyGun.dolu{background:#E3EFEC}
   .fyGun.bugunG .gn{color:var(--ok); text-decoration:underline; text-underline-offset:3px}
   .fyGun.gecmis{opacity:.35; pointer-events:none}
-  .fyGun.sec{border-color:var(--ok); background:var(--basili-zemin)}
+  .fyGun.sec{border-color:var(--lacivert); background:var(--lacivert-zemin)}
+  /* 12.6 fiyatlarda seçili ay: açık lacivert zemin + lacivert çerçeve */
+  .grup > .satirBtn.fyAy.secili{background:var(--lacivert-zemin); box-shadow:inset 0 0 0 2px var(--lacivert); position:relative; z-index:1}
+  .fyAy .tik.on{background:var(--lacivert); border-color:var(--lacivert); color:#fff}
+  .fyBar .big:disabled{opacity:.45}
   .fyGun:active{border-color:var(--basili-cerceve)}
   .fyBar{display:flex; align-items:center; gap:.5rem}
   .fyBar .fySay{flex:1; min-width:0; font-size:.9375rem}
   .fyBar .big{margin-top:0; width:auto; padding:.625rem 1rem; min-height:2.875rem; white-space:nowrap}
   .fyBar .big:not(.ghost){background:var(--ok); color:#fff}
+  .fyBar .big.ghost{padding:.625rem .75rem}
   .fyPanel .fyNot{font-size:.875rem; color:var(--muted); margin:.25rem 0 1rem}
   .hazir{display:flex; gap:.5rem; margin-bottom:.75rem; flex-wrap:wrap}
   .hazir .big{margin-top:0; width:auto; flex:1 1 0; min-height:3rem; padding:.5rem .5rem; font-size:.9375rem}
@@ -535,7 +540,7 @@
   .gunSatir .gA{flex:1; min-width:0}
   .durumEt{font-size:.8125rem; padding:.1875rem .5rem; border-radius:99px; white-space:nowrap}
   .durumEt.ok{background:#E3EFEC; color:#0B5B57}
-  .durumEt.kismen{background:#FBF0E1; color:#8A5410}
+  .durumEt.kismen{background:var(--lacivert-zemin); color:var(--lacivert)}
   .durumEt.yok{background:#FBF1F4; color:#9B2C4A}
   .durumEt.bos{background:var(--soft); color:var(--muted)}
 
@@ -684,8 +689,8 @@
 
   /* ================= Görev 10: netlik ve vurgu =================
      Renk sistemi: koyu yeşil = ana eylem / dolu / tamam · açık yeşil + yeşil çerçeve = ikincil eylem
-     turuncu = boş / uyarı / eksik · kırmızı (--uyari) = sadece alınacak para ve hata */
-  :root{--turuncu:#B0761A; --turuncu-yazi:#7A520F; --turuncu-zemin:#FBF0DD; --turuncu-cerceve:#E2C28C}
+     Görev 12: sıcak tonlar (sarı/altın/krem) yok · lacivert = para / eksik / yaklaşan · gri = boş · kırmızı (--uyari) = sadece alınacak para ve hata */
+  :root{--lacivert:#3C4E8C; --lacivert-zemin:#E8EAF1; --lacivert-cerceve:#AEB6D2; --lacivert-basili:#D4D8E6}
   /* iPhone tarihleri ("Kasım 2026") bağlantı sanıp altını çizmesin */
   a[x-apple-data-detectors]{color:inherit !important; text-decoration:none !important; font:inherit !important}
   .monthbar .m{text-decoration:none}
@@ -716,30 +721,21 @@
   .vbKonum{font-size:.9375rem; color:var(--muted); margin-top:.25rem}
   .villaBas .durumEt{margin-top:.875rem}
   .villaBas .durumAlt{margin-top:.5rem}
-  .today{padding-bottom:1.5rem; margin:0 0 1.5rem}
-  /* durum etiketi: dolu = koyu yeşil, boş = açık turuncu (10.3, 10.12, 10.13) */
+  /* 12.3: sadece villa durum kutusu (div); takvimdeki bugün hücresine (button.cell.today) uygulanmaz */
+  div.today{padding-bottom:1.5rem; margin:0 0 1.5rem}
+  /* durum etiketi: dolu = koyu yeşil, boş = açık gri (10.3, 10.12, 10.13, 12.1) */
   .durumEt{display:inline-flex; align-items:center; gap:.4375rem; max-width:100%; min-width:0; border-radius:99px;
     padding:.3125rem .8125rem .375rem; font-size:.9375rem; line-height:1.3; border:1.5px solid transparent}
   .durumEt::before{content:""; flex:none; width:.5rem; height:.5rem; border-radius:99px; background:currentColor}
   .durumEt > span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0}
   .durumEt.dolu{background:var(--ok); color:#fff}
-  .durumEt.bos{background:var(--turuncu-zemin); color:var(--turuncu-yazi); border-color:var(--turuncu-cerceve)}
-  .durumEt.bos::before{background:var(--turuncu)}
+  .durumEt.bos{background:#EEF1EF; color:#3F4843; border-color:transparent}
+  .durumEt.bos::before{background:#8A948F}
   .kart .durumEt{font-size:.8125rem; padding:.1875rem .625rem .25rem; margin-top:.375rem; align-self:flex-start}
   /* 10.4 üç ana buton: + Rezervasyon dolu yeşil, diğerleri açık yeşil + yeşil çerçeve */
   .big.ikincil{background:var(--basili-zemin); border-color:var(--ok); color:var(--ok); box-shadow:none}
   .big.ikincil:active, .big.ikincil.basili{background:#CFE3DD; border-color:var(--ok)}
   .hizli .big:not(.ikincil){border-color:var(--ok)}
-  /* 10.5 boş gece satırı: sakin, açık turuncu, butonların altında */
-  .bosSatir{display:flex; align-items:center; gap:.75rem; width:100%; margin-top:.75rem; min-height:3rem;
-    padding:.375rem .875rem; border-radius:var(--kose); background:var(--turuncu-zemin);
-    border:1.5px solid var(--turuncu-cerceve); color:var(--turuncu-yazi); font-size:.875rem;
-    transition:background-color var(--hiz-bas); touch-action:manipulation}
-  .bosSatir > span:first-child{flex:1; min-width:0}
-  .bosSatir .sag{flex:none; color:var(--turuncu-yazi)}
-  .bosSatir::after{content:""; flex:none; width:.4375rem; height:.4375rem; margin:0 .125rem 0 -.25rem;
-    border-top:2px solid var(--turuncu-yazi); border-right:2px solid var(--turuncu-yazi); transform:rotate(45deg)}
-  .bosSatir:active{background:#F5E2BF}
   /* 10.7 geçmiş günler: rakam ve baş harf soluk, dolu blok %50 */
   .cell.gecmis{opacity:1; color:#A3ADA8}
   .cell.gecmis .fy{opacity:.75}
@@ -753,7 +749,7 @@
   .hatirlat .hBas{font-size:1rem; text-transform:none; letter-spacing:0; color:var(--ink)}
   .bolumSatir{display:flex; align-items:baseline; justify-content:space-between; gap:.75rem; margin-bottom:.25rem}
   .bolumNot{font-size:.875rem; color:var(--muted); flex:none}
-  .eksikYazi{color:var(--turuncu-yazi)}
+  .eksikYazi{color:var(--lacivert)}
   #fotoBas{margin-bottom:.75rem}
   /* 10.9 yaklaşan rezervasyon kartları */
   .rezKart{display:flex; align-items:center; gap:.75rem; width:100%; margin-top:.5rem; min-height:var(--dokunma-yukseklik);
@@ -767,14 +763,14 @@
   .rezKart .rkAd{display:block; overflow-wrap:anywhere}
   .rezKart .rkAlt{display:block; font-size:.875rem; color:var(--muted); margin-top:.125rem}
   .yakinEt{flex:none; font-size:.8125rem; border-radius:99px; padding:.1875rem .5625rem .25rem; white-space:nowrap;
-    background:var(--turuncu-zemin); color:var(--turuncu-yazi); border:1.5px solid var(--turuncu-cerceve)}
+    background:var(--lacivert-zemin); color:var(--lacivert); border:1.5px solid var(--lacivert-cerceve)}
   .tumuBtn{margin-top:.75rem}
   .ayGrup{font-family:var(--serif); font-size:1.125rem; margin:1.5rem 0 .25rem}
   .ayGrup:first-of-type{margin-top:1rem}
   /* 10.10 villa yönetimi satırları */
   .satirBtn .sag.tamamYazi{color:var(--ok); max-width:none}
-  .satirBtn .sag.eksikEt{flex:none; max-width:none; color:var(--turuncu-yazi); background:var(--turuncu-zemin);
-    border:1.5px solid var(--turuncu-cerceve); border-radius:99px; padding:.125rem .5625rem .1875rem; font-size:.8125rem}
+  .satirBtn .sag.eksikEt{flex:none; max-width:none; color:var(--lacivert); background:#fff;
+    border:1.5px solid var(--lacivert); border-radius:99px; padding:.125rem .5625rem .1875rem; font-size:.8125rem}
   /* 10.11 küçük kurulum kartı */
   .kurulum.kapali{padding:0; background:none}
   .kurulum.kapali .satirBtn{margin:0}
@@ -802,9 +798,9 @@
      Her işin sabit rengi (ikonlar.js → IS tablosu ile aynı): --r ana renk, --r12 renkli buton zemini,
      --r15 satır ikon kutusu, --r22 basılı zemin, --ry okunaklı yazı tonu */
   .is-rez{--r:#0B5B57; --r12:#E2EBEB; --r15:#DAE6E6; --r22:#C9DBDA; --ry:#0B5B57}
-  .is-para{--r:#B0761A; --r12:#F6EFE4; --r15:#F3EADD; --r22:#EEE1CD; --ry:#8A5A0E}
-  .is-misafir{--r:#3C4E8C; --r12:#E8EAF1; --r15:#E2E4EE; --r22:#D4D8E6; --ry:#3C4E8C}
-  .is-foto{--r:#7A4B8C; --r12:#EFE9F1; --r15:#EBE4EE; --r22:#E2D7E6; --ry:#7A4B8C}
+  .is-para{--r:#3C4E8C; --r12:#E8EAF1; --r15:#E2E4EE; --r22:#D4D8E6; --ry:#3C4E8C}
+  .is-misafir{--r:#7A4B8C; --r12:#EFE9F1; --r15:#EBE4EE; --r22:#E2D7E6; --ry:#7A4B8C}
+  .is-foto{--r:#2E6E8E; --r12:#E6EEF1; --r15:#E0E9EE; --r22:#D1DFE6; --ry:#2E6E8E}
   .is-paylas{--r:#2E6E8E; --r12:#E6EEF1; --r15:#E0E9EE; --r22:#D1DFE6; --ry:#2E6E8E}
   .is-bakici{--r:#4F6B22; --r12:#EAEDE4; --r15:#E5E9DE; --r22:#D8DECE; --ry:#4F6B22}
   .is-wa{--r:#25D366; --r12:#E5FAED; --r15:#DEF8E8; --r22:#CFF5DD; --ry:#127A3B}
@@ -844,12 +840,12 @@
   .tarihIk .ik.gir{color:var(--ok)} .tarihIk .ik.cik{color:#8A948F}
   .rkSag{flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:.25rem}
   .kalanEt{display:inline-flex; align-items:center; gap:.25rem; font-size:.875rem; color:#9B2C4A; white-space:nowrap}
-  .kalanEt .ik{color:#B0761A}
+  .kalanEt .ik{color:var(--lacivert)}
   .rezKart{padding-left:.75rem}
   .satirBtn > span.harfDaire{flex:none}
   .satirBtn > .harfDaire + span{flex:1 1 auto; min-width:0; white-space:normal; overflow-wrap:anywhere}
   .satirBtn:has(> .harfDaire){padding-left:.75rem}
-  .misSatir .harfDaire{background:#3C4E8C}
+  .misSatir .harfDaire{background:#7A4B8C}
   .kSatir > .ikKutu{margin-right:-.25rem}
   .row > .ikKutu{margin-left:0}
   .ajSatir .ajIc{flex:1 1 auto; min-width:0}
@@ -859,13 +855,56 @@
   .bilgiSat > .ik{margin-top:.125rem; color:var(--muted)}
   .bilgiSat > .ik.gir{color:var(--ok)}
   .alinacakBuyuk, .alindiTamam{display:flex; align-items:center; gap:.5rem}
-  .alinacakBuyuk > .ik{color:#B0761A}
+  .alinacakBuyuk > .ik{color:var(--lacivert)}
   .alindiTamam > .ik{color:var(--ok)}
   /* 11.7 ay özeti kutuları renkli */
   .okutu.is-rez, .okutu.is-para, .okutu.is-misafir{background:var(--r12)}
   .okutu .lab{display:flex; align-items:center; gap:.3125rem}
   .okutu .lab .ik{color:var(--r); flex:none}
   @media (max-width:360px){ .okutu .lab .ik{display:none} }
+  /* 12.9 alt ekranlarda başlığın sağında villanın kapak fotoğrafı (yoksa villa renginde baş harf) */
+  .baslikSatir{display:flex; align-items:center; justify-content:space-between; gap:.75rem}
+  .baslikSatir > h1{flex:1 1 auto; min-width:0; overflow-wrap:anywhere}
+  .vRozet{flex:none; width:44px; height:44px; border-radius:12px; background:var(--soft) center/cover no-repeat;
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:.9375rem; letter-spacing:.03em; line-height:1;
+    box-shadow:inset 0 0 0 1px rgba(16,22,19,.08)}
+  .head.headRozet{display:flex; align-items:center; gap:.75rem; padding-right:3rem}
+  .head.headRozet > h2{flex:1 1 auto; min-width:0}
+  /* 12.10 özellik düğmeleri: 2 sütun, 48px; seçili değil = beyaz + gri, seçili = açık yeşil + yeşil + ✓ */
+  .cipler.ozIzgara{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem}
+  .cip.ozBtn{display:flex; align-items:center; gap:.5rem; min-height:3rem; padding:.375rem .625rem .375rem .75rem; border-radius:.75rem;
+    background:#fff; border:1.5px solid var(--cerceve); color:var(--ink); font-size:.875rem; line-height:1.25; text-align:left}
+  .cip.ozBtn::before{content:none}
+  .cip.ozBtn .ozIk{flex:none; color:#7A857F}
+  .cip.ozBtn .ozAd{flex:1 1 auto; min-width:0; overflow-wrap:anywhere}
+  .cip.ozBtn .ozTik{flex:none; color:var(--ok); visibility:hidden}
+  .cip.ozBtn.on{background:#E3EFEC; border-color:var(--ok)}
+  .cip.ozBtn.on .ozIk{color:var(--ok)}
+  .cip.ozBtn.on .ozTik{visibility:visible}
+  /* 12.10 Villa bilgileri: ikonlu bölüm başlıkları ve − / + sayaçlar */
+  .vbBolum{margin:2.25rem 0 .75rem}
+  .sayacSatir{display:flex; align-items:center; gap:.75rem; padding:.5rem .875rem .5rem .75rem; border-bottom:1px solid var(--line); margin-bottom:-1px}
+  .sayacSatir .sayacAd{flex:1 1 auto; min-width:0}
+  .sayacSatir .adimci{gap:.5rem}
+  .sayacSatir .adimci .big{width:2.75rem; min-height:2.75rem; height:2.75rem}
+  .sayacSatir .adimci input{width:3.5rem; height:2.75rem; text-align:center; font-size:1.0625rem; padding:0; border:0; background:transparent; font-variant-numeric:tabular-nums}
+  .vbKaydet{margin-top:1.5rem}
+  /* 12.7 paylaş panelinde tehlikeli işten önce ayraç */
+  .lsAyrac{border-top:1px solid var(--line); margin:2rem 0 1.25rem}
+  /* 12.4 "Sıradaki" kartı: en yakın giriş/çıkış, büyük ve açık yeşil */
+  .sirKart{display:block; width:100%; text-align:left; padding:1rem 1.125rem 1.0625rem; background:#E3EFEC;
+    border:2px solid var(--ok); border-radius:var(--kose); color:var(--ink); touch-action:manipulation;
+    transition:transform var(--gecis), background-color var(--gecis)}
+  .sirKart:active{background:#CFE3DD; transform:scale(var(--basili-olcek))}
+  .sirUst{display:flex; align-items:center; justify-content:space-between; gap:.75rem}
+  .sirBas{font-size:.8125rem; letter-spacing:.09em; text-transform:uppercase; color:var(--ok); font-weight:500}
+  .sirNe{font-size:.875rem; color:var(--ok); white-space:nowrap}
+  .sirTarih{font-size:1.25rem; line-height:1.3; margin-top:.5rem}
+  .sirAlt{display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-top:.375rem; flex-wrap:wrap}
+  .sirAd{display:flex; align-items:center; gap:.5rem; font-size:1.125rem; line-height:1.3; min-width:0; overflow-wrap:anywhere}
+  .sirAd .ik.gir{color:var(--ok)} .sirAd .ik.cik{color:#8A948F}
+  .sirKalan{font-size:.9375rem; color:#9B2C4A; white-space:nowrap}
+  #siradaki:not(:empty) + .bolumSatir{margin-top:2rem}
   /* 11.8 alt menü: seçili sekmede dolu ikon */
   .sekmeler button svg.ik{width:22px; height:22px}
 </style>
@@ -1128,7 +1167,8 @@
     <div class="hint" id="hint"></div>
 
     <div class="section">
-      <div class="bolumSatir"><div class="eyebrow" data-iki="rez:takvim">Yaklaşan rezervasyonlar</div><span class="bolumNot" id="listeNot"></span></div>
+      <div id="siradaki"></div>
+      <div class="bolumSatir" id="listeBas"><div class="eyebrow" data-iki="rez:takvim">Yaklaşan rezervasyonlar</div></div>
       <div id="liste"></div>
     </div>
 
@@ -1201,23 +1241,23 @@
 
   <!-- FOTOĞRAFLAR -->
   <div id="fotoEkran" class="hide">
-    <div class="topbar">
+    <div class="topbar hide">
       <button class="backbtn" id="ftGeri">
         <span data-ik="sol" style="display:inline-flex"></span>
         <span>Villa</span>
       </button>
-      <div style="flex:1"></div>
-      <button id="ftSecModu" class="sm" style="color:var(--ok);font-weight:600;min-height:3rem;min-width:3rem;padding:0 .5rem;margin-right:-.5rem;text-align:center">Seç</button>
     </div>
     <h1>Fotoğraflar <span class="vad" id="ftSay"></span></h1>
-    <div class="sm muted" id="ftIpucu" style="margin-top:.375rem"></div>
+    <!-- 12.8: başlığın altında yan yana ikonlu renkli butonlar -->
+    <div class="ftUst" id="ftEkleSatir">
+      <button class="big renkli is-foto" id="ftEkle" data-ik="resim-arti"><span id="ftEkleYazi">Fotoğraf ekle</span></button>
+      <button class="big renkli is-foto hide" id="ftDrive" data-ik="bulut-indir"><span>Drive'dan al</span></button>
+      <button class="big renkli is-foto" id="ftSecModu" data-ik="kare-tik"><span id="ftSecYazi">Birden fazla seç</span></button>
+    </div>
+    <div class="sm muted" id="ftIpucu" style="margin-top:.75rem"></div>
     <div class="ftIzgara" id="ftIzgara"></div>
-    <div class="ftAlt">
-      <div id="ftEkleSatir">
-        <button class="big" id="ftEkle" data-ik="resim-arti"><span id="ftEkleYazi">Fotoğraf ekle</span></button>
-        <button class="big renkli is-foto hide" id="ftDrive" data-ik="bulut-indir"><span>Drive'dan al</span></button>
-      </div>
-      <button class="big tehlike hide" data-ik="cop" id="ftSil">Fotoğraf seçin</button>
+    <div class="ftAlt hide" id="ftAlt">
+      <button class="big tehlike" data-ik="cop" id="ftSil">Fotoğraf seçin</button>
     </div>
   </div>
 
@@ -1233,6 +1273,7 @@
     <div class="seg" id="fySeg" style="margin-top:1rem">
       <button data-g="ay">Aylar</button><button data-g="gun">Günler</button>
     </div>
+    <button class="big renkli is-para" data-ik="takvim" id="fyTumAy" style="margin-top:1rem">Tüm aylara fiyat gir</button>
     <button class="big renkli is-para secBtn" data-ik="liste-tik" id="fySecModu">Birden fazla ay seç</button>
     <div id="fyAylar"></div>
     <div id="fyGunler" class="hide">
@@ -1250,6 +1291,7 @@
     <div class="secBar fyBar hide" id="fyBar">
       <span class="fySay" id="fySay"></span>
       <button class="big ghost" id="fyTemizle">Temizle</button>
+      <button class="big ghost" id="fyTumSec">Tümünü seç</button>
       <button class="big" data-ik="etiket" id="fyGir">Fiyat gir</button>
     </div>
   </div>
@@ -1711,7 +1753,7 @@
     return { bas:"Villa boş", renk:null, alt:sonrakiMetin() };
   }
 
-  // Dolu: koyu yeşil "● Dolu · Ad Soyad"; boş: açık turuncu "● Boş" (villa ekranı ve villa kartları)
+  // Dolu: koyu yeşil "● Dolu · Ad Soyad"; boş: açık gri "● Boş" (villa ekranı ve villa kartları)
   function durumEtiket(dolu,misafir){
     return dolu ? '<span class="durumEt dolu"><span>'+esc(cev("Dolu"))+(misafir?" · "+esc(misafir):"")+"</span></span>"
                 : '<span class="durumEt bos"><span>'+esc(cev("Boş"))+"</span></span>";
@@ -1917,7 +1959,7 @@
         if(r.start===bugunK) sat.push({o:1,renk:"#0B5B57",
           m:"<b>Bugün "+GIRIS+"</b> · "+esc(r.guest)+" giriş yapıyor"+
             (r.people?" ("+esc(r.people)+" kişi)":""), v:villaAdi, r:r, vid:v.id});
-        if(r.end===bugunK) sat.push({o:2,renk:"#B0761A",
+        if(r.end===bugunK) sat.push({o:2,renk:"#5F6A64",
           m:"<b>Bugün "+CIKIS+"</b> · "+esc(r.guest)+" çıkış yapıyor", v:villaAdi, r:r, vid:v.id});
         if(r.start===yarinK) sat.push({o:3,renk:"#3C4E8C",
           m:"<b>Yarın "+GIRIS+"</b> · "+esc(r.guest)+" giriş yapacak", v:villaAdi, r:r, vid:v.id});
@@ -1974,11 +2016,29 @@
     return false;
   }
 
+  // 12.9: hangi villadayım? Kapak fotoğrafı ya da villa renginde baş harf
+  function villaRozet(v){
+    v=v||aktif(); if(!v) return "";
+    var f=(v.fotolar||[])[0];
+    return f ? '<span class="vRozet" aria-hidden="true" style="background-image:url(\''+kucukResim(f)+'\')"></span>'
+             : '<span class="vRozet" aria-hidden="true" style="background-color:'+esc(v.color||"#0B5B57")+'">'+esc(basHarf(v.ad)||"V")+"</span>";
+  }
+  function rozetKoy(ekran){
+    var el=document.getElementById(ekran), h1=el&&el.querySelector("h1"); if(!h1) return;
+    var sat=h1.parentNode;
+    if(!sat.classList.contains("baslikSatir")){
+      sat=document.createElement("div"); sat.className="baslikSatir";
+      h1.parentNode.insertBefore(sat,h1); sat.appendChild(h1);
+    }
+    var eski=sat.querySelector(".vRozet"); if(eski) eski.remove();
+    sat.insertAdjacentHTML("beforeend",villaRozet());
+  }
   function goster(id){
     ["giris","sifre","onay","ana","ajanda","hesapEkran","takvim","kasa","misafirler","fiyatEkran","fotoEkran","sihirbaz"].forEach(function(x){
       document.getElementById(x).classList[x===id?"remove":"add"]("hide"); });
     // Alt menü: ana sekmelerde ve villa içi ekranlarda görünür; iç ekranlarda "Villalar" seçili
     var ic=(id==="takvim"||id==="kasa"||id==="misafirler"||id==="fiyatEkran"||id==="fotoEkran");
+    if(ic && id!=="takvim") rozetKoy(id);
     var sekmeli=(id==="ana"||id==="ajanda"||id==="hesapEkran"||ic);
     var secili=ic?"ana":id;
     document.getElementById("sekmeler").classList[sekmeli?"remove":"add"]("hide");
@@ -2110,8 +2170,8 @@
       kalanlar.forEach(function(x,j){
         var kg=Math.round((parse(x.r.end)-today)/86400000);
         var et = kg<=0 ? '<span class="ajEt kirmizi">'+esc(cev("Bugün çıkış"))+"</span>"
-          : (kg===1 ? '<span class="ajEt turuncu">'+esc(cev("Yarın çıkış"))+"</span>"
-          : '<span class="ajEt '+(kg===2?"turuncu":"gri")+'">'+esc(cev(kg+" gün sonra çıkış"))+"</span>");
+          : (kg===1 ? '<span class="ajEt lacivert">'+esc(cev("Yarın çıkış"))+"</span>"
+          : '<span class="ajEt '+(kg===2?"lacivert":"gri")+'">'+esc(cev(kg+" gün sonra çıkış"))+"</span>");
         h+='<button class="satirBtn" data-ak="'+j+'">'+harfDaire(x.r)+"<span><span>"+esc(x.v.ad||"Villa")+" · "+esc(x.r.guest)+"</span>"+
           '<span class="satirAlt">'+et+"</span></span></button>";
       });
@@ -2433,11 +2493,39 @@
     var tutarYok=paraGorur() && !(r.tutar>0);
     var gf=Math.round((parse(r.start)-today)/86400000);
     var yakin=(gf>=0 && gf<7) ? (gf===0?"Bugün":(gf===1?"Yarın":gf+" gün sonra")) : "";
+    var basladi=gf<0;
+    var tarihler=(basladi?'<span class="tarihIk">'+ikon("giris",{boy:15,sinif:"gir"})+esc(kisa(r.start))+"</span> "
+                         :'<span class="tarihIk">'+ikon("giris",{boy:15,sinif:"gir"})+esc(kisa(r.start))+'<span class="fiil">'+esc(cev("girecek"))+"</span></span> ")+
+                 '<span class="tarihIk">'+ikon("cikis",{boy:15,sinif:"cik"})+esc(kisa(r.end))+'<span class="fiil">'+esc(cev("çıkacak"))+"</span></span>";
     return '<button class="row rezKart'+(yeniOlabilir?yeniCls(r.id):"")+'" data-id="'+r.id+'">'+harfDaire(r)+
-      '<span class="rkMetin"><span class="rkAd">'+esc(r.guest)+'</span><span class="rkAlt">'+tarihIk(r)+
+      '<span class="rkMetin"><span class="rkAd">'+esc(r.guest)+'</span><span class="rkAlt">'+tarihler+
       (tutarYok?' <span class="eksikYazi">'+esc(cev("· tutar girilmedi"))+"</span>":"")+
       "</span></span>"+
       ((yakin||kalan>0)?'<span class="rkSag">'+(yakin?'<span class="yakinEt">'+esc(cev(yakin))+"</span>":"")+(kalan>0?kalanEt(kalan):"")+"</span>":"")+
+      "</button>";
+  }
+  // 12.4: en yakın olay. Başlamamış rezervasyonun olayı giriş, içerideki misafirinki çıkış; aynı gün çıkış (10:00) girişten (16:00) önce
+  function siradakiOlay(v){
+    var tk=fmt(today), l=[];
+    v.rez.forEach(function(r){
+      if(r.end<tk) return;
+      if(r.start>=tk) l.push({r:r, giris:true, k:r.start, saat:GIRIS});
+      else l.push({r:r, giris:false, k:r.end, saat:CIKIS});
+    });
+    l.sort(function(a,b){ return a.k!==b.k ? (a.k<b.k?-1:1) : (a.giris===b.giris?0:(a.giris?1:-1)); });
+    return l[0]||null;
+  }
+  function siradakiHTML(v,o){
+    var r=o.r, d=parse(o.k), gf=Math.round((d-today)/86400000);
+    var gunler=(window.DIL&&DIL.GUNLER[DIL.dil])||["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"];
+    var ne=gf===0?"Bugün":(gf===1?"Yarın":gf+" gün sonra");
+    var kalan=kalanGorur()?kalanTutar(v,r):0;
+    return '<button class="sirKart'+yeniCls(r.id)+'" data-id="'+r.id+'">'+
+      '<span class="sirUst"><span class="sirBas">'+esc(cev("Sıradaki"))+'</span><span class="sirNe">'+esc(cev(ne))+"</span></span>"+
+      '<span class="sirTarih" style="display:block">'+esc(d.getDate()+" "+AYLAR[d.getMonth()]+" "+gunler[d.getDay()])+" · "+esc(o.saat)+"</span>"+
+      '<span class="sirAlt"><span class="sirAd">'+ikon(o.giris?"giris":"cikis",{boy:20,sinif:o.giris?"gir":"cik"})+
+        "<span><span>"+esc(r.guest||"—")+"</span> <span>"+esc(cev(o.giris?"girecek":"çıkacak"))+"</span></span></span>"+
+        (kalan>0?'<span class="sirKalan">'+esc(cev(para(kalan)+" alınacak"))+"</span>":"")+"</span>"+
       "</button>";
   }
   function yaklasanlar(v){
@@ -2494,17 +2582,8 @@
     ao.innerHTML=kutular.join("");
     ao.classList[v.rez.length?"remove":"add"]("hide");  // 7.14: rezervasyonsuz villada boş kutular gösterilmez
 
-    // ---- villa durumu + boş günleri paylaş + hızlı işlemler ----
+    // ---- villa durumu + hızlı işlemler (12.2: boş gün satırı Paylaş paneline taşındı) ----
     var dm=durum(v);
-    var iceride=v.rez.some(function(r){ return r.start<=tk && tk<r.end; });
-    var bosSatir="";
-    if(!iceride){
-      var aySonu=new Date(today.getFullYear(),today.getMonth()+1,0), bosGece=0;
-      for(var dd=new Date(today); dd<=aySonu; dd=addDays(dd,1)) if(!gun(fmt(dd)).aksam) bosGece++;
-      if(bosGece) bosSatir='<button class="bosSatir" data-is="bos">'+
-        "<span>"+esc(cev("Bu ay "+bosGece+" gece boş"))+"</span>"+
-        '<span class="sag">'+esc(cev("Boş günleri paylaş"))+"</span></button>";
-    }
     var hz=[];
     if(duz0) hz.push('<button class="big" data-is="rez" data-ik="takvim-arti"><span>'+esc(cev("Rezervasyon"))+"</span></button>");
     if(sahip0 && duz0) hz.push('<button class="big renkli is-para" data-is="fiyat" data-ik="etiket"><span>'+esc(cev("Fiyat gir"))+"</span></button>");
@@ -2514,7 +2593,7 @@
       '<div class="villaBas"><div class="vbAd">'+esc(v.ad||cev("İsimsiz villa"))+"</div>"+
       (konum?'<div class="vbKonum">'+esc(konum)+"</div>":"")+durumEtiket(dm.dolu,dm.misafir)+
       '<div class="durumAlt">'+esc(dm.alt)+"</div></div>"+
-      (hz.length?'<div class="hizli">'+hz.join("")+"</div>":"")+bosSatir;
+      (hz.length?'<div class="hizli">'+hz.join("")+"</div>":"");
 
     // ---- kurulum kartı (sadece sahip; 4 madde bitince gizlenir) ----
     var kur=document.getElementById("kurulum");
@@ -2602,12 +2681,15 @@
     } else ser.classList.add("hide");
 
     // Bugünden sonraki ilk 6 rezervasyon; fazlası "Tümünü gör" panelinde (ay ay)
-    var tumYak=yaklasanlar(v), yak=tumYak.slice(0,6);
+    // 12.4: en yakın olay ayrı kartta; listede tekrar etmez
+    var tumYak=yaklasanlar(v), sir=siradakiOlay(v);
+    var kalanlar=sir?tumYak.filter(function(r){ return r.id!==sir.r.id; }):tumYak, yak=kalanlar.slice(0,6);
+    document.getElementById("siradaki").innerHTML=sir?siradakiHTML(v,sir):"";
     var lh="";
-    if(!yak.length) lh='<div style="margin-top:1rem">'+cizimImg("bos-rezervasyon")+'</div><div class="sm muted" style="text-align:center">Henüz rezervasyon yok. Takvimden tarih aralığı seçerek başlayın.</div>';
+    if(!tumYak.length) lh='<div style="margin-top:1rem">'+cizimImg("bos-rezervasyon")+'</div><div class="sm muted" style="text-align:center">Henüz rezervasyon yok. Takvimden tarih aralığı seçerek başlayın.</div>';
     else yak.forEach(function(r){ lh+=rezKartHTML(v,r,true); });
-    if(tumYak.length>6) lh+='<button class="big ghost tumuBtn" id="tumRezBtn">'+esc(cev("Tümünü gör ("+tumYak.length+")"))+"</button>";
-    document.getElementById("listeNot").textContent = yak.length ? cev("Sıradaki "+yak.length) : "";
+    if(kalanlar.length>6) lh+='<button class="big ghost tumuBtn" id="tumRezBtn">'+esc(cev("Tümünü gör ("+tumYak.length+")"))+"</button>";
+    document.getElementById("listeBas").classList[(sir && !kalanlar.length)?"add":"remove"]("hide");
     document.getElementById("liste").innerHTML=lh;
 
     // fiyat özeti
@@ -2719,6 +2801,11 @@
     ciz(); form();
   });
 
+  document.getElementById("siradaki").addEventListener("click",function(ev){
+    var b=ev.target.closest(".sirKart"); if(!b || !aktif()) return;
+    var r=aktif().rez.filter(function(x){return x.id===b.dataset.id})[0];
+    if(r) detay(r);
+  });
   document.getElementById("liste").addEventListener("click",function(ev){
     if(ev.target.closest("#tumRezBtn")){ tumRezSheet(); return; }
     var b=ev.target.closest(".row"); if(!b || !aktif()) return;
@@ -2819,6 +2906,7 @@
       b.classList[b.dataset.g===F.gor?"add":"remove"]("on"); });
     var sm=document.getElementById("fySecModu");
     sm.classList[F.gor==="ay"?"remove":"add"]("hide");
+    document.getElementById("fyTumAy").classList[(F.gor==="ay" && !F.secMod)?"remove":"add"]("hide");
     sm.textContent=cev(F.secMod?"Vazgeç":"Birden fazla ay seç");
     document.getElementById("fyAylar").classList[F.gor==="ay"?"remove":"add"]("hide");
     document.getElementById("fyGunler").classList[F.gor==="gun"?"remove":"add"]("hide");
@@ -2836,7 +2924,7 @@
           sag='<span class="sag">'+esc(mn===mx?cev(binlik(mn)+" ₺ / gece"):binlik(mn)+" – "+binlik(mx)+" ₺")+"</span>";
         }
         var key=y+"-"+(m+1), sec=!!F.secAy[key];
-        h+='<button class="satirBtn fyAy"'+(F.secMod?"":' data-ikk="fiyat:takvim"')+' data-ay="'+key+'"><span class="tikli">'+
+        h+='<button class="satirBtn fyAy'+(F.secMod&&sec?" secili":"")+'"'+(F.secMod?"":' data-ikk="fiyat:takvim"')+' data-ay="'+key+'"><span class="tikli">'+
           (F.secMod?'<span class="tik'+(sec?" on":"")+'">'+(sec?ikon("tik",{boy:14,kalinlik:3}):"")+"</span>":"")+
           "<span>"+esc(AYLAR[m]+" "+y)+
           ((eksik && fl.length)?'<span class="fyEksik">'+esc(cev(eksik+" gün fiyatsız"))+"</span>":"")+
@@ -2867,7 +2955,12 @@
     else { n=Object.keys(F.secGun).length; yaz=n+" gün seçildi"; }
     document.getElementById("fySay").textContent=cev(yaz);
     document.getElementById("fyTemizle").classList[F.gor==="gun"?"remove":"add"]("hide");
-    bar.classList[(n && (F.gor==="gun" || F.secMod))?"remove":"add"]("hide");
+    // 12.5: ay seçerken çubuk hep görünür; "Tümünü seç" 12 ayı birden seçer
+    var ts=document.getElementById("fyTumSec");
+    ts.classList[F.gor==="ay"?"remove":"add"]("hide");
+    ts.textContent=cev(n===12?"Seçimi kaldır":"Tümünü seç");
+    document.getElementById("fyGir").disabled=!n;
+    bar.classList[((F.gor==="gun" && n) || (F.gor==="ay" && F.secMod))?"remove":"add"]("hide");
   }
 
   document.getElementById("fySeg").addEventListener("click",function(e){
@@ -2875,6 +2968,18 @@
     F.gor=b.dataset.g; F.secMod=false; F.secAy={}; F.secGun={}; F.capa=null; cizFiyat();
   });
   document.getElementById("fySecModu").onclick=function(){ F.secMod=!F.secMod; F.secAy={}; cizFiyat(); };
+  function onIkiAy(){
+    var l=[];
+    for(var i=0;i<12;i++){ var t=new Date(today.getFullYear(),today.getMonth()+i,1); l.push(t.getFullYear()+"-"+(t.getMonth()+1)); }
+    return l;
+  }
+  // 12.5: 12 ayın hepsi seçili gelir; panelde hafta içi + hafta sonu fiyatı
+  document.getElementById("fyTumAy").onclick=function(){ fiyatPanel({aylar:onIkiAy(), hsAcik:true}); };
+  document.getElementById("fyTumSec").onclick=function(){
+    var hepsi=Object.keys(F.secAy).length===12;
+    F.secAy={}; if(!hepsi) onIkiAy().forEach(function(k){ F.secAy[k]=1; });
+    cizFiyat();
+  };
   document.getElementById("fyAylar").addEventListener("click",function(e){
     var b=e.target.closest("[data-ay]"); if(!b) return;
     var key=b.dataset.ay;
@@ -2957,7 +3062,9 @@
       if(o.aylar.length===1){ var x0=ayAnahtar(o.aylar[0]); baslik=AYLAR[x0.m-1]+" "+x0.y+" için gecelik fiyat"; }
       else{
         baslik=o.aylar.length+" ay için gecelik fiyat";
-        not=o.aylar.map(function(a){ var x=ayAnahtar(a); return AYLAR[x.m-1]+" "+x.y; }).join(", ");
+        var ilkA=ayAnahtar(o.aylar[0]), sonA=ayAnahtar(o.aylar[o.aylar.length-1]);
+        not=o.aylar.length>4 ? AYLAR[ilkA.m-1]+" "+ilkA.y+" – "+AYLAR[sonA.m-1]+" "+sonA.y
+                             : o.aylar.map(function(a){ var x=ayAnahtar(a); return AYLAR[x.m-1]+" "+x.y; }).join(", ");
       }
       not=(not?not+" · ":"")+cev(keys.length+" gün");
     } else {
@@ -2976,9 +3083,10 @@
       '<div class="fyNot">'+esc(not)+"</div>"+
       (hz.length?'<div class="hazir">'+hz.map(function(f){
         return '<button class="big renkli is-para" data-ik="etiket" data-ik-boy="16" data-hf="'+f+'">'+binlik(f)+" ₺</button>"; }).join("")+"</div>":"")+
+      (o.aylar?'<div class="fyLab'+(o.hsAcik?"":" hide")+'" id="fp-anaLab">'+esc(cev("Pazar – Perşembe geceleri"))+"</div>":"")+
       sayiAlan("fp-tutar",false,(ayni&&ilk)?ilk:0)+
-      (o.aylar?'<button class="satirBtn hsAc" id="fp-hsAc" data-ikk="fiyat:takvim" style="margin-top:1rem"><span>'+esc(cev("Hafta sonu farklı fiyat"))+"</span></button>"+
-        '<div id="fp-hsKutu" class="hide"><div class="fyLab">'+esc(cev("Cuma ve Cumartesi geceleri"))+"</div>"+sayiAlan("fp-hs",true,0)+"</div>":"")+
+      (o.aylar?'<button class="satirBtn hsAc'+(o.hsAcik?" on":"")+'" id="fp-hsAc" data-ikk="fiyat:takvim" style="margin-top:1rem"><span>'+esc(cev("Hafta sonu farklı fiyat"))+"</span></button>"+
+        '<div id="fp-hsKutu"'+(o.hsAcik?"":' class="hide"')+'><div class="fyLab">'+esc(cev("Cuma ve Cumartesi geceleri"))+"</div>"+sayiAlan("fp-hs",true,0)+"</div>":"")+
       '<button class="big" data-ik="tik" id="fp-uygula">'+esc(cev(o.aylar?(o.aylar.length===1?"Tüm aya uygula":o.aylar.length+" aya uygula"):"Uygula"))+"</button>"+
       (o.gunler?'<button class="big tehlike" data-ik="cop" id="fp-sil" style="margin-top:1.5rem">'+esc(cev("Bu günlerin fiyatını sil"))+"</button>":"")+
       "</div>");
@@ -2994,6 +3102,7 @@
     if(hsAc) hsAc.onclick=function(){
       var k=document.getElementById("fp-hsKutu"), acik=k.classList.contains("hide");
       k.classList[acik?"remove":"add"]("hide"); hsAc.classList[acik?"add":"remove"]("on");
+      document.getElementById("fp-anaLab").classList[acik?"remove":"add"]("hide");
       if(acik) try{ hs.focus(); }catch(e){} else son=ana;
     };
     function bitir(eski,msg){
@@ -3007,7 +3116,7 @@
       if(!f) return uyari("Gecelik fiyat girin.");
       var hsAcik=hs && !document.getElementById("fp-hsKutu").classList.contains("hide");
       var fh=hsAcik?sayi(hs.value):0;
-      if(hsAcik && !fh) return uyari("Hafta sonu fiyatını girin.");
+      if(hsAcik && !fh && !o.hsAcik) return uyari("Hafta sonu fiyatını girin.");
       var eski={};
       keys.forEach(function(k){
         eski[k]=v.fiyatlar[k]||0;
@@ -3462,7 +3571,7 @@
       if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
       kaydet();
       if(secenek.donus==="detay"){ detay(r); parlat(".overlay:not(.kapaniyor) .alinacakBuyuk, .overlay:not(.kapaniyor) .alindiTamam"); }
-      else { kapat(); parlat('#liste .row[data-id="'+r.id+'"]'); parlat('#tahsilat [data-id="'+r.id+'"]'); }
+      else { kapat(); parlat('#liste .row[data-id="'+r.id+'"], #siradaki [data-id="'+r.id+'"]'); parlat('#tahsilat [data-id="'+r.id+'"]'); }
       tamam(cev(para(t)+" ödeme kaydedildi"));
     };
 
@@ -3949,7 +4058,7 @@
         el.innerHTML=liste.map(function(u){
           var durum = u.yonetici ? ["Yönetici","#0B5B57"]
                     : u.askida ? ["Askıda","#9B2C4A"]
-                    : u.onay ? ["Aktif","#0B5B57"] : ["Onay bekliyor","#B0761A"];
+                    : u.onay ? ["Aktif","#0B5B57"] : ["Onay bekliyor","#3C4E8C"];
           var benMi = u.id===ben;
           return '<div class="row" style="align-items:flex-start;gap:.5rem">'+
             '<span class="name"><span style="font-size:.9375rem">'+
@@ -4172,7 +4281,7 @@
 
   function bakiciSheet(){
     var v=aktif();
-    perde('<div class="head"><h2>Bakıcılar</h2>'+kapatBtn()+"</div>"+
+    perde('<div class="head headRozet"><h2>Bakıcılar</h2>'+villaRozet(v)+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 1.25rem">Bakıcılar rezervasyonları görüp ekleyebilir, gider girebilir ve girişte alınacak kalan ödemeyi görür. Fiyatlar, ödemeler ve kazanç bilgileri onlara kapalıdır.</div>'+
       '<div id="bk-liste"><div class="sm muted">Yükleniyor…</div></div>'+
       '<button class="big" data-ik="kisi-arti" id="bk-uret" style="margin-top:1.25rem">Yeni bakıcı davet et</button>'+
@@ -4369,7 +4478,7 @@
       h+='<button class="misSatir" data-k="'+esc(g.anahtar)+'">'+
         (MS.mod?'<span class="kutucuk'+(sec?" on":"")+'">'+(sec?
           ikon("tik",{boy:12,kalinlik:3}):"")+"</span>":"")+
-        (MS.mod?"":harfDaire({guest:g.ad},"#3C4E8C"))+
+        (MS.mod?"":harfDaire({guest:g.ad},"#7A4B8C"))+
         '<span class="bilgi"><span class="ad2">'+esc(g.ad)+"</span>"+
         '<span class="alt3">'+misTarihMetni(g)+
           (g.sonTeklif?" · teklif "+kisa(g.sonTeklif):"")+"</span></span>"+
@@ -5260,12 +5369,16 @@
       '<span id="'+id+'">'+(sayi(deger)||0)+"</span>"+
       '<button class="big renkli is-rez" data-sa="'+id+'" data-yon="1" aria-label="Artır" data-ik="arti" data-ik-boy="22"></button></div></div>';
   }
-  function shCipler(liste,secili,grup){
-    return '<div class="cipler" data-grup="'+grup+'">'+liste.map(function(o){
-      return '<button class="cip'+(secili.indexOf(o)>=0?" on":"")+'" data-o="'+esc(o)+'">'+
-        (ozEmojiAl(o)?'<span class="emo">'+ozEmojiAl(o)+"</span>":"")+esc(cev(o))+"</button>";
+  // 12.10: özellik / olanak düğmesi — Lucide ikonu (ozellik.js), seçiliyken yeşil + ✓; 2 sütunlu ızgara
+  function ozDugmeler(liste,secili,grup,id){
+    return '<div class="cipler ozIzgara"'+(id?' id="'+id+'"':"")+' data-grup="'+grup+'">'+liste.map(function(o){
+      var on=secili.indexOf(o)>=0;
+      return '<button class="cip ozBtn'+(on?" on":"")+'" data-o="'+esc(o)+'" aria-pressed="'+on+'">'+
+        (window.ozIkon?window.ozIkon(o,20):"")+'<span class="ozAd">'+esc(cev(o))+"</span>"+ikon("tik",{boy:16,kalinlik:2.5,sinif:"ozTik"})+"</button>";
     }).join("")+"</div>";
   }
+  function ozDegis(x,on){ x.classList[on?"add":"remove"]("on"); x.setAttribute("aria-pressed",String(on)); }
+  function shCipler(liste,secili,grup){ return ozDugmeler(liste,secili,grup); }
   function shCiz(){
     var v=aktif(); if(!v) return;
     var b=v.bilgi, a=SH.adim, el=document.getElementById("shIcerik"), h="";
@@ -5346,7 +5459,7 @@
         c.addEventListener("click",function(e){
           var x=e.target.closest(".cip"); if(!x) return;
           var g=c.dataset.grup, l=b[g]=b[g]||[], o=x.dataset.o, i=l.indexOf(o);
-          if(i>=0){ l.splice(i,1); x.classList.remove("on"); } else { l.push(o); x.classList.add("on"); }
+          if(i>=0){ l.splice(i,1); ozDegis(x,false); } else { l.push(o); ozDegis(x,true); }
           degisti();
         });
       });
@@ -5391,7 +5504,6 @@
   document.getElementById("shGeri").onclick=function(){ if(SH.adim>1){ SH.adim--; SH.yon=-1; shKaydet(); shCiz(); } };
   document.getElementById("shAtla").onclick=function(){ SH.adim++; SH.yon=1; shKaydet(); shCiz(); };
   document.getElementById("shTumBilgi").onclick=function(){ goster("takvim"); ciz(); bilgiSheet(false); };
-  var ozEmojiAl=function(o){ return (window.ozEmoji && window.ozEmoji(o)) || ""; };
 
   // ================= FOTOĞRAFLAR EKRANI =================
   // Sahip: ekler, sıralar (basılı tut-sürükle), siler, kapak seçer. Bakıcı: görür ve ekler.
@@ -5423,9 +5535,10 @@
     var l=v.fotolar||[], yon=fotoYonetir();
     if(!yon) FT.secMod=false;
     document.getElementById("ftSay").textContent="· "+l.length;
+    rozetKoy("fotoEkran");
     var sm=document.getElementById("ftSecModu");
     sm.classList[(yon && l.length)?"remove":"add"]("hide");
-    sm.textContent=cev(FT.secMod?"Vazgeç":"Seç");
+    document.getElementById("ftSecYazi").textContent=cev(FT.secMod?"Vazgeç":"Birden fazla seç");
     document.getElementById("ftIpucu").textContent = !l.length ? cev("Henüz fotoğraf yok.")
       : cev(yon ? (FT.secMod ? "Silmek istediğiniz fotoğraflara dokunun." : "İlk fotoğraf kapaktır. Sıralamak için basılı tutup sürükleyin.")
                 : "İlk fotoğraf misafir sayfasında kapak olarak görünür.");
@@ -5437,10 +5550,11 @@
         "</button>";
     }).join("");
     var n=Object.keys(FT.sec).length;
-    document.getElementById("ftEkleSatir").classList[FT.secMod?"add":"remove"]("hide");
-    document.getElementById("ftDrive").classList[driveKullanilir()?"remove":"add"]("hide");
+    // seçim modunda ekleme butonları gizlenir, alttaki çubukta sadece silme kalır
+    document.getElementById("ftEkle").classList[FT.secMod?"add":"remove"]("hide");
+    document.getElementById("ftDrive").classList[(driveKullanilir() && !FT.secMod)?"remove":"add"]("hide");
     var sil=document.getElementById("ftSil");
-    sil.classList[FT.secMod?"remove":"add"]("hide");
+    document.getElementById("ftAlt").classList[FT.secMod?"remove":"add"]("hide");
     sil.textContent=cev(n ? n+" fotoğraf sil" : "Fotoğraf seçin");
 
   }
@@ -6344,10 +6458,18 @@
     var anahtar=function(id,lab,deger){
       return '<div class="anahtar"><span>'+lab+'</span>'+
         '<span class="svic'+(deger?" on":"")+'" id="'+id+'"><i></i></span></div>'; };
-    perde('<div class="head"><h2>Villa bilgileri</h2>'+kapatBtn()+"</div>"+
+    // 12.10: bölüm başlığı (ikonlu) ve − / + sayaç
+    var bolum=function(is,ik,t,ilk){ return '<div class="eyebrow vbBolum" data-iki="'+is+":"+ik+'"'+(ilk?' style="margin-top:.25rem"':"")+">"+esc(cev(t))+"</div>"; };
+    var sayac=function(id,lab,ik,deger,adim){
+      return '<div class="sayacSatir"><span class="ikKutu is-rez">'+ikon(ik,{boy:20})+'</span><span class="sayacAd">'+esc(cev(lab))+"</span>"+
+        '<div class="adimci"><button class="big renkli is-rez" data-bs="'+id+'" data-yon="-'+(adim||1)+'" aria-label="'+esc(cev("Azalt"))+'" data-ik="eksi" data-ik-boy="20"></button>'+
+        '<input id="'+id+'" type="text" inputmode="numeric" autocomplete="off" aria-label="'+esc(cev(lab))+'" value="'+esc(deger||"")+'" placeholder="0">'+
+        '<button class="big renkli is-rez" data-bs="'+id+'" data-yon="'+(adim||1)+'" aria-label="'+esc(cev("Artır"))+'" data-ik="arti" data-ik-boy="20"></button></div></div>';
+    };
+    perde('<div class="head headRozet"><h2>Villa bilgileri</h2>'+villaRozet(v)+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 1.5rem">Bu bilgiler paylaştığınız sayfada görünür. '+
         (yeni?"Şimdi atlayıp sonra da doldurabilirsiniz.":"İstediğiniz zaman güncelleyebilirsiniz.")+"</div>"+
-      '<div class="eyebrow" style="margin:0 0 .75rem">'+esc(cev("Fiyat ve iletişim"))+"</div>"+
+      bolum("para","cuzdan","Fiyat ve iletişim",true)+
       alan("b-depozito","Hasar depozitosu (₺)","","tel",b.depozito)+
       alan("b-onOdeme","Önerilen kapora (%)","","tel",b.onOdeme||30)+
       '<div class="sm muted" style="margin:-.5rem 0 1rem">Yeni rezervasyonda önerilen kapora bu orandan hesaplanır.</div>'+
@@ -6358,59 +6480,64 @@
       '<div class="sm muted" style="margin:-.5rem 0 1rem">Bu gece sayısı ve altındaki konaklamalara ek ücret eklenir. Boş bırakırsanız uygulanmaz.</div>'+
       alan("b-whatsapp","WhatsApp numarası","0532 000 00 00","telefon",b.whatsapp)+
       '<div class="sm muted" style="margin:-.5rem 0 1rem">Paylaşılan sayfada "WhatsApp\'tan bilgi al" butonu olarak çıkar. Boş bırakırsanız buton görünmez.</div>'+
-      '<div class="eyebrow" style="margin:2rem 0 .75rem">'+esc(cev("Villa"))+"</div>"+
-      alan("b-konum","Konum","Örn. Kalkan, İslamlar","text",b.konum)+
       alan("b-sahip","Ev sahibi adı soyadı","Rezervasyon formunda görünür","text",b.sahip)+
-      '<div class="uclu">'+
-        alan("b-kapasite","Kişi","","tel",b.kapasite)+
-        alan("b-oda","Yatak odası","","tel",b.oda)+
-        alan("b-banyo","Banyo","","tel",b.banyo)+
-      "</div>"+
-      alan("b-m2","Büyüklük (m²)","","tel",b.m2)+
-      '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Ev hakkında</div>'+
-        '<textarea id="b-aciklama" placeholder="Villanızı tanıtın: konumu, manzarası, öne çıkan yanları…">'+
-        esc(b.aciklama||"")+"</textarea></div>"+
-      '<div class="eyebrow" style="margin:1.25rem 0 .625rem">Özellikler</div>'+
-      '<div class="cipler" id="b-ozellikler">'+
-        OZELLIKLER.map(function(o){
-          return '<button class="cip'+(b.ozellikler.indexOf(o)>=0?" on":"")+'" data-o="'+esc(o)+'">'+(ozEmojiAl(o)?'<span class="emo">'+ozEmojiAl(o)+"</span>":"")+esc(o)+"</button>";
-        }).join("")+"</div>"+
-      '<div class="eyebrow" style="margin:2rem 0 .625rem">Ev olanakları</div>'+
-      '<div class="cipler" id="b-olanaklar">'+
-        OLANAKLAR.map(function(o){
-          return '<button class="cip'+((b.olanaklar||[]).indexOf(o)>=0?" on":"")+'" data-o="'+esc(o)+'">'+(ozEmojiAl(o)?'<span class="emo">'+ozEmojiAl(o)+"</span>":"")+esc(o)+"</button>";
-        }).join("")+"</div>"+
-      '<div class="field" style="margin-top:1.5rem"><div class="eyebrow" style="margin-bottom:.375rem">Oda ve banyo bilgileri</div>'+
-        '<textarea id="b-odalar" placeholder="Her satıra bir oda yazın. Örn:&#10;Salon · Zemin kat · Klima, TV&#10;1. Yatak Odası · Zemin kat · Çift kişilik yatak, duş">'+
-        esc(b.odalar||"")+"</textarea></div>"+
-      '<div class="ikili">'+
-        alan("b-havuzBoyut","Havuz ölçüsü","","text",b.havuzBoyut)+
-        alan("b-havuzDerinlik","Havuz derinliği","","text",b.havuzDerinlik)+
-      "</div>"+
-      '<div class="eyebrow" style="margin:2rem 0 .625rem">Yakınlarda ne var (km)</div>'+
+      bolum("bilgi","konum","Konum")+
+      alan("b-konum","Konum","Örn. Kalkan, İslamlar","text",b.konum)+
+      alan("b-harita","Konum bağlantısı","Google Haritalar linki","text",b.harita)+
+      '<div class="eyebrow lab" style="margin:1rem 0 .5rem">'+esc(cev("Yakınlarda ne var (km)"))+"</div>"+
       '<div class="ikili">'+
         MESAFELER.map(function(m){
           return alan("b-m-"+m[0],m[1],"","tel",(b.mesafeler||{})[m[0]]||"");
         }).join("")+
       "</div>"+
-      alan("b-harita","Konum bağlantısı","Google Haritalar linki","text",b.harita)+
-      '<div class="eyebrow" style="margin:2rem 0 .25rem">Ev kuralları</div>'+
+      bolum("bilgi","kisiler","Kapasite")+
+      '<div class="grup">'+
+        sayac("b-kapasite","Kişi","kisiler",b.kapasite)+
+        sayac("b-oda","Yatak odası","yatak",b.oda)+
+        sayac("b-banyo","Banyo","banyo",b.banyo)+
+        sayac("b-m2","Büyüklük (m²)","cetvel",b.m2,10)+
+      "</div>"+
+      '<div class="field" style="margin-top:1.25rem"><div class="eyebrow" style="margin-bottom:.375rem">Oda ve banyo bilgileri</div>'+
+        '<textarea id="b-odalar" placeholder="Her satıra bir oda yazın. Örn:&#10;Salon · Zemin kat · Klima, TV&#10;1. Yatak Odası · Zemin kat · Çift kişilik yatak, duş">'+
+        esc(b.odalar||"")+"</textarea></div>"+
+      bolum("bilgi","sihirli","Özellikler")+
+      ozDugmeler(OZELLIKLER,b.ozellikler,"ozellikler","b-ozellikler")+
+      '<div class="ikili" style="margin-top:1rem">'+
+        alan("b-havuzBoyut","Havuz ölçüsü","","text",b.havuzBoyut)+
+        alan("b-havuzDerinlik","Havuz derinliği","","text",b.havuzDerinlik)+
+      "</div>"+
+      bolum("bilgi","ev","Ev olanakları")+
+      ozDugmeler(OLANAKLAR,b.olanaklar||[],"olanaklar","b-olanaklar")+
+      bolum("bilgi","metin","Açıklama")+
+      '<div class="field" style="margin-top:0"><textarea id="b-aciklama" aria-label="'+esc(cev("Ev hakkında"))+'" placeholder="Villanızı tanıtın: konumu, manzarası, öne çıkan yanları…">'+
+        esc(b.aciklama||"")+"</textarea></div>"+
+      bolum("bilgi","liste-tik","Kurallar")+
+      '<div class="grup">'+
       anahtar("b-sigara","Sigara içilebilir",b.sigara)+
       anahtar("b-evcil","Evcil hayvan kabul",b.evcil)+
       anahtar("b-parti","Parti / kalabalık misafir",b.parti)+
       anahtar("b-su","Su bedeli fiyata dahil",b.su!==false)+
       anahtar("b-elektrik","Elektrik bedeli fiyata dahil",b.elektrik!==false)+
-      '<button class="big" data-ik="tik" id="b-kaydet">Kaydet</button>'+
+      "</div>"+
+      '<div class="altSabit vbKaydet"><button class="big" data-ik="tik" id="b-kaydet">Kaydet</button></div>'+
       ((!yeni && sahipMi() && !S.destek)?'<div class="eyebrow" style="margin-top:2.5rem">Tehlikeli işlemler</div>'+
         '<button class="big tehlike" data-ik="cop" id="b-villaSil" style="margin-top:.75rem">Villayı sil</button>':""));
+    // sayaçlar: − / + (m² onar onar); kutuya elle de yazılabilir
+    Array.prototype.forEach.call(document.querySelectorAll("[data-bs]"),function(bt){
+      bt.onclick=function(){
+        var inp=document.getElementById(bt.dataset.bs), adim=+bt.dataset.yon;
+        var n=Math.max(0,Math.min(Math.abs(adim)>1?9990:99,(sayi(inp.value)||0)+adim));
+        inp.value=n?String(n):"";
+      };
+    });
     var bvs=document.getElementById("b-villaSil");
     if(bvs) bvs.onclick=function(){ villaSilSor(v); };
 
     document.getElementById("b-ozellikler").addEventListener("click",function(e){
       var c=e.target.closest(".cip"); if(!c) return;
       var o=c.dataset.o, i=b.ozellikler.indexOf(o);
-      if(i>=0){ b.ozellikler.splice(i,1); c.className="cip"; }
-      else { b.ozellikler.push(o); c.className="cip on"; }
+      if(i>=0){ b.ozellikler.splice(i,1); ozDegis(c,false); }
+      else { b.ozellikler.push(o); ozDegis(c,true); }
     });
     if(b.su===undefined) b.su=true;
     if(b.elektrik===undefined) b.elektrik=true;
@@ -6418,8 +6545,8 @@
     document.getElementById("b-olanaklar").addEventListener("click",function(e){
       var c=e.target.closest(".cip"); if(!c) return;
       var o=c.dataset.o, i=b.olanaklar.indexOf(o);
-      if(i>=0){ b.olanaklar.splice(i,1); c.className="cip"; }
-      else { b.olanaklar.push(o); c.className="cip on"; }
+      if(i>=0){ b.olanaklar.splice(i,1); ozDegis(c,false); }
+      else { b.olanaklar.push(o); ozDegis(c,true); }
     });
     ["sigara","evcil","parti","su","elektrik"].forEach(function(k){
       var el=document.getElementById("b-"+k);
@@ -6539,7 +6666,9 @@
         uyarilar.map(function(u){ return "• "+esc(cev(u)); }).join("<br>")+"</div>" : "")+
       '<button class="big" data-ik="dunya" id="yo-yayinla">Yayınla</button>'+
       (bilgiYarim?'<button class="big renkli is-rez" data-ik="ev" id="yo-bilgi" style="margin-top:.5rem">Villa bilgilerini doldur</button>':"")+
-      (!fotoSay?'<button class="big renkli is-foto" data-ik="resim-arti" id="yo-foto" style="margin-top:.5rem">Fotoğraf ekle</button>':""), false);
+      (!fotoSay?'<button class="big renkli is-foto" data-ik="resim-arti" id="yo-foto" style="margin-top:.5rem">Fotoğraf ekle</button>':"")+
+      '<button class="big renkli is-paylas" data-ik="takvim" id="yo-bos" style="margin-top:.5rem">'+esc(cev("Boş günleri paylaş"))+"</button>", false);
+    document.getElementById("yo-bos").onclick=function(){ bosGunPaylas(v); };
     document.getElementById("yo-yayinla").onclick=function(){
       kapat(); var pb=document.getElementById("paylasBtn"); pb.onayli=true; pb.click(); };
     var yb=document.getElementById("yo-bilgi");
@@ -6554,23 +6683,38 @@
       '<div class="sm muted" style="margin:.5rem 0 1rem">Bu bağlantıyı gönderdiğiniz kişi fotoğrafları, boş günleri ve fiyatları görür; tarih seçip size istek gönderebilir.</div>'+
       '<div class="sm" style="background:var(--soft);border-radius:.75rem;padding:1rem;word-break:break-all">'+
         esc(link)+"</div>"+
-      '<button class="big" data-ik="paylas" id="ls-paylas">Linki paylaş</button>'+
-      '<button class="big renkli is-paylas" data-ik="kopyala" id="ls-kopyala" style="margin-top:.5rem">Kopyala</button>'+
-      '<button id="ls-kaldir" class="big tehlike" data-ik="x-daire">Paylaşımı kaldır</button>'+
-      '<div class="sm muted" id="ls-durum" style="margin-top:.75rem"></div>');
+      '<button class="big" data-ik="paylas" id="ls-paylas">'+esc(cev("Bağlantıyı paylaş"))+"</button>"+
+      '<button class="big renkli is-paylas" data-ik="kopyala" id="ls-kopyala" style="margin-top:.5rem">'+esc(cev("Bağlantıyı kopyala"))+"</button>"+
+      '<button class="big renkli is-paylas" data-ik="goz" id="ls-onizle" style="margin-top:.5rem">'+esc(cev("Sayfayı önizle"))+"</button>"+
+      '<button class="big renkli is-paylas" data-ik="takvim" id="ls-bos" style="margin-top:.5rem">'+esc(cev("Boş günleri paylaş"))+"</button>"+
+      '<div class="lsAyrac"></div>'+
+      '<button id="ls-kaldir" class="big tehlike" data-ik="x-daire" style="margin-top:0">'+esc(cev("Villa sayfasını yayından kaldır"))+"</button>"+
+      '<div class="sm muted" style="margin-top:.625rem;line-height:1.45">'+esc(cev("Paylaştığınız bağlantı çalışmaz. Fotoğraflar ve bilgiler silinmez, istediğiniz zaman yeniden yayınlayabilirsiniz."))+"</div>");
 
     document.getElementById("ls-paylas").onclick=function(){
       if(navigator.share) navigator.share({title:v.ad||"Villa", url:link}).catch(function(){});
       else kopyala(link,"Bağlantı kopyalandı, mesaja yapıştırın.");
     };
     document.getElementById("ls-kopyala").onclick=function(){ kopyala(link,"Bağlantı kopyalandı."); };
-    document.getElementById("ls-kaldir").onclick=function(){
-      var d=document.getElementById("ls-durum");
-      d.textContent="Kaldırılıyor…";
+    document.getElementById("ls-onizle").onclick=function(){ window.open(link,"_blank"); };
+    document.getElementById("ls-bos").onclick=function(){ bosGunPaylas(v); };
+    document.getElementById("ls-kaldir").onclick=function(){ yayindanKaldirSor(v); };
+  }
+  // 12.7: yayından kaldırmadan önce onay; fotoğraflar ve bilgiler silinmez
+  function yayindanKaldirSor(v){
+    perde('<div class="head"><h2>'+esc(cev("Villa sayfası yayından kaldırılsın mı?"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin-top:.5rem;line-height:1.5">'+esc(cev("Paylaştığınız bağlantı çalışmaz. Fotoğraflar ve bilgiler silinmez, istediğiniz zaman yeniden yayınlayabilirsiniz."))+"</div>"+
+      '<button class="big ghost" id="yk-hayir" style="margin-top:1.25rem">'+esc(cev("Vazgeç"))+"</button>"+
+      '<button class="big tehlike" data-ik="x-daire" id="yk-evet" style="margin-top:2rem">'+esc(cev("Evet, yayından kaldır"))+"</button>"+
+      '<div class="sm" id="yk-durum" style="margin-top:.75rem"></div>');
+    document.getElementById("yk-hayir").onclick=function(){ kapat(); linkSheet(v); };
+    document.getElementById("yk-evet").onclick=function(){
+      var b=this, d=document.getElementById("yk-durum");
+      b.disabled=true; d.className="sm muted"; d.textContent=cev("Kaldırılıyor…");
       sbSil(v.paylasim.ad+".json",function(hata){
-        if(hata){ d.innerHTML='<span class="warn">'+esc(hata)+"</span>"; return; }
+        if(hata){ b.disabled=false; d.className="sm warn"; d.textContent=hata; return; }
         // Fotoğraflar uygulamadaki villa fotoğraflarıyla aynı dosyalar; silinmez.
-        delete v.paylasim; kaydet(); ciz(); kapat(); bildir("Paylaşım kaldırıldı.");
+        delete v.paylasim; kaydet(); ciz(); kapat(); bildir(cev("Villa sayfası yayından kaldırıldı."));
       });
     };
   }

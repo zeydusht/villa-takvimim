@@ -216,6 +216,24 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
         Her ekranda en fazla 1 dolu yeşil buton (testle sayıldı).
       11.10 (Veritabanı Adım C notu) işaretlenmedi: Claude Code veritabanına bakmadı, kapandığını doğrulayamadı (aşağıdaki maddeye bakın).
 
+- [x] Görev 12 — renk düzeltmesi ve ince ayar (docs/GOREV12.md, 12.1–12.10) · Claude Code yaptı (14 Kasım), sahte veriyle test edildi.
+      12.1 Sarı/altın/krem/turuncu kalktı: para işleri (ödeme, gelir & gider, fiyatlar, kapora, depozito) lacivert #3C4E8C,
+      misafirler mor #7A4B8C, fotoğraflar petrol #2E6E8E. Tablo `www/ikonlar.js` → `IS` ve `index.html` → `.is-*` sınıflarında.
+      "Boş" etiketi açık gri, "Eksik" lacivert çerçeve, "Yarın / 2 gün sonra" etiketleri açık lacivert.
+      Kontrol grep'i yalnızca `PALET` satırını bulur (rezervasyon renk seçenekleri; görev "aynı kalsın" dediği için dokunulmadı).
+      12.2 Villa ekranındaki "Bu ay N gece boş" satırı kalktı; "Boş günleri paylaş" Paylaş panelinde (yayınlanmamış villada önizlemede de).
+      12.3 Bugünün rakamı 12px yukarıdaydı: villa durum kutusu için yazılmış `.today` kuralı (alt boşluk 24px) takvimdeki bugün hücresine de
+      uyuyordu. Kural `div.today` yapıldı; dolu/boş/giriş günü/çıkış günü/tek gece/seçili durumlarında fark 0px (ölçüldü).
+      12.4 "Sıradaki" kartı: en yakın giriş ya da içerideki misafirin çıkışı; dokununca detay; listede tekrar etmez; satırlarda "girecek / çıkacak".
+      12.5 Fiyatlar → "Tüm aylara fiyat gir" (12 ay, hafta içi + hafta sonu kutusu açık gelir) ve seçim çubuğunda "Tümünü seç".
+      12.6 Seçili ay açık lacivert zemin + lacivert çerçeve. 12.7 Paylaş paneli: Bağlantıyı paylaş / kopyala / Sayfayı önizle / Boş günleri paylaş;
+      en altta çizgiyle ayrılmış "Villa sayfasını yayından kaldır" + açıklama + onay. 12.8 Fotoğraflar: başlık üstte, altında
+      "Fotoğraf ekle / Drive'dan al / Birden fazla seç". 12.9 Gelir & gider, Misafirler, Fiyatlar, Fotoğraflar, Villa bilgileri, Bakıcılar
+      başlığının sağında 44×44 kapak fotoğrafı (yoksa villa renginde baş harf). 12.10 Villa bilgileri 7 ikonlu bölüm, − / + sayaçlar,
+      sabit "Kaydet"; özellik/olanak düğmeleri emojiden Lucide ikonlarına geçti (`www/ozellik.js`, misafir sayfası g.html aynı tabloyu kullanır).
+      Sade (beyaz) buton sayısı 15 → 17 (yeni: Fiyatlar seçim çubuğunda "Tümünü seç", yayından kaldır onayında "Vazgeç").
+      Her ekranda en fazla 1 dolu yeşil buton (testle yeniden sayıldı). Eski testler yeni düzene göre güncellenip hatasız geçti.
+
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
 

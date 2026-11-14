@@ -68,7 +68,6 @@
   .ambIkon{width:2rem;height:2rem;border-radius:99px;background:#fff;color:var(--yes);flex:none;
     display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(18,35,43,.06)}
   .ambIkon svg{width:17px;height:17px}
-  .ambIkon.emo{font-size:1.0625rem;line-height:1}
 
   /* dip bilgi */
   .dip{background:var(--soft);margin-top:2.5rem;padding:2rem 0 2.25rem;text-align:center}
@@ -536,8 +535,9 @@
   }
   function amblemler(dizi){
     return '<div class="amblemler">'+dizi.map(function(o){
-      var em=(window.ozEmoji && window.ozEmoji(o)) || "";
-      return '<div class="amb"><span class="ambIkon'+(em?" emo":"")+'">'+(em||amblem(o))+"</span><span>"+esc(CEV(o))+"</span></div>";
+      // 12.10: uygulamadaki özellik düğmeleriyle aynı Lucide ikonu (ozellik.js); tabloda yoksa eski amblem
+      var ik=(window.OZ_IKON && window.OZ_IKON[String(o||"").trim()]) ? window.ozIkon(o,22) : "";
+      return '<div class="amb"><span class="ambIkon">'+(ik||amblem(o))+"</span><span>"+esc(CEV(o))+"</span></div>";
     }).join("")+"</div>";
   }
 

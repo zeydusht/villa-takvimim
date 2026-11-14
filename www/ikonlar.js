@@ -2,12 +2,15 @@
    VİLLA TAKVİM — ikonlar (Görev 11)
    Lucide ikonları (https://lucide.dev, ISC lisansı) dosyaya gömülüdür:
    internetten yüklenmez, uygulama çevrimdışı da çalışır.
-   Kullanım: ikon("cuzdan", {boy:22, renk:"#B0761A", dolu:false, kalinlik:2})
+   Kullanım: ikon("cuzdan", {boy:22, renk:"#3C4E8C", dolu:false, kalinlik:2})
    IS: her işin sabit rengi ve ikonu (tek kaynak). Açık zeminler beyazla karıştırılmış hâlidir.
    ============================================================ */
 (function () {
   "use strict";
   var I = {
+    "kare-tik": "<path d=\"M21 10.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12.5\"/><path d=\"m9 11 3 3L22 4\"/>",
+    "metin": "<path d=\"M17 6.1H3\"/><path d=\"M21 12.1H3\"/><path d=\"M15.1 18H3\"/>",
+    "cetvel": "<path d=\"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z\"/><path d=\"m14.5 12.5 2-2\"/><path d=\"m11.5 9.5 2-2\"/><path d=\"m8.5 6.5 2-2\"/><path d=\"m17.5 15.5 2-2\"/>",
     "takvim-arti": "<path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><path d=\"M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8\"/><path d=\"M3 10h18\"/><path d=\"M16 19h6\"/><path d=\"M19 16v6\"/>",
     "takvim": "<path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M3 10h18\"/>",
     "takvim-tik": "<path d=\"M8 2v4\"/><path d=\"M16 2v4\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M3 10h18\"/><path d=\"m9 16 2 2 4-4\"/>",
@@ -94,13 +97,13 @@
       '" viewBox="0 0 24 24" fill="none" stroke="' + (o.renk || "currentColor") + '" stroke-width="' + (o.kalinlik || 2) +
       '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + ic + "</svg>";
   };
-  // İş → renk + ikon (renkler PALET'teki tonlardır). zemin12: renkli buton zemini, zemin15: satır ikon kutusu, yazi: okunaklı yazı tonu
+  // İş → renk + ikon (Görev 12: sarı/altın yok; para lacivert, misafir mor, fotoğraf petrol). zemin12: renkli buton zemini, zemin15: satır ikon kutusu, yazi: okunaklı yazı tonu
   window.IS = {
     rez:     { renk:"#0B5B57", zemin12:"#E2EBEB", zemin15:"#DAE6E6", yazi:"#0B5B57", ikon:"takvim-arti", sinif:"is-rez" },
-    para:    { renk:"#B0761A", zemin12:"#F6EFE4", zemin15:"#F3EADD", yazi:"#8A5A0E", ikon:"cuzdan",      sinif:"is-para" },
-    fiyat:   { renk:"#B0761A", zemin12:"#F6EFE4", zemin15:"#F3EADD", yazi:"#8A5A0E", ikon:"etiket",      sinif:"is-para" },
-    misafir: { renk:"#3C4E8C", zemin12:"#E8EAF1", zemin15:"#E2E4EE", yazi:"#3C4E8C", ikon:"kisiler",     sinif:"is-misafir" },
-    foto:    { renk:"#7A4B8C", zemin12:"#EFE9F1", zemin15:"#EBE4EE", yazi:"#7A4B8C", ikon:"resimler",    sinif:"is-foto" },
+    para:    { renk:"#3C4E8C", zemin12:"#E8EAF1", zemin15:"#E2E4EE", yazi:"#3C4E8C", ikon:"cuzdan", sinif:"is-para" },
+    fiyat:   { renk:"#3C4E8C", zemin12:"#E8EAF1", zemin15:"#E2E4EE", yazi:"#3C4E8C", ikon:"etiket", sinif:"is-para" },
+    misafir: { renk:"#7A4B8C", zemin12:"#EFE9F1", zemin15:"#EBE4EE", yazi:"#7A4B8C", ikon:"kisiler",     sinif:"is-misafir" },
+    foto:    { renk:"#2E6E8E", zemin12:"#E6EEF1", zemin15:"#E0E9EE", yazi:"#2E6E8E", ikon:"resimler",    sinif:"is-foto" },
     paylas:  { renk:"#2E6E8E", zemin12:"#E6EEF1", zemin15:"#E0E9EE", yazi:"#2E6E8E", ikon:"paylas",      sinif:"is-paylas" },
     bakici:  { renk:"#4F6B22", zemin12:"#EAEDE4", zemin15:"#E5E9DE", yazi:"#4F6B22", ikon:"anahtar",     sinif:"is-bakici" },
     bilgi:   { renk:"#0B5B57", zemin12:"#E2EBEB", zemin15:"#DAE6E6", yazi:"#0B5B57", ikon:"ev",          sinif:"is-rez" },
