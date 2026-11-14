@@ -490,6 +490,13 @@
     "Bağlantı boş.":"The link is empty.", "Lütfen Google Haritalar bağlantısı yapıştırın.":"Please paste a Google Maps link.",
     "Bu bağlantıdan konum okunamadı. Haritada evin üstüne basılı tutup çıkan koordinatı yapıştırabilirsiniz.":"The location could not be read from this link. In Maps, press and hold on the house and paste the coordinates shown.",
     "Konum çözülemedi, tekrar deneyin.":"The location could not be resolved, please try again.",
+    // Görev 15 eki — Apple Haritalar, metinden bağlantı ayıklama, kaydederken konum
+    "Harita bağlantısını yapıştırın":"Paste the map link",
+    "Google veya Apple Haritalar'da evi açın → Paylaş → bağlantıyı kopyalayıp buraya yapıştırın.":"Open the house in Google or Apple Maps → Share → copy the link and paste it here.",
+    "Önce harita bağlantısını yapıştırın.":"Paste the map link first.",
+    "Google veya Apple Haritalar bağlantısı yapıştırın.":"Paste a Google or Apple Maps link.",
+    "Bu bağlantı evin değil, paylaşan telefonun o anki konumunu gösteriyor olabilir. Haritada evi açıp oradan paylaşın.":"This link may show the sharing phone's current location, not the house. Open the house on the map and share from there.",
+    "Kaydedildi. Harita için konum bulunamadı.":"Saved. The location for the map could not be found.",
     "Çift kişilik yatak":"Double beds", "Tek kişilik yatak":"Single beds", "Çekyat / kanepe yatak":"Sofa beds",
     "Sizin kurallarınız":"Your rules", "Henüz eklediğiniz kural yok.":"You have not added any rules yet.", "Yeni kural":"New rule",
     "Örn. Saat 23:00'ten sonra yüksek sesle müzik yok.":"E.g. No loud music after 23:00.", "Kural ekle":"Add rule", "Ekle":"Add",

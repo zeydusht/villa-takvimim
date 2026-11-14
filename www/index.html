@@ -7308,6 +7308,22 @@
   // 15.6 bilmeniz gerekenler için hazır öneriler (dokununca alan bu metinle açılır, düzenlenir)
   var NOT_ONERI=["Villaya … basamakla çıkılıyor.","Yolun son … metresi toprak / stabilize.","Araç gerekli.","Alarm sistemi var.","Bölgede inşaat olabilir.","Doğa içinde, böcek görülebilir."];
   var havuzVarMi=function(oz){ return (oz||[]).some(function(x){ return /havuz/i.test(x); }); };
+  // Görev 15 eki: yapıştırılan metinden bağlantıyı ya da düz koordinatı ayıkla
+  //   "Grand Emora Villaları https://maps.google.com/?q=…" → bağlantı; "36.25, 29.41" → koordinat
+  function haritaAyikla(metin){
+    var t=String(metin||"").trim();
+    var u=t.match(/https?:\/\/[^\s<>"']+/i);
+    if(u){ var l=u[0].replace(/[).,;!?]+$/,""); return {link:l, kutu:l}; }
+    var c=t.match(/(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);
+    if(c){ var la=parseFloat(c[1]), lo=parseFloat(c[2]);
+      if(Math.abs(la)<=90 && Math.abs(lo)<=180 && !(la===0&&lo===0)) return {koord:{lat:la,lng:lo}, kutu:c[1]+", "+c[2]}; }
+    var d=t.match(/(?:maps\.app\.goo\.gl|maps\.apple(?:\.com)?|maps\.google\.[a-z.]+|goo\.gl\/maps)\/?[^\s<>"']*/i);
+    if(d){ var l2="https://"+d[0].replace(/[).,;!?]+$/,""); return {link:l2, kutu:l2}; }
+    return {kutu:t};
+  }
+  // "Konumum / My Location" adı: paylaşan telefonun o anki konumu, evin değil
+  function kendiKonumMu(ad){ return /^(my location|current location|konumum|mevcut konum|bulunduğum yer)$/i.test(String(ad||"").trim()); }
+
   function bilgiSheet(yeni){
     var v=aktif(), b=JSON.parse(JSON.stringify(v.bilgi||{}));
     if(!b.ozellikler) b.ozellikler=[];
@@ -7349,10 +7365,10 @@
       bolum("bilgi","konum","Konum")+
       alan("b-konum","Konum","Örn. Kalkan, İslamlar","text",esc(b.konum||""))+
       // 13.1: harita bağlantısı → konum-coz → koordinat → en yakın havalimanları
-      '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Google Haritalar bağlantısını yapıştırın"))+"</div>"+
-        '<div class="drLink konumSat"><input id="b-harita" type="url" inputmode="url" autocomplete="off" placeholder="https://maps.app.goo.gl/…" value="'+esc(b.haritaLink||b.harita||"")+'">'+
+      '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Harita bağlantısını yapıştırın"))+"</div>"+
+        '<div class="drLink konumSat"><input id="b-harita" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://maps.app.goo.gl/…" value="'+esc(haritaAyikla(b.haritaLink||b.harita||"").kutu)+'">'+
         '<button class="big renkli is-paylas" data-ik="konum" id="b-konumBul">'+esc(cev("Konumu bul"))+"</button></div>"+
-        '<div class="sm muted" style="margin-top:.375rem">'+esc(cev("Haritada evi açın → Paylaş → Bağlantıyı kopyala."))+"</div>"+
+        '<div class="sm muted" style="margin-top:.375rem">'+esc(cev("Google veya Apple Haritalar'da evi açın → Paylaş → bağlantıyı kopyalayıp buraya yapıştırın."))+"</div>"+
         '<div class="sm" id="b-konumDurum" style="margin-top:.375rem"></div></div>'+
       // 15.1: misafir sayfasındaki harita — yaklaşık bölge (önerilen) ya da tam konum
       '<div class="eyebrow lab" style="margin:1rem 0 .5rem">'+esc(cev("Haritada göster"))+"</div>"+
@@ -7468,31 +7484,54 @@
     hgCiz();
     var kd=document.getElementById("b-konumDurum"), kb=document.getElementById("b-konumBul");
     var kdYaz=function(t,tur){ kd.className="sm"+(tur==="hata"?" warn":(tur==="ok"?" okYazi":" muted")); kd.textContent=t; };
-    kb.onclick=function(){
-      var link=document.getElementById("b-harita").value.trim();
-      if(!link) return kdYaz(cev("Önce Google Haritalar bağlantısını yapıştırın."),"hata");
-      if(!(S.bulut && kurulu() && window.VT && VT.girisli && VT.girisli())) return kdYaz(cev("Konumu bulmak için giriş yapmış olmanız gerekiyor."),"hata");
-      kb.disabled=true; kdYaz(cev("Konum aranıyor…"));
-      fonksiyonIstek("konum-coz",{link:link}).then(function(r){
+    var hk=document.getElementById("b-harita");
+    // Görev 15 eki: kutuda yalnız bağlantı (ya da koordinat) kalsın
+    var kutuTemizle=function(){ var a=haritaAyikla(hk.value); if(a.kutu!==hk.value) hk.value=a.kutu; return a; };
+    hk.addEventListener("paste",function(){ setTimeout(kutuTemizle,0); });
+    hk.addEventListener("change",kutuTemizle);
+    var bulutGirisli=function(){ return !!(S.bulut && kurulu() && window.VT && VT.girisli && VT.girisli()); };
+    // bağlantı → koordinat. Sonuç: {ok:true,d} ya da {ok:false,hata}
+    var konumCoz=function(){
+      var a=kutuTemizle(), metin=hk.value.trim();
+      if(!metin) return Promise.resolve({ok:false,hata:cev("Önce harita bağlantısını yapıştırın.")});
+      if(a.koord) return Promise.resolve({ok:true,d:{lat:a.koord.lat,lng:a.koord.lng,ad:""},link:metin});
+      if(!bulutGirisli()) return Promise.resolve({ok:false,hata:cev("Konumu bulmak için giriş yapmış olmanız gerekiyor.")});
+      return fonksiyonIstek("konum-coz",{link:metin}).then(function(r){
         return r.json().then(function(d){ return {r:r,d:d}; },function(){ return {r:r,d:null}; });
       }).then(function(x){
-        kb.disabled=false;
         var d=x.d||{};
         if(!x.r.ok || typeof d.lat!=="number" || typeof d.lng!=="number"){
-          if(x.r.status===404 && !d.hata) return kdYaz(cev("Konum bulma şu anda kullanılamıyor. Mesafeleri elle yazabilirsiniz."),"hata");
-          return kdYaz(d.hata || cev("Konum bulunamadı. Bağlantıyı kontrol edip tekrar deneyin."),"hata");
+          if(x.r.status===404 && !d.hata) return {ok:false,hata:cev("Konum bulma şu anda kullanılamıyor. Mesafeleri elle yazabilirsiniz.")};
+          return {ok:false,hata:d.hata?cev(d.hata):cev("Konum bulunamadı. Bağlantıyı kontrol edip tekrar deneyin.")};
         }
-        b.konumKoord={lat:d.lat,lng:d.lng}; b.haritaLink=link; b.harita=link;
-        var ka=document.getElementById("b-konum");
-        if(!ka.value.trim() && d.ad) ka.value=d.ad;
-        // elle düzeltilen satırlar kalır; otomatik havalimanı satırları yenilenir
-        var elle=b.mesafeListe.filter(function(m){ return !(m.oto && m.tip==="hava"); });
-        var adlar=elle.map(function(m){ return String(m.ad||"").trim().toLocaleLowerCase("tr"); });
-        var yeniH=enYakinHavalimanlari(b.konumKoord,2).filter(function(h){ return adlar.indexOf(h.ad.toLocaleLowerCase("tr"))<0; });
-        b.mesafeListe=yeniH.concat(elle); mesafeCiz();
+        return {ok:true,d:d,link:metin};
+      },function(){ return {ok:false,hata:cev("Bağlantı kurulamadı. İnternetinizi kontrol edin.")}; });
+    };
+    var konumUygula=function(x){
+      var d=x.d;
+      b.konumKoord={lat:d.lat,lng:d.lng}; b.koordLink=x.link; b.haritaLink=x.link; b.harita=x.link;
+      var ka=document.getElementById("b-konum");
+      if(!ka.value.trim() && d.ad && !kendiKonumMu(d.ad)) ka.value=d.ad;
+      // elle düzeltilen satırlar kalır; otomatik havalimanı satırları yenilenir
+      var elle=b.mesafeListe.filter(function(m){ return !(m.oto && m.tip==="hava"); });
+      var adlar=elle.map(function(m){ return String(m.ad||"").trim().toLocaleLowerCase("tr"); });
+      var yeniH=enYakinHavalimanlari(b.konumKoord,2).filter(function(h){ return adlar.indexOf(h.ad.toLocaleLowerCase("tr"))<0; });
+      b.mesafeListe=yeniH.concat(elle); mesafeCiz();
+    };
+    // konum yok ya da bağlantı değiştiyse yeniden bulunmalı
+    var konumGerekli=function(){
+      var a=haritaAyikla(hk.value); if(!a.kutu) return false;
+      if(!b.konumKoord) return true;
+      return !!b.koordLink && b.koordLink!==a.kutu;
+    };
+    kb.onclick=function(){
+      kb.disabled=true; kdYaz(cev("Konum aranıyor…"));
+      konumCoz().then(function(x){
+        kb.disabled=false;
+        if(!x.ok) return kdYaz(x.hata,"hata");
+        konumUygula(x);
+        if(kendiKonumMu(x.d.ad)) return kdYaz(cev("Bu bağlantı evin değil, paylaşan telefonun o anki konumunu gösteriyor olabilir. Haritada evi açıp oradan paylaşın."),"hata");
         kdYaz(cev("Konum bulundu. En yakın havalimanları eklendi; mesafeler yaklaşıktır, düzeltebilirsiniz."),"ok");
-      }).catch(function(){
-        kb.disabled=false; kdYaz(cev("Bağlantı kurulamadı. İnternetinizi kontrol edin."),"hata");
       });
     };
     // 13.4 kurallar (genel liste yardımcısı)
@@ -7633,7 +7672,20 @@
       var el=document.getElementById("b-"+k);
       el.onclick=function(){ b[k]=!b[k]; el.className="svic"+(b[k]?" on":""); };
     });
-    document.getElementById("b-kaydet").onclick=function(){
+    // Görev 15 eki: "Konumu bul"a basılmadan kaydedilirse konum bir kez denenir; bulunamazsa kayıt yine yapılır
+    var kaydetBtn=document.getElementById("b-kaydet");
+    kaydetBtn.onclick=function(){
+      if(kaydetBtn.disabled) return;
+      kutuTemizle();
+      if(!konumGerekli() || (!bulutGirisli() && !haritaAyikla(hk.value).koord)) return bilgiKaydet(false);
+      kaydetBtn.disabled=true; kb.disabled=true; kdYaz(cev("Konum aranıyor…"));
+      konumCoz().then(function(x){
+        kaydetBtn.disabled=false; kb.disabled=false;
+        if(x.ok) konumUygula(x); else { delete b.konumKoord; delete b.koordLink; }
+        bilgiKaydet(!x.ok);
+      });
+    };
+    var bilgiKaydet=function(konumYok){
       var al=function(id){ return document.getElementById(id).value.trim(); };
       var mListe=b.mesafeListe.map(function(m){ return {ad:String(m.ad||"").trim(), mesafe:String(m.mesafe||"").trim(), sure:String(m.sure||"").trim(), tip:m.tip||"yer", oto:!!m.oto}; })
                               .filter(function(m){ return m.ad || m.mesafe; });
@@ -7659,11 +7711,13 @@
         whatsapp:al("b-whatsapp"),
         kisaSinir:sayi(al("b-kisaSinir")), kisaUcret:sayi(al("b-kisaUcret"))
       });
-      if(!v.bilgi.haritaLink){ delete v.bilgi.konumKoord; }
+      if(!v.bilgi.haritaLink){ delete v.bilgi.konumKoord; delete v.bilgi.koordLink; }
       if(!v.bilgi.havuz) delete v.bilgi.havuz;
       if(!v.bilgi.iptal) delete v.bilgi.iptal;
       if(v.bilgi.havuz){ delete v.bilgi.havuzBoyut; delete v.bilgi.havuzDerinlik; }
-      kapat(); ciz(); kaydet(); tamam(cev("Villa bilgileri kaydedildi"));
+      kapat(); ciz(); kaydet();
+      if(konumYok){ titret("uyari"); bildir(cev("Kaydedildi. Harita için konum bulunamadı.")); }
+      else tamam(cev("Villa bilgileri kaydedildi"));
     };
   }
 
