@@ -15,6 +15,13 @@
 
   document.documentElement.classList.add("native", "native-" + platform);
 
+  // ---------- açılış ekranı ----------
+  // Görev 16.2: native açılış ekranını acilis.js gizler (web perdesi hazır olunca).
+  // Bir şey ters giderse ekran takılı kalmasın diye 3 sn sonra yine de gizlenir.
+  setTimeout(function () {
+    try { if (P.SplashScreen && P.SplashScreen.hide) P.SplashScreen.hide({ fadeOutDuration: 150 }); } catch (e) {}
+  }, 3000);
+
   // ---------- dış linkler ----------
   // App içinde yeni sekme olmadığı için bu linkler hiçbir şey yapmıyordu.
   // Web linkleri uygulama içi tarayıcıda, WhatsApp / telefon / e-posta ise
@@ -130,6 +137,7 @@
       if (tur === "basari") H.notification({ type: "SUCCESS" }).catch(function () {});
       else if (tur === "uyari") H.notification({ type: "WARNING" }).catch(function () {});
       else if (tur === "sil") H.impact({ style: "MEDIUM" }).catch(function () {});
+      else if (tur === "hafif") H.impact({ style: "LIGHT" }).catch(function () {});
     } catch (e) {}
   };
 

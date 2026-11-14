@@ -6,6 +6,8 @@
 	<string>Villa ve fiş fotoğrafı çekebilmeniz için kameraya erişim gerekiyor.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Villa fotoğraflarınızı seçebilmeniz için fotoğraflarınıza erişim gerekiyor.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Villa Takvimim'i Face ID ile açmak için.</string>
   <key>CAPACITOR_DEBUG</key>
 	<string>$(CAPACITOR_DEBUG)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>

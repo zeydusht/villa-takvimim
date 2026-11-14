@@ -309,6 +309,29 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Kurallar / odalar / notlar için ortak sürükle-sırala düzeltildi: satır taşınırken parmak takibi kaybolup sıralama kaydedilmiyordu.
 - [x] Görev 15 eki — harita konumu (docs/GOREV15_EK_KONUM.md) · Claude Code (14 Kasım): yapıştırılan metinden bağlantı / düz koordinat ayıklanıyor, konum-coz Apple Haritalar'ı (maps.apple.com, maps.apple/p/…) okuyor, Kaydet'te konum yoksa bir kez deneniyor (bulamazsa "Kaydedildi. Harita için konum bulunamadı."), yayındaki sayfa otomatik yenileniyor; "Konumum / My Location" bağlantısında uyarı. konum-coz'un son hâli Claude tarafından yazılıp yüklendi (Google + Apple, cevapta `google` bağlantısı).
 - [x] Harita linki düzeltmesi · Claude Code (14 Kasım): misafire giden bağlantı her zaman Google (`haritaLink` = koordinattan Google, yapıştırılan orijinal `kaynakLink`'te; düz koordinatta da). Misafir sayfasında "Haritada aç" konum varsa koordinattan Google'a gider, yoksa eski bağlantıya. Açılışta konumu olup bağlantısı Google olmayan villalar bir kerelik çevrilir. Villa bilgilerinde "✓ Konum bulundu · misafirleriniz Google Haritalar'da açacak" satırı. Ayrıca 15.1'deki bir hata düzeltildi: konumu olan villada yayınlanan sayfada dolu günler listesi bozuluyordu (yaklaşık modda dolu günler boş görünür, tam modda sayfa açılmazdı); canlıda konumu olan villa olmadığı için kimse etkilenmedi.
+- [x] Görev 16 — açılış animasyonu ve Wise'tan uyarlamalar (docs/GOREV16.md, 16.1–16.9) · Claude Code (15 Kasım), sahte veriyle test edildi. **Netlify'a yüklenmedi** (görev gereği; sadece commit + push).
+      16.1 Açılış deseni Codex CLI ile üretildi (ilk denemede uygun), `www/img/acilis-doku.webp` 1080×1920, 189 KB. Logo, native açılış
+      görselinden (`assets/splash.png`) kesildi: `www/img/acilis-logo.webp`.
+      16.2 `www/acilis.js` (tek modül, `<body>` başında): native açılış ekranıyla aynı görünümde web perdesi → hap şerit yükselir (550 ms)
+      → yanlara açılır (300 ms) → veri hazırsa (en fazla 1,5 sn bekler) desen solar, ana ekran %96'dan büyüyerek gelir. Sadece
+      transform / opacity / clip-path. Dokununca anında biter; "Hareketi azalt" açıksa logo → 200 ms solma. Web'de oturumda bir kez
+      (sessionStorage), girişsiz kullanıcıda yok. `capacitor.config.json`: `launchAutoHide:false` — native açılış ekranını acilis.js
+      gizler; bir şey ters giderse native.js 3 sn sonra yine gizler.
+      16.3 Face ID / parmak izi kilidi: eklenti `@aparajita/capacitor-biometric-auth` 10.0.0 (Capacitor 8 için; `Capacitor.Plugins.BiometricAuthNative`).
+      Hesap → Güvenlik (yalnız uygulamada, girişli kullanıcıda). Açarken bir kez doğrulanır; ayar cihazda (`vt-kilit`). Soğuk açılışta ve
+      5 dakikadan uzun arka planda kalınca sorulur; başarısızsa "Tekrar dene" / "Şifreyle giriş" (çıkış yapıp giriş ekranı).
+      iOS Info.plist: NSFaceIDUsageDescription. Gerçek Face ID yalnız yüklü uygulamada denenebilir (testte eklenti taklit edildi).
+      16.4 Hızlı işlem hapları: villa ekranında Rezervasyon (dolu) · Teklif · Opsiyon · Fiyat gir · Paylaş (eski üç büyük buton kalktı;
+      Teklif / Opsiyon da önce iki gün seçtirir, sonra ilgili paneli açar); ana ekranda Villa ekle · Takvim · Teklifler (alttaki büyük
+      "Villa ekle" kalktı; birden çok villada Teklifler önce villa sorar).
+      16.5 Rezervasyon detayında yuvarlak eylem butonları: Ara · WhatsApp · Ödeme gir · Düzenle; PDF ve iptal liste satırı (iptal en altta).
+      16.6 "Tümünü gör" başlıkta: Yaklaşan rezervasyonlar, villa ekranında yeni Teklifler bölümü (son 3 teklif; varken "Teklifler" satırı
+      gizlenir), Gelir & gider'in dört listesi (ilk 4 satır, gerisi "Tümünü gör (N)" ile açılır).
+      16.7 Ana ekranda kapatılabilir ipucu kartı (en fazla 1, "Ana ekrana ekleyin" kartı varken çıkmaz): fotoğraf → gelecek ay fiyatı →
+      belge no → bakıcı (bakıcı bilgisi yalnız bu sıraya gelince sunucudan sorulur). Kapatılan tür 30 gün çıkmaz (cihazda).
+      16.8 Aşağı çekip yenile: ana ekran, villa ekranı, Takvim sekmesi (en üstteyken). Önce bekleyen değişiklikler gönderilir, sonra
+      bulut verisi yeniden yüklenir; "✓ Güncel".
+      16.9 Ödeme kaydı ve teklif detayında ortada 36px tutar + durum etiketi + tarih; rezervasyon detayında "… alınacak" ortalı 30px.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
