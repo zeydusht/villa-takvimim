@@ -102,6 +102,22 @@
     border-bottom:1px solid var(--line)}
   .mesafe div:last-child{border-bottom:0}
   .mesafe span{color:var(--muted)}
+  /* 13.7 özel teklif şeridi */
+  .tSerit{padding:.875rem 1.25rem;font-size:.875rem;line-height:1.45}
+  .tSeritIc{max-width:29.5rem;margin:0 auto}
+  .tSerit.yesil{background:#E3EFEC;color:var(--yesKoyu);border-bottom:1.5px solid var(--yes)}
+  .tSerit.gri{background:#EEF1EF;color:#3F4843;border-bottom:1px solid var(--line)}
+  .tsBas{font-size:1rem;font-weight:500;margin-bottom:.125rem}
+  .tsFiyat{font-weight:500}
+  .tSerit s,.tEski{color:var(--muted);font-weight:400}
+  .mesafe .msAd{display:inline-flex;align-items:center;gap:.5rem;color:var(--ink);min-width:0}
+  .mesafe .msAd svg{color:var(--yes);flex:none}
+  .mesafe b{font-weight:500;text-align:right;white-space:nowrap}
+  .mesafe .msSure{color:var(--muted);font-weight:400}
+  .konumAd{display:flex;align-items:center;gap:.5rem;font-size:.9375rem;margin-bottom:.5rem}
+  .konumAd svg{color:var(--yes);flex:none}
+  .yatakSat{display:flex;align-items:center;gap:.5rem;margin-top:.75rem;font-size:.875rem;color:var(--ink)}
+  .yatakSat svg{color:var(--yes);flex:none}
 
   /* takvim */
   .aybar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
@@ -199,7 +215,9 @@
 <body>
 <div class="w" id="kok"><div class="yuk">Yükleniyor…</div></div>
 <script src="config.js"></script>
+<script src="ikonlar.js"></script>
 <script src="ozellik.js"></script>
+<script src="adlar.js"></script>
 <script>
 (function(){
   var C=window.VILLA_CONFIG||{};
@@ -212,7 +230,10 @@
   var DILLER={
     "Uygunluk":"Availability","Ev hakkında":"About the house","Öne çıkan özellikler":"Highlights",
     "Oda ve banyo bilgileri":"Rooms and bathrooms","Ev olanakları":"Amenities","Konum":"Location",
-    "Ev kuralları":"House rules","Yakınlarda ne var?":"What's nearby?","Haritada göster":"Show on map",
+    "Ev kuralları":"House rules","Size özel teklif":"A special offer for you","size özel":"special price",
+    "Bu teklif artık geçerli değil. Güncel fiyatlar aşağıda.":"This offer is no longer valid. Current prices are below.",
+    "Bu teklifin süresi doldu. Güncel fiyatlar aşağıda.":"This offer has expired. Current prices are below.",
+    "Bu tarihler artık dolu, lütfen başka tarih seçin.":"These dates are no longer available, please choose other dates.","Yakınlarda ne var?":"What's nearby?","Haritada göster":"Show on map","Haritada aç":"Open in maps",
     "Uygun":"Available","Dolu":"Booked","Temizle":"Clear","Kapat":"Close",
     "Rezervasyon isteği oluştur":"Send a booking request","Tarih seçin":"Select dates",
     "Giriş gününü seçin":"Select check-in day","Çıkış gününü seçin":"Select check-out day",
@@ -343,6 +364,8 @@
   var yol=decodeURIComponent(location.pathname.replace(/^\/+|\/+$/g,""));
   var q=(location.search.match(/[?&]v=([^&]+)/)||[])[1];
   var jeton=q?decodeURIComponent(q):yol;
+  // 13.7 özel teklif: ?teklif=KOD (8 karakter)
+  var teklifKod=((location.search.match(/[?&]teklif=([A-Za-z0-9]{4,16})/)||[])[1]||"").toUpperCase();
   if(!jeton || !/^[a-z0-9-]+$/i.test(jeton) || !C.supabaseUrl) return hata();
 
   fetch(C.supabaseUrl.replace(/\/+$/,"")+"/storage/v1/object/public/galeri/"+jeton+".json",{cache:"no-cache"})
@@ -385,6 +408,13 @@
     if(b.m2) kunye.push([ikon("alan"), b.m2+" m²"]);
     if(kunye.length) h+='<div class="kunye">'+kunye.map(function(x){
       return '<div class="kt"><span class="ktIkon">'+x[0]+"</span><span>"+x[1]+"</span></div>"; }).join("")+"</div>";
+    // 13.2 yatak sayıları: "3 çift kişilik · 2 tek kişilik yatak · 1 çekyat" (boş olanlar görünmez)
+    var cy=parseInt(b.ciftYatak,10)||0, ty=parseInt(b.tekYatak,10)||0, ck=parseInt(b.cekyat,10)||0, yt=[];
+    if(cy) yt.push(EN?cy+" double":cy+" çift kişilik");
+    if(ty) yt.push(EN?ty+" single":ty+" tek kişilik");
+    var ytm=yt.length ? yt.join(" · ")+(EN?(cy+ty>1?" beds":" bed"):" yatak") : "";
+    if(ck) ytm+=(ytm?" · ":"")+(EN?ck+" sofa bed"+(ck>1?"s":""):ck+" çekyat");
+    if(ytm) h+='<div class="yatakSat">'+(window.ikon?window.ikon("yatak",{boy:18}):"")+"<span>"+esc(ytm)+"</span></div>";
     h+="</div>";
 
     // ---- uygunluk ----
@@ -423,11 +453,25 @@
     if(b.olanaklar && b.olanaklar.length)
       h+=bolum(CEV("Ev olanakları"),amblemler(b.olanaklar));
 
-    // ---- konum ----
-    var haritaAdres=guvenliAdres(b.harita);
-    if(haritaAdres)
-      h+=bolum(CEV("Konum"),'<a class="harita" href="'+esc(haritaAdres)+'" target="_blank" rel="noopener noreferrer">'+
-        ikon("pin")+CEV("Haritada göster")+"</a>");
+    // ---- konum (13.1): konum adı, mesafeler (havalimanı uçak, diğerleri iğne ikonu), Haritada aç ----
+    var haritaAdres=guvenliAdres(b.haritaLink||b.harita);
+    var mList=Array.isArray(b.mesafeListe) ? b.mesafeListe : (function(){
+      var ms=b.mesafeler||{}, mAd={havaalani:"Havaalanına",merkez:"Merkeze",plaj:"Plaja",
+        market:"Markete",restoran:"Restorana",toplutasima:"Toplu taşımaya"}, l=[];
+      Object.keys(mAd).forEach(function(x){ if(ms[x]) l.push({ad:CEV(mAd[x]), mesafe:ms[x]+" km", tip:x==="havaalani"?"hava":"yer"}); });
+      return l; })();
+    var enYer=function(t){ return EN ? String(t||"").replace(/Havalimanı/g,"Airport") : String(t||""); };
+    var enSure=function(t){ return EN ? String(t||"").replace(/\bsa\b/g,"h").replace(/\bdk\b/g,"min") : String(t||""); };
+    var ki=function(ad){ return window.ikon ? window.ikon(ad,{boy:16}) : ikon("pin"); };
+    var konumHtml="";
+    if(b.konum) konumHtml+='<div class="konumAd">'+ki("konum")+"<span>"+esc(b.konum)+"</span></div>";
+    if(mList.length) konumHtml+='<div class="mesafe">'+mList.filter(function(m){ return m && (m.ad||m.mesafe); }).map(function(m){
+      return '<div><span class="msAd">'+ki(m.tip==="hava"?"ucak":"konum")+"<span>"+esc(enYer(m.ad))+"</span></span>"+
+        "<b>"+esc(m.mesafe||"")+(m.sure?' <span class="msSure">'+esc(enSure(m.sure))+"</span>":"")+"</b></div>";
+    }).join("")+"</div>";
+    if(haritaAdres) konumHtml+='<a class="harita" href="'+esc(haritaAdres)+'" target="_blank" rel="noopener noreferrer"'+(konumHtml?' style="margin-top:1rem"':"")+">"+
+        ikon("pin")+CEV("Haritada aç")+"</a>";
+    if(konumHtml) h+=bolum(CEV("Konum"),konumHtml);
 
     // ---- ev kuralları ----
     var k=[];
@@ -441,14 +485,10 @@
       k.push("<b>"+nf.format(D.ek.ucret)+" ₺</b> kısa konaklama ücreti, "+D.ek.sinir+
              " gece ve altındaki konaklamalara eklenir.");
     if(b.depozito) k.push("<b>"+nf.format(b.depozito)+" ₺</b> hasar depozitosu eve girişte alınır, hasar yoksa çıkışta iade edilir.");
+    // 13.4: villa sahibinin eklediği kurallar (sahibin yazdığı dilde)
+    (Array.isArray(b.kurallar)?b.kurallar:[]).forEach(function(t){ if(String(t||"").trim()) k.push(esc(t)); });
     h+=bolum(CEV("Ev kuralları"),'<ul class="kural">'+k.map(function(x){return "<li>"+x+"</li>"}).join("")+"</ul>");
 
-    // ---- yakınlarda ne var ----
-    var ms=b.mesafeler||{}, mAd={havaalani:"Havaalanına",merkez:"Merkeze",plaj:"Plaja",
-      market:"Markete",restoran:"Restorana",toplutasima:"Toplu taşımaya"};
-    var mv=Object.keys(mAd).filter(function(x){return ms[x]});
-    if(mv.length) h+=bolum(CEV("Yakınlarda ne var?"),'<div class="mesafe">'+
-      mv.map(function(x){ return "<div><span>"+CEV(mAd[x])+"</span><b>"+esc(ms[x])+" km</b></div>"; }).join("")+"</div>");
 
     var tel0=telNo(b.whatsapp);
     h+='<div class="dip"><div class="pad">'+
@@ -467,6 +507,58 @@
     };
     if(D.fotolar.length) kaydirmaTakip();
     takvimCiz(); altCiz();
+    if(teklifKod) teklifGetir();
+  }
+
+  // ---- 13.7 özel teklif ----
+  var TK=null;
+  function teklifAktif(){ return !!(TK && sec.bas===TK.giris && sec.bit===TK.cikis); }
+  // "Hasan Bey" / "Beyza Hanım" (uygulamadaki hitap kuralı); listede yoksa sadece ad
+  function hitapG(ad){
+    var a=String(ad||"").trim().split(/\s+/)[0]||""; if(!a) return "";
+    a=a.charAt(0).toLocaleUpperCase("tr")+a.slice(1).toLocaleLowerCase("tr");
+    if(EN) return a;
+    var c=window.adCinsiyet ? window.adCinsiyet(a) : "";
+    return c==="erkek" ? a+" Bey" : (c==="kadin" ? a+" Hanım" : a);
+  }
+  var AY_EK=["a","a","a","a","a","a","a","a","e","e","a","a"];
+  function gecerliYaz(k){
+    var d=new Date(+k.slice(0,4),+k.slice(5,7)-1,+k.slice(8,10));
+    return EN ? "valid until "+d.getDate()+" "+AYLAR[d.getMonth()]
+              : d.getDate()+" "+AYLAR[d.getMonth()]+"'"+AY_EK[d.getMonth()]+" kadar geçerli";
+  }
+  function serit(tur,html){
+    var el=document.getElementById("teklifSerit");
+    if(!el){
+      el=document.createElement("div"); el.id="teklifSerit";
+      var ust=kok.querySelector(".ust");
+      if(ust && ust.parentNode) ust.parentNode.insertBefore(el,ust.nextSibling); else kok.insertBefore(el,kok.firstChild);
+    }
+    el.className="tSerit "+tur; el.innerHTML='<div class="tSeritIc">'+html+"</div>";
+  }
+  function teklifGetir(){
+    fetch(C.supabaseUrl.replace(/\/+$/,"")+"/rest/v1/rpc/teklif_getir",{
+      method:"POST",
+      headers:{ "apikey":C.supabaseKey, "Authorization":"Bearer "+C.supabaseKey, "Content-Type":"application/json" },
+      body:JSON.stringify({p_kod:teklifKod})
+    }).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(l){
+      var t=Array.isArray(l)?l[0]:null, bugunK=fmt(bugun);
+      if(!t || (t.paylasim_ad && t.paylasim_ad!==jeton)){ serit("gri",esc(CEV("Bu teklif artık geçerli değil. Güncel fiyatlar aşağıda."))); return; }
+      if(t.durum!=="acik" || (t.son_gecerlilik && t.son_gecerlilik<bugunK)){ serit("gri",esc(CEV("Bu teklifin süresi doldu. Güncel fiyatlar aşağıda."))); return; }
+      if(t.giris<bugunK || !girisUygun(t.giris) || !cikisUygun(t.cikis) || !araBos(t.giris,t.cikis)){
+        serit("gri",esc(CEV("Bu tarihler artık dolu, lütfen başka tarih seçin."))); return; }
+      TK={kod:t.kod, giris:t.giris, cikis:t.cikis, konaklama:+t.konaklama||0, normal:+t.normal||0,
+          depozito:+t.depozito||0, ad:t.misafir_ad||"", son:t.son_gecerlilik||""};
+      sec={bas:TK.giris, bit:TK.cikis};
+      imlec=new Date(+TK.giris.slice(0,4), +TK.giris.slice(5,7)-1, 1);
+      takvimCiz(); altCiz(); secimKutusu();
+      var hit=hitapG(TK.ad), gc=geceSay();
+      var bas=hit ? (EN ? "A special offer for "+hit : hit+", size özel teklif") : CEV("Size özel teklif");
+      var fiyatH=(TK.normal && TK.normal!==TK.konaklama ? "<s>"+nf.format(TK.normal)+" ₺</s> " : "")+'<span class="tsFiyat">'+nf.format(TK.konaklama)+" ₺</span>";
+      serit("yesil",'<div class="tsBas">'+esc(bas)+"</div>"+
+        '<div class="tsAlt">'+esc(tarihMetni()+" · "+gc+" "+(EN?(gc===1?"night":"nights"):"gece"))+" · "+fiyatH+
+        (TK.son?" · "+esc(gecerliYaz(TK.son)):"")+"</div>");
+    }).catch(function(){});
   }
 
 
@@ -679,7 +771,7 @@
     }
     var t=toplam(), gc=geceSay();
     var e2=D.ek||{}, ekU2=(e2.sinir&&e2.ucret&&gc<=e2.sinir)?e2.ucret:0;
-    var satir=t.eksik? CEV("Fiyatı sorun") : nf.format(t.tutar+ekU2)+" ₺";
+    var satir=teklifAktif() ? nf.format(TK.konaklama)+" ₺" : (t.eksik? CEV("Fiyatı sorun") : nf.format(t.tutar+ekU2)+" ₺");
     bar.innerHTML='<div class="ic">'+
       '<div class="altozet"><span><b>'+tarihMetni()+"</b> · "+gc+" gece · "+kisiOzet().join(", ")+"</span>"+
       "<b>"+satir+"</b></div>"+
@@ -695,7 +787,8 @@
     function ciz2(){
       var t=toplam(), gc=geceSay();
       var mesaj=(D.ad||"Villa")+" için "+tarihMetni()+" tarihleri arasında ("+gc+" gece) "+
-        kisiMetin()+" ile rezervasyon yapmak istiyorum. Uygunluk ve fiyat için bilgi alabilir miyim?";
+        kisiMetin()+" ile rezervasyon yapmak istiyorum. Uygunluk ve fiyat için bilgi alabilir miyim?"+
+        (teklifAktif()?" Teklif kodu: "+TK.kod:"");
       o.innerHTML='<div class="onaykutu"><h3>Kaç kişi geliyorsunuz?</h3>'+
         '<div style="color:var(--muted);font-size:.875rem;margin:.375rem 0 1rem">'+
           esc(D.ad||"Villa")+" · "+tarihMetni()+" · "+gc+" "+(EN?"nights":"gece")+"</div>"+
@@ -775,7 +868,13 @@
     var t=toplam(), gc=geceSay(), b=D.bilgi||{};
     var ek=(D.ek&&D.ek.sinir&&D.ek.ucret&&gc<=D.ek.sinir)?D.ek.ucret:0;
     var dep=b.depozito||0, gece=gc+" "+(EN?(gc===1?"night":"nights"):"gece");
+    if(teklifAktif()) dep=TK.depozito||dep;
     var not=dep?'<div class="fsNot">'+depNot(dep)+"</div>":"";
+    if(teklifAktif()){
+      return '<div class="fs"><span style="color:var(--ink)">'+gece+" · "+CEV("size özel")+"</span><span>"+
+          (TK.normal && TK.normal!==TK.konaklama ? '<s class="tEski">'+nf.format(TK.normal)+" ₺</s> " : "")+nf.format(TK.konaklama)+" ₺</span></div>"+
+        '<div class="fs fsTop"><span>'+CEV("Toplam")+"</span><span>"+nf.format(TK.konaklama)+" ₺</span></div>"+not;
+    }
     if(t.eksik) return '<div class="fs fsTop"><span>'+CEV("Toplam")+'</span><span class="fiyatSor" style="white-space:normal">'+
       CEV("Bu tarihlerin fiyatını villa sahibine sorun")+"</span></div>"+not;
     var gunler=[], d=new Date(sec.bas);
@@ -811,12 +910,13 @@
     var t=toplam(), gc=geceSay();
     var ek=(D.ek&&D.ek.sinir&&D.ek.ucret&&gc<=D.ek.sinir)?D.ek.ucret:0;
     // Toplam = konaklama + kısa konaklama ücreti. Depozito toplama EKLENMEZ, ayrı satırda yazılır.
-    var konaklamaT=t.tutar+ek;
+    var tka=teklifAktif(), eksik=t.eksik && !tka;
+    var konaklamaT=tka ? TK.konaklama : t.tutar+ek;
 
     var h="";
-    if(!t.eksik) h+='<div class="fiyatKutu">'+fiyatOzet()+"</div>";
+    if(!eksik) h+='<div class="fiyatKutu">'+fiyatOzet()+"</div>";
     h+='<div class="ozetkutu"><div class="sol">'+
-      '<div class="top'+(t.eksik?" fiyatSor":"")+'">'+(t.eksik?CEV("Bu tarihlerin fiyatını villa sahibine sorun"):nf.format(konaklamaT)+" ₺")+"</div>"+
+      '<div class="top'+(eksik?" fiyatSor":"")+'">'+(eksik?CEV("Bu tarihlerin fiyatını villa sahibine sorun"):nf.format(konaklamaT)+" ₺")+"</div>"+
       '<div style="color:var(--muted)">'+tarihMetni()+" · "+gc+" gece</div></div>"+
       '<button class="temizle" id="tmz">'+CEV("Seçimi temizle")+"</button></div>"+
       '<div class="kisiler">'+sayaclar(mx,b.evcil)+"</div>";

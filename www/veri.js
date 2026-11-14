@@ -726,6 +726,22 @@
     }).then(function () { return kod; });
   };
 
+  // ---------------- özel teklifler (Görev 13.7) ----------------
+  // Kayıt: aynı kodla tekrar gönderilirse günceller (kod + villa sahibi)
+  VT.teklifKaydet = function (t) {
+    return api("teklifler?on_conflict=kod", {
+      method: "POST", donus: "resolution=merge-duplicates,return=representation", body: t
+    });
+  };
+  VT.teklifler = function (villaId) {
+    return api("teklifler?villa_id=eq." + encodeURIComponent(villaId) + "&order=olusturma.desc&select=*");
+  };
+  VT.teklifDurum = function (kod, durum) {
+    return api("teklifler?kod=eq." + encodeURIComponent(kod), {
+      method: "PATCH", donus: "return=minimal", body: { durum: durum }
+    });
+  };
+
   VT.davetiKullan = function (kod) {
     return VT.rpc("daveti_kullan", { p_kod: String(kod || "").toUpperCase().trim() });
   };

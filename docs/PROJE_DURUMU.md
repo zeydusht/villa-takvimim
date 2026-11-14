@@ -234,6 +234,32 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Sade (beyaz) buton sayısı 15 → 17 (yeni: Fiyatlar seçim çubuğunda "Tümünü seç", yayından kaldır onayında "Vazgeç").
       Her ekranda en fazla 1 dolu yeşil buton (testle yeniden sayıldı). Eski testler yeni düzene göre güncellenip hatasız geçti.
 
+- [x] Görev 13 — konum, yataklar, kurallar, özel teklif (docs/GOREV13.md, 13.1–13.7) · Claude Code yaptı (14 Kasım), sahte veriyle test edildi.
+      Veritabanı (`teklifler` + `teklif_getir`, kayıt: docs/VERITABANI_GOREV13.sql) ve `konum-coz` fonksiyonu
+      (supabase/functions/konum-coz/index.ts) Claude tarafından kuruldu; Claude Code bunları sadece kullandı, kurmadı/deploy etmedi.
+      13.1 Villa bilgileri → Konum: Google Haritalar bağlantısı + "Konumu bul" (konum-coz, girişli kullanıcının jetonuyla).
+      Koordinat `bilgi.konumKoord`, bağlantı `bilgi.haritaLink`. En yakın 2 havalimanı istemcide hesaplanır (kuş uçuşu × 1,35, 5 km'ye;
+      süre km ÷ 65 km/sa, 5 dk'ya). Mesafeler artık satır listesi (`bilgi.mesafeListe`: ad, mesafe, süre, tip hava/yer, oto):
+      düzenlenebilir, elle düzeltilen "yaklaşık" yazısını kaybeder ve tekrar "Konumu bul"da ezilmez; "Mesafe ekle" ile yeni satır.
+      Eski sabit mesafe alanları (Görev 7) açılışta satırlara çevrilir. Misafir sayfasında "Konum" bölümü: ad, mesafeler, "Haritada aç".
+      13.2 Kapasite: çift kişilik / tek kişilik yatak / çekyat sayaçları; misafir sayfasında "3 çift kişilik · 2 tek kişilik yatak · 1 çekyat".
+      13.3 Özellik ikonları gözden geçirildi: Lucide'da karşılığı olmayan 11 ikon (hamak, şömine, sineklik, mama sandalyesi, beşik, fırın,
+      su ısıtıcı, saç kurutma, ütü, mangal, puset) aynı çizgi stilinde özel çizildi; çizimler `www/ikonlar.js`, ad → ikon tablosu `www/ozellik.js`.
+      Misafir sayfası artık ikonlar.js'i de yüklüyor. Zeyd'in onayı için: docs/IKON_LISTESI.html (34 ad, 3 sütun).
+      13.4 Kurallar: hazır aç/kapalar kaldı; altına kullanıcı kuralları (`bilgi.kurallar`): ekle, çöp ile sil (Geri al), tutamaktan sürükleyerek sırala.
+      Misafir sayfasında ve rezervasyon formu PDF'inde madde madde (kural çoksa PDF'te yazı küçülür).
+      13.5 Kaydırma hafızası (`goster()`): derine açılan ekran en üstten, geri dönünce / sekme değişince / panel kapanınca kaldığı yer.
+      13.6 Boş günleri paylaş paneli: Bu ay · 2 ay · 3 ay · Sezon sonuna kadar (31 Ekim), "En az N gece" (varsayılan 2),
+      düzenlenebilir mesaj + villa sayfası bağlantısı, "WhatsApp'ta gönder" / "Kopyala".
+      13.7 Özel teklif: takvimde iki tarih seçilince "Rezervasyon ekle" / "Teklif gönder" (+ Rezervasyon ile başlandıysa doğrudan form);
+      yeni rezervasyon formunda "Teklif olarak gönder"; Paylaş panelinde "Özel teklif oluştur". Teklif paneli: tarihler, normal ücret kartı,
+      %5/%10/%15 düğmeleri, misafir adı (hitap "Hasan Bey"), geçerlilik 3 gün / 7 gün / tarih, düzenlenebilir mesaj.
+      Gönder/kopyala anında `teklifler`'e kayıt (8 karakter kod, O/0/I/1 yok); bağlantı `<site>/<paylaşım adı>?teklif=KOD`.
+      Sayfa yayında değilse önce "Yayınla". Misafir sayfası `rpc/teklif_getir` ile okur: tarihler seçili, yeşil şerit, özel fiyat,
+      WhatsApp isteğine "Teklif kodu"; süresi dolmuşsa / tarihler doluysa gri şerit. Villa yönetimi → "Teklifler": Açık / Süresi doldu /
+      Kabul edildi / İptal; "Rezervasyona çevir" (kaydedince teklif kabul olur), "Bağlantıyı tekrar gönder", "Teklifi iptal et" (Geri al).
+      Canlı veritabanıyla değil, sahte sunucuyla test edildi; ilk gerçek teklifte bir kez denenmeli.
+
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
 
@@ -269,6 +295,9 @@ Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Cl
    Sonra veri.js'te okunup yazılacak (şu an cihazda: villa-takvim-hitap).
 6. ⏳ **Villa sayfası güncellenebiliyor mu? (kontrol edilecek)** Sahip, `galeri/<ad>.json` dosyasının ÜZERİNE yazabilmeli (upsert/update izni).
    "Fiyat için sorun" şikâyetinin en olası nedeni bu; kontrol edilmeli.
+
+## Gelecek fikirler
+- 3D / sanal tur: villa fotoğraflarından 3D görünüm (Zeyd'in fikri, 14 Kasım). Şimdilik park edildi.
 
 ## Sonraki fazlar
 - Bakıcı davet bağlantısı yüklü uygulamayı doğrudan açsın (iOS universal link / Android app link). Şimdilik web adresi açılır.
