@@ -282,6 +282,32 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       (şerit dikeyde de kaydırılabilir kalmıştı; sabit alt çubuk ve sayaçtaki bulanıklık efekti kaydırmayı kasıyordu) → şerit yalnız yatay,
       bulanıklık kaldırıldı, ilk fotoğraf öncelikli diğerleri sırası gelince yükleniyor. Villa ekranının başlığına da sağ üstte 44×44 villa fotoğrafı eklendi.
 
+- [x] Görev 15 — referans siteden eksikler (docs/GOREV15.md, 15.1–15.8) · Claude Code yaptı (14 Kasım), sahte veriyle test edildi.
+      Yeni alanların hepsi `villalar.bilgi` (JSON) içinde; yeni tablo/sütun yok. Boş olan hiçbir yerde görünmez.
+      15.1 Misafir sayfasında konum haritası (Leaflet 1.9.4 cdnjs + OpenStreetMap, "© OpenStreetMap" yazısı). Villa bilgilerinde
+      "Haritada göster": Yaklaşık bölge (varsayılan; ~800 m'lik yeşil daire, merkez villa id'den türetilen 300–500 m kaydırma ile)
+      ya da Tam konum (nokta). Yaklaşık modda gerçek koordinat yayınlanan sayfaya hiç gitmez (`harita` alanı yayınlanırken hesaplanır).
+      Küçük harita sabit (sayfa kaydırması engellenmez); dokununca tam ekran açılır, orada sürüklenir/yakınlaşır.
+      Not: "Haritada aç" düğmesi sahibin yapıştırdığı Google Haritalar bağlantısını açar; o bağlantı evin tam yerini gösterir.
+      Sayfanın `Referrer-Policy: no-referrer` ayarı yüzünden harita karoları `referrerPolicy` ile isteniyor (OSM kuralı).
+      15.2 Odalar (`bilgi.odaListe`): tür, kat, yatak sayaçları, banyolu/klima/TV/balkon/jakuzi/deniz manzarası; sürükle-sırala, sil (Geri al).
+      Oda girilince 13.2 yatak sayaçları odalardan hesaplanır ve kilitlenir. Misafir sayfasında "Odalar" bölümü (oda oda kart).
+      15.3 Havuz (`bilgi.havuz`): en × boy, derinlik, çocuk havuzu, ısıtma (ücretli mi), korunaklı; havuzlu bir özellik seçiliyse görünür.
+      Eski "Havuz ölçüsü/derinliği" alanları açılışta yeni bölüme taşınır. Misafir sayfasında künyenin altında tek satır.
+      15.4 Opsiyon: takvimde iki tarih seçince "Opsiyon koy" (misafir adı, telefon, son geçerlilik 1/2/3 gün/tarih, not).
+      Takvimde taralı mavi-gri, villa ekranında "Opsiyonlar" listesi, ayrıntıda Rezervasyona çevir / Süreyi uzat / Opsiyonu kaldır;
+      ana ekranda "Opsiyon yarın bitiyor". Misafir sayfasında "Opsiyonlu" (seçilemez). Süresi dolan takvimden düşer, listede 7 gün kalır.
+      Veri: `rezervasyonlar` tablosunda opsiyon için uygun sütun yok (notun içine işaret koymak bakıcıya ve eski sürümlere opsiyonu
+      kesin rezervasyon gibi gösterirdi). Bu yüzden opsiyonlar `villalar.bilgi.opsiyonlar` içinde tutuluyor; veritabanı değişikliği
+      gerekmedi. Yayınlanan sayfaya yalnız aktif opsiyonların tarihleri gider (ad/telefon gitmez). Bakıcı opsiyon koyamaz (villa bilgisi
+      yalnız sahipte yazılır). İleride ayrı tutmak istenirse aşağıdaki "Veritabanı için gerekenler (Görev 15)" taslağı kullanılabilir.
+      15.5 İptal ve iade (`bilgi.iptal`): Esnek / Orta / Katı / Kendi metnim, metin düzenlenebilir; misafir sayfasında ve PDF'te.
+      15.6 Bilmeniz gerekenler (`bilgi.notlar`): ekle / sil / sırala + hazır öneriler; misafir sayfasında künyenin altında gri kutu, PDF'te de.
+      15.7 Turizm izin belge no (`bilgi.belgeNo`): Fiyat ve iletişim + sihirbaz 6. adım; misafir sayfasının en altında ve PDF altbilgisinde;
+      boşsa yayınlarken "İzin belge numaranızı girmeniz önerilir." uyarısı (engel değil).
+      15.8 Misafir sayfasında 720px'ten geniş ekranda iki ay yan yana (sayfa da genişler); telefonda tek ay.
+      Kurallar / odalar / notlar için ortak sürükle-sırala düzeltildi: satır taşınırken parmak takibi kaybolup sıralama kaydedilmiyordu.
+
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
 
@@ -317,6 +343,16 @@ Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Cl
    Sonra veri.js'te okunup yazılacak (şu an cihazda: villa-takvim-hitap).
 6. ⏳ **Villa sayfası güncellenebiliyor mu? (kontrol edilecek)** Sahip, `galeri/<ad>.json` dosyasının ÜZERİNE yazabilmeli (upsert/update izni).
    "Fiyat için sorun" şikâyetinin en olası nedeni bu; kontrol edilmeli.
+
+## Veritabanı için gerekenler (Görev 15) — ŞİMDİLİK GEREKMİYOR
+Opsiyonlar şu an `villalar.bilgi.opsiyonlar` içinde çalışıyor. İleride rezervasyonlarla aynı tabloda tutmak istenirse taslak:
+```sql
+alter table public.rezervasyonlar
+  add column if not exists durum text not null default 'kesin' check (durum in ('kesin','opsiyon')),
+  add column if not exists opsiyon_bitis date;
+```
+Bu yapılırsa bakıcı tarafı, kalan ödeme hesapları (bakici_kalanlar) ve çakışma kontrolleri `durum = 'kesin'` ile süzülmeli;
+uygulama da opsiyonları bilgi'den bu sütunlara taşıyacak şekilde güncellenmeli.
 
 ## Gelecek fikirler
 - 3D / sanal tur: villa fotoğraflarından 3D görünüm (Zeyd'in fikri, 14 Kasım). Şimdilik park edildi.
