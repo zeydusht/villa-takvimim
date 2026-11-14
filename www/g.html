@@ -119,6 +119,78 @@
   .yatakSat{display:flex;align-items:center;gap:.5rem;margin-top:.75rem;font-size:.875rem;color:var(--ink)}
   .yatakSat svg{color:var(--yes);flex:none}
 
+  /* ===== Görev 14: misafir sayfası netliği ===== */
+  b,strong{font-weight:inherit}
+  svg.ik{display:block;flex:none}
+  .eyebrow{font-weight:400}
+  .odaAd{font-weight:400}
+  .alt .ic a{font-weight:500}
+  .tsBas{font-weight:400;font-size:1.0625rem}
+  .tsFiyat{font-weight:400}
+  .konumBas{display:flex;align-items:center;gap:.375rem;margin-top:.5rem;font-size:1rem;color:var(--muted)}
+  .konumBas svg{color:var(--yes)}
+  /* 14.2 künye: 2 sütun, büyük rakam */
+  .kunye{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.625rem;margin-top:1.25rem}
+  .kunye.yataklar{margin-top:.625rem}
+  .kt{display:flex;align-items:center;gap:.75rem;background:#fff;border:1px solid var(--line);border-radius:.875rem;
+    padding:.75rem .875rem;text-align:left;font-size:inherit;flex-direction:row;line-height:1.2}
+  .ktDaire{flex:none;width:40px;height:40px;border-radius:99px;background:#E3EFEC;color:var(--yes);display:flex;align-items:center;justify-content:center}
+  .ktMetin{display:flex;flex-direction:column;min-width:0}
+  .ktSayi{font-size:22px;line-height:1.15;color:var(--ink);font-variant-numeric:tabular-nums}
+  .ktEt{font-size:15px;color:var(--muted);overflow-wrap:anywhere}
+  /* 14.3 bölüm başlıkları */
+  h2.bBas{display:flex;align-items:center;gap:.5rem}
+  h2.bBas svg{color:var(--yes)}
+  .bAlt{font-size:.875rem;color:var(--muted);margin:-.625rem 0 1rem}
+  .fiyatBas{display:flex;align-items:center;gap:.5rem;font-family:var(--serif);font-weight:400;font-size:1.25rem;letter-spacing:-.02em;margin:1.5rem 0 .25rem;color:var(--ink)}
+  .fiyatBas svg{color:#3C4E8C}
+  /* 14.4 seçimi temizle */
+  .temizleKucuk{display:inline-flex;align-items:center;gap:.375rem;margin-top:.25rem;min-height:44px;padding:.375rem .875rem;
+    border:1.5px solid #5F6A64;border-radius:.75rem;font-size:.875rem;color:var(--ink);background:#fff}
+  .temizleKucuk:active{background:#E3EFEC;border-color:var(--yes)}
+  .altBtn{display:flex;gap:.5rem;align-items:stretch}
+  .altBtn a{flex:1 1 auto;width:auto}
+  .altTemizle{flex:none;width:3.25rem;border:1.5px solid #5F6A64;border-radius:.75rem;display:flex;align-items:center;justify-content:center;color:var(--ink);background:#fff}
+  .altFiyat{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+  .altTutar{color:var(--ink);font-size:.9375rem}
+  .altTarih{color:var(--ink)}
+  .altDep{font-size:.6875rem;color:#3C4E8C;white-space:nowrap}
+  /* 14.5 konum */
+  .mesafe{font-size:.9375rem}
+  .mesafe div{align-items:center;gap:.75rem}
+  .mesafe .msAd span{color:var(--ink)}
+  .msDeger{display:flex;flex-direction:column;align-items:flex-end;font-size:17px;color:var(--ink) !important;white-space:nowrap;text-align:right}
+  .msDeger .msSure{font-size:.8125rem;color:var(--muted)}
+  .harita{background:#E6EEF1;border:1.5px solid #2E6E8E;color:#2E6E8E;min-height:3rem}
+  .harita svg{color:#2E6E8E}
+  /* 14.6 kurallar */
+  .saatler{display:grid;grid-template-columns:1fr 1fr;gap:.625rem;margin-bottom:1rem}
+  .saat{display:flex;align-items:center;gap:.625rem;border:1px solid var(--line);border-radius:.875rem;padding:.75rem .875rem}
+  .saat svg{color:var(--yes)}
+  .saat > span{display:flex;flex-direction:column}
+  .saatEt{font-size:.8125rem;color:var(--muted)}
+  .saatDeger{font-size:1.375rem;line-height:1.2;font-variant-numeric:tabular-nums}
+  .kurallar{border:1px solid var(--line);border-radius:.875rem}
+  .kSat{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.75rem .875rem;border-bottom:1px solid var(--line)}
+  .kSat:last-child{border-bottom:0}
+  .kAd{display:flex;align-items:center;gap:.625rem;font-size:.9375rem;min-width:0}
+  .kAd svg{color:var(--yes)}
+  .rz{flex:none;display:inline-flex;align-items:center;gap:.3125rem;border-radius:99px;padding:.3125rem .75rem .3125rem .625rem;font-size:.9375rem;line-height:1.2}
+  .rz.evet{background:var(--yes);color:#fff}
+  .rz.hayir{background:#F7E6EB;color:#9B2C4A}
+  .rz.gri{background:#EEF1EF;color:#3F4843;padding-left:.75rem}
+  .kBilgi{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:.5rem}
+  .kBilgi li{display:flex;gap:.5rem;align-items:flex-start;font-size:.875rem;line-height:1.5;color:#2A3B44}
+  .kBilgi svg{color:var(--yes);margin-top:.0625rem}
+  /* 14.7 hasar depozitosu kartı */
+  .depKart{display:flex;gap:.75rem;align-items:flex-start;background:#E8EAF1;border:1.5px solid #3C4E8C;border-radius:.875rem;padding:1rem;margin-top:.75rem;color:#24305A}
+  .depKart svg{color:#3C4E8C;margin-top:.0625rem}
+  .dkBas{font-size:20px;line-height:1.25}
+  .dkAlt{font-size:.875rem;line-height:1.45;margin-top:.25rem}
+  .depKart.kucuk{padding:.75rem .875rem;margin-top:1rem}
+  .depKart.kucuk .dkBas{font-size:1.0625rem}
+  .depKart.kucuk .dkAlt{font-size:.8125rem}
+  .dipTel svg{color:var(--yes)}
   /* takvim */
   .aybar{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
   .aybar .ad{font-family:var(--serif);font-size:1.0625rem}
@@ -230,7 +302,7 @@
   var DILLER={
     "Uygunluk":"Availability","Ev hakkında":"About the house","Öne çıkan özellikler":"Highlights",
     "Oda ve banyo bilgileri":"Rooms and bathrooms","Ev olanakları":"Amenities","Konum":"Location",
-    "Ev kuralları":"House rules","Size özel teklif":"A special offer for you","size özel":"special price",
+    "Ev kuralları":"House rules","Takvim":"Calendar","Giriş ve çıkış gününe dokunun":"Tap your check-in and check-out days","Fiyat":"Price","Size özel teklif":"A special offer for you","size özel":"special price",
     "Bu teklif artık geçerli değil. Güncel fiyatlar aşağıda.":"This offer is no longer valid. Current prices are below.",
     "Bu teklifin süresi doldu. Güncel fiyatlar aşağıda.":"This offer has expired. Current prices are below.",
     "Bu tarihler artık dolu, lütfen başka tarih seçin.":"These dates are no longer available, please choose other dates.","Yakınlarda ne var?":"What's nearby?","Haritada göster":"Show on map","Haritada aç":"Open in maps",
@@ -397,40 +469,42 @@
          '</div><div class="sayac" id="sayac">1 / '+D.fotolar.length+"</div></div>";
     }
 
-    // ---- başlık ----
+    // ---- başlık (14.1): büyük ad, altında iğne ikonlu konum; hemen altında künye (14.2) ----
     h+='<div class="pad" style="padding-top:1.5rem">';
-    if(b.konum) h+='<div class="eyebrow">'+esc(b.konum)+"</div>";
     h+="<h1>"+esc(D.ad||"Villa")+"</h1>";
-    var kunye=[];
-    if(b.kapasite) kunye.push([ikon("kisi"), b.kapasite+" "+CEV("kişi")]);
-    if(b.oda) kunye.push([ikon("oda"), b.oda+" "+CEV("yatak odası")]);
-    if(b.banyo) kunye.push([ikon("banyo"), b.banyo+" "+CEV("banyo")]);
-    if(b.m2) kunye.push([ikon("alan"), b.m2+" m²"]);
-    if(kunye.length) h+='<div class="kunye">'+kunye.map(function(x){
-      return '<div class="kt"><span class="ktIkon">'+x[0]+"</span><span>"+x[1]+"</span></div>"; }).join("")+"</div>";
-    // 13.2 yatak sayıları: "3 çift kişilik · 2 tek kişilik yatak · 1 çekyat" (boş olanlar görünmez)
-    var cy=parseInt(b.ciftYatak,10)||0, ty=parseInt(b.tekYatak,10)||0, ck=parseInt(b.cekyat,10)||0, yt=[];
-    if(cy) yt.push(EN?cy+" double":cy+" çift kişilik");
-    if(ty) yt.push(EN?ty+" single":ty+" tek kişilik");
-    var ytm=yt.length ? yt.join(" · ")+(EN?(cy+ty>1?" beds":" bed"):" yatak") : "";
-    if(ck) ytm+=(ytm?" · ":"")+(EN?ck+" sofa bed"+(ck>1?"s":""):ck+" çekyat");
-    if(ytm) h+='<div class="yatakSat">'+(window.ikon?window.ikon("yatak",{boy:18}):"")+"<span>"+esc(ytm)+"</span></div>";
+    if(b.konum) h+='<div class="konumBas">'+ik("konum",18)+"<span>"+esc(b.konum)+"</span></div>";
+    var sayiAl=function(x){ var n=parseInt(x,10); return n>0?n:0; };
+    var kt=function(ikAd,n,tr,enT,enC){
+      return '<div class="kt"><span class="ktDaire">'+ik(ikAd,20)+'</span><span class="ktMetin"><span class="ktSayi">'+esc(n)+
+        '</span><span class="ktEt">'+esc(EN?(n===1?enT:enC):tr)+"</span></span></div>";
+    };
+    var kn=[];
+    if(sayiAl(b.kapasite)) kn.push(kt("kisiler",sayiAl(b.kapasite),"kişi","guest","guests"));
+    if(sayiAl(b.oda)) kn.push(kt("cikis-kapi",sayiAl(b.oda),"yatak odası","bedroom","bedrooms"));
+    if(sayiAl(b.banyo)) kn.push(kt("banyo",sayiAl(b.banyo),"banyo","bathroom","bathrooms"));
+    if(sayiAl(b.m2)) kn.push(kt("cetvel",sayiAl(b.m2),"m²","m²","m²"));
+    if(kn.length) h+='<div class="kunye">'+kn.join("")+"</div>";
+    var yk=[];
+    if(sayiAl(b.ciftYatak)) yk.push(kt("yatak",sayiAl(b.ciftYatak),"çift kişilik","double bed","double beds"));
+    if(sayiAl(b.tekYatak)) yk.push(kt("yatak-tek",sayiAl(b.tekYatak),"tek kişilik","single bed","single beds"));
+    if(sayiAl(b.cekyat)) yk.push(kt("kanepe",sayiAl(b.cekyat),"çekyat","sofa bed","sofa beds"));
+    if(yk.length) h+='<div class="kunye yataklar">'+yk.join("")+"</div>";
     h+="</div>";
 
     // ---- uygunluk ----
-    h+=bolum(CEV("Uygunluk"),'<div id="takvim"></div>'+
+    h+=bolum(CEV("Takvim"),'<div id="takvim"></div>'+
        '<div class="aciklik">'+
        '<span><i class="ornek" style="background:#fff;box-shadow:inset 0 0 0 1px var(--line)"></i>Uygun</span>'+
        '<span><i class="ornek" style="background:var(--dolu)"></i>Dolu</span>'+
        '<span style="color:var(--muted)">Giriş 16:00 · Çıkış 10:00</span></div>'+
-       '<div id="secimAlan"></div>');
+       '<div id="secimAlan"></div>',"takvim",CEV("Giriş ve çıkış gününe dokunun"));
 
     // ---- ev hakkında ----
-    if(b.aciklama) h+=bolum(CEV("Ev hakkında"),'<p>'+esc(b.aciklama)+"</p>");
+    if(b.aciklama) h+=bolum(CEV("Ev hakkında"),'<p>'+esc(b.aciklama)+"</p>","metin");
 
     // ---- öne çıkan özellikler ----
     if(b.ozellikler && b.ozellikler.length)
-      h+=bolum(CEV("Öne çıkan özellikler"),amblemler(b.ozellikler));
+      h+=bolum(CEV("Öne çıkan özellikler"),amblemler(b.ozellikler),"sihirli");
 
     // ---- oda ve banyo ----
     var odaHtml="";
@@ -443,15 +517,15 @@
         }).join("")+"</div>";
     }
     if(b.havuzBoyut || b.havuzDerinlik){
-      odaHtml+='<div class="havuz">'+ikon("havuz")+"<span>Havuz"+
+      odaHtml+='<div class="havuz">'+ik("oz-havuz",18)+"<span>Havuz"+
         (b.havuzBoyut?" · "+esc(b.havuzBoyut):"")+
         (b.havuzDerinlik?" · derinlik "+esc(b.havuzDerinlik):"")+"</span></div>";
     }
-    if(odaHtml) h+=bolum(CEV("Oda ve banyo bilgileri"),odaHtml);
+    if(odaHtml) h+=bolum(CEV("Oda ve banyo bilgileri"),odaHtml,"yatak");
 
     // ---- ev olanakları ----
     if(b.olanaklar && b.olanaklar.length)
-      h+=bolum(CEV("Ev olanakları"),amblemler(b.olanaklar));
+      h+=bolum(CEV("Ev olanakları"),amblemler(b.olanaklar),"ev");
 
     // ---- konum (13.1): konum adı, mesafeler (havalimanı uçak, diğerleri iğne ikonu), Haritada aç ----
     var haritaAdres=guvenliAdres(b.haritaLink||b.harita);
@@ -462,33 +536,52 @@
       return l; })();
     var enYer=function(t){ return EN ? String(t||"").replace(/Havalimanı/g,"Airport") : String(t||""); };
     var enSure=function(t){ return EN ? String(t||"").replace(/\bsa\b/g,"h").replace(/\bdk\b/g,"min") : String(t||""); };
-    var ki=function(ad){ return window.ikon ? window.ikon(ad,{boy:16}) : ikon("pin"); };
+    var ki=function(ad){ return ik(ad,20); };
+    // 14.5: mesafe adına göre ikon
+    var mIkon=function(m){
+      if(m.tip==="hava") return "ucak";
+      var a=String(m.ad||"").toLocaleLowerCase("tr");
+      if(/plaj|deniz|sahil|koy|beach|sea/.test(a)) return "oz-havuz";
+      if(/market|bakkal|süpermarket|shop/.test(a)) return "sepet";
+      if(/merkez|şehir|çarşı|centre|center|town/.test(a)) return "bina";
+      if(/restoran|lokanta|kafe|cafe|restaurant/.test(a)) return "oz-catal";
+      if(/hastane|sağlık|eczane|hospital|pharmacy/.test(a)) return "hastane";
+      return "konum";
+    };
     var konumHtml="";
     if(b.konum) konumHtml+='<div class="konumAd">'+ki("konum")+"<span>"+esc(b.konum)+"</span></div>";
     if(mList.length) konumHtml+='<div class="mesafe">'+mList.filter(function(m){ return m && (m.ad||m.mesafe); }).map(function(m){
-      return '<div><span class="msAd">'+ki(m.tip==="hava"?"ucak":"konum")+"<span>"+esc(enYer(m.ad))+"</span></span>"+
-        "<b>"+esc(m.mesafe||"")+(m.sure?' <span class="msSure">'+esc(enSure(m.sure))+"</span>":"")+"</b></div>";
+      return '<div><span class="msAd">'+ki(mIkon(m))+"<span>"+esc(enYer(m.ad))+"</span></span>"+
+        '<span class="msDeger">'+esc(m.mesafe||"")+(m.sure?'<span class="msSure">'+esc(enSure(m.sure))+"</span>":"")+"</span></div>";
     }).join("")+"</div>";
     if(haritaAdres) konumHtml+='<a class="harita" href="'+esc(haritaAdres)+'" target="_blank" rel="noopener noreferrer"'+(konumHtml?' style="margin-top:1rem"':"")+">"+
-        ikon("pin")+CEV("Haritada aç")+"</a>";
-    if(konumHtml) h+=bolum(CEV("Konum"),konumHtml);
+        ik("harita",20)+"<span>"+CEV("Haritada aç")+"</span></a>";
+    if(konumHtml) h+=bolum(CEV("Konum"),konumHtml,"konum");
 
-    // ---- ev kuralları ----
-    var k=[];
-    k.push("Giriş saati <b>16:00</b>, çıkış saati <b>10:00</b>.");
-    if(b.sigara!==undefined) k.push("Evde sigara içilmesine izin <b>"+(b.sigara?"veriliyor":"verilmiyor")+"</b>.");
-    if(b.evcil!==undefined) k.push("Evde evcil hayvana izin <b>"+(b.evcil?"veriliyor":"verilmiyor")+"</b>.");
-    if(b.parti!==undefined) k.push("Parti ve kalabalık misafir ağırlanmasına izin <b>"+(b.parti?"veriliyor":"verilmiyor")+"</b>.");
-    if(b.su!==false) k.push("Su bedeli fiyata dahildir.");
-    if(b.elektrik!==false) k.push("Elektrik bedeli fiyata dahildir.");
-    if(D.ek && D.ek.sinir && D.ek.ucret)
-      k.push("<b>"+nf.format(D.ek.ucret)+" ₺</b> kısa konaklama ücreti, "+D.ek.sinir+
-             " gece ve altındaki konaklamalara eklenir.");
-    if(b.depozito) k.push("<b>"+nf.format(b.depozito)+" ₺</b> hasar depozitosu eve girişte alınır, hasar yoksa çıkışta iade edilir.");
+    // ---- ev kuralları (14.6): tek bakışta Serbest / Yasak, Dahil / Ayrı ücret ----
+    var serbest=EN?"Allowed":"Serbest", yasak=EN?"Not allowed":"Yasak", dahil=EN?"Included":"Dahil", ayri=EN?"Extra charge":"Ayrı ücret";
+    var rozet=function(ok,evet,hayir,gri){
+      return ok ? '<span class="rz evet">'+ik("tik",16)+"<span>"+evet+"</span></span>"
+                : '<span class="rz '+(gri?"gri":"hayir")+'">'+(gri?"":ik("x",16))+"<span>"+hayir+"</span></span>";
+    };
+    var ks=[];
+    if(b.sigara!==undefined) ks.push(["sigara",EN?"Smoking":"Sigara",rozet(!!b.sigara,serbest,yasak)]);
+    if(b.evcil!==undefined) ks.push(["pati",EN?"Pets":"Evcil hayvan",rozet(!!b.evcil,serbest,yasak)]);
+    if(b.parti!==undefined) ks.push(["parti",EN?"Parties / large groups":"Parti / kalabalık",rozet(!!b.parti,serbest,yasak)]);
+    ks.push(["damla",EN?"Water":"Su",rozet(b.su!==false,dahil,ayri,true)]);
+    ks.push(["simsek",EN?"Electricity":"Elektrik",rozet(b.elektrik!==false,dahil,ayri,true)]);
+    var saat=function(ikAd,et,deger){ return '<div class="saat">'+ik(ikAd,22)+'<span><span class="saatEt">'+et+'</span><span class="saatDeger">'+deger+"</span></span></div>"; };
+    var kh='<div class="saatler">'+saat("giris",EN?"Check-in":"Giriş","16:00")+saat("cikis",EN?"Check-out":"Çıkış","10:00")+"</div>"+
+      '<div class="kurallar">'+ks.map(function(x){ return '<div class="kSat"><span class="kAd">'+ik(x[0],20)+"<span>"+x[1]+"</span></span>"+x[2]+"</div>"; }).join("")+"</div>";
+    var bilgiL=[];
+    if(D.ek && D.ek.sinir && D.ek.ucret) bilgiL.push(EN
+      ? nf.format(D.ek.ucret)+" ₺ short-stay fee applies to stays of "+D.ek.sinir+" nights or fewer."
+      : nf.format(D.ek.ucret)+" ₺ kısa konaklama ücreti, "+D.ek.sinir+" gece ve altındaki konaklamalara eklenir.");
     // 13.4: villa sahibinin eklediği kurallar (sahibin yazdığı dilde)
-    (Array.isArray(b.kurallar)?b.kurallar:[]).forEach(function(t){ if(String(t||"").trim()) k.push(esc(t)); });
-    h+=bolum(CEV("Ev kuralları"),'<ul class="kural">'+k.map(function(x){return "<li>"+x+"</li>"}).join("")+"</ul>");
-
+    (Array.isArray(b.kurallar)?b.kurallar:[]).forEach(function(t){ if(String(t||"").trim()) bilgiL.push(esc(t)); });
+    if(bilgiL.length) kh+='<ul class="kBilgi">'+bilgiL.map(function(t){ return "<li>"+ik("bilgi-i",18)+"<span>"+t+"</span></li>"; }).join("")+"</ul>";
+    kh+=depKart(b.depozito,true);
+    h+=bolum(CEV("Ev kuralları"),kh,"liste-tik");
 
     var tel0=telNo(b.whatsapp);
     h+='<div class="dip"><div class="pad">'+
@@ -496,7 +589,7 @@
       (b.konum?'<div class="dipKonum">'+esc(b.konum)+"</div>":"")+
       '<div class="dipNot">Giriş 16:00 · Çıkış 10:00 · Takvimden tarih seçip rezervasyon isteği gönderebilirsiniz.</div>'+
       (tel0?'<a class="dipTel" href="https://wa.me/'+tel0+'" target="_blank" rel="noopener">'+
-        ikon("pin")+"Soru sormak için yazın</a>":"")+
+        ik("mesaj",18)+"<span>Soru sormak için yazın</span></a>":"")+
       "</div></div>";
     kok.innerHTML=h;
     dilIzle();
@@ -633,9 +726,22 @@
     }).join("")+"</div>";
   }
 
-  function bolum(baslik,ic){
-    return '<div class="bolum"><div class="pad"><h2>'+baslik+"</h2>"+ic+"</div></div>";
+  // Görev 14: uygulamadaki Lucide ikonları (ikonlar.js)
+  function ik(ad,boy){ return window.ikon ? window.ikon(ad,{boy:boy||20}) : ""; }
+  // 14.3: her bölüm başlığının solunda 22px yeşil ikon (renk: "lac" = lacivert)
+  function bolum(baslik,ic,ikAd,alt){
+    return '<div class="bolum"><div class="pad"><h2 class="bBas">'+(ikAd?ik(ikAd,22):"")+"<span>"+baslik+"</span></h2>"+
+      (alt?'<div class="bAlt">'+alt+"</div>":"")+ic+"</div></div>";
   }
+  // 14.7: hasar depozitosu kartı (büyük: fiyat özetinin altında; küçük: kurallar ve istek paneli)
+  function depKart(dep,kucuk){
+    dep=+dep||0; if(!dep) return "";
+    return '<div class="depKart'+(kucuk?" kucuk":"")+'">'+ik("kalkan",kucuk?22:28)+"<div>"+
+      '<div class="dkBas">'+(EN?"Damage deposit: ":"Hasar depozitosu: ")+nf.format(dep)+" ₺</div>"+
+      '<div class="dkAlt">'+(EN?"Taken at check-in and refunded at check-out if there is no damage. Not included in the total price."
+                              :"Girişte alınır, hasar yoksa çıkışta iade edilir. Toplam fiyata dahil değildir.")+"</div></div></div>";
+  }
+  function depTutar(){ var b=D.bilgi||{}; return (teklifAktif() && TK.depozito) ? TK.depozito : (+b.depozito||0); }
   function tik(){
     return '<svg class="tik" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>';
   }
@@ -693,9 +799,12 @@
     return {tutar:t, eksik:eksik};
   }
 
+  function secimTemizle(){ sec={bas:null,bit:null}; uyariMetin=""; takvimCiz(); altCiz(); secimKutusu(); }
   function gunTikla(k){
     uyariMetin="";
     if(k<fmt(bugun)) return;
+    // 14.4: seçili giriş ya da çıkış gününe tekrar dokunmak seçimi temizler
+    if((sec.bas && k===sec.bas) || (sec.bit && k===sec.bit)){ secimTemizle(); return; }
     if(!sec.bas || sec.bit){
       if(!girisUygun(k)){ uyariMetin="Bu güne giriş yapılamıyor, dolu."; }
       else sec={bas:k,bit:null};
@@ -739,7 +848,9 @@
          '<span class="f">'+((!gecmis && !tam && f)?kisaFiyat(f):"")+"</span></div>";
     }
     h+='</div><div class="uyari">'+esc(uyariMetin)+"</div>";
+    if(sec.bas) h+='<button class="temizleKucuk" id="tmzUst">'+ik("x",16)+"<span>"+CEV("Seçimi temizle")+"</span></button>";
     t.innerHTML=h;
+    var tu=document.getElementById("tmzUst"); if(tu) tu.onclick=secimTemizle;
     document.getElementById("ay-once").onclick=function(){
       imlec=new Date(imlec.getFullYear(),imlec.getMonth()-1,1); takvimCiz(); };
     document.getElementById("ay-sonra").onclick=function(){
@@ -772,11 +883,15 @@
     var t=toplam(), gc=geceSay();
     var e2=D.ek||{}, ekU2=(e2.sinir&&e2.ucret&&gc<=e2.sinir)?e2.ucret:0;
     var satir=teklifAktif() ? nf.format(TK.konaklama)+" ₺" : (t.eksik? CEV("Fiyatı sorun") : nf.format(t.tutar+ekU2)+" ₺");
+    var dep2=depTutar();
     bar.innerHTML='<div class="ic">'+
-      '<div class="altozet"><span><b>'+tarihMetni()+"</b> · "+gc+" gece · "+kisiOzet().join(", ")+"</span>"+
-      "<b>"+satir+"</b></div>"+
+      '<div class="altozet"><span><span class="altTarih">'+tarihMetni()+"</span> · "+gc+" gece · "+kisiOzet().join(", ")+"</span>"+
+      '<span class="altFiyat"><span class="altTutar">'+satir+"</span>"+
+        (dep2?'<span class="altDep">'+(EN?"+ "+nf.format(dep2)+" ₺ refundable deposit":"+ "+nf.format(dep2)+" ₺ iade edilen depozito")+"</span>":"")+"</span></div>"+
+      '<div class="altBtn"><button class="altTemizle" id="altTmz" aria-label="'+CEV("Seçimi temizle")+'">'+ik("x",20)+"</button>"+
       (tel?'<a href="#" id="rez-ac">Rezervasyon isteği oluştur</a>'
-          :'<a class="pasif">İletişim bilgisi yok</a>')+"</div>";
+          :'<a class="pasif">İletişim bilgisi yok</a>')+"</div></div>";
+    document.getElementById("altTmz").onclick=secimTemizle;
     var ra=document.getElementById("rez-ac");
     if(ra) ra.onclick=function(e){ e.preventDefault(); onayAc(); };
   }
@@ -788,13 +903,14 @@
       var t=toplam(), gc=geceSay();
       var mesaj=(D.ad||"Villa")+" için "+tarihMetni()+" tarihleri arasında ("+gc+" gece) "+
         kisiMetin()+" ile rezervasyon yapmak istiyorum. Uygunluk ve fiyat için bilgi alabilir miyim?"+
+        (depTutar()?" "+nf.format(depTutar())+" ₺ hasar depozitosunun girişte alınıp çıkışta iade edileceğini biliyorum.":"")+
         (teklifAktif()?" Teklif kodu: "+TK.kod:"");
       o.innerHTML='<div class="onaykutu"><h3>Kaç kişi geliyorsunuz?</h3>'+
         '<div style="color:var(--muted);font-size:.875rem;margin:.375rem 0 1rem">'+
           esc(D.ad||"Villa")+" · "+tarihMetni()+" · "+gc+" "+(EN?"nights":"gece")+"</div>"+
         '<div class="kisiler" id="onay-sayac">'+sayaclar(mx,b.evcil,"o")+"</div>"+
         '<div class="ozetsatir"><span style="color:var(--muted)">Misafir</span><span>'+esc(kisiMetin())+"</span></div>"+
-        '<div class="fiyatKutu" id="onay-fiyat">'+fiyatOzet()+"</div>"+
+        '<div class="fiyatKutu" id="onay-fiyat">'+fiyatOzet()+"</div>"+depKart(depTutar(),true)+
         '<a class="onaybtn" href="https://wa.me/'+tel+'?text='+encodeURIComponent(mesaj)+
           '" target="_blank" rel="noopener">WhatsApp\'tan gönder</a>'+
         '<button class="vazgec" id="onay-kapat">Vazgeç</button></div>';
@@ -869,7 +985,7 @@
     var ek=(D.ek&&D.ek.sinir&&D.ek.ucret&&gc<=D.ek.sinir)?D.ek.ucret:0;
     var dep=b.depozito||0, gece=gc+" "+(EN?(gc===1?"night":"nights"):"gece");
     if(teklifAktif()) dep=TK.depozito||dep;
-    var not=dep?'<div class="fsNot">'+depNot(dep)+"</div>":"";
+    var not="";   // 14.7: depozito artık ayrı kartta (depKart)
     if(teklifAktif()){
       return '<div class="fs"><span style="color:var(--ink)">'+gece+" · "+CEV("size özel")+"</span><span>"+
           (TK.normal && TK.normal!==TK.konaklama ? '<s class="tEski">'+nf.format(TK.normal)+" ₺</s> " : "")+nf.format(TK.konaklama)+" ₺</span></div>"+
@@ -913,8 +1029,9 @@
     var tka=teklifAktif(), eksik=t.eksik && !tka;
     var konaklamaT=tka ? TK.konaklama : t.tutar+ek;
 
-    var h="";
+    var h='<h3 class="fiyatBas">'+ik("cuzdan",22)+"<span>"+CEV("Fiyat")+"</span></h3>";
     if(!eksik) h+='<div class="fiyatKutu">'+fiyatOzet()+"</div>";
+    h+=depKart(depTutar());
     h+='<div class="ozetkutu"><div class="sol">'+
       '<div class="top'+(eksik?" fiyatSor":"")+'">'+(eksik?CEV("Bu tarihlerin fiyatını villa sahibine sorun"):nf.format(konaklamaT)+" ₺")+"</div>"+
       '<div style="color:var(--muted)">'+tarihMetni()+" · "+gc+" gece</div></div>"+

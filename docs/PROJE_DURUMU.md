@@ -260,6 +260,25 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Kabul edildi / İptal; "Rezervasyona çevir" (kaydedince teklif kabul olur), "Bağlantıyı tekrar gönder", "Teklifi iptal et" (Geri al).
       Canlı veritabanıyla değil, sahte sunucuyla test edildi; ilk gerçek teklifte bir kez denenmeli.
 
+- [x] Görev 14 — misafir sayfası netliği, Gelir & gider, küçük düzeltmeler (docs/GOREV14.md, 14.1–14.11) · Claude Code yaptı (14 Kasım), sahte veriyle test edildi.
+      Misafir sayfası (g.html) artık uygulamanın Lucide ikonlarını (ikonlar.js) ve renklerini kullanıyor; kalın yazı kalmadı.
+      14.1 Başlık: büyük ad, altında iğne ikonlu konum. 14.2 Künye: 2 sütun, 40px yeşil daire + 22px rakam + 15px etiket
+      (kişi, yatak odası, banyo, m²); yatak sayıları ayrı satırda. 14.3 Bölüm başlıklarında 22px ikon; "Uygunluk" → "Takvim"
+      ("Giriş ve çıkış gününe dokunun"); seçim yapılınca lacivert cüzdanlı "Fiyat" başlığı. 14.4 Seçili giriş/çıkış gününe tekrar dokunmak
+      seçimi temizler; takvimin altında ve alt çubukta "✕ Seçimi temizle". 14.5 Konum: ada göre ikon (plaj, market, merkez, restoran,
+      hastane, havalimanı), mesafe/süre sağda 17px, petrol renkli "Haritada aç". 14.6 Ev kuralları: Giriş/Çıkış saat kutuları,
+      Sigara / Evcil hayvan / Parti için Serbest-Yasak rozeti, Su / Elektrik için Dahil-Ayrı ücret; sahibin kuralları "i" ikonlu liste.
+      14.7 Hasar depozitosu kartı (lacivert): fiyat özetinin altında büyük, kurallarda ve istek panelinde küçük; alt çubukta
+      "+ 5.000 ₺ iade edilen depozito"; WhatsApp isteğinde depozito cümlesi.
+      14.8 Fiyatlar: "Birden fazla ay seç" ve "Tüm yıla fiyat gir" aynı boyutta yan yana; yıl seçimi (bu yıl kalan aylar / gelecek yıl),
+      hafta içi + hafta sonu; ay listesi en az 18 ay. Görev 12'deki "Tüm aylara fiyat gir" kaldırıldı.
+      14.9 Gelir & gider: net kazanç kartı; Alındı (yeşil) / Alınacak (kırmızı, depozito hariç, altında "+ depozito") / Giderler (gri)
+      kutuları ilgili listeye kaydırır; tek cümle özet; listeler: Alınacak ödemeler, Alınan ödemeler, Giderler (+ Gider ekle),
+      Diğer gelirler (+ Gelir ekle); grafik, sezon özeti, PDF ve tüm rezervasyonlar "Daha fazla istatistik" altında kapalı.
+      14.10 Fotoğraflar: "Fotoğraf ekle" / "Drive'dan al" alttaki sabit çubukta; "Birden fazla seç" küçük; seçim modunda
+      "Kapak yap" (tek fotoğraf) / "Sil" / "Vazgeç". 14.11 Teklif panelinde "Teklifi kopyala" (mesajın tamamı + bağlantı, teklifi de kaydeder);
+      Teklifler ayrıntısında "Teklifi tekrar gönder" + "Teklifi kopyala".
+
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
 

@@ -524,6 +524,14 @@
     "Teklif geri alınamadı.":"The offer could not be restored.", "Teklif iptal edilemedi.":"The offer could not be cancelled.",
     "Özel teklif fiyatı uygulandı":"Special offer price applied", "Teklif durumu güncellenemedi.":"The offer status could not be updated.",
     "Açık":"Open", "Süresi doldu":"Expired", "Kabul edildi":"Accepted", "İptal":"Cancelled",
+    // Görev 14
+    "Tüm yıla fiyat gir":"Set prices for a whole year", "Hangi yıl? Geçmiş günlere fiyat yazılmaz.":"Which year? Past days are not priced.",
+    "Alındı":"Received", "Alınacak":"To collect", "Daha fazla istatistik":"More statistics", "Tüm rezervasyonlar":"All reservations",
+    "Bu dönemde gider yok.":"No expenses in this period.", "Bu dönemde başka gelir yok.":"No other income in this period.",
+    "Bu dönemde alınan ödeme yok.":"No payments received in this period.",
+    "Fotoğraflara dokunarak seçin.":"Tap photos to select them.", "Kapak yap":"Set as cover",
+    "Kapak yapmak için tek fotoğraf seçin.":"Select a single photo to set it as the cover.",
+    "Teklifi kopyala":"Copy offer", "Teklif kopyalandı":"Offer copied", "Teklifi tekrar gönder":"Resend offer",
     // Görev 10
     "Göster":"Show", "Villa kurulumu":"Villa setup", "Eksik":"Incomplete", "İsimsiz villa":"Unnamed villa",
     "Tüm villa bilgileri":"All villa details", "Rezervasyonlarınızı villa villa takip edin":"Track your bookings villa by villa",
@@ -632,6 +640,16 @@
     [/^%(\d+) indirim$/, "$1% off"],
     [/^(\d+) boş aralık bulundu$/, "$1 free periods found"],
     [/^(\d+) gecenin fiyatı girilmemiş$/, "No price set for $1 nights"],
+    // Görev 14
+    [/^\+ ([\d.,]+ ₺) depozito$/, "+ $1 deposit"],
+    [/^(\d+) sil$/, "Delete $1"],
+    [/^Bu yıl ([\d.,]+ ₺) rezervasyon var; ([\d.,]+ ₺)'si alındı, ([\d.,]+ ₺) gider çıktı\.$/, "This year: $1 in reservations; $2 received, $3 in expenses."],
+    [/^Bu ay ([\d.,]+ ₺) rezervasyon var; ([\d.,]+ ₺)'si alındı, ([\d.,]+ ₺) gider çıktı\.$/, "This month: $1 in reservations; $2 received, $3 in expenses."],
+    [/^Toplamda ([\d.,]+ ₺) rezervasyon var; ([\d.,]+ ₺)'si alındı, ([\d.,]+ ₺) gider çıktı\.$/, "In total: $1 in reservations; $2 received, $3 in expenses."],
+    [/^(.+) (?:yılında|ayında) ([\d.,]+ ₺) rezervasyon var; ([\d.,]+ ₺)'si alındı, ([\d.,]+ ₺) gider çıktı\.$/, "$1: $2 in reservations; $3 received, $4 in expenses."],
+    [/^(Bu yıl|Bu ay|Toplamda|.+ yılında|.+ ayında) rezervasyon yok(?:, ([\d.,]+ ₺) gider çıktı)?\.$/, function (_, d, g) {
+      var dd = d === "Bu yıl" ? "This year" : d === "Bu ay" ? "This month" : d === "Toplamda" ? "In total" : d.replace(/ (yılında|ayında)$/, "");
+      return dd + ": no reservations" + (g ? ", " + g + " in expenses." : "."); }],
     [/^([\d.,]+ ₺) hasar depozitosu$/, "$1 damage deposit"],
     // "✓ …" ile başlayan başarı mesajları: işaret kalır, gerisi çevrilir
     [/^✓ (.+)$/, function (_, a) { return "✓ " + D.cevir(a); }],
