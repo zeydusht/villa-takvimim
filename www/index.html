@@ -750,6 +750,9 @@
   .villaBas{border:var(--cerceve-kalinlik) solid var(--line); border-radius:var(--kose); padding:1rem 1.125rem 1.125rem}
   .vbAd{font-family:var(--serif); font-size:1.875rem; letter-spacing:-.02em; line-height:1.15; overflow-wrap:anywhere}
   .vbKonum{font-size:.9375rem; color:var(--muted); margin-top:.25rem}
+  .vbUst{display:flex; align-items:flex-start; justify-content:space-between; gap:.75rem}
+  .vbSol{flex:1 1 auto; min-width:0}
+  .vbUst .vRozet{margin-top:.125rem}
   .villaBas .durumEt{margin-top:.875rem}
   .villaBas .durumAlt{margin-top:.5rem}
   /* 12.3: sadece villa durum kutusu (div); takvimdeki bugün hücresine (button.cell.today) uygulanmaz */
@@ -2710,8 +2713,9 @@
     if(sahip0 && kurulu()) hz.push('<button class="big renkli is-paylas" data-is="paylas" data-ik="paylas"><span>'+esc(cev("Paylaş"))+"</span></button>");
     var konum=String((v.bilgi&&v.bilgi.konum)||"").trim();
     document.getElementById("bugun").innerHTML=
-      '<div class="villaBas"><div class="vbAd">'+esc(v.ad||cev("İsimsiz villa"))+"</div>"+
-      (konum?'<div class="vbKonum">'+esc(konum)+"</div>":"")+durumEtiket(dm.dolu,dm.misafir)+
+      // villa ekranında da başlığın sağ üstünde villanın küçük kapak fotoğrafı (alt ekranlardaki gibi)
+      '<div class="villaBas"><div class="vbUst"><div class="vbSol"><div class="vbAd">'+esc(v.ad||cev("İsimsiz villa"))+"</div>"+
+      (konum?'<div class="vbKonum">'+esc(konum)+"</div>":"")+"</div>"+villaRozet(v)+"</div>"+durumEtiket(dm.dolu,dm.misafir)+
       '<div class="durumAlt">'+esc(dm.alt)+"</div></div>"+
       (hz.length?'<div class="hizli">'+hz.join("")+"</div>":"");
 

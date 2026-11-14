@@ -30,13 +30,16 @@
 
   /* galeri: tam genişlik, köşesiz */
   .galeri{position:relative}
-  .kaydir{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+  /* Düzeltme: şerit sadece yatay kaysın. overflow-y açık kalınca iPhone'da küsuratlı yükseklik yüzünden
+     aşağı kaydırma hareketini şerit yutuyor, sayfa kaymıyordu. */
+  .kaydir{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
+    overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
     scrollbar-width:none;-ms-overflow-style:none}
   .kaydir::-webkit-scrollbar{display:none}
-  .kaydir img{width:100%;flex:none;aspect-ratio:4/3;object-fit:cover;
+  .kaydir img{width:100%;height:auto;flex:none;aspect-ratio:4/3;object-fit:cover;
     scroll-snap-align:center;background:var(--soft);display:block}
   .sayac{position:absolute;right:.75rem;bottom:.75rem;background:rgba(18,35,43,.72);color:#fff;
-    font-size:.75rem;padding:.25rem .625rem;border-radius:99px;backdrop-filter:blur(4px)}
+    font-size:.75rem;padding:.25rem .625rem;border-radius:99px}
 
   /* üst şerit */
   .ust{position:sticky;top:0;z-index:50;background:var(--yes);color:#fff;
@@ -258,7 +261,7 @@
 
   .alt{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.97);
     border-top:1px solid var(--line);padding:.75rem 1.25rem calc(.75rem + env(safe-area-inset-bottom));
-    display:flex;flex-direction:column;align-items:center;gap:.5rem;backdrop-filter:blur(8px)}
+    display:flex;flex-direction:column;align-items:center;gap:.5rem;transform:translateZ(0)}
   .alt .ic{width:100%;max-width:29.5rem}
   .alt a{display:block;width:100%;text-align:center;background:var(--yes);color:#fff;
     text-decoration:none;padding:.9375rem 0;border-radius:.75rem;font-size:1rem;font-weight:600}
@@ -462,9 +465,10 @@
     D.fotolar=(D.fotolar||[]).filter(function(u){ return guvenliAdres(u); });
     if(D.fotolar.length){
       h+='<div class="galeri"><div class="kaydir" id="kaydir">'+
-         D.fotolar.map(function(u){
+         D.fotolar.map(function(u,i){
            var a=guvenliAdres(u);
-           return a? '<img src="'+esc(a)+'" loading="lazy" alt="">' : "";
+           // ilk fotoğraf hemen, diğerleri sırası gelince; çözümleme kaydırmayı bekletmesin
+           return a? '<img src="'+esc(a)+'" width="800" height="600" decoding="async" '+(i?'loading="lazy"':'fetchpriority="high"')+' alt="">' : "";
          }).join("")+
          '</div><div class="sayac" id="sayac">1 / '+D.fotolar.length+"</div></div>";
     }

@@ -278,6 +278,9 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       14.10 Fotoğraflar: "Fotoğraf ekle" / "Drive'dan al" alttaki sabit çubukta; "Birden fazla seç" küçük; seçim modunda
       "Kapak yap" (tek fotoğraf) / "Sil" / "Vazgeç". 14.11 Teklif panelinde "Teklifi kopyala" (mesajın tamamı + bağlantı, teklifi de kaydeder);
       Teklifler ayrıntısında "Teklifi tekrar gönder" + "Teklifi kopyala".
+      Düzeltme (Zeyd'in denemesinden, 14 Kasım): misafir sayfasında fotoğraf şeridinin üzerinden aşağı kaydırma iPhone'da takılıyordu
+      (şerit dikeyde de kaydırılabilir kalmıştı; sabit alt çubuk ve sayaçtaki bulanıklık efekti kaydırmayı kasıyordu) → şerit yalnız yatay,
+      bulanıklık kaldırıldı, ilk fotoğraf öncelikli diğerleri sırası gelince yükleniyor. Villa ekranının başlığına da sağ üstte 44×44 villa fotoğrafı eklendi.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
