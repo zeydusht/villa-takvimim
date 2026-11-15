@@ -433,6 +433,19 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       · 60 fps kayıt: boşluk yok, 179/179 satır geçti. Kare düşmesi: 4x 12/12 sıfır; 1x 12'de 1 kare (2b'de; sayfa kareyi
         zamanında üretti, GPU süreci bir yenileme boyunca hiç çalışmadı). Kilit, giriş, hap, yenileme, detay, ipucu testleri geçti.
       · iPhone Safari'de ölçülmedi.
+- [x] Açılış animasyonu İNCE AYAR (daire–logo buluşması) · Claude Code (15 Kasım). Netlify'a yüklenmedi. Ayrıntı: `docs/ACILIS_DOGRULAMA.md`.
+      1) Logo ortası ekran yüksekliğinin %49,5'inde: assets/splash.png + splash-dark.png'de sembol 13 px yukarı, capacitor-assets ile
+      iOS/Android açılış görselleri yeniden üretildi; Android 12 sistem açılış simgesi (splash_sembol) 4 dp yukarı; web logosu aynı yerde
+      (390×844'te 417,83 px, ikisi birebir). 2) Animasyon girişsiz kullanıcıda da oynuyor; perde açılınca oturum varsa ana ekran, bu
+      cihazda daha önce giriş yapılmışsa "Giriş yap", hiç yapılmamışsa "Kayıt ol" + altında "Zaten hesabın var mı? Giriş yap" bağlantısı
+      (cihazda "vt-giris-yapildi" işareti). 3) 2a: daire logonun arkasında, konum ve çapla aynı eğriyle D = logo × 1,42'ye büyür (halka ve
+      gövde de; gövde hiç daireden dar değil); 2b: çap D → D×1,04 → D yumuşak yay; 2c: logo ve daire tek parça yükselir, 1 → 0,7 küçülür;
+      logo 2c'ye kadar hiç değişmez; dairede ayrı ikon yok.
+      · Kare kare: 2a sonunda daire–logo merkezi x 0,0 / y 0,1 px, çap 167,2 px (D 167,6); 2b–2c boyunca hiza ≤ 0,7 px (gerçek
+        zamanlı kayıtta ≤ 0,57 px). Baş/daire/gövde 0,11/0,11/0,49 puan.
+      · Kare düşmesi: 1x'te denemelerin yarısında aynı anda (2532 ms) 1 kare kaçıyor (önceki sürüm aynı koşulda 0); 4x'te önceki
+        sürümden az. Neden: GPU sürecinde saniyelik bekleme (sayfa kareyi zamanında üretiyor); birkaç düzeltme denendi, kalkmadı.
+      · iPhone Safari'de ölçülmedi.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).

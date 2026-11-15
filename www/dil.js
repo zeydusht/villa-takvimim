@@ -249,6 +249,7 @@
     // Hesap / giriş
     "Giriş yap":"Sign in", "Hesap oluştur":"Create account",
     "Hesabım yok, oluştur":"I don't have an account", "Zaten hesabım var":"I already have an account",
+    "Zaten hesabın var mı? Giriş yap":"Already have an account? Sign in",
     "Şifremi unuttum":"Forgot my password", "Çıkış yap":"Sign out",
     "E-posta":"Email", "Şifre":"Password", "Yeni şifre":"New password", "Tekrar":"Repeat",
     "En az 6 karakter":"At least 6 characters", "Şifreyi kaydet":"Save password",

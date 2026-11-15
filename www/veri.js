@@ -28,9 +28,14 @@
   }
   VT.yeniId = yeniId;
 
+  // bu cihazda daha önce giriş yapıldı mı (oturum düşünce kayıt yerine giriş ekranı açılsın)
+  var GIRIS_YAPILDI = "vt-giris-yapildi";
+  VT.dahaOnceGiris = function () { try { return localStorage.getItem(GIRIS_YAPILDI) === "1"; } catch (e) { return false; } };
+
   function oturumYaz(o) {
     VT.oturum = o;
     try {
+      if (o) localStorage.setItem(GIRIS_YAPILDI, "1");
       if (o) localStorage.setItem(OTURUM_ANAHTAR, JSON.stringify(o));
       else localStorage.removeItem(OTURUM_ANAHTAR);
     } catch (e) {}

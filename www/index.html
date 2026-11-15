@@ -1127,6 +1127,7 @@
       <div class="sm warn" id="g-hata" style="min-height:1.25rem"></div>
       <button class="big" data-ik="giris" id="g-gonder">Giriş yap</button>
       <button class="big renkli is-rez" data-ik="kisi-arti" id="g-mod" style="margin-top:.5rem">Hesabım yok, oluştur</button>
+      <button id="g-girisLink" class="sm hide" style="width:100%;margin-top:1.25rem;text-align:center;text-decoration:underline;font-weight:400;border:0;background:none;min-height:2.75rem;color:inherit">Zaten hesabın var mı? Giriş yap</button>
       <button id="g-unuttum" class="sm muted" style="width:100%;margin-top:1.25rem;text-align:center;text-decoration:underline">Şifremi unuttum</button>
       <div class="seg" id="g-dil" style="margin-top:1.5rem">
         <button data-d="tr">Türkçe</button>
@@ -2405,6 +2406,7 @@
   var KAYDIR={};
   function goster(id){
     var onceki=null;
+    if(id==="giris" && window.girisEkraniModu){ var acik=document.getElementById("giris"); if(acik && acik.classList.contains("hide")) girisEkraniModu(); }
     EKRANLAR.forEach(function(x){ var e=document.getElementById(x); if(e && !e.classList.contains("hide")) onceki=x; });
     var simdiY=window.scrollY||0;
     if(onceki) KAYDIR[onceki]=simdiY;
@@ -4618,16 +4620,24 @@
   document.getElementById("g-riza").onchange=function(){
     riza=this.checked; girisHata("");
   };
-  document.getElementById("g-mod").onclick=function(){
-    girisMod=(girisMod==="giris")?"kayit":"giris";
+  // kayıt / giriş görünümü. Kayıtta altta "Zaten hesabın var mı? Giriş yap" bağlantısı; girişte "Hesabım yok, oluştur".
+  function girisModAyarla(mod){
+    girisMod=mod;
     var kayit=girisMod==="kayit";
     document.getElementById("g-rizaSatir").classList[kayit?"remove":"add"]("hide");
     document.getElementById("g-adAlan").style.display=kayit?"block":"none";
     document.getElementById("g-gonder").textContent=kayit?"Hesap oluştur":"Giriş yap";
-    document.getElementById("g-mod").textContent=kayit?"Zaten hesabım var":"Hesabım yok, oluştur";
+    document.getElementById("g-mod").classList[kayit?"add":"remove"]("hide");
+    document.getElementById("g-mod").textContent="Hesabım yok, oluştur";
+    document.getElementById("g-girisLink").classList[kayit?"remove":"add"]("hide");
+    document.getElementById("g-unuttum").classList[kayit?"add":"remove"]("hide");
     document.getElementById("g-sifre").setAttribute("autocomplete",kayit?"new-password":"current-password");
     girisHata("");
-  };
+  }
+  // ekran açılırken: bu cihazda daha önce giriş yapıldıysa giriş, yapılmadıysa kayıt
+  window.girisEkraniModu=function(){ girisModAyarla(window.VT && VT.dahaOnceGiris && VT.dahaOnceGiris() ? "giris" : "kayit"); };
+  document.getElementById("g-mod").onclick=function(){ girisModAyarla(girisMod==="giris"?"kayit":"giris"); };
+  document.getElementById("g-girisLink").onclick=function(){ girisModAyarla("giris"); };
 
   document.getElementById("g-gonder").onclick=function(){
     var e=document.getElementById("g-eposta").value.trim();

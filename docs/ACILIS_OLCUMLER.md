@@ -47,7 +47,7 @@ Desenli gövde genişler, tüm ekranı kaplar:
 - **Doğrulama zorunlu:** Playwright ile 390×844'te 60 fps video kaydı al, her karede kapsül/baş tepesini ve gövde genişliğini ölç; yukarıdaki tablolarla karşılaştır. Her satırda sapma ±1,5 puan / ±17 ms'den büyük olmasın. Ölçüm tablosunu `docs/ACILIS_DOGRULAMA.md`'ye yaz. Chrome DevTools'ta 4× CPU yavaşlatmada kare düşmesi olmasın.
 - "Hareketi azalt": logo 400 ms → 200 ms solma → ana ekran (değişmez).
 
-## Villa Takvimim sürümü (Zeyd, 15 Kasım): ortada nefes anı
+## Villa Takvimim sürümü (Zeyd, 15 Kasım): ortada nefes anı + daire–logo buluşması
 
 _Yukarıdaki Wise tablolarının yerine bu ritim uygulanır (`www/acilis.js`). Önceki "ACILIS_YAVAS = 1.35" talimatının yerine geçer._
 
@@ -55,30 +55,27 @@ _Yukarıdaki Wise tablolarının yerine bu ritim uygulanır (`www/acilis.js`). �
 
 | Aşama | Wise hızında | Ekranda (× 1,15) | Ne olur |
 |---|---|---|---|
-| 0. Logo | – | 0–1000 ms | Koyu zemin, ortada logo, kıpırtısız |
+| 0. Logo | – | 0–1000 ms | Koyu zemin, logo kıpırtısız. Logo ortası ekran yüksekliğinin %49,5'inde (tam ekran üzerinden; native açılış ekranı da aynı yerde) |
 | 1. Baş gösterme | 0–300 | 0–345 | Aynen yukarıdaki 1. aşama tabloları (kapsül + aşağıdan yetişen daire) |
-| 2a. Yavaşlayarak ortaya | 300–600 | 345–690 | Baş %12,4'ten, dairenin MERKEZİ logonun merkezinin 30 pt altına gelene kadar yükselir. `cubic-bezier(0.2, 0.7, 0.3, 1)`. Gövde genişliği %29 sabit |
-| 2b. Ortada nefes | 600–860 | 690–989 | Baş son 30 pt'yi çok yavaş alır, daire merkezi logonun merkezine tam oturur (`ease-out`) |
-| 2c. Hızlanarak tepeye | 860–1280 | 989–1472 | Baş ortadan %100'e çıkar, `cubic-bezier(0.6, 0, 0.9, 0.45)`. Gövde %29 → %49,7 |
+| 2a. Yavaşlayarak ortaya | 300–600 | 345–690 | Daire yükselirken çapı şerit içindeki boyundan D = logo genişliği × 1,42'ye büyür. Konum ve çap AYNI eğriyle ilerler (`cubic-bezier(0.2, 0.7, 0.3, 1)`): ortaya vardığı anda tam D, merkezi logonun merkezinde |
+| 2b. Oturma | 600–860 | 690–989 | Daire yerinde, çap yumuşak bir yayla D → D × 1,04 → D. Logo hiç değişmez |
+| 2c. Hızlanarak tepeye | 860–1280 | 989–1472 | Logo ve daire tek parça gibi birlikte yükselir, `cubic-bezier(0.6, 0, 0.9, 0.45)`. İkisi aynı oranda 1 → 0,7 küçülür; 2c sonunda baş tepesi ekranın tepesinde |
 | 3. Tam açılma | 1280–1447 | 1472–1664 | Aynen yukarıdaki 3. aşama tablosu, süre × 1,15 |
 | 4. Bekleme + geçiş | 1447–1697 | 1664–1952 | 17 ms tam desen; sonra 233 ms solma (`cubic-bezier(0.4, 0, 0.2, 1)`) + ana ekran 12 pt aşağıdan yerine |
 
 **Toplam: 1000 ms logo + ~1952 ms animasyon ≈ 2,95 sn.**
 
-**Dairedeki sembol ve logo (15 Kasım düzeltmesi; iPhone kaydından):**
-- Dairenin içinde çizgi ev değil, logonun AYNISI var: `assets/sembol-acik.svg`, #9FE870, dolu ev-takvim sembolü.
-- **1 ve 2a:** sembol dairenin ortasında, genişliği daire çapının %55'i.
-- **2b başı:** sembol, tam opak logonun arkasında, görünmeden logoyla aynı merkeze ve aynı boya geçer.
-- **2b sırasında:** logo opaklığı 1 → 0 (180 ms, ekranda 207 ms, `ease-out`). Logo solarken altındaki aynı sembol onun yerini alır. Logo küçülmez; küçülseydi iki ayrı boy üst üste görünürdü. Daire son 30 pt'de sembolün altına oturur.
-- **2c:** sembol daireyle birlikte yükselir ve daire çapının %55'ine küçülür (`cubic-bezier(0.4, 0, 0.2, 1)`, 2c boyunca).
-- Logo daireden büyük (iPhone 390×844'te logo 118 px, daire 104 px). Bu yüzden 2b'de ve 2c'nin başında sembol dairenin kenarlarından taşar.
-- Önceki sürümdeki ev ikonu atışı (1 → 1,12 → 1) kaldırıldı. Sembol logoyla birebir aynı boyda dururken atış, logo solarken iki ayrı boy gösterirdi.
+**Daire–logo buluşması (Zeyd, 15 Kasım; önceki "logo daireye girer / dairede sembol" düzenini kaldırır):**
+- D = logonun genişliği × 1,42: logoyu iç boşluklu rahat alan daire çapı (iPhone 390×844'te logo 118 px, D 167,6 px).
+- Daire logonun ARKASINDA, logoyu asla örtmez. Dairenin içinde ayrıca ikon yok: logo, dairenin içindeki ikonun kendisi olur. Logonun pencereleri saydam; daire arkasına gelince pencerelerde daire görünür.
+- **1. aşama:** daire çapı şeridin %92'si (Wise tablosu).
+- **2a:** çap büyürken limon kapsül (halka) da aynı oranda büyür. Şerit/gövde genişliği her an kapsül genişliğinden (çap / 0,92) dar değildir, dolayısıyla daire çapından da dar değildir.
+- **2b, yumuşak yay:** çap 260 ms'de (ekranda 299 ms) D → D × 1,04 → D. Yükseliş ilk %35'te, oturma kalan %65'te; iki parça da sinüs² (başı ve sonu hızsız). `cubic-bezier(0.34, 1.56, 0.64, 1)` benzeri yumuşak yay, sert sekme yok. Daire yerinden kıpırdamaz.
+- **Logo 0–2b:** boyunu, yerini ve opaklığını HİÇ değiştirmez. Atış, küçülme, solma yok.
+- **2c:** logo ve daire aynı translateY ile birlikte yükselir ve aynı oranda küçülür (1 → 0,7, yükselişle aynı eğri). Logo dairenin tam ortasında kalır. 2c'den sonra ikisi birlikte, 2c'nin bitiş hızıyla ekranın üstünden çıkar.
+- **Gövde genişliği:** aşağıdaki tablo gibi artar, ama hiçbir an kapsülün o ana kadarki en geniş hâlinden (2b tepesinde D × 1,04 / 0,92 ≈ %48,5) dar olmaz. Böylece gövde hep en az daire çapı kadardır ve hiç daralmaz.
 
 **2c'deki gövde genişliği:** Wise tablosundaki artış kısmı (500–816 ms: 29 → 29,2 → 30,5 → 33,8 → 38,5 → 43,1 → 47,2 → 48,7 → 49,2 → 49,7) 2c'nin 420 ms'sine oranla yayılır. Wise'ta 500 ms 2c'nin başına (860), 816 ms sonuna (1280) denk gelir; aralar doğrusal.
-
-**Logo:**
-- Logo başın önünde durur. Arkasında zemin renginde dolu bir siluet var; böylece baş altına girerken pencerelerinden daire görünmez.
-- 2c'den sonra baş, 2c'nin bitiş hızıyla ekranın üstünden çıkar.
 
 **İlk kare ve bekleme (15 Kasım düzeltmesi):**
 - İlk karede logo dışında hiçbir açılış parçası görünmez. Kapsül, gövde, daire ve sembol CSS'te gizli başlar; animasyon başlarken boyut ve yerleri verilip görünür yapılır.
@@ -86,3 +83,5 @@ _Yukarıdaki Wise tablolarının yerine bu ritim uygulanır (`www/acilis.js`). �
 - Native uygulamada açılış ekranı boyunca durum çubuğu yazısı beyaz. Ana ekrana eklenen web sürümünde `apple-mobile-web-app-status-bar-style` "black".
 - Veri, sayfa açılır açılmaz yüklenmeye başlar: oturum yenilemesi beklenmez, profil ve villalar aynı anda istenir.
 - Desen tam ekranken veri için en fazla 300 ms beklenir. Veri hazır değilse yine geçilir ve ana ekranda iskelet satırlar görünür; veri gelince yerini alır.
+- Animasyon herkes için oynar (girişsiz kullanıcıda da; web'de oturum başına bir kez, uygulamada her soğuk açılışta).
+- Perde açılınca: oturum varsa ana ekran; bu cihazda daha önce giriş yapılmış ama oturum düşmüşse "Giriş yap" ekranı; hiç giriş yapılmamışsa "Kayıt ol" ekranı, altında "Zaten hesabın var mı? Giriş yap" bağlantısı.
