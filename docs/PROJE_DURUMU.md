@@ -335,6 +335,9 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
 - [x] Uygulama ikonu adayları (docs/CODEX_APP_IKON.md) · Claude Code (15 Kasım). 10 aday, her biri ayrı Codex isteğiyle üretildi
       (hepsi ilk denemede, 1024×1024, saydamlıksız): `docs/ikonlar/ikon-01 … ikon-10`. Kontrol sayfası: `docs/ikon-adaylari.html`
       (büyük görünüm, 60 px iOS köşeli, açık / koyu duvar kağıdı, sahte ana ekran). Uygulamanın ikonu DEĞİŞMEDİ; seçim Zeyd'de.
+- [x] İkon 2. tur (docs/CODEX_APP_IKON_2.md) · Claude Code (15 Kasım). Seçilen "takvim çatısı"nın Wise netliğinde 10 varyasyonu,
+      her biri ayrı Codex isteği (hepsi ilk denemede, 1024×1024): `docs/ikonlar2/ikon2-01 … 10`. Kontrol sayfası `docs/ikon-adaylari-2.html`
+      (telefon satırında 1. turdaki ikon da referans olarak var). Uygulamanın ikonu DEĞİŞMEDİ.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
