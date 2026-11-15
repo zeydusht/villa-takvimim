@@ -359,6 +359,36 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Üst çubuk, giriş / yeni şifre / onay ekranı ve açılış animasyonu logosu artık sembol.svg'den satır içi SVG (maske ile, renk
       currentColor; her örnekte ayrı maske kimliği). Açılış logosu splash'teki gibi 601/2732 ölçekte, ilk karede aynı yerde (test edildi).
       Eski PNG/WebP logolar (`img/acilis-logo.webp`, `img/logo-acik.png`, `img/logo-koyu.png`) silindi. Referans: `docs/ikonlar3/ikon3-02.png`.
+- [x] Açılış animasyonu WISE RİTMİNDE · Claude Code (15 Kasım). Netlify'a yüklenmedi. Renkler: zemin #10180D, logo `assets/sembol-acik.svg`
+      (#9FE870). Yeni `assets/splash.png` / `splash-dark.png` Claude'un (değiştirilmedi; sembol 2732'lik karede 382 px, tam ortada; iPhone 14'te
+      ekran genişliğinin %30,3'ü). `npx capacitor-assets generate` ile iOS/Android açılış ekranları yeniden üretildi (araçtan gelen `icons/`,
+      manifest ve AndroidManifest değişiklikleri yine geri alındı; ikonlar değişmedi). capacitor.config.json: backgroundColor / android /
+      SplashScreen → #10180D.
+      ANDROID: Capacitor 8 Android'de her sürümde sistemin açılış ekranını (Android 12 API, compat) kullanıyor; orada `splash.png` değil,
+      zemin rengi + ortada ikon görünür. Bu yüzden `values/styles.xml`'de AppTheme.NoActionBarLaunch'a `windowSplashScreenBackground` #10180D
+      ve `windowSplashScreenAnimatedIcon` = `drawable-xxxhdpi/splash_sembol.png` (288dp kare, sembol 120dp, saydam) eklendi; web'de Android'de
+      logo da 120px ve ekranın ortasında (`#acilis.acAndroid`). Cihazda denenmedi: sistem çubukları web görünümünü kaydırırsa birkaç dp oynayabilir.
+      ZAMAN ÇİZELGESİ (acilis.js, native açılış gizlendikten sonra; Web Animations API, tek zaman çizelgesi, hepsi aynı startTime):
+      0–600 sadece logo · 600–900 şerit %8'e (cubic-bezier(0.2,0,0.2,1)) · 900–1430 %100'e hızlanarak (0.55,0,0.85,0.45) · 1430–1600
+      yanlara açılır, daire tepeden çıkıp kaybolur (0.5,0,0.9,0.5) · 1600–1630 tam desen · 1630–1830 desen 1→0, ana ekran 0→1 ve 12px
+      aşağıdan (ease-out). Veri 1630'da hazır değilse desende en fazla 1,5 sn bekler, sonra iskelet ekran. Dokununca anında biter.
+      Hareketi azalt: logo 400 ms → (veri bekle) → 200 ms solma. Şerit: genişlik %14, tam yuvarlak uç, `img/acilis-doku.webp` ekrana göre
+      sabit; tepede şerit genişliğinde #163300 daire, içinde #9FE870 ev; şerit logonun önünden geçer.
+      Yapı (yalnız transform/opacity): ekranın sol ve sağ yarısında birer kırpma kutusu; her birinde üst köşesi yuvarlak panel translate ile
+      yükselir ve yanlara açılır, içindeki desen ters yönde kayar (top/height/clip-path animasyonu yok). Desen görseli img.decode() ile
+      çözülüp iki kare beklendikten sonra başlar; will-change yalnızca animasyon boyunca. Ana ekran perdenin arkasında önceden kendi
+      katmanında çizilir (perde %99,9 opak), solma başlarken kare kaçmasın.
+      DOĞRULAMA (Chrome, iPhone 14 görünümü 390×844):
+      · Kare kare (60 fps ızgarası, 99 kare, animasyon durdurulup her kareye gidilerek): şerit yüksekliği ve açılma oranı beklenen eğriden
+        en fazla %0,27 saptı (ekran yüksekliğine/genişliğine göre); desen her karede ekrana göre sabit.
+      · Gerçek zamanlı ekran kaydı (CDP screencast, her kare zaman damgalı; Playwright'ın video kaydı 25 fps olduğu için bu kullanıldı):
+        hareketli bölümde 65 kare, ortalama 16,9 ms (59 fps). Kayıt aracının sabit 16,5 ms (1 kare) gecikmesi düzeltilince en büyük sapma
+        %0,51 (±%5 sınırının çok altında).
+      · Performans izi (DevTools trace, CPU 4x yavaşlatma, 4 deneme): şerit ve solma boyunca her ekran yenilemesinde yeni kare çizildi;
+        yalnızca şeridin ilk 1–2 karesinde (≈611 ve 628 ms, şerit henüz 1–2 px hareket etmişken) uygulamanın ana ekran verisini yerleştirdiği
+        ana denk gelen 1–2 kare kaçtı (bir denemede 845 ms'de 1 kare). Yavaşlatma olmadan (2 deneme) hiç kare düşmesi yok.
+      · İlk kare / açılış ekranı: logo kutusu birebir aynı (3x'te 1 piksel), fark yalnızca kenar yumuşatması. Android görünümünde logo 120px, tam orta.
+      · Dokunma, hareketi azalt, yavaş veri (1 / 2,5 / 6 sn) ve eski kilit / giriş / ana ekran testleri geçti.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).

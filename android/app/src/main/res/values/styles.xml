@@ -16,7 +16,11 @@
     </style>
 
 
+    <!-- Açılış (Android 12 API, Capacitor 8 tüm sürümlerde bunu kullanır): koyu zemin + ortada açık yeşil sembol.
+         Sembol 288dp karede 120dp genişlikte; web'deki açılış animasyonunun ilk karesi aynı boyut ve yerde (acilis.js). -->
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
+        <item name="windowSplashScreenBackground">#10180D</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_sembol</item>
     </style>
 </resources>

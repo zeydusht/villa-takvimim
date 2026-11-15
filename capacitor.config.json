@@ -2,19 +2,19 @@
   "appId": "com.zeydtekin.villatakvim",
   "appName": "Villa Takvimim",
   "webDir": "www",
-  "backgroundColor": "#9FE870",
+  "backgroundColor": "#10180D",
   "ios": {
     "contentInset": "never",
     "scheme": "VillaTakvim"
   },
   "android": {
-    "backgroundColor": "#9FE870"
+    "backgroundColor": "#10180D"
   },
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 600,
       "launchAutoHide": false,
-      "backgroundColor": "#9FE870",
+      "backgroundColor": "#10180D",
       "showSpinner": false
     },
     "StatusBar": {
