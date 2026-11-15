@@ -90,9 +90,9 @@ _Hazırlayan: Claude (ürün yöneticisi), 16 Kasım 2026, gece. Zeyd uyuyor; sa
 
 ## E. Villalarım (ana ekran)
 
-- [ ] **18.15 Başlık satırı.** "Villalarım" başlığının **sağında**, sağa dayalı: "● 0 dolu" "● 5 boş" etiketleri (aynı satırda; dar ekranda başlığın altına iner). Altında sadece **"+ Villa ekle"** butonu; "Takvim" ve "Teklifler" hapları kaldırılsın.
-- [ ] **18.16 Villaları sürükleyerek sırala.** Villa kartına basılı tut (400 ms, hafif titreşim) → kart kalkar (gölge + 1,03 ölçek) → sürükle → bırak. Diğer kartlar akıcı yer değiştirir. Sıra kalıcı (önce cihazda; kullanıcıya özel sırayı buluta yazmak için veritabanı gerekirse PROJE_DURUMU'na yaz). Varsayılan sıra (henüz sıralanmamışsa): eklenme sırası, yeni villa en altta. İlk kez 2+ villa olduğunda küçük ipucu: "Sırayı değiştirmek için villaya basılı tutup sürükleyin."
-- [ ] **18.17 "Bugün ve yarın" kartı çok villada:** en fazla 4 satır göster, fazlası için "+3 olay daha · Takvim'de gör". Satıra dokununca o rezervasyon açılsın (şu anki gibi).
+- [x] **18.15 Başlık satırı.** "Villalarım" başlığının **sağında**, sağa dayalı: "● 0 dolu" "● 5 boş" etiketleri (aynı satırda; dar ekranda başlığın altına iner). Altında sadece **"+ Villa ekle"** butonu; "Takvim" ve "Teklifler" hapları kaldırılsın.
+- [x] **18.16 Villaları sürükleyerek sırala.** Villa kartına basılı tut (400 ms, hafif titreşim) → kart kalkar (gölge + 1,03 ölçek) → sürükle → bırak. Diğer kartlar akıcı yer değiştirir. Sıra kalıcı (önce cihazda; kullanıcıya özel sırayı buluta yazmak için veritabanı gerekirse PROJE_DURUMU'na yaz). Varsayılan sıra (henüz sıralanmamışsa): eklenme sırası, yeni villa en altta. İlk kez 2+ villa olduğunda küçük ipucu: "Sırayı değiştirmek için villaya basılı tutup sürükleyin."
+- [x] **18.17 "Bugün ve yarın" kartı çok villada:** en fazla 4 satır göster, fazlası için "+3 olay daha · Takvim'de gör". Satıra dokununca o rezervasyon açılsın (şu anki gibi).
 
 ## F. Aşağı çekip yenile
 

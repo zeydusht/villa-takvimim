@@ -698,6 +698,7 @@
     "Ödeme kaydedilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Payment could not be saved. Check your internet connection and try again.",
     "Ödeme kaydedilemedi.":"Payment could not be saved.",
     // Görev 18
+    "Sırayı değiştirmek için villaya basılı tutup sürükleyin.":"To change the order, press and hold a villa, then drag it.",
     "Villanızın adı":"Your villa's name",
     "Villayı ekle":"Add villa",
     "Örn. Villa Salta":"E.g. Villa Salta",
@@ -752,6 +753,7 @@
 
   var K = [
     // Görev 18: seçim paneli "24 → 27 Kasım · 3 gece · 9.000 ₺"
+    [/^\+(\d+) olay daha · Takvim'de gör$/, "+$1 more · see in Calendar"],
     [/^(.+) ayı için gecelik fiyat$/, "Nightly price for $1"],
     [/^(.+) ayına uygulanır\. Diğer ayları sonra Fiyatlar'dan girebilirsiniz\.$/, "Applies to $1. You can enter other months later under Prices."],
     [/^Geçen yıl: (.+)$/, "Last year: $1"],
