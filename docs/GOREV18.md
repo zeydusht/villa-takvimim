@@ -39,9 +39,9 @@ _Hazırlayan: Claude (ürün yöneticisi), 16 Kasım 2026, gece. Zeyd uyuyor; sa
 
 ## B. Villa ekranı
 
-- [ ] **18.5 "Sıradaki" kartı her zaman var.** Rezervasyon yoksa da aynı yerde (villa başlığının altında) dursun: "SIRADAKİ · Henüz rezervasyon yok" + "İlk rezervasyonunuzu girin" + buton **"Nasıl yapılır?"** → 18.13 öğretici turunun takvim adımını başlatır (takvime kaydırır, ilk boş günü nabız gibi vurgular, baloncuk: "1. Misafirin gireceği güne dokunun"; dokununca: "2. Çıkacağı güne dokunun"; sonra alttaki panel vurgulanır: "3. Rezervasyon'a dokunun").
-- [ ] **18.6 Takvim başlığı çakışıyor.** "Kasım 2026" ve ‹ › okları üstteki "Villanızı hazırlayın" kartına değiyor. Arada en az 24 px boşluk; okların dokunma alanı (48 px) başka öğeyle çakışmasın.
-- [ ] **18.7 Villa yönetimi sırası:** Villa bilgileri · **Fiyatlar** · **Teklifler** · Misafirler · Gelir & gider · Bakıcılar.
+- [x] **18.5 "Sıradaki" kartı her zaman var.** Rezervasyon yoksa da aynı yerde (villa başlığının altında) dursun: "SIRADAKİ · Henüz rezervasyon yok" + "İlk rezervasyonunuzu girin" + buton **"Nasıl yapılır?"** → 18.13 öğretici turunun takvim adımını başlatır (takvime kaydırır, ilk boş günü nabız gibi vurgular, baloncuk: "1. Misafirin gireceği güne dokunun"; dokununca: "2. Çıkacağı güne dokunun"; sonra alttaki panel vurgulanır: "3. Rezervasyon'a dokunun").
+- [x] **18.6 Takvim başlığı çakışıyor.** "Kasım 2026" ve ‹ › okları üstteki "Villanızı hazırlayın" kartına değiyor. Arada en az 24 px boşluk; okların dokunma alanı (48 px) başka öğeyle çakışmasın.
+- [x] **18.7 Villa yönetimi sırası:** Villa bilgileri · **Fiyatlar** · **Teklifler** · Misafirler · Gelir & gider · Bakıcılar.
 
 ## C. Teklifler ve Fiyatlar
 

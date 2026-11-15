@@ -257,6 +257,8 @@
 
   /* takvim */
   .monthbar{display:flex; align-items:center; justify-content:space-between}
+  /* 18.6: üstteki "Villanızı hazırlayın" kartıyla arada en az 24 px (okların 48 px dokunma alanı çakışmasın) */
+  #kurulum:not(.hide) + .adimSerit + .monthbar, #siradaki:not(:empty) + .adimSerit + .monthbar{margin-top:1.5rem}
   .monthbar .m{font-family:var(--serif); font-size:1.1875rem; letter-spacing:-.02em}
   .nav{display:flex; gap:.25rem}
   .nav button{width:3rem; height:3rem; border-radius:99px; line-height:0; color:var(--ink);
@@ -786,11 +788,11 @@
   @media (max-width:360px){ .okutu{padding:.5rem .5625rem} .okutu .lab{letter-spacing:.02em; min-height:2.6em} }
   /* 10.2 / 10.6 yuvarlak çerçeveli ok butonları; basınca merkezden dolar */
   .barGeri, .nav button{position:relative; overflow:hidden; isolation:isolate; border-radius:99px;
-    width:2.75rem; height:2.75rem; transition:transform var(--hiz-bas) ease-out, border-color var(--hiz-bas), color var(--hiz-bas)}
+    width:3rem; height:3rem; transition:transform var(--hiz-bas) ease-out, border-color var(--hiz-bas), color var(--hiz-bas)}
   .barGeri svg, .nav button svg{position:relative; z-index:1}
   .barGeri::before, .nav button::before{content:""; position:absolute; inset:0; border-radius:inherit;
     transform:scale(0); transition:transform var(--hiz-bas) ease-out}
-  .barGeri{border:2px solid rgba(255,255,255,.8); background:rgba(255,255,255,.14); margin:-.375rem .25rem -.375rem -.125rem}
+  .barGeri{border:2px solid rgba(255,255,255,.8); background:rgba(255,255,255,.14); margin:-.5rem .25rem -.5rem -.125rem}
   .barGeri::before{background:#fff}
   .barGeri:active{opacity:1; transform:scale(.92); color:var(--ok)}
   .nav{gap:.5rem; flex:none}
@@ -1095,6 +1097,11 @@
   .sirKalan{font-size:.9375rem; color:#9B2C4A; white-space:nowrap}
   .sirAlindi{display:inline-flex; align-items:center; gap:.25rem; font-size:.9375rem; color:var(--ok); white-space:nowrap}
   #siradaki:not(:empty){margin:0 0 1.5rem}
+  .sirKart.sirBos{background:#fff; border-style:dashed}
+  .sirKart.sirBos:active{transform:none; background:#fff}
+  .sirBosYazi{font-size:.9375rem; color:var(--muted)}
+  .sirBosAlt{display:block; font-size:1.125rem; line-height:1.3; margin-top:.5rem}
+  .sirBos .big{margin-top:.875rem}
   /* 17.4: rezervasyon detayının en üstünde "Ödemeyi al ve misafiri yerleştir" / "Misafir çıktı mı?" */
   .akisKart{margin:1rem 0 .5rem; padding:1rem; border-radius:var(--kose); background:#E3EFEC; border:2px solid var(--ok)}
   .akisKart .big{margin-top:.5rem}
@@ -1152,6 +1159,28 @@
   .spBtn.ana:active{background:#08443F}
   @media (max-width:370px){ .spBtn{font-size:.875rem} }
   @media (prefers-reduced-motion: reduce){ .secPanel, .secPanel.acik{transition:none} }
+  /* 18.13 / 18.5: uygulama turu — perde, delik, baloncuk */
+  .tur{position:fixed; inset:0; z-index:70; animation:turAc var(--hiz-ac) ease-out}
+  .tur.kapaniyor{opacity:0; transition:opacity var(--hiz-kapa) ease-in}
+  @keyframes turAc{from{opacity:0}to{opacity:1}}
+  .turDelik{position:fixed; left:0; top:0; width:0; height:0; border-radius:16px; pointer-events:none;
+    box-shadow:0 0 0 2px rgba(255,255,255,.9), 0 0 0 9999px rgba(16,22,19,.64); transition:opacity var(--hiz-ac)}
+  .turBalon{position:fixed; left:1rem; right:1rem; top:0; max-width:26rem; margin:0 auto; background:#fff; border-radius:18px;
+    padding:1rem 1rem 1rem; box-shadow:0 10px 30px rgba(0,0,0,.22); will-change:transform}
+  .turBalon.yeni{animation:turBalon 280ms cubic-bezier(.2,.8,.2,1)}
+  @keyframes turBalon{from{opacity:0}to{opacity:1}}
+  .turSay{font-size:.8125rem; color:var(--muted); letter-spacing:.06em}
+  .turSay:empty{display:none}
+  .turMetin{font-size:1.125rem; line-height:1.4; margin-top:.25rem}
+  .turBalon .big{margin-top:.875rem}
+  .turGec{position:fixed; top:calc(.75rem + env(safe-area-inset-top)); right:.75rem; min-height:3rem; padding:0 1rem;
+    border-radius:99px; background:rgba(255,255,255,.95); color:var(--ink); font-size:.9375rem; border:0}
+  .turGec:active{transform:scale(.97)}
+  .cell.turNabiz{z-index:1; overflow:visible}
+  .cell.turNabiz::after{content:""; position:absolute; inset:-2px; border-radius:12px; border:3px solid var(--ok); pointer-events:none;
+    animation:turNabiz 1.2s ease-out infinite}
+  @keyframes turNabiz{0%{transform:scale(.9); opacity:1}100%{transform:scale(1.35); opacity:0}}
+  @media (prefers-reduced-motion: reduce){ .tur, .turBalon.yeni, .cell.turNabiz::after{animation:none} }
   /* 11.8 alt menü: seçili sekmede dolu ikon */
   .sekmeler button svg.ik{width:22px; height:22px}
 </style>
@@ -1415,14 +1444,6 @@
       <div id="opsListe"></div>
     </div>
 
-    <div class="section" id="fiyatBolum">
-      <div class="eyebrow" data-iki="fiyat:etiket">Fiyatlar</div>
-      <div class="grup">
-      <button class="satirBtn" id="fiyatBtn" data-ikk="fiyat:etiket">
-        <span id="fiyatOzet">Fiyat belirle</span>
-      </button>
-      </div>
-    </div>
 
     <div class="section">
       <div class="eyebrow" data-iki="bilgi:ev">Villa yönetimi</div>
@@ -1431,8 +1452,12 @@
         <span><span>Villa bilgileri</span><span class="satirAlt hide" id="bilgiAlt"></span></span>
         <span class="sag" id="bilgiOzet"></span>
       </button>
-      <button class="satirBtn hide" id="bakiciBtn" data-ikk="bakici:anahtar">
-        <span>Bakıcılar</span>
+      <!-- 18.7: Villa bilgileri · Fiyatlar · Teklifler · Misafirler · Gelir & gider · Bakıcılar -->
+      <button class="satirBtn" id="fiyatBtn" data-ikk="fiyat:etiket">
+        <span><span>Fiyatlar</span><span class="satirAlt" id="fiyatOzet">Fiyat belirle</span></span>
+      </button>
+      <button class="satirBtn hide" id="teklifBtn" data-ikk="para:rozet-yuzde">
+        <span>Teklifler</span>
       </button>
       <button class="satirBtn" id="misafirBtn" data-ikk="misafir:kisiler">
         <span>Misafirler</span>
@@ -1440,8 +1465,8 @@
       <button class="satirBtn" id="kasaBtn" data-ikk="para:cuzdan">
         <span>Gelir &amp; gider</span>
       </button>
-      <button class="satirBtn hide" id="teklifBtn" data-ikk="para:rozet-yuzde">
-        <span>Teklifler</span>
+      <button class="satirBtn hide" id="bakiciBtn" data-ikk="bakici:anahtar">
+        <span>Bakıcılar</span>
       </button>
       <button class="satirBtn hide" id="giderlerimBtn" data-ikk="para:fis">
         <span>Giderlerim</span>
@@ -3156,6 +3181,15 @@
         sag+"</span>"+
       "</button>";
   }
+  // 18.5: rezervasyon yoksa da kart aynı yerde: "SIRADAKİ · Henüz rezervasyon yok" + "Nasıl yapılır?" (takvim turu)
+  function sirBosHTML(v){
+    var hic=!(v.rez||[]).length;
+    return '<div class="sirKart sirBos"><span class="sirUst"><span class="sirBas">'+esc(cev("Sıradaki"))+"</span>"+
+      '<span class="sirBosYazi">· '+esc(cev(hic?"Henüz rezervasyon yok":"Yaklaşan rezervasyon yok"))+"</span></span>"+
+      '<span class="sirBosAlt">'+esc(cev(hic?"İlk rezervasyonunuzu girin":"Yeni rezervasyon girin"))+"</span>"+
+      (duzenlenebilir()?'<button class="big renkli is-rez" data-ik="yardim" id="sirNasil" type="button">'+esc(cev("Nasıl yapılır?"))+"</button>":"")+
+      "</div>";
+  }
   function yaklasanlar(v){
     return v.rez.filter(function(r){return parse(r.end)>=today})
                 .sort(function(a,c){return a.start<c.start?-1:1});
@@ -3303,12 +3337,13 @@
     // 18.3: seçim işlemleri altta (başparmak bölgesi), alt menünün hemen üstünde kayan panel
     document.getElementById("adimSerit").classList.add("hide");
     secPanelCiz(v);
+    if(TUR) setTimeout(turGuncelle,0);
 
     // Bugünden sonraki ilk 6 rezervasyon; fazlası "Tümünü gör" panelinde (ay ay)
     // 12.4: en yakın olay ayrı kartta; listede tekrar etmez
     var tumYak=yaklasanlar(v), sir=siradakiOlay(v);
     var kalanlar=sir?tumYak.filter(function(r){ return r.id!==sir.r.id; }):tumYak, yak=kalanlar.slice(0,6);
-    document.getElementById("siradaki").innerHTML=sir?siradakiHTML(v,sir):"";
+    document.getElementById("siradaki").innerHTML=sir?siradakiHTML(v,sir):sirBosHTML(v);
     var lh="";
     if(!tumYak.length) lh='<div style="margin-top:1rem">'+cizimImg("bos-rezervasyon")+'</div><div class="sm muted" style="text-align:center">Henüz rezervasyon yok. Takvimden tarih aralığı seçerek başlayın.</div>';
     else yak.forEach(function(r){ lh+=rezKartHTML(v,r,true); });
@@ -3338,7 +3373,6 @@
         ? cev(gl0.length+" kayıt")+" · "+para(gl0.reduce(function(a,x){return a+(x.tutar||0)},0)) : cev("Gider ekle");
     }
     document.getElementById("fiyatBtn").classList[(sahip&&duz)?"remove":"add"]("hide");
-    document.getElementById("fiyatBolum").classList[(sahip&&duz)?"remove":"add"]("hide");
     document.getElementById("bakiciBtn").classList[(S.bulut&&sahip&&!S.destek)?"remove":"add"]("hide");
     // 16.6: villa ekranında Teklifler bölümü görünüyorsa "Teklifler" satırı tekrarlanmaz
     var tkVar=!!(S.tkOn && S.tkOn[v.id] && S.tkOn[v.id].l && S.tkOn[v.id].l.length && teklifVerebilir());
@@ -3458,6 +3492,137 @@
     p.classList.remove("acik");
     document.body.classList.remove("secPanelAcik");
   }
+
+  // ================= 18.13 / 18.5 UYGULAMA TURU =================
+  // Koyu yarı saydam perde, vurgulanan öğede delik, altta/üstte baloncuk + "İleri", sağ üstte "Turu geç".
+  // Adım: {hedef:fn→öğe, metin, bekle:"aralik"|"rez"|null, metin2 (başlangıç seçilince), hazirla:fn}
+  // "bekle" adımlarında perdedeki delikten gerçek dokunuş geçer (takvim günleri, alttaki panel).
+  var TUR=null, TUR_ANAHTAR="vt-tur";
+  function turBaslat(adimlar,bitince,sec){
+    turBitir(true);
+    var o=document.createElement("div");
+    o.className="tur"; o.setAttribute("role","dialog"); o.setAttribute("aria-modal","true");
+    o.innerHTML='<div class="turDelik"></div><div class="turBalon"><div class="turSay"></div><div class="turMetin"></div>'+
+      '<button class="big turIleri" type="button"></button></div>'+
+      '<button class="turGec" type="button">'+esc(cev("Turu geç"))+"</button>";
+    document.body.appendChild(o);
+    TUR={o:o, adimlar:adimlar, i:-1, bitince:bitince, raf:0, sayacYok:!!(sec&&sec.sayacYok)};
+    o.addEventListener("click",function(e){
+      if(e.target.closest(".turGec")){ titret("hafif"); turBitir(); return; }
+      if(e.target.closest(".turIleri")){ titret("hafif"); turAdim(TUR.i+1); return; }
+      if(e.target.closest(".turBalon")) return;
+      // delikten geçen dokunuş: bekleyen adımda alttaki öğeye iletilir
+      var a=TUR && TUR.adimlar[TUR.i]; if(!a || !a.bekle) return;
+      var r=TUR.rect; if(!r || e.clientX<r.left || e.clientX>r.right || e.clientY<r.top || e.clientY>r.bottom) return;
+      o.style.pointerEvents="none";
+      var hedef=document.elementFromPoint(e.clientX,e.clientY);
+      o.style.pointerEvents="";
+      // ikon (SVG) üstüne düşse de olay butona kadar kabarcıklanır
+      if(hedef) hedef.dispatchEvent(new MouseEvent("click",{bubbles:true, cancelable:true, clientX:e.clientX, clientY:e.clientY, view:window}));
+      setTimeout(turGuncelle,30);
+    });
+    var izle=function(){ if(!TUR || TUR.o!==o) return; turYerlestir(); TUR.raf=requestAnimationFrame(izle); };
+    turAdim(0);
+    TUR.raf=requestAnimationFrame(izle);
+  }
+  function turBitir(sessiz){
+    if(!TUR) return;
+    var t=TUR; TUR=null;
+    cancelAnimationFrame(t.raf);
+    Array.prototype.forEach.call(document.querySelectorAll(".turNabiz"),function(x){ x.classList.remove("turNabiz"); });
+    t.o.classList.add("kapaniyor");
+    setTimeout(function(){ if(t.o.parentNode) t.o.remove(); },azHareket()?0:180);
+    if(!sessiz && t.bitince) t.bitince();
+  }
+  function turAdim(i){
+    if(!TUR) return;
+    if(i>=TUR.adimlar.length){ turBitir(); return; }
+    TUR.i=i;
+    var a=TUR.adimlar[i];
+    Array.prototype.forEach.call(document.querySelectorAll(".turNabiz"),function(x){ x.classList.remove("turNabiz"); });
+    if(a.hazirla) a.hazirla();
+    TUR.o.classList.toggle("bekliyor",!!a.bekle);
+    var b=TUR.o.querySelector(".turBalon");
+    b.classList.remove("yeni"); void b.offsetWidth; b.classList.add("yeni");
+    turGuncelle();
+  }
+  // bekleyen adımda uygulamanın durumuna göre metin / sonraki adım
+  function turGuncelle(){
+    if(!TUR) return;
+    var a=TUR.adimlar[TUR.i]; if(!a) return;
+    if(a.bekle==="aralik" && S.secim){ turAdim(TUR.i+1); return; }
+    if(a.bekle==="rez" && document.querySelector(".overlay:not(.kapaniyor)")){ turBitir(); return; }
+    var n=TUR.adimlar.length;
+    TUR.o.querySelector(".turSay").textContent=TUR.sayacYok?"":cev((TUR.i+1)+"/"+n);
+    TUR.o.querySelector(".turMetin").textContent=cev((a.bekle==="aralik" && S.start && a.metin2) ? a.metin2 : a.metin);
+    var ileri=TUR.o.querySelector(".turIleri");
+    ileri.textContent=cev(TUR.i===n-1?"Bitir":"İleri");
+    ileri.classList.toggle("hide",!!a.bekle);
+    turYerlestir();
+  }
+  function turYerlestir(){
+    if(!TUR) return;
+    var a=TUR.adimlar[TUR.i], el=a && a.hedef && a.hedef(), d=TUR.o.querySelector(".turDelik"), b=TUR.o.querySelector(".turBalon");
+    var W=window.innerWidth, H=window.innerHeight, pay=8;
+    if(!el || el.offsetParent===null && getComputedStyle(el).position!=="fixed"){ d.style.opacity="0"; TUR.rect=null; }
+    else {
+      var r=el.getBoundingClientRect(), x=Math.max(4,r.left-pay), y=Math.max(4,r.top-pay), w=Math.min(W-4,r.right+pay)-x, h=Math.min(H-4,r.bottom+pay)-y;
+      var anahtar=[x,y,w,h].map(Math.round).join(",");
+      if(anahtar!==TUR.son){
+        TUR.son=anahtar;
+        d.style.opacity="1"; d.style.left=x+"px"; d.style.top=y+"px"; d.style.width=Math.max(0,w)+"px"; d.style.height=Math.max(0,h)+"px";
+      }
+      TUR.rect={left:x, top:y, right:x+w, bottom:y+h};
+    }
+    // baloncuk: deliğin altında yer varsa altta, yoksa üstte; ikisi de yoksa ekranın üstünde
+    var bh=b.offsetHeight, R=TUR.rect, ust;
+    if(!R) ust=H-bh-16;
+    else if(H-R.bottom>=bh+20) ust=R.bottom+12;
+    else if(R.top>=bh+20) ust=R.top-bh-12;
+    else ust=Math.max(56,(H-bh)/2);
+    b.style.transform="translateY("+Math.round(ust)+"px)";
+  }
+  // takvim adımı: takvimi ekrana getirir, ilk boş günü nabız gibi vurgular
+  function turTakvimHazirla(){
+    var g=document.getElementById("grid"); if(!g) return;
+    var ab=document.getElementById("appBar"), ust=(ab&&!ab.classList.contains("hide"))?ab.offsetHeight:0;
+    var bas=document.querySelector("#takvim .monthbar");
+    try{ window.scrollTo(0, Math.max(0,(bas||g).getBoundingClientRect().top+window.scrollY-ust-150)); }catch(e){}
+    var tk=fmt(today), bos=Array.prototype.filter.call(g.querySelectorAll(".cell"),function(c){
+      var o=gun(c.dataset.k); return c.dataset.k>=tk && !o.sabah && !o.aksam; })[0];
+    if(bos) bos.classList.add("turNabiz");
+  }
+  var turAdimTakvim=function(no){ return {hedef:function(){ return document.getElementById("grid"); }, bekle:"aralik", hazirla:turTakvimHazirla,
+    metin:(no?no+". ":"")+"Misafirin gireceği güne, sonra çıkacağı güne dokunun.",
+    metin2:(no?(no+1)+". ":"")+"Şimdi çıkacağı güne dokunun."}; };
+  // 18.5 "Nasıl yapılır?": 1. giriş günü, 2. çıkış günü, 3. Rezervasyon'a dokunun
+  function turTakvim(){
+    if(!aktif()) return;
+    S.secim=null; S.start=null; S.rezModu=false; S.uyari=""; ciz();
+    turBaslat([
+      {hedef:function(){ return document.getElementById("grid"); }, bekle:"aralik", hazirla:turTakvimHazirla,
+       metin:"1. Misafirin gireceği güne dokunun", metin2:"2. Çıkacağı güne dokunun"},
+      {hedef:function(){ return document.getElementById("secPanel"); }, bekle:"rez", metin:"3. Rezervasyon'a dokunun"}
+    ],null,{sayacYok:true});
+  }
+  // 18.13: kurulum bitince villa ekranında 4 adımlı tur (bir kez; Hesap → Yardım'dan tekrar)
+  function turGosterildi(){ try{ return !!localStorage.getItem(TUR_ANAHTAR); }catch(e){ return true; } }
+  function turAna(){
+    if(!aktif()) return;
+    try{ localStorage.setItem(TUR_ANAHTAR,"1"); }catch(e){}
+    S.secim=null; S.start=null; S.rezModu=false; S.uyari=""; ciz();
+    try{ window.scrollTo(0,0); }catch(e){}
+    turBaslat([
+      {hedef:function(){ return document.querySelector("#siradaki .sirKart"); },
+       hazirla:function(){ try{ window.scrollTo(0,0); }catch(e){} },
+       metin:"Burada her zaman sıradaki iş yazar: kim girecek, ne kadar alınacak."},
+      turAdimTakvim(0),
+      {hedef:function(){ return document.getElementById("secPanel"); }, metin:"Rezervasyon, teklif ya da opsiyon seçin."},
+      {hedef:function(){ return document.getElementById("sekmeler"); },
+       hazirla:function(){ S.secim=null; S.start=null; ciz(); },
+       metin:"Takvim sekmesinde tüm villalarınızın giriş-çıkışları, Hesap'ta ayarlar."}
+    ],function(){ if(S.secim||S.start){ S.secim=null; S.start=null; ciz(); } });
+  }
   document.getElementById("grid").addEventListener("click",function(ev){
     var b=ev.target.closest(".cell"); if(!b) return;
     var k=b.dataset.k; S.uyari="";
@@ -3497,7 +3662,8 @@
   });
 
   document.getElementById("siradaki").addEventListener("click",function(ev){
-    var b=ev.target.closest(".sirKart"); if(!b || !aktif()) return;
+    if(ev.target.closest("#sirNasil")){ turTakvim(); return; }
+    var b=ev.target.closest(".sirKart[data-id]"); if(!b || !aktif()) return;
     var r=aktif().rez.filter(function(x){return x.id===b.dataset.id})[0];
     if(r) detay(r);
   });
