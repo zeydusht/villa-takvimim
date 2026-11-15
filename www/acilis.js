@@ -37,20 +37,20 @@
 
   // ---------- stil ----------
   var CSS =
-    "#acilis{position:fixed;inset:0;z-index:2147483000;background:#0B5B57;overflow:hidden;" +
+    "#acilis{position:fixed;inset:0;z-index:2147483000;background:#9FE870;overflow:hidden;" +
       "-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:none}" +
     /* logo: native açılış ekranıyla aynı yer ve boyut (2732'lik kare, ekranı kaplayacak şekilde ölçeklenir) */
-    "#acilis .acLogo{position:absolute;left:50%;top:50%;width:calc(475 / 2732 * max(100vw,100vh));height:auto;" +
+    "#acilis .acLogo{position:absolute;left:50%;top:50%;width:calc(609 / 2732 * max(100vw,100vh));height:auto;" +
       "transform:translate(-50%,-50%);pointer-events:none}" +
     /* hap şerit: açık yeşil kenar katmanı + desen katmanı, ikisi de clip-path ile */
     "#acilis .acKat{position:absolute;inset:0;will-change:clip-path}" +
     "#acilis .acYesil{background:#9FE2BF;clip-path:inset(100% calc(50% - 32px) 0 calc(50% - 32px) round 32px)}" +
     "#acilis .acDoku{background:#9FE2BF url(img/acilis-doku.webp) center/cover no-repeat;" +
       "clip-path:inset(calc(100% + 60px) calc(50% - 28px) 0 calc(50% - 28px) round 28px)}" +
-    /* hapın tepesi: 56px koyu yeşil daire, içinde beyaz ev */
+    /* hapın tepesi: 56px koyu (#163300) daire, içinde beyaz ev */
     "#acilis .acBas{position:absolute;left:50%;top:0;width:64px;height:64px;margin-left:-32px;" +
       "display:flex;align-items:center;justify-content:center;transform:translateY(calc(100vh + 72px));visibility:hidden;will-change:transform,opacity}" +
-    "#acilis .acDaire{width:56px;height:56px;border-radius:50%;background:#0B5B57;display:flex;align-items:center;justify-content:center}" +
+    "#acilis .acDaire{width:56px;height:56px;border-radius:50%;background:#163300;display:flex;align-items:center;justify-content:center}" +
     "#acilis .acDaire svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}" +
     /* 2) yüksel — 550 ms */
     "#acilis.yuksel .acYesil,#acilis.yuksel .acDoku,#acilis.yuksel .acBas{transition:clip-path 550ms cubic-bezier(.2,.8,.2,1),transform 550ms cubic-bezier(.2,.8,.2,1)}" +
@@ -71,12 +71,12 @@
     ".acGiris.acGel{transition:transform 250ms cubic-bezier(.2,.8,.2,1),opacity 250ms ease-out;transform:none;opacity:1}" +
     /* kilit: Face ID başarısızsa */
     "#acilis .acKilit{position:absolute;left:0;right:0;bottom:calc(3rem + env(safe-area-inset-bottom));display:none;" +
-      "flex-direction:column;align-items:center;gap:.75rem;padding:0 1.5rem;color:#fff;text-align:center}" +
+      "flex-direction:column;align-items:center;gap:.75rem;padding:0 1.5rem;color:#163300;text-align:center}" +
     "#acilis.kilitli .acKilit{display:flex}" +
     "#acilis .acKilit p{margin:0 0 .25rem;font-size:.95rem;opacity:.85}" +
     "#acilis .acKilit button{width:100%;max-width:20rem;min-height:3.25rem;border-radius:999px;font:inherit;font-size:1rem;" +
-      "font-weight:500;border:1.5px solid rgba(255,255,255,.6);background:transparent;color:#fff;cursor:pointer;text-align:center}" +
-    "#acilis .acKilit button.acAna{background:#fff;color:#0B5B57;border-color:#fff}";
+      "font-weight:500;border:1.5px solid rgba(22,51,0,.55);background:transparent;color:#163300;cursor:pointer;text-align:center}" +
+    "#acilis .acKilit button.acAna{background:#163300;color:#fff;border-color:#163300}";
 
   var EV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>' +
     '<path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';

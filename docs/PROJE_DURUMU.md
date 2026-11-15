@@ -341,6 +341,17 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
 - [x] İkon 3. tur (docs/CODEX_APP_IKON_3.md) · Claude Code (15 Kasım). 1. turdaki ikon-02 çizimi, A renkleri (#9FE870 / #163300);
       her biri ayrı Codex isteği, referans görsel `-i` ile eklendi (hepsi ilk denemede): `docs/ikonlar3/ikon3-01 … 05`. Codex görseli
       ürettikten sonra tam iki renge indirip 1024×1024'e getirdi. Kontrol sayfası `docs/ikon-adaylari-3.html`. Uygulamanın ikonu DEĞİŞMEDİ.
+- [x] YENİ UYGULAMA İKONU: `docs/ikonlar3/ikon3-02.png` (zemin #9FE870, sembol #163300) · Claude Code (15 Kasım). Netlify'a yüklenmedi.
+      Tüm görseller ikon3-02'den, kenarları yumuşatılarak üretildi (Python/PIL): `assets/icon-only.png`; Android uyarlanabilir ikon
+      (`icon-background.png` düz #9FE870, `icon-foreground.png` saydam, sembol %60 — capacitor-assets ön planı %16,7 içeriden çizdiği
+      için yuvarlak ikonda da kesilmiyor); açılış `splash.png` / `splash-dark.png` (2732, sembol %22). `npx capacitor-assets generate`
+      ile iOS ve Android ikonları + açılış ekranları üretildi (aracın kendiliğinden yazdığı `icons/` klasörü ve manifest değişikliği geri alındı).
+      capacitor.config.json: backgroundColor / android / SplashScreen → #9FE870. Açılış animasyonu (acilis.js): zemin #9FE870, logo
+      `www/img/acilis-logo.webp` açılış ekranından birebir (609/2732 ölçeği; ilk karede sembol aynı yerde, test edildi), yükselen şeridin
+      tepesindeki daire #163300; kilit ekranı yazı/düğmeleri açık zeminde koyu. Web: icon-180/192/512 (köşesiz), `icon-512-maskable.png`
+      (kenar boşluklu, manifest'te "any maskable"), `favicon.ico` + `favicon-32.png` (index.html ve g.html'de bağlantılı); manifest
+      theme/background #9FE870. Uygulama içi logolar: üst çubukta `img/logo-acik.png` (#9FE870), giriş / yeni şifre / onay ekranında
+      `img/logo-koyu.png` (#163300), "Ana ekrana ekleyin" kartında uygulama ikonu. `ikon3-05.png` (2×2) silindi.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).

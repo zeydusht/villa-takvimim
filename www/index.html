@@ -13,7 +13,9 @@
 <meta name="apple-mobile-web-app-title" content="Villa Takvim">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" href="icon-192.png">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <style>
   :root{
     color-scheme: light only;
@@ -164,7 +166,7 @@
   .gunBas{font-size:.75rem; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin:1.5rem 0 .25rem}
 
   /* ana ekran */
-  .mark{width:2.5rem; height:2.5rem; margin:0 auto .875rem}
+  .mark{display:block; width:2.75rem; height:2.75rem; object-fit:contain; margin:0 auto .875rem}
   .sekmeEkran h1{font-size:1.875rem}
   .hatirlat{margin-top:1.5rem; border:1px solid var(--line); border-radius:.875rem; overflow:hidden}
   .hatirlat .hBas{background:var(--soft); padding:.75rem 1rem; font-size:.75rem;
@@ -177,7 +179,7 @@
   .kurKart{display:flex; align-items:center; gap:.75rem; background:var(--soft);
     border-radius:.875rem; padding:.875rem 2.75rem .875rem 1rem; margin-top:1.5rem; position:relative}
   .kurIkon{width:2.5rem; height:2.5rem; flex:none}
-  .kurIkon svg{width:100%; height:100%; border-radius:.625rem}
+  .kurIkon img{width:100%; height:100%; border-radius:22.5%; display:block}
   .kurMetin{flex:1; min-width:0; padding-right:1rem}
   .kurBas{font-size:.9375rem; font-weight:500}
   .kurAlt{font-size:.75rem; color:var(--muted); margin-top:.125rem}
@@ -1091,13 +1093,7 @@
     <div class="appBarIc">
       <button class="barGeri hide" id="barGeri" aria-label="Geri" data-ik="sol" data-ik-boy="22">
       </button>
-      <svg width="22" height="22" viewBox="0 0 100 100" aria-hidden="true" class="barLogo">
-        <defs><clipPath id="kirpBar"><rect width="100" height="100" rx="26"/></clipPath></defs>
-        <g clip-path="url(#kirpBar)">
-          <rect width="100" height="100" fill="rgba(255,255,255,.55)"/>
-          <polygon points="62,0 100,0 100,100 38,100" fill="#fff"/>
-        </g>
-      </svg>
+      <img src="img/logo-acik.png" width="22" height="22" alt="" aria-hidden="true" class="barLogo">
       <span>Villa Takvim</span>
     </div>
   </div>
@@ -1109,13 +1105,7 @@
 
   <!-- GİRİŞ -->
   <div id="giris" class="hide">
-    <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
-      <defs><clipPath id="kirp2"><rect width="100" height="100" rx="26"/></clipPath></defs>
-      <g clip-path="url(#kirp2)">
-        <rect width="100" height="100" fill="#CFDEDC"/>
-        <polygon points="62,0 100,0 100,100 38,100" fill="#0B5B57"/>
-      </g>
-    </svg>
+    <img class="mark" src="img/logo-koyu.png" alt="" aria-hidden="true">
     <h1 style="text-align:center">Villa Takvim</h1>
     <div class="sm muted" id="girisAlt" style="text-align:center;margin-top:.5rem">
       Villalarınızı ve rezervasyonlarınızı tek yerden yönetin
@@ -1148,13 +1138,7 @@
 
   <!-- YENİ ŞİFRE -->
   <div id="sifre" class="hide">
-    <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
-      <defs><clipPath id="kirp4"><rect width="100" height="100" rx="26"/></clipPath></defs>
-      <g clip-path="url(#kirp4)">
-        <rect width="100" height="100" fill="#CFDEDC"/>
-        <polygon points="62,0 100,0 100,100 38,100" fill="#0B5B57"/>
-      </g>
-    </svg>
+    <img class="mark" src="img/logo-koyu.png" alt="" aria-hidden="true">
     <h1 style="text-align:center;font-size:1.875rem">Yeni şifre belirleyin</h1>
     <div class="sm muted" id="sifreAlt" style="text-align:center;margin-top:.75rem;line-height:1.6">
       Hesabınız için yeni bir şifre yazın.
@@ -1172,13 +1156,7 @@
 
   <!-- ONAY BEKLİYOR -->
   <div id="onay" class="hide">
-    <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
-      <defs><clipPath id="kirp3"><rect width="100" height="100" rx="26"/></clipPath></defs>
-      <g clip-path="url(#kirp3)">
-        <rect width="100" height="100" fill="#CFDEDC"/>
-        <polygon points="62,0 100,0 100,100 38,100" fill="#0B5B57"/>
-      </g>
-    </svg>
+    <img class="mark" src="img/logo-koyu.png" alt="" aria-hidden="true">
     <h1 style="text-align:center;font-size:1.875rem" id="onayBaslik">Hesabınız onay bekliyor</h1>
     <div class="sm muted" id="onayMetin" style="text-align:center;margin-top:.75rem;line-height:1.6">
       Kaydınızı aldık. Hesabınız onaylandığında uygulamayı kullanmaya başlayabilirsiniz.
@@ -1201,13 +1179,7 @@
     <div class="hatirlat hide" id="hatirlat"></div>
     <div class="kurKart hide" id="kurKart">
       <div class="kurIkon">
-        <svg viewBox="0 0 100 100" aria-hidden="true">
-          <defs><clipPath id="kirpKur"><rect width="100" height="100" rx="26"/></clipPath></defs>
-          <g clip-path="url(#kirpKur)">
-            <rect width="100" height="100" fill="#0B5B57"/>
-            <polygon points="62,0 100,0 100,100 38,100" fill="rgba(255,255,255,.9)"/>
-          </g>
-        </svg>
+        <img src="icon-180.png" alt="" aria-hidden="true">
       </div>
       <div class="kurMetin">
         <div class="kurBas">Ana ekrana ekleyin</div>

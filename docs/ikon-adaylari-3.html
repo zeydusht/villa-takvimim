@@ -55,7 +55,7 @@
 <div class="sayfa">
   <div class="ust">
     <h1>Uygulama ikonu adayları · 3. tur</h1>
-    <p>1. turdaki “Takvim çatısı” çizimi, yeni renklerle (canlı limon yeşili zemin, çok koyu yeşil sembol) 5 hâlde. Her biri büyük hâliyle, telefondaki boyutta (60 px, köşeleri yuvarlatılmış) ve açık ve koyu duvar kağıdı üzerinde. En altta hepsi bir telefon ekranında; karşılaştırma için 1. turdaki ikon da var (“1. tur” yazan). Uygulamanın şu anki ikonu değişmedi.</p>
+    <p>1. turdaki “Takvim çatısı” çizimi, yeni renklerle (canlı limon yeşili zemin, çok koyu yeşil sembol) 4 hâlde. Her biri büyük hâliyle, telefondaki boyutta (60 px, köşeleri yuvarlatılmış) ve açık ve koyu duvar kağıdı üzerinde. En altta hepsi bir telefon ekranında; karşılaştırma için 1. turdaki ikon da var (“1. tur” yazan). Uygulamanın şu anki ikonu değişmedi.</p>
   </div>
   <div class="liste" id="liste"></div>
 
@@ -64,15 +64,14 @@
     <div class="izgara" id="izgara"></div>
     <div class="dock"><div class="gri"></div><div class="gri"></div><div class="gri"></div><div class="gri"></div></div>
   </div>
-  <p class="not">Gri kareler diğer uygulamaların yerini tutuyor. Sırayla 1'den 5'e; ilk satırdaki “1. tur” karşılaştırma için.</p>
+  <p class="not">Gri kareler diğer uygulamaların yerini tutuyor. Sırayla 1'den 4'e; ilk satırdaki “1. tur” karşılaştırma için.</p>
 </div>
 <script>
 var ADAY=[
   ["ikon3-01.png","Aynı çizim","1. turdaki çizimin tıpkısı, yeni iki renkle."],
   ["ikon3-02.png","Bir gün dolu","Sağ alttaki gün dolu (rezervasyonlu gün); diğer beşi boş."],
   ["ikon3-03.png","Daha kalın","Kalın çatı, iri takvim, küçük kareler; en küçük boyut için."],
-  ["ikon3-04.png","Eğik","Bütün sembol hafif öne eğik."],
-  ["ikon3-05.png","2×2","3×2 yerine 4 büyük gün karesi; daha sade."]
+  ["ikon3-04.png","Eğik","Bütün sembol hafif öne eğik."]
 ];
 function resim(dosya,sinif){
   return '<img class="'+sinif+'" src="'+(dosya.indexOf("/")<0?"ikonlar3/":"")+dosya+'" alt="" onerror="this.outerHTML=\'<div class=&quot;'+sinif+' yok&quot;>üretilemedi</div>\'">';
@@ -90,7 +89,7 @@ ADAY.forEach(function(a,i){
      '</div></div></div>';
   I+='<div class="app" title="'+(i+1)+' · '+a[1]+'">'+resim(a[0],"ik60")+'<small>Villa Takvimim</small></div>';
 });
-for(var k=0;k<3;k++) I+='<div class="gri"></div>';
+for(var k=0;k<4;k++) I+='<div class="gri"></div>';
 document.getElementById("liste").innerHTML=L;
 document.getElementById("izgara").innerHTML=I;
 </script>
