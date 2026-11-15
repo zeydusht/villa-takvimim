@@ -698,6 +698,24 @@
     "Ödeme kaydedilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Payment could not be saved. Check your internet connection and try again.",
     "Ödeme kaydedilemedi.":"Payment could not be saved.",
     // Görev 18
+    "Villanızın adı":"Your villa's name",
+    "Villayı ekle":"Add villa",
+    "Örn. Villa Salta":"E.g. Villa Salta",
+    "Ad ve konum":"Name and location",
+    "Bu ayın fiyatı":"This month's price",
+    "İletişim":"Contact",
+    "Harita bağlantısı (isteğe bağlı)":"Map link (optional)",
+    "Hafta içi":"Weekdays",
+    "Hafta sonu":"Weekend",
+    "(cuma ve cumartesi geceleri)":"(Friday and Saturday nights)",
+    "Kısa konaklama ücreti ve depozito (isteğe bağlı)":"Short-stay fee and deposit (optional)",
+    "Kaç gece ve altına uygulanır":"Applies to this many nights or fewer",
+    "Örn. 3":"E.g. 3",
+    "En az 20 fotoğraf önerilir: her oda, banyolar, havuz, manzara, dış cephe.":"At least 20 photos are recommended: every room, bathrooms, pool, view, exterior.",
+    "Turizm izin belge no (isteğe bağlı)":"Tourism licence no. (optional)",
+    "Misafirlerinize göndereceğiniz sayfa: fotoğraflar, boş günler ve fiyatlar.":"The page you send to guests: photos, free days and prices.",
+    "Villa sayfamı oluştur":"Create my villa page",
+    "Sayfa oluşturulamadı.":"The page could not be created.",
     "geçmiş":"past",
     "Önceki yıl":"Previous year",
     "Sonraki yıl":"Next year",
@@ -734,6 +752,8 @@
 
   var K = [
     // Görev 18: seçim paneli "24 → 27 Kasım · 3 gece · 9.000 ₺"
+    [/^(.+) ayı için gecelik fiyat$/, "Nightly price for $1"],
+    [/^(.+) ayına uygulanır\. Diğer ayları sonra Fiyatlar'dan girebilirsiniz\.$/, "Applies to $1. You can enter other months later under Prices."],
     [/^Geçen yıl: (.+)$/, "Last year: $1"],
     [/^Teklif · (.+)$/, "Offer · $1"],
     [/^(.+) → (.+) · (\d+) gece(?: · (.+))?$/, function (_, a, b, n, t) { return a + " → " + b + " · " + n + " nights" + (t ? " · " + t : ""); }],

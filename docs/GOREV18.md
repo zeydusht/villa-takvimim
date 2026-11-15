@@ -55,8 +55,8 @@ _Hazırlayan: Claude (ürün yöneticisi), 16 Kasım 2026, gece. Zeyd uyuyor; sa
 
 ## D. Villa ekleme ve kurulum turu (7 adım)
 
-- [ ] **18.10 "Villa ekle" sadece ad sorsun.** İlk panel: tek alan "Villanızın adı" + tek buton **"Villayı ekle"**. Fotoğraf, konum vb. burada YOK. Eklenince kurulum sihirbazı açılır.
-- [ ] **18.11 Sihirbaz 7 adım (sade).** Üstte ilerleme çubuğu ve "2/7". Her adımda **sadece "İleri"** (ve solda "Geri"); "Şimdilik atla" ve "Tüm villa bilgileri" bağlantıları KALDIRILSIN (boş bırakıp İleri denebilir).
+- [x] **18.10 "Villa ekle" sadece ad sorsun.** İlk panel: tek alan "Villanızın adı" + tek buton **"Villayı ekle"**. Fotoğraf, konum vb. burada YOK. Eklenince kurulum sihirbazı açılır.
+- [x] **18.11 Sihirbaz 7 adım (sade).** Üstte ilerleme çubuğu ve "2/7". Her adımda **sadece "İleri"** (ve solda "Geri"); "Şimdilik atla" ve "Tüm villa bilgileri" bağlantıları KALDIRILSIN (boş bırakıp İleri denebilir).
   1. **Ad ve konum** — ad önceden dolu; konum (Google/Apple Haritalar bağlantısı, Görev 13).
   2. **Kaç kişilik?** — Kişi (`users`), Yatak odası (`bed-double`), Banyo (`bath`) — her biri büyük ikonlu kart + − / + sayaç.
   3. **Nesi var?** — mevcut hâli kalsın (çok iyi).
@@ -65,7 +65,7 @@ _Hazırlayan: Claude (ürün yöneticisi), 16 Kasım 2026, gece. Zeyd uyuyor; sa
   6. **İletişim** — WhatsApp numarası; "Turizm izin belge no **(isteğe bağlı)**". Bu adımda "Villa sayfası oluştur" butonu YOK.
   7. **Villa sayfası** — tek büyük buton **"Villa sayfamı oluştur"** → yükleniyor animasyonu → "🎉 Villa sayfanız hazır" + **"Tamam"**. Önizleme bu akışta yok.
   - **Son ekran:** `sihirbaz-hazir` çizimi + "Villanız hazır!" + tek buton **"Takvime git"** ("Başka villa ekle" kaldırılsın). Takvime git → villa ekranı → 18.13 turu otomatik başlar.
-- [ ] **18.12 Her adımda bir çizim.** Mevcut çizimleri kullan, eksikleri `codex exec` ile üret (docs/CODEX_GORSELLER.md'deki "Ortak stil" paragrafı başa eklenerek, her biri ayrı istek, `www/img/` içine, 800 px WebP, <120 KB):
+- [x] **18.12 Her adımda bir çizim.** Mevcut çizimleri kullan, eksikleri `codex exec` ile üret (docs/CODEX_GORSELLER.md'deki "Ortak stil" paragrafı başa eklenerek, her biri ayrı istek, `www/img/` içine, 800 px WebP, <120 KB):
   - Adım 1: `sihirbaz-hosgeldin` (var)
   - Adım 2: `sihirbaz-kapasite` — "A cozy bedroom corner of the white villa: a double bed with linen, a small bedside olive branch vase, an open shuttered window showing the sea."
   - Adım 3: `sihirbaz-ozellikler` — "A turquoise private pool with a small jacuzzi, two sun loungers, a parasol and a bougainvillea wall."
@@ -81,7 +81,7 @@ _Hazırlayan: Claude (ürün yöneticisi), 16 Kasım 2026, gece. Zeyd uyuyor; sa
   3. Alt panel: "Rezervasyon, teklif ya da opsiyon seçin."
   4. Alt menü: "Takvim sekmesinde tüm villalarınızın giriş-çıkışları, Hesap'ta ayarlar."
   - Bir kez gösterilir (cihazda saklanır, try/catch); Hesap → Yardım → **"Uygulama turunu tekrar göster"**.
-- [ ] **18.14 Akıcı geçişler (uygulama geneli).**
+- [x] **18.14 Akıcı geçişler (uygulama geneli).**
   - Sihirbaz adımları: yatay "shared axis" geçiş (yeni adım 24 px sağdan + solma, eskisi sola + solma, 280 ms, `cubic-bezier(0.2,0.8,0.2,1)`); Geri'de ters yön. İlerleme çubuğu genişliği aynı sürede kayarak dolar.
   - Adım içeriği: çizim 0,96→1 ölçek + solma (320 ms), altındaki alanlar 40 ms arayla sırayla belirir.
   - Ekranlar arası (liste → villa → alt ekranlar): ileri giderken yeni ekran sağdan 30 px + solma, geri gelirken tersi (260 ms). Paneller (sheet) Görev 9'daki gibi.
