@@ -389,6 +389,21 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
         ana denk gelen 1–2 kare kaçtı (bir denemede 845 ms'de 1 kare). Yavaşlatma olmadan (2 deneme) hiç kare düşmesi yok.
       · İlk kare / açılış ekranı: logo kutusu birebir aynı (3x'te 1 piksel), fark yalnızca kenar yumuşatması. Android görünümünde logo 120px, tam orta.
       · Dokunma, hareketi azalt, yavaş veri (1 / 2,5 / 6 sn) ve eski kilit / giriş / ana ekran testleri geçti.
+- [x] Açılış animasyonu WISE ÖLÇÜMLERİYLE YENİDEN · Claude Code (15 Kasım). Netlify'a yüklenmedi. Önceki tarifteki şerit genişliği (%14)
+      ve cubic-bezier eğrileri yanlıştı; `docs/ACILIS_OLCUMLER.md` tabloları WAAPI anahtar kareleri olarak birebir girildi (offset'li,
+      aralar linear). 800 ms logo → limon kapsül (%29) + içinden yetişen koyu daire (çap %92, içinde ev) → baş yükselir, desenli gövde
+      %29'dan %49,7'ye genişler → 816–983 gövde tüm ekranı kaplar → 1000–1233 solma (cubic-bezier(0.4,0,0.2,1)), ana ekran 12px aşağıdan.
+      Toplam ~2,03 sn. Gövde: sol/sağ yarım kaplar translate ile (scale denendi, takıldı). Ana ekran logo + hareket boyunca
+      content-visibility:hidden (veri logo sırasında gelirse hemen açılır). Tüm animasyonlar en başta tek zaman çizelgesinde oluşturulur.
+      Ayrıntı ve tüm ölçüm tabloları: `docs/ACILIS_DOGRULAMA.md`. Özet:
+      · Kare kare (animasyon durdurularak): en büyük sapma 0,11 / 0,10 / 0,49 puan (kapsül / daire / gövde).
+      · Playwright 60 fps kayıt: 60 kare/sn, boşluk yok. 12 kaydın 11'inde ham zaman damgaları izden ölçülen 33,3 ms çizim hattı
+        gecikmesi kadar geride (ham ±17 ms ölçütü bu kayıtlarda karşılanmıyor; 1 kayıtta gecikme ~16 ms, ham da 48/48 geçti);
+        33,3 ms düşülünce 5 kaydın hepsinde 48/48 satır ±1,5 puan içinde (en çok 0,51).
+      · Solma tam 1000 ms'de başlıyor, eğriden en büyük fark 0,002.
+      · Kare düşmesi (performans izi): 1x'te 10/10 denemede sıfır. 4x'te 24 denemenin 22'sinde sıfır; 2 denemede toplam 4 + 1 kare
+        (nedeni yakalanamadı, tekrarlanmadı).
+      · iPhone Safari'de ölçülmedi.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).

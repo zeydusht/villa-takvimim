@@ -3,7 +3,7 @@
 
 // Sürüm: her yayında artırılır. Dosya değişince telefonlar yeni servisi kurar;
 // açılışta eski sürümlerden kalan önbellekler silinir, böylece eski ekran kalmaz.
-var SURUM = "vt-2026-11-15-acilis-wise";
+var SURUM = "vt-2026-11-15-acilis-olcum";
 
 self.addEventListener("install", function (e) {
   self.skipWaiting();
