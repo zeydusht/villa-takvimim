@@ -332,6 +332,9 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       16.8 Aşağı çekip yenile: ana ekran, villa ekranı, Takvim sekmesi (en üstteyken). Önce bekleyen değişiklikler gönderilir, sonra
       bulut verisi yeniden yüklenir; "✓ Güncel".
       16.9 Ödeme kaydı ve teklif detayında ortada 36px tutar + durum etiketi + tarih; rezervasyon detayında "… alınacak" ortalı 30px.
+- [x] Uygulama ikonu adayları (docs/CODEX_APP_IKON.md) · Claude Code (15 Kasım). 10 aday, her biri ayrı Codex isteğiyle üretildi
+      (hepsi ilk denemede, 1024×1024, saydamlıksız): `docs/ikonlar/ikon-01 … ikon-10`. Kontrol sayfası: `docs/ikon-adaylari.html`
+      (büyük görünüm, 60 px iOS köşeli, açık / koyu duvar kağıdı, sahte ana ekran). Uygulamanın ikonu DEĞİŞMEDİ; seçim Zeyd'de.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
