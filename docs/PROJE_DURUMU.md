@@ -352,6 +352,13 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       (kenar boşluklu, manifest'te "any maskable"), `favicon.ico` + `favicon-32.png` (index.html ve g.html'de bağlantılı); manifest
       theme/background #9FE870. Uygulama içi logolar: üst çubukta `img/logo-acik.png` (#9FE870), giriş / yeni şifre / onay ekranında
       `img/logo-koyu.png` (#163300), "Ana ekrana ekleyin" kartında uygulama ikonu. `ikon3-05.png` (2×2) silindi.
+- [x] İkon VEKTÖR sürümü · 15 Kasım. İkon Claude tarafından vektör olarak yeniden çizildi (yapay zekâ görselinin kenarları tırtıklıydı):
+      `assets/ikon.svg` (tam ikon), `assets/sembol.svg` (sadece sembol, saydam) ve bunlardan üretilmiş assets/*.png + www ikonları/favicon
+      (bu dosyalar elle değiştirilmez). Claude Code: `npx capacitor-assets generate` ile iOS/Android yeniden üretildi (aracın yazdığı
+      `icons/` klasörü ve manifest değişikliği yine geri alındı); manifest'te icon-512 "any", icon-512-maskable "maskable".
+      Üst çubuk, giriş / yeni şifre / onay ekranı ve açılış animasyonu logosu artık sembol.svg'den satır içi SVG (maske ile, renk
+      currentColor; her örnekte ayrı maske kimliği). Açılış logosu splash'teki gibi 601/2732 ölçekte, ilk karede aynı yerde (test edildi).
+      Eski PNG/WebP logolar (`img/acilis-logo.webp`, `img/logo-acik.png`, `img/logo-koyu.png`) silindi. Referans: `docs/ikonlar3/ikon3-02.png`.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).

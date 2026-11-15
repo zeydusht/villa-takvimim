@@ -39,9 +39,10 @@
   var CSS =
     "#acilis{position:fixed;inset:0;z-index:2147483000;background:#9FE870;overflow:hidden;" +
       "-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:none}" +
-    /* logo: native açılış ekranıyla aynı yer ve boyut (2732'lik kare, ekranı kaplayacak şekilde ölçeklenir) */
-    "#acilis .acLogo{position:absolute;left:50%;top:50%;width:calc(609 / 2732 * max(100vw,100vh));height:auto;" +
-      "transform:translate(-50%,-50%);pointer-events:none}" +
+    /* logo: native açılış ekranıyla aynı yer ve boyut. assets/splash.png 2732'lik karede sembol %22 genişlikte (601 px) ve ortada;
+       ekran onu kaplayacak şekilde ölçeklenir. Logo assets/sembol.svg'den satır içi vektör (her boyutta net). */
+    "#acilis .acLogo{position:absolute;left:50%;top:50%;width:calc(601.04 / 2732 * max(100vw,100vh));height:auto;aspect-ratio:656/640;" +
+      "color:#163300;transform:translate(-50%,-50%);pointer-events:none;display:block}" +
     /* hap şerit: açık yeşil kenar katmanı + desen katmanı, ikisi de clip-path ile */
     "#acilis .acKat{position:absolute;inset:0;will-change:clip-path}" +
     "#acilis .acYesil{background:#9FE2BF;clip-path:inset(100% calc(50% - 32px) 0 calc(50% - 32px) round 32px)}" +
@@ -81,6 +82,9 @@
   var EV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>' +
     '<path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
 
+  // uygulama sembolü (assets/sembol.svg), rengi currentColor
+  var SEMBOL = "<svg class=\"acLogo\" viewBox=\"184 191 656 640\" aria-hidden=\"true\" focusable=\"false\"><mask id=\"vtSemAcilis\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"1024\" height=\"1024\"><rect x=\"0\" y=\"0\" width=\"1024\" height=\"1024\" fill=\"black\"/><g fill=\"white\"><rect x=\"629\" y=\"201\" width=\"97\" height=\"190\" rx=\"12\"/><rect x=\"250\" y=\"400\" width=\"522\" height=\"430\" rx=\"62\"/><polyline points=\"218.5,449 512,226 805.5,449\" fill=\"none\" stroke=\"white\" stroke-width=\"69\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polygon points=\"250,425 512,226 772,425 772,520 250,520\"/></g><g fill=\"black\"><path d=\"M512 280 L606 352 L606 398 Q606 411 593 411 L431 411 Q418 411 418 398 L418 352 Z\"/><rect x=\"360\" y=\"382\" width=\"44\" height=\"104\" rx=\"22\"/><rect x=\"619\" y=\"382\" width=\"44\" height=\"104\" rx=\"22\"/><rect x=\"312\" y=\"542\" width=\"101\" height=\"96\" rx=\"20\"/><rect x=\"460\" y=\"542\" width=\"103\" height=\"96\" rx=\"20\"/><rect x=\"609\" y=\"542\" width=\"102\" height=\"96\" rx=\"20\"/><rect x=\"312\" y=\"673\" width=\"101\" height=\"96\" rx=\"20\"/><rect x=\"460\" y=\"673\" width=\"103\" height=\"96\" rx=\"20\"/></g></mask><rect x=\"0\" y=\"0\" width=\"1024\" height=\"1024\" fill=\"currentColor\" mask=\"url(#vtSemAcilis)\"/></svg>";
+
   function cev(t) { try { return (window.DIL && DIL.cevir) ? DIL.cevir(t) : t; } catch (e) { return t; } }
 
   var stilEklendi = false;
@@ -101,7 +105,7 @@
     d.id = "acilis";
     d.setAttribute("aria-hidden", "true");
     d.innerHTML =
-      '<img class="acLogo" src="img/acilis-logo.webp" alt="" decoding="sync">' +
+      SEMBOL +
       '<div class="acKat acYesil"></div><div class="acKat acDoku"></div>' +
       '<div class="acBas"><div class="acDaire">' + EV + "</div></div>" +
       '<div class="acKilit"><p class="acKilitYazi"></p>' +
@@ -111,13 +115,12 @@
     document.documentElement.appendChild(d);
     return d;
   }
-  // logo yüklenince native açılış ekranı gizlenir (geçiş fark edilmesin)
+  // logo (satır içi vektör, yüklenmesi beklenmez) ekrana çizilince native açılış ekranı gizlenir (geçiş fark edilmesin)
   function logoHazir(d, cb) {
-    var img = d.querySelector(".acLogo"), tamam = false;
+    var tamam = false;
     var git = function () { if (tamam) return; tamam = true; cb(); };
-    if (img.complete && img.naturalWidth) return git();
-    img.onload = git; img.onerror = git;
-    setTimeout(git, 400);
+    if (window.requestAnimationFrame) requestAnimationFrame(function () { requestAnimationFrame(git); });
+    setTimeout(git, 120);
   }
 
   // ---------- veri hazır mı ----------
