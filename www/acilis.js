@@ -2,13 +2,14 @@
    VİLLA TAKVİM — açılış animasyonu (Görev 16.2) ve Face ID kilidi (16.3)
    Tek modül. <body>'nin en başında yüklenir.
    Sıra (docs/ACILIS_OLCUMLER.md "Villa Takvimim sürümü: ortada nefes anı"; süreler Wise hızında, hepsi
-         ACILIS_YAVAS = 1,15 ile çarpılır, toplam ~2,95 sn): native açılış ekranı → aynı görünümde web perdesi
+         ACILIS_YAVAS = 1,15 ile çarpılır, toplam ~2,88 sn): native açılış ekranı → aynı görünümde web perdesi
          (koyu zemin, logo; ortası ekran yüksekliğinin %49,5'i) → [kilit açıksa Face ID] → 1000 ms logo (sabit) →
-         0–300 limon kapsül baş gösterir, koyu daire içinden yetişir → 2a 300–600 daire yavaşlayarak ortaya gelirken
-         logonun ARKASINDA D = logo × 1,42 çapına büyür (konum ve çap aynı eğri) → 2b 600–860 daire yerine oturur
-         (çap D → D × 1,04 → D, yumuşak yay; logo hiç değişmez) → 2c 860–1280 logo ve daire tek parça hızlanarak
-         tepeye, birlikte 1 → 0,7 küçülür; desenli gövde tablo gibi genişler → 3) 1280–1447 gövde tüm ekranı kaplar →
-         1447–1464 tam desen → 1464–1697 desen solar, ana ekran belirir.
+         0–300 limon kapsül baş gösterir, koyu daire içinden yetişir (çap = şerit × 0,92) → 2a 300–600 daire
+         yavaşlayarak alttan gelip logonun merkezine oturur; dairenin üst kenarı logonun alt kenarına değdiği anda logo
+         küçülmeye başlar, daire oturduğu anda çapın %56'sına inmiş olur (logo dairenin önünde, yeri sabit) → 2b
+         600–800 daire ve içindeki logo birlikte yumuşak yay (1 → 1,04 → 1) → 2c 800–1220 logo ve daire tek parça
+         hızlanarak tepeye, birlikte 1 → 0,85 küçülür; desenli gövde tablo gibi genişler → 3) 1220–1387 gövde tüm
+         ekranı kaplar → 1387–1404 tam desen → 1404–1637 desen solar, ana ekran belirir.
    Sadece transform / opacity, Web Animations API (offset'li anahtar kareler, aralar doğrusal).
    Dışarıya: window.VTAcilis = { hazir, kilitDestek, kilitAcik, kilitAyarla, cikisBagla }
    ============================================================ */
@@ -57,14 +58,14 @@
   var CSS =
     "#acilis{position:fixed;inset:0;z-index:2147483000;background:" + ZEMIN + ";overflow:hidden;contain:strict;" +
       "-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:none}" +
-    /* logo: native açılış ekranıyla aynı yer ve boyut; dairenin önünde durur (dairenin içindeki ikon logonun kendisi).
+    /* logo: native açılış ekranıyla aynı yer ve boyut; her an dairenin önünde (z-index), dairenin içindeki ikon logonun kendisi.
        assets/splash.png 2732'lik karede sembol 382 px genişlikte, yatayda ortada, dikeyde ortası 1352,5'te (%49,5); ekran onu
        kaplayacak şekilde ölçeklenir (iPhone 14'te genişliğin ~%30'u, ortası ekran yüksekliğinin %49,5'i). Logo
        assets/sembol-acik.svg'den satır içi vektör. */
     "#acilis .acLogo{position:absolute;left:50%;top:calc(50% - 13.5 / 2732 * max(100vw,100vh));width:calc(382 / 2732 * max(100vw,100vh));height:auto;aspect-ratio:656/640;" +
       "color:#9FE870;transform:translate(-50%,-50%);transform-origin:50% 50%;transform-box:border-box;pointer-events:none;display:block}" +
     /* logo ilk karesinden kendi katmanında: sonradan katmana alınırken yeniden çizilip soluk/bulanık görünmesin */
-    "#acilis .acLogo{will-change:transform}" +
+    "#acilis .acLogo{will-change:transform;z-index:2}" +
     /* Android: native açılış sistemin açılış ekranı (Android 12 API); sembol orada sabit 120dp genişlikte, ekranın ortasının
        4dp üstünde (android/app/src/main/res/values/styles.xml + drawable-xxxhdpi/splash_sembol.png) */
     "#acilis.acAndroid .acLogo{width:120px;top:calc(50% - 4px)}" +
@@ -82,7 +83,7 @@
     /* logo dışındaki bütün parçalar, baslat() boyut ve yerlerini verip görünür yapana kadar gizli (ilk karede yalnız logo) */
     "#acilis .acKapsul,#acilis .acYari,#acilis .acBas{visibility:hidden;opacity:0}" +
     /* kilit: Face ID başarısızsa */
-    "#acilis .acKilit{position:absolute;left:0;right:0;bottom:calc(3rem + env(safe-area-inset-bottom));display:none;" +
+    "#acilis .acKilit{position:absolute;z-index:3;left:0;right:0;bottom:calc(3rem + env(safe-area-inset-bottom));display:none;" +
       "flex-direction:column;align-items:center;gap:.75rem;padding:0 1.5rem;color:#9FE870;text-align:center}" +
     "#acilis.kilitli .acKilit{display:flex}" +
     "#acilis .acKilit p{margin:0 0 .25rem;font-size:.95rem;opacity:.85}" +
@@ -176,15 +177,16 @@
   // t = 0 anı logo beklemesinin sonu (native açılış gizlendikten LOGO ms sonra).
   // Yükseklik: tepenin ekranın altından uzaklığı, ekran yüksekliğinin %'si. Genişlik: ekran genişliğinin %'si.
   var ACILIS_YAVAS = 1.15, LOGO = 1000;
-  var W_1 = 300, W_2A = 600, W_2B = 860, W_2C = 1280, W_3 = 1447, W_SON = 1464, W_SOLMA = 233;
+  var W_1 = 300, W_2A = 600, W_2B = 800, W_2C = 1220, W_3 = 1387, W_SON = 1404, W_SOLMA = 233;
   var ACIK = W_3 * ACILIS_YAVAS, SON = W_SON * ACILIS_YAVAS, SOLMA = W_SOLMA * ACILIS_YAVAS;
   var SOLMA_EGRI = "cubic-bezier(0.4, 0, 0.2, 1)";
   var E_2A = [0.2, 0.7, 0.3, 1], E_2C = [0.6, 0, 0.9, 0.45];
-  // DAİRE–LOGO BULUŞMASI: daire logonun ARKASINDA. 2a'da çapı şerit içindeki boyundan D = logo genişliği × 1,42'ye
-  // büyür (konumla aynı eğri: ortaya vardığında tam D, merkezi logonun merkezinde). 2b'de yerinde, çap yumuşak bir
-  // yayla D → D × 1,04 → D (yükselme %35'te tepe, sinüs² ile: sert sekme yok). 2c'de logo ve daire tek parça gibi
-  // birlikte yükselir ve birlikte küçülür (1 → 0,7). Logo 2c'ye kadar boyunu, yerini ve opaklığını hiç değiştirmez.
-  var DAIRE_LOGO = 1.42, YAY = 0.04, YAY_TEPE = 0.35, KUCUK = 0.7;
+  // LOGO DAİREYE GİRER: daire boyu hep şerit × 0,92 (büyümez). Logo yerinde durur, daire alttan gelip merkezine oturur.
+  // Dairenin üst kenarı logonun alt kenarına değdiği anda logo küçülmeye başlar; küçülme dairenin konumuna bağlıdır
+  // (aynı eğri, aynı bitiş anı): daire logonun merkezine oturduğunda logo genişliği çapın %56'sı. Logo hep dairenin
+  // önünde, opaklığı 1. 2b'de daire ve logo birlikte yumuşak yay: ölçek 1 → 1,04 → 1 (tepe %35'te, sinüs²: sert sekme
+  // yok). 2c'de tek parça yükselir, birlikte 1 → 0,85 küçülür.
+  var LOGO_DAIRE = 0.56, YAY = 0.04, YAY_TEPE = 0.35, KUCUK = 0.85;
   function yay(p) {
     if (p <= 0 || p >= 1) return 0;
     var s = p <= YAY_TEPE ? Math.sin(Math.PI / 2 * p / YAY_TEPE) : Math.cos(Math.PI / 2 * (p - YAY_TEPE) / (1 - YAY_TEPE));
@@ -315,22 +317,21 @@
     var logo = d.querySelector(".acLogo");
     var lr = logo.getBoundingClientRect();
     var lx = lr.left + lr.width / 2, ly = lr.top + lr.height / 2;
-    var D = lr.width * DAIRE_LOGO;          // 2a sonundaki daire çapı (logoyu iç boşluklu alır)
-    var Dm = D * (1 + YAY);                 // en büyük çap (2b yayının tepesi): daire bu boyda çizilir, hep küçültülür
+    var sT = LOGO_DAIRE * dC / lr.width;   // daire oturduğunda logonun ölçeği (genişliği çapın %56'sı)
+    var Dm = dC * (1 + YAY);                // en büyük çap (2b yayının tepesi): daire bu boyda çizilir, hep küçültülür
     var Km = Dm / DAIRE_ORAN;               // kapsül de en büyük boyunda çizilir (daire / 0,92)
 
-    // her an (Wise zamanı w) için daire çapı (px)
+    // her an (Wise zamanı w) için daire çapı (px): 2a sonuna kadar sabit
     function cap(w) {
-      if (w <= W_1) return dC;
-      if (w <= W_2A) return dC + (D - dC) * e2a((w - W_1) / (W_2A - W_1));
-      if (w <= W_2B) return D * (1 + YAY * yay((w - W_2A) / (W_2B - W_2A)));
-      if (w <= W_2C) return D * (1 - (1 - KUCUK) * e2c((w - W_2B) / (W_2C - W_2B)));
-      return D * KUCUK;
+      if (w <= W_2A) return dC;
+      if (w <= W_2B) return dC * (1 + YAY * yay((w - W_2A) / (W_2B - W_2A)));
+      if (w <= W_2C) return dC * (1 - (1 - KUCUK) * e2c((w - W_2B) / (W_2C - W_2B)));
+      return dC * KUCUK;
     }
-    // daire merkezinin (ekranda y) durakları: 300'de kapsülün tepesinde; 2a sonunda logonun ortasında (konum ve çap
-    // aynı eğriyle ilerler); 2b'de yerinde; 2c sonunda baş (halka) tepesi ekranın tepesinde
+    // daire merkezinin (ekranda y) durakları: 300'de kapsülün tepesinde; 2a sonunda logonun ortasında; 2b'de yerinde;
+    // 2c sonunda baş (halka) tepesi ekranın tepesinde
     var c1 = yuk(DAIRE_TEPE[DAIRE_TEPE.length - 1][1]) + dC / 2;
-    var cC = halka * KUCUK * D / dC + KUCUK * D / 2;
+    var cC = halka * KUCUK + KUCUK * dC / 2;
     // 2c'nin sonundaki hız (px / Wise-ms); 1280'den sonra baş (ve logo) bu hızla ekranın üstünden çıkar
     var cikis = (ly - cC) * (1 - e2c(1 - 1e-4)) / 1e-4 / (W_2C - W_2B);
     function merkez(w) {
@@ -339,6 +340,21 @@
       if (w <= W_2B) return ly;
       if (w <= W_2C) return ly + (cC - ly) * e2c((w - W_2B) / (W_2C - W_2B));
       return cC - cikis * (w - W_2C);
+    }
+    // logonun küçülmeye başladığı an (wDeg): dairenin üst kenarı (merkez − dC / 2) logonun alt kenarına değer
+    var cDeg = ly + lr.height / 2 + dC / 2;
+    var wDeg = W_1;
+    if (merkez(W_1) > cDeg) {
+      var aD = W_1, bD = W_2A;
+      for (var iD = 0; iD < 50; iD++) { var mD = (aD + bD) / 2; if (merkez(mD) > cDeg) aD = mD; else bD = mD; }
+      wDeg = (aD + bD) / 2;
+    }
+    // logonun ölçeği: değmeden önce 1; sonra dairenin logoya yaklaşmasıyla doğru orantılı (aynı eğri, aynı bitiş);
+    // daire oturunca sT, ardından daireyle aynı oranda (2b yayı, 2c küçülmesi)
+    function olcekL(w) {
+      if (w <= wDeg) return 1;
+      if (w <= W_2A) return 1 - (1 - sT) * Math.min(1, Math.max(0, (cDeg - merkez(w)) / (cDeg - ly)));
+      return sT * cap(w) / dC;
     }
     // gövde genişliği: tablo, ama hiçbir an kapsülün (şeridin) o ana kadarki en geniş hâlinden dar değil
     // (böylece hep daire çapından da geniş; gövde daralmaz)
@@ -378,7 +394,7 @@
     var zam = {};
     KAPSUL_TEPE.concat(DAIRE_TEPE, GOVDE_YENI).forEach(function (r) { zam[r[0]] = 1; });
     for (var w = W_1; w < W_2C; w += 4 / ACILIS_YAVAS) zam[Math.round(w * 1000) / 1000] = 1;
-    [W_2A, W_2B, W_2C, W_3].forEach(function (w) { zam[w] = 1; });
+    [wDeg, W_2A, W_2B, W_2C, W_3].forEach(function (w) { zam[w] = 1; });
     var anlar = Object.keys(zam).map(Number).filter(function (w) { return w >= 0 && w <= W_3; }).sort(function (a, b) { return a - b; });
 
     // Tek zaman çizelgesi (ekran zamanı, ms): 0 → LOGO logo bekler (parçalar başlangıç yerinde), sonra hareket
@@ -395,9 +411,9 @@
       var gTepe = s.merkez;                        // gövdenin tepesi = dairenin ortası (desen dairenin arkasından açılır)
       var tx = cx - s.gen / 2;                     // gövdenin sol kenarı (sol kap bu kadar sağa, sağ kap bu kadar sola)
       var k = s.cap / Dm;                          // daire ve kapsülün ölçeği
-      // logo 2c'ye kadar hiç kıpırdamaz (bekleme karesi 0,01 px değişir: tarayıcı ana iş parçacığını uyandırmasın);
-      // 2c'den itibaren dairenin ortasında, daireyle aynı oranda küçülür (1 → 0,7)
-      var lo = w <= W_2B ? lT(1, 0.01 * w / W_2B) : lT(s.cap / D, s.merkez - ly);
+      // logo daire değene kadar hiç kıpırdamaz (bekleme karesi 0,01 px değişir: tarayıcı ana iş parçacığını
+      // uyandırmasın); sonra yerinde küçülür, 2b'de daireyle birlikte yaylanır, 2c'de dairenin ortasında yükselir
+      var lo = w <= wDeg ? lT(1, 0.01 * w / wDeg) : lT(olcekL(w), w <= W_2B ? 0.01 : s.merkez - ly);
       return { kap: "translateY(" + px(s.kapsul) + ") scale(" + olc(k) + ")",
         bas: "translateY(" + px(s.merkez - Dm / 2) + ") scale(" + olc(k) + ")",
         gS: tr(tx, gTepe), dS: tr(-tx, -gTepe), gR: tr(-tx, gTepe), dR: tr(tx, -gTepe), logo: lo };
@@ -416,7 +432,7 @@
     logo.style.transform = lT(1);
     var t0 = document.timeline ? document.timeline.currentTime : null;
     d._t0 = t0;
-    d._olcu = { W: W, H: H, kapsul: kG, daire: dC, D: D, logo: LOGO, yavas: ACILIS_YAVAS,
+    d._olcu = { W: W, H: H, kapsul: kG, daire: dC, logoSon: sT, degme: wDeg * ACILIS_YAVAS, logo: LOGO, yavas: ACILIS_YAVAS,
       logoKutu: { x: lx, y: ly, w: lr.width, h: lr.height }, son: SON, acik: ACIK, solma: SOLMA };
     var will = [kap, gS, gR, dS, dR, bas, logo];
     // katmanlar logo beklemesinde (ekran durgunken) hazırlanır

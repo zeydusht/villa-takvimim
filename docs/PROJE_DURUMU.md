@@ -446,6 +446,19 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       · Kare düşmesi: 1x'te denemelerin yarısında aynı anda (2532 ms) 1 kare kaçıyor (önceki sürüm aynı koşulda 0); 4x'te önceki
         sürümden az. Neden: GPU sürecinde saniyelik bekleme (sayfa kareyi zamanında üretiyor); birkaç düzeltme denendi, kalkmadı.
       · iPhone Safari'de ölçülmedi.
+- [x] Açılış animasyonu: LOGO DAİREYE GİRER (Zeyd: "daire çok büyük oldu") · Claude Code (16 Kasım). Netlify'a yüklenmedi.
+      Ayrıntı: `docs/ACILIS_DOGRULAMA.md`.
+      1) Daire boyu eski hâline döndü: çap = şerit × 0,92 (~%27 genişlik, 390×844'te 104 px), 2a'da büyümüyor; × 1,42 kuralı kaldırıldı.
+      2) Logo yerinde (%49,5) ve hep dairenin önünde (z-index), opaklığı 1. Daire alttan gelip merkezine oturuyor. Dairenin üst kenarı
+      logonun alt kenarına değdiği anda logo küçülmeye başlıyor, daire oturduğu anda (690 ms) genişliği çapın %56'sı. Küçülme dairenin
+      konumuna bağlı (aynı eğri, aynı bitiş). 2b 200 ms (ekranda 230): daire + logo birlikte 1 → 1,04 → 1 yumuşak yay. 2c: tek parça
+      yükselir, birlikte 1 → 0,85. Sonraki aşamalar 60 ms öne kaydı (toplam ~2,88 sn).
+      · Kare kare: küçülme başı ile değme aynı kare (440 ms; model 438,8); küçülme bitişi ile oturma aynı an (690 ms; ilerleme
+        oranları her karede ≤ 0,009 farklı); oturduğunda merkez farkı x 0,00 / y 0,18 px, logo / çap %56,1; 2b–2c boyunca hiza
+        ≤ 0,73 px, logo / çap %56,0–56,6. Android görünümünde %55,9.
+      · Kare düşmesi (dönüşümlü, önceki turla): 1x'te yeni 10 denemenin 2'sinde (3 kare), önceki 10'un 1'inde (1 kare); hepsi
+        sayfa zamanı ~1800 ms'de, iki sürümde aynı anda. 4x'te ikisi de 0.
+      · iPhone Safari'de ölçülmedi.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).
