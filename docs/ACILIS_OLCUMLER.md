@@ -65,14 +65,24 @@ _Yukarıdaki Wise tablolarının yerine bu ritim uygulanır (`www/acilis.js`). �
 
 **Toplam: 1000 ms logo + ~1952 ms animasyon ≈ 2,95 sn.**
 
-**2b sırasında:**
-- Logo opaklığı 1 → 0 ve boyu %100 → %85, 180 ms (ekranda 207 ms), `ease-out`. Logo dairenin içine "girer".
-- Dairenin içindeki ev ikonu tek atış yapar: ölçek 1 → 1,12 → 1, 260 ms (ekranda 299 ms). İki yarının her biri `cubic-bezier(0.3, 0, 0.3, 1)`. Yalnızca ikon atar, daire atmaz.
+**Dairedeki sembol ve logo (15 Kasım düzeltmesi; iPhone kaydından):**
+- Dairenin içinde çizgi ev değil, logonun AYNISI var: `assets/sembol-acik.svg`, #9FE870, dolu ev-takvim sembolü.
+- **1 ve 2a:** sembol dairenin ortasında, genişliği daire çapının %55'i.
+- **2b başı:** sembol, tam opak logonun arkasında, görünmeden logoyla aynı merkeze ve aynı boya geçer.
+- **2b sırasında:** logo opaklığı 1 → 0 (180 ms, ekranda 207 ms, `ease-out`). Logo solarken altındaki aynı sembol onun yerini alır. Logo küçülmez; küçülseydi iki ayrı boy üst üste görünürdü. Daire son 30 pt'de sembolün altına oturur.
+- **2c:** sembol daireyle birlikte yükselir ve daire çapının %55'ine küçülür (`cubic-bezier(0.4, 0, 0.2, 1)`, 2c boyunca).
+- Logo daireden büyük (iPhone 390×844'te logo 118 px, daire 104 px). Bu yüzden 2b'de ve 2c'nin başında sembol dairenin kenarlarından taşar.
+- Önceki sürümdeki ev ikonu atışı (1 → 1,12 → 1) kaldırıldı. Sembol logoyla birebir aynı boyda dururken atış, logo solarken iki ayrı boy gösterirdi.
 
 **2c'deki gövde genişliği:** Wise tablosundaki artış kısmı (500–816 ms: 29 → 29,2 → 30,5 → 33,8 → 38,5 → 43,1 → 47,2 → 48,7 → 49,2 → 49,7) 2c'nin 420 ms'sine oranla yayılır. Wise'ta 500 ms 2c'nin başına (860), 816 ms sonuna (1280) denk gelir; aralar doğrusal.
 
-**Logo ve ikon:**
-- Logo başın önünde durur. Arkasında zemin renginde dolu bir siluet var; böylece baş altına girerken pencerelerinden daire görünmez, logo solunca daire ortaya çıkar.
-- Logo ile ev ikonu aynı merkezde.
-- Boyda ödünleşim: logo daireden büyük (iPhone 390×844'te logo 118 px, daire 104 px). Bu yüzden ikon logoyla aynı boyda olamıyor. Ev, atışın tepesinde (× 1,12) bile dairenin kenarına 4 px kalacak en büyük boyda (390 px genişlikte kutu 78 px, görünen ev ~66 px). Çizgi kalınlığı logonun çatı çizgisiyle aynı oranda.
+**Logo:**
+- Logo başın önünde durur. Arkasında zemin renginde dolu bir siluet var; böylece baş altına girerken pencerelerinden daire görünmez.
 - 2c'den sonra baş, 2c'nin bitiş hızıyla ekranın üstünden çıkar.
+
+**İlk kare ve bekleme (15 Kasım düzeltmesi):**
+- İlk karede logo dışında hiçbir açılış parçası görünmez. Kapsül, gövde, daire ve sembol CSS'te gizli başlar; animasyon başlarken boyut ve yerleri verilip görünür yapılır.
+- `index.html` `<head>` başında koyu zemin (#10180D) ve `theme-color` #10180D. Koyu zemin, perde ekrana çizilince kalkar; `theme-color` açılış bitince normal temaya (#0B5B57) döner.
+- Native uygulamada açılış ekranı boyunca durum çubuğu yazısı beyaz. Ana ekrana eklenen web sürümünde `apple-mobile-web-app-status-bar-style` "black".
+- Veri, sayfa açılır açılmaz yüklenmeye başlar: oturum yenilemesi beklenmez, profil ve villalar aynı anda istenir.
+- Desen tam ekranken veri için en fazla 300 ms beklenir. Veri hazır değilse yine geçilir ve ana ekranda iskelet satırlar görünür; veri gelince yerini alır.

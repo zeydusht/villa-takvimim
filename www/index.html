@@ -2,14 +2,15 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
+<style id="vtIlkZemin">html:root,html:root body{background:#10180D!important}</style>
+<meta name="theme-color" content="#10180D" data-normal="#0B5B57">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Villa Takvim</title>
-<meta name="theme-color" content="#0B5B57">
 <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
 <meta name="color-scheme" content="light only">
 <meta name="supported-color-schemes" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Villa Takvim">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -8399,8 +8400,10 @@
       if(gelen.tur==="recovery"){ goster("sifre"); }
       else bulutYukle();
     } else {
-    goster("giris");
-    document.getElementById("girisAlt").textContent="Yükleniyor…";
+    // Kayıtlı oturum varsa giriş ekranı yerine hemen iskeletli ana ekran (açılış animasyonu bunun üstünde açılır;
+    // veri gecikirse iskelet görünür, veri gelince yerini alır). Oturum geçersiz çıkarsa aşağıda giriş ekranına dönülür.
+    if(VT.oturumKayitli && VT.oturumKayitli()) anaIskelet();
+    else { goster("giris"); document.getElementById("girisAlt").textContent="Yükleniyor…"; }
     VT.oturumuGeriYukle().then(function(o){
       document.getElementById("girisAlt").textContent="Villalarınızı ve rezervasyonlarınızı tek yerden yönetin";
       if(o) bulutYukle(); else { goster("giris"); acilisHazir(); }
@@ -8450,8 +8453,17 @@
     });
   }); }catch(e){}
 
+  // Arka planda yenilenen oturumu sunucu reddederse (veri.js): giriş ekranına dön
+  window.addEventListener("vt-oturum-bitti",function(){
+    try{ localStorage.removeItem(K2); }catch(e){}
+    S.villalar=[]; S.bulut=false; kapat(); goster("giris"); acilisHazir();
+  });
+
   function bulutYukle(){
+    // Profil ve villalar aynı anda istenir (sırayla beklenmez). Hesap onaylı değilse villa sonucu kullanılmaz.
+    var villaSoz=VT.villalariYukle(); villaSoz.catch(function(){});
     VT.profilYukle().then(function(pr){
+      if(!VT.girisli()) return; // bu arada oturum sona erdi (giriş ekranına dönüldü)
       if(!pr || !pr.onay){
         document.getElementById("onayEposta").textContent=(pr&&pr.eposta)||"";
         document.getElementById("onayBaslik").textContent =
@@ -8463,7 +8475,7 @@
         onayBeklentiAyarla(pr&&pr.askida);
         goster("onay"); acilisHazir(); return;
       }
-      villalariGetir();
+      villalariGetir(villaSoz);
     });
   }
 
@@ -8500,12 +8512,18 @@
     });
   });
 
-  function villalariGetir(){
-    S.bulut=true; S.yukleniyor=true;
+  // ana ekran, villalar yüklenirken: iskelet satırlar
+  function anaIskelet(){
     goster("ana");
     document.getElementById("ozet").textContent="Villalarınız yükleniyor…";
     document.getElementById("villalar").innerHTML=iskelet();
-    VT.villalariYukle().then(function(liste){
+  }
+
+  function villalariGetir(hazirSoz){
+    S.bulut=true; S.yukleniyor=true;
+    anaIskelet();
+    (hazirSoz||VT.villalariYukle()).then(function(liste){
+      if(!VT.girisli()){ S.yukleniyor=false; return; } // bu arada oturum sona erdi
       S.villalar=liste; S.villalar.forEach(duzelt);
       if(depIadeAktar()) kaydet();
       S.yukleniyor=false;

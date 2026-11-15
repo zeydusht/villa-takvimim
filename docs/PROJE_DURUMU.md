@@ -419,6 +419,20 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
         sayfanın kareyi zamanında ürettiğini, tarayıcının ekran birleştiricisinin beklediğini gösterdi (logo/ikon kapatılınca da
         rastgele duraklamalar oldu: makine yükü).
       · iPhone Safari'de ölçülmedi.
+- [x] Açılış animasyonu İPHONE KAYDI DÜZELTMELERİ · Claude Code (15 Kasım). Netlify'a yüklenmedi. Ayrıntı: `docs/ACILIS_DOGRULAMA.md`.
+      1) Sol üstteki elips (boyutu verilmeden çizilen baş dairesi): kapsül/gövde/daire/sembol CSS'te gizli başlıyor, animasyon
+      başlarken görünür. Eski sürümde Chrome'da da üretildi (ilk 2 kare); yeni sürümde ilk 20 karede logo dışında açık piksel 0.
+      2) Gri ilk kare: <head> başında koyu zemin + theme-color #10180D (açılış bitince #0B5B57); native'de açılışta durum çubuğu
+      yazısı beyaz; ana ekrana eklenen web sürümünde status-bar-style "black". 3) Desen beklemesi: oturum yenilemesi (jeton
+      geçerliyken) arka planda, profil ve villalar aynı anda (300 ms gecikmeli sahte sunucuda liste 1,4 sn → 0,8 sn); kayıtlı
+      oturumda ilk ekran iskeletli ana ekran; desen tam ekranken en fazla 300 ms bekleme, sonra iskelet. 4) Dairede logonun
+      aynısı (sembol): 1–2a çapın %55'i, 2b'de logoyla aynı yer ve boy (logo solarken yerini alır), 2c'de %55'e küçülür; ev
+      ikonu ve atışı kaldırıldı, logo küçülmüyor. 5) Logo baştan kendi katmanında, native ekran +50 ms sonra kalkıyor (iPhone'daki
+      soluk başlangıç Chrome'da üretilemedi; cihazda bakılmalı).
+      · Kare kare: baş 0,11 / daire 0,12 / gövde 0,48 puan; sembol yeri 0,46 px, ölçeği 0,007; 2b sonunda daire logoya y −0,5 px.
+      · 60 fps kayıt: boşluk yok, 179/179 satır geçti. Kare düşmesi: 4x 12/12 sıfır; 1x 12'de 1 kare (2b'de; sayfa kareyi
+        zamanında üretti, GPU süreci bir yenileme boyunca hiç çalışmadı). Kilit, giriş, hap, yenileme, detay, ipucu testleri geçti.
+      · iPhone Safari'de ölçülmedi.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).

@@ -5,8 +5,9 @@
          ACILIS_YAVAS = 1,15 ile çarpılır, toplam ~2,95 sn): native açılış ekranı → aynı görünümde web perdesi
          (koyu zemin, logo) → [kilit açıksa Face ID] → 1000 ms logo (sabit) → 0–300 limon kapsül baş gösterir,
          koyu daire içinden yetişir → 2a 300–600 baş yavaşlayarak ortaya (daire merkezi logonun 30 pt altına) →
-         2b 600–860 ortada nefes (daire logoya oturur, logo solup küçülerek daireye girer, ev ikonu bir kez atar) →
-         2c 860–1280 hızlanarak tepeye, desenli gövde %29 → %49,7 → 3) 1280–1447 gövde tüm ekranı kaplar →
+         2b 600–860 ortada nefes (daire logoya oturur; dairedeki sembol logoyla aynı yer ve boyda, logo solarken yerini
+         alır) → 2c 860–1280 hızlanarak tepeye, desenli gövde %29 → %49,7, sembol daire çapının %55'ine küçülür →
+         3) 1280–1447 gövde tüm ekranı kaplar →
          1447–1464 tam desen → 1464–1697 desen solar, ana ekran belirir.
    Sadece transform / opacity, Web Animations API (offset'li anahtar kareler, aralar doğrusal).
    Dışarıya: window.VTAcilis = { hazir, kilitDestek, kilitAcik, kilitAyarla, cikisBagla }
@@ -33,6 +34,18 @@
   }
   function kilitAcik() { return native && !!BIO && ls(KILIT_ANAHTAR) === "1" && girisli(); }
 
+  // index.html <head> başındaki koyu zemin (#vtIlkZemin) ve theme-color: ilk karede gri/beyaz görünmesin.
+  // Koyu zemin, perde ekrana çizilince kalkar (perde kendi zeminiyle her yeri kaplıyor; solma sırasında arkada
+  // koyu zemin kalmasın). theme-color açılış bitince normal temaya döner.
+  function ilkZeminBirak() {
+    var z = document.getElementById("vtIlkZemin");
+    if (z && z.parentNode) z.parentNode.removeChild(z);
+  }
+  function temaGeriAl() {
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m && m.getAttribute("data-normal")) m.setAttribute("content", m.getAttribute("data-normal"));
+  }
+
   var splashGizlendi = false;
   function splashGizle() {
     if (splashGizlendi) return; splashGizlendi = true;
@@ -46,11 +59,13 @@
       "-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:none}" +
     /* logo: native açılış ekranıyla aynı yer ve boyut. Başın önünde durur (2b'de solup küçülerek daireye "girer"). assets/splash.png 2732'lik karede sembol 382 px genişlikte ve tam ortada;
        ekran onu kaplayacak şekilde ölçeklenir (iPhone 14'te genişliğin ~%30'u). Logo assets/sembol-acik.svg'den satır içi vektör. */
-    "#acilis .acLogo{position:absolute;left:50%;top:50%;width:calc(382 / 2732 * max(100vw,100vh));height:auto;aspect-ratio:656/640;" +
+    "#acilis .acLogo,#acilis .acSem{position:absolute;left:50%;top:50%;width:calc(382 / 2732 * max(100vw,100vh));height:auto;aspect-ratio:656/640;" +
       "color:#9FE870;transform:translate(-50%,-50%);transform-origin:50% 50%;transform-box:border-box;pointer-events:none;display:block}" +
+    /* logo ilk karesinden kendi katmanında: sonradan katmana alınırken yeniden çizilip soluk/bulanık görünmesin */
+    "#acilis .acLogo{will-change:transform}" +
     /* Android: native açılış sistemin açılış ekranı (Android 12 API); sembol orada sabit 120dp genişlikte, ekranın ortasında
        (android/app/src/main/res/values/styles.xml + drawable-xxxhdpi/splash_sembol.png) */
-    "#acilis.acAndroid .acLogo{width:120px}" +
+    "#acilis.acAndroid .acLogo,#acilis.acAndroid .acSem{width:120px}" +
     /* limon kapsül (düz #9FE870, üstü yuvarlak); yükselince başın çevresindeki halka olur */
     "#acilis .acKapsul{position:absolute;top:0;background:#9FE870;pointer-events:none}" +
     /* desenli gövde: ekranın sol ve sağ yarısında birer kırpma kutusu; her birinde dış üst köşesi yuvarlak (yarıçap = kapsülün
@@ -60,11 +75,10 @@
     "#acilis .acGovde{position:absolute;left:0;top:0;overflow:hidden}" +
     "#acilis .acDesen{position:absolute;left:0;top:0}" +
     "#acilis .acDesen img{display:block;width:100%;height:100%;object-fit:cover}" +
-    /* baş: #163300 daire (kapsül genişliğinin %92'si), içinde #9FE870 ev. Ev, logoya olabildiğince yakın boyda: atışın
-       tepesinde (1,12) bile dairenin içinde kalacak en büyük boy (baslat'ta hesaplanır). */
-    "#acilis .acBas{position:absolute;top:0;border-radius:50%;background:#163300;display:flex;align-items:center;justify-content:center;pointer-events:none}" +
-    "#acilis .acEv{position:relative;display:block;flex:none;width:42%;height:42%;transform-origin:50% 50%}" +
-    "#acilis .acEv svg{display:block;width:100%;height:100%;fill:none;stroke:#9FE870;stroke-width:2.75;stroke-linecap:round;stroke-linejoin:round}" +
+    /* baş: #163300 daire (kapsül genişliğinin %92'si). İçindeki sembol (.acSem) ayrı katman: logonun aynısı. */
+    "#acilis .acBas{position:absolute;top:0;border-radius:50%;background:#163300;pointer-events:none}" +
+    /* logo dışındaki bütün parçalar, baslat() boyut ve yerlerini verip görünür yapana kadar gizli (ilk karede yalnız logo) */
+    "#acilis .acKapsul,#acilis .acYari,#acilis .acBas,#acilis .acSem{visibility:hidden;opacity:0}" +
     /* kilit: Face ID başarısızsa */
     "#acilis .acKilit{position:absolute;left:0;right:0;bottom:calc(3rem + env(safe-area-inset-bottom));display:none;" +
       "flex-direction:column;align-items:center;gap:.75rem;padding:0 1.5rem;color:#9FE870;text-align:center}" +
@@ -74,12 +88,11 @@
       "font-weight:500;border:1.5px solid rgba(159,232,112,.55);background:transparent;color:#9FE870;cursor:pointer;text-align:center}" +
     "#acilis .acKilit button.acAna{background:#9FE870;color:#163300;border-color:#9FE870}";
 
-  var EV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>' +
-    '<path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
-
-  // uygulama sembolü (assets/sembol-acik.svg ile aynı şekil), rengi currentColor (#9FE870). Arkasında zemin renginde
+  // uygulama sembolü (assets/sembol-acik.svg ile aynı şekil), rengi currentColor (#9FE870). Logo ve dairedeki sembol aynı. Arkasında zemin renginde
   // dolu siluet: koyu zeminde görünüm aynı; baş logonun altına girince pencerelerden daire/ikon görünmez, logo solunca ortaya çıkar.
-  var SEMBOL = "<svg class=\"acLogo\" viewBox=\"184 191 656 640\" aria-hidden=\"true\" focusable=\"false\"><mask id=\"vtSemAcilis\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"1024\" height=\"1024\"><rect x=\"0\" y=\"0\" width=\"1024\" height=\"1024\" fill=\"black\"/><g fill=\"white\"><rect x=\"629\" y=\"201\" width=\"97\" height=\"190\" rx=\"12\"/><rect x=\"250\" y=\"400\" width=\"522\" height=\"430\" rx=\"62\"/><polyline points=\"218.5,449 512,226 805.5,449\" fill=\"none\" stroke=\"white\" stroke-width=\"69\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polygon points=\"250,425 512,226 772,425 772,520 250,520\"/></g><g fill=\"black\"><path d=\"M512 280 L606 352 L606 398 Q606 411 593 411 L431 411 Q418 411 418 398 L418 352 Z\"/><rect x=\"360\" y=\"382\" width=\"44\" height=\"104\" rx=\"22\"/><rect x=\"619\" y=\"382\" width=\"44\" height=\"104\" rx=\"22\"/><rect x=\"312\" y=\"542\" width=\"101\" height=\"96\" rx=\"20\"/><rect x=\"460\" y=\"542\" width=\"103\" height=\"96\" rx=\"20\"/><rect x=\"609\" y=\"542\" width=\"102\" height=\"96\" rx=\"20\"/><rect x=\"312\" y=\"673\" width=\"101\" height=\"96\" rx=\"20\"/><rect x=\"460\" y=\"673\" width=\"103\" height=\"96\" rx=\"20\"/></g></mask><mask id=\"vtSemAcilisZ\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"1024\" height=\"1024\"><rect x=\"0\" y=\"0\" width=\"1024\" height=\"1024\" fill=\"black\"/><g fill=\"white\"><rect x=\"629\" y=\"201\" width=\"97\" height=\"190\" rx=\"12\"/><rect x=\"250\" y=\"400\" width=\"522\" height=\"430\" rx=\"62\"/><polyline points=\"218.5,449 512,226 805.5,449\" fill=\"none\" stroke=\"white\" stroke-width=\"69\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polygon points=\"250,425 512,226 772,425 772,520 250,520\"/></g></mask><rect x=\"0\" y=\"0\" width=\"1024\" height=\"1024\" fill=\"#10180D\" mask=\"url(#vtSemAcilisZ)\"/><rect x=\"0\" y=\"0\" width=\"1024\" height=\"1024\" fill=\"currentColor\" mask=\"url(#vtSemAcilis)\"/></svg>";
+  function sembol(sinif, id) {
+    return "<svg class=\"" + sinif + "\" viewBox=\"184 191 656 640\" aria-hidden=\"true\" focusable=\"false\"><mask id=\"" + id + "\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"1024\" height=\"1024\"><rect x=\"0\" y=\"0\" width=\"1024\" height=\"1024\" fill=\"black\"/><g fill=\"white\"><rect x=\"629\" y=\"201\" width=\"97\" height=\"190\" rx=\"12\"/><rect x=\"250\" y=\"400\" width=\"522\" height=\"430\" rx=\"62\"/><polyline points=\"218.5,449 512,226 805.5,449\" fill=\"none\" stroke=\"white\" stroke-width=\"69\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polygon points=\"250,425 512,226 772,425 772,520 250,520\"/></g><g fill=\"black\"><path d=\"M512 280 L606 352 L606 398 Q606 411 593 411 L431 411 Q418 411 418 398 L418 352 Z\"/><rect x=\"360\" y=\"382\" width=\"44\" height=\"104\" rx=\"22\"/><rect x=\"619\" y=\"382\" width=\"44\" height=\"104\" rx=\"22\"/><rect x=\"312\" y=\"542\" width=\"101\" height=\"96\" rx=\"20\"/><rect x=\"460\" y=\"542\" width=\"103\" height=\"96\" rx=\"20\"/><rect x=\"609\" y=\"542\" width=\"102\" height=\"96\" rx=\"20\"/><rect x=\"312\" y=\"673\" width=\"101\" height=\"96\" rx=\"20\"/><rect x=\"460\" y=\"673\" width=\"103\" height=\"96\" rx=\"20\"/></g></mask><mask id=\"" + id + "Z\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"1024\" height=\"1024\"><rect x=\"0\" y=\"0\" width=\"1024\" height=\"1024\" fill=\"black\"/><g fill=\"white\"><rect x=\"629\" y=\"201\" width=\"97\" height=\"190\" rx=\"12\"/><rect x=\"250\" y=\"400\" width=\"522\" height=\"430\" rx=\"62\"/><polyline points=\"218.5,449 512,226 805.5,449\" fill=\"none\" stroke=\"white\" stroke-width=\"69\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><polygon points=\"250,425 512,226 772,425 772,520 250,520\"/></g></mask><rect x=\"0\" y=\"0\" width=\"1024\" height=\"1024\" fill=\"#10180D\" mask=\"url(#" + id + "Z)\"/><rect x=\"0\" y=\"0\" width=\"1024\" height=\"1024\" fill=\"currentColor\" mask=\"url(#" + id + ")\"/></svg>";
+  }
 
   function cev(t) { try { return (window.DIL && DIL.cevir) ? DIL.cevir(t) : t; } catch (e) { return t; } }
 
@@ -104,7 +117,7 @@
       '<div class="acKapsul"></div>' +
       '<div class="acYari acSol"><div class="acGovde"><div class="acDesen"><img alt="" decoding="async" src="' + DESEN + '"></div></div></div>' +
       '<div class="acYari acSag"><div class="acGovde"><div class="acDesen"><img alt="" decoding="async" src="' + DESEN + '"></div></div></div>' +
-      '<div class="acBas"><span class="acEv">' + EV + "</span></div>" + SEMBOL +
+      '<div class="acBas"></div>' + sembol("acSem", "vtSemDaire") + sembol("acLogo", "vtSemAcilis") +
       '<div class="acKilit"><p class="acKilitYazi"></p>' +
       '<button type="button" class="acAna acTekrar"></button>' +
       '<button type="button" class="acSifre"></button></div>';
@@ -120,8 +133,10 @@
   function logoHazir(d, cb) {
     var tamam = false;
     var git = function () { if (tamam) return; tamam = true; cb(); };
-    if (window.requestAnimationFrame) requestAnimationFrame(function () { requestAnimationFrame(git); });
-    setTimeout(git, 120);
+    // iki kare + 50 ms: logonun ekrana tam parlaklıkta basıldığından emin olmadan native ekran kalkmasın (iPhone'da
+    // erken kalkınca ilk karelerde gri zemin / soluk logo görünüyordu)
+    if (window.requestAnimationFrame) requestAnimationFrame(function () { requestAnimationFrame(function () { setTimeout(git, 50); }); });
+    setTimeout(git, 180);
   }
   // bir sonraki kare çizildikten hemen sonra çalışır (rAF + kare sonrası görev)
   function kareSonrasi(cb) {
@@ -163,7 +178,12 @@
   var ACIK = W_3 * ACILIS_YAVAS, SON = W_SON * ACILIS_YAVAS, SOLMA = W_SOLMA * ACILIS_YAVAS;
   var SOLMA_EGRI = "cubic-bezier(0.4, 0, 0.2, 1)";
   var E_2A = [0.2, 0.7, 0.3, 1], E_2B = [0, 0, 0.58, 1], E_2C = [0.6, 0, 0.9, 0.45]; // 2b: ease-out
-  var ATIS_EGRI = "cubic-bezier(0.3, 0, 0.3, 1)", ATIS = 1.12, LOGO_KUCUK = 0.85, LOGO_EGRI = "ease-out";
+  var LOGO_EGRI = "ease-out";
+  // dairedeki sembol: 2b'de logoyla aynı yer ve boy; 1–2a'da ve 2c sonundan itibaren daire çapının %55'i.
+  // 2c'de yükselirken küçülür (cubic-bezier(0.4, 0, 0.2, 1)).
+  var SEM_ORAN = 0.55;
+  // desen tam ekranken veri için en fazla bu kadar beklenir; sonra iskelet ekranla geçilir (veri gelince yerini alır)
+  var VERI_BEKLE = 300;
   var NEFES = 30; // 2a'nın sonunda daire merkezi logonun merkezinin bu kadar (pt = CSS px) altında
   var KAPSUL_GEN = 29, DAIRE_ORAN = 0.92;
   // 1) limon kapsülün tepesi ve koyu dairenin tepesi (0–300; daire kapsülün içinde aşağıdan gelir)
@@ -198,7 +218,7 @@
       return by((lo + hi) / 2);
     };
   }
-  var e2a = bezier(E_2A), e2b = bezier(E_2B), e2c = bezier(E_2C);
+  var e2a = bezier(E_2A), e2b = bezier(E_2B), e2c = bezier(E_2C), eSem = bezier([0.4, 0, 0.2, 1]);
   // gövde genişliği (% genişlik), Wise zamanında (yeni ritim)
   var GOVDE_YENI = [[0, 29]].concat(GOVDE_GEN.map(function (r) { return [govdeZaman(r[0]), r[1]]; }));
 
@@ -214,6 +234,7 @@
     animler.forEach(function (a) { try { a.cancel(); } catch (e) {} });
     animler = [];
     anaGizle(false);
+    temaGeriAl();
   }
   // ana ekranı çizme / çiz (content-visibility): gizliyken yerleşimi yapılmaz
   function anaGizle(gizle) {
@@ -265,9 +286,9 @@
     // güvenlik: perde hiçbir durumda 5 sn'den uzun kalmasın
     guvenlik = setTimeout(function () { if (!bitti && perde === d) perdeKaldir(true); }, 5000);
     if (azHareket() || !d.animate) {
-      // hareketi azalt: logo 400 ms → (veri bekle, en fazla 1,5 sn) → 200 ms solma → ana ekran
+      // hareketi azalt: logo 400 ms → (veri bekle, en fazla 300 ms; sonra iskelet ekran) → 200 ms solma → ana ekran
       setTimeout(function () {
-        veriyiBekle(function () { if (perde === d) perdeKaldir(false); }, 1500);
+        veriyiBekle(function () { if (perde === d) perdeKaldir(false); }, VERI_BEKLE);
       }, 400);
       return;
     }
@@ -308,34 +329,32 @@
       return { kapsul: kt, daire: dt, gen: W * dogrusal(GOVDE_YENI, w) / 100 };
     }
 
-    var kap = d.querySelector(".acKapsul"), bas = d.querySelector(".acBas"), ev = d.querySelector(".acEv");
+    var kap = d.querySelector(".acKapsul"), bas = d.querySelector(".acBas"), sem = d.querySelector(".acSem");
     var sol = d.querySelector(".acSol"), sag = d.querySelector(".acSag");
     var gS = sol.firstChild, gR = sag.firstChild, dS = gS.firstChild, dR = gR.firstChild;
     var r = kG / 2, boy = H * 2;
-    kap.style.cssText = "left:" + px(cx - kG / 2) + ";width:" + px(kG) + ";height:" + px(H * 0.25) + ";border-radius:" + px(r) + " " + px(r) + " 0 0";
+    var gor = "visibility:visible;opacity:1;";
+    kap.style.cssText = gor + "left:" + px(cx - kG / 2) + ";width:" + px(kG) + ";height:" + px(H * 0.25) + ";border-radius:" + px(r) + " " + px(r) + " 0 0";
     // kırpma kutuları: ekranın iki yarısı (ortada 1 px üst üste, dikiş görünmesin)
-    sol.style.cssText = "left:0;width:" + px(cx + 1) + ";height:" + px(H);
-    sag.style.cssText = "left:" + px(cx - 1) + ";width:" + px(W - cx + 1) + ";height:" + px(H);
+    sol.style.cssText = gor + "left:0;width:" + px(cx + 1) + ";height:" + px(H);
+    sag.style.cssText = gor + "left:" + px(cx - 1) + ";width:" + px(W - cx + 1) + ";height:" + px(H);
     // kaplar: genişliği W; sol kabın sol üst, sağ kabın sağ üst köşesi yuvarlak. Kabın dış kenarı = gövdenin kenarı.
     gS.style.cssText = "width:" + px(W) + ";height:" + px(boy) + ";border-top-left-radius:" + px(r);
     gR.style.cssText = "left:" + px(-(cx - 1)) + ";width:" + px(W) + ";height:" + px(boy) + ";border-top-right-radius:" + px(r);
     dS.style.cssText = dR.style.cssText = "width:" + px(W) + ";height:" + px(H);
-    bas.style.cssText = "left:" + px(cx - dC / 2) + ";width:" + px(dC) + ";height:" + px(dC);
-    // ev ikonu: logo (dairenin önünde solarken) ile aynı merkezde. Logo (iPhone'da ~118 px) daireden (~104 px) büyük
-    // olduğu için ev, atışın tepesinde (× 1,12) bile dairenin kenarına 4 px kalacak en büyük boyda. Çizgi kalınlığı
-    // logonun çatı çizgisiyle aynı oranda (genişliğin %10,5'i). Lucide house: 24'lük kutuda gövde 3–21, ortası (12, 11,74).
-    var sw = 0.105 * 18 / (1 - 0.105);                        // çizgi, birim başına (kutu birimi)
-    var k = (dC / 2 - 4) / ATIS / (Math.hypot(7, 7.26) + 2 + sw / 2); // px / kutu birimi (en uzak nokta: alt köşe yayı)
-    var S = 24 * k;
-    ev.style.cssText = "width:" + px(S) + ";height:" + px(S) + ";top:" + px(0.26 * k);
-    ev.firstChild.style.strokeWidth = Math.round(sw * 1000) / 1000;
+    bas.style.cssText = gor + "left:" + px(cx - dC / 2) + ";width:" + px(dC) + ";height:" + px(dC);
+    // dairedeki sembol: logonun kutusuyla aynı yerde durur, transform ile dairenin ortasına taşınır ve ölçeklenir
+    sem.style.cssText = gor;
+    var semK = SEM_ORAN * dC / lr.width; // küçük hâli: genişliği daire çapının %55'i
+    // logo ve sembol: kendi kutusunun ortasına göre (transform px ile; yüzde ve ölçek merkezi kaymasın), ek: dikey kayma
+    var lT = function (s, ek) { return "translate(" + px(-lr.width / 2) + "," + px(-lr.height / 2 + (ek || 0)) + ") scale(" + Math.round(s * 1e5) / 1e5 + ")"; };
 
     // anahtar kareler (Wise zamanı): 1) ve 3) tablo zamanları (aralar doğrusal); 2a–2c eğrili olduğu için ekranda
     // her 4 ms'de bir örnek (aralar doğrusal; eğriden sapma < 0,05 px), artı genişlik tablosunun zamanları
     var zam = {};
     KAPSUL_TEPE.concat(DAIRE_TEPE, GOVDE_YENI).forEach(function (r) { zam[r[0]] = 1; });
     for (var w = W_1; w < W_2C; w += 4 / ACILIS_YAVAS) zam[Math.round(w * 1000) / 1000] = 1;
-    [W_2A, W_2B, W_2C, W_3].forEach(function (w) { zam[w] = 1; });
+    [W_2A, W_2A + 0.001, W_2B, W_2C, W_3].forEach(function (w) { zam[w] = 1; });
     var anlar = Object.keys(zam).map(Number).filter(function (w) { return w >= 0 && w <= W_3; }).sort(function (a, b) { return a - b; });
 
     // Tek zaman çizelgesi (ekran zamanı, ms): 0 → LOGO logo bekler (parçalar başlangıç yerinde), sonra hareket
@@ -344,34 +363,39 @@
     // · KUYRUK: animasyonların bitişini işlemek için uyanan ana iş parçacığı solmanın son karelerine denk gelmesin.
     var KUYRUK = 100, TUM = LOGO + SON + SOLMA + KUYRUK;
     var o = function (t) { return Math.min(1, Math.max(0, (LOGO + t) / TUM)); };
-    var kK = [], kD = [], kGS = [], kGR = [], kDS = [], kDR = [];
+    var kK = [], kD = [], kGS = [], kGR = [], kDS = [], kDR = [], kSem = [];
     var ekle = function (dizi, t, tr) { dizi.push({ offset: o(t), transform: tr }); };
     var tr = function (x, y) { return "translate(" + px(x) + "," + px(y) + ")"; };
     var yer = function (w) {
       var s = durum(w);
       var gTepe = s.daire + dC / 2;                // gövdenin tepesi = dairenin ortası (desen dairenin arkasından açılır)
       var tx = cx - s.gen / 2;                     // gövdenin sol kenarı (sol kap bu kadar sağa, sağ kap bu kadar sola)
+      // sembol: 1–2a küçük ve dairenin ortasında; 2b'de (600'den hemen sonra, tam opak logonun arkasında, görünmeden)
+      // logoyla aynı yer ve boy; 2c'de daireyle yükselirken küçülür
+      var semY = gTepe - ly, semS = semK;
+      if (w > W_2A && w <= W_2B) { semY = 0; semS = 1; }
+      else if (w > W_2B && w <= W_2C) semS = 1 + (semK - 1) * eSem((w - W_2B) / (W_2C - W_2B));
       return { kap: "translateY(" + px(s.kapsul) + ")", bas: "translateY(" + px(s.daire) + ")",
-        gS: tr(tx, gTepe), dS: tr(-tx, -gTepe), gR: tr(-tx, gTepe), dR: tr(tx, -gTepe) };
+        gS: tr(tx, gTepe), dS: tr(-tx, -gTepe), gR: tr(-tx, gTepe), dR: tr(tx, -gTepe), sem: lT(semS, semY) };
     };
     // hareket ACIK'ta biter; parçalar solmanın sonuna kadar (TUM) yerinde durur: animasyonlar ortada bitmez,
     // böylece tarayıcı hareket sırasında ana iş parçacığını uyandırmaz
     [-LOGO / ACILIS_YAVAS].concat(anlar, [(SON + SOLMA + KUYRUK) / ACILIS_YAVAS]).forEach(function (w) {
       var y = yer(Math.min(W_3, Math.max(0, w))), t = w * ACILIS_YAVAS;
       ekle(kK, t, y.kap); ekle(kD, t, y.bas); ekle(kGS, t, y.gS); ekle(kDS, t, y.dS); ekle(kGR, t, y.gR); ekle(kDR, t, y.dR);
+      ekle(kSem, t, y.sem);
     });
     // başlangıç yerleri (animasyon başlamadan önce de aynı)
     var y0 = yer(0);
     kap.style.transform = y0.kap; bas.style.transform = y0.bas;
     gS.style.transform = y0.gS; dS.style.transform = y0.dS; gR.style.transform = y0.gR; dR.style.transform = y0.dR;
-    // logo: kendi kutusunun ortasına göre (transform px ile; yüzde ve ölçek merkezi kaymasın)
-    var lT = function (s, ek) { return "translate(" + px(-lr.width / 2) + "," + px(-lr.height / 2 + (ek || 0)) + ") scale(" + s + ")"; };
+    sem.style.transform = y0.sem;
     logo.style.transform = lT(1);
     var t0 = document.timeline ? document.timeline.currentTime : null;
     d._t0 = t0;
-    d._olcu = { W: W, H: H, kapsul: kG, daire: dC, logo: LOGO, yavas: ACILIS_YAVAS, ikon: S, cizgi: sw * k,
+    d._olcu = { W: W, H: H, kapsul: kG, daire: dC, logo: LOGO, yavas: ACILIS_YAVAS, semKucuk: semK,
       logoKutu: { x: lx, y: ly, w: lr.width, h: lr.height }, son: SON, acik: ACIK, solma: SOLMA };
-    var will = [kap, gS, gR, dS, dR, bas, ev, logo];
+    var will = [kap, gS, gR, dS, dR, bas, sem, logo];
     // katmanlar logo beklemesinde (ekran durgunken) hazırlanır
     will.forEach(function (e) { e.style.willChange = "transform"; });
     // ana ekran şimdilik çizilmez: veri hareket sırasında gelirse yerleşimi (uzun ana iş parçacığı işi) hareketi
@@ -392,20 +416,17 @@
     var sec = { duration: TUM, fill: "forwards", easing: "linear" };
     anim(kap, kK, sec);
     anim(bas, kD, sec);
+    anim(sem, kSem, sec);
     anim(gS, kGS, sec); anim(dS, kDS, sec);
     anim(gR, kGR, sec); anim(dR, kDR, sec);
     // Bekleme kareleri tam sabit DEĞİL (0,01 px kayma, 0,0001 opaklık; gözle görülmez): değeri sabit duran bir
     // aralık görünce tarayıcı, değişimin başlayacağı ana yakın ana iş parçacığını uyandırıp animasyonlu öğelerin
     // biçimini yeniden hesaplıyor ve 4x yavaşlatmada hareketin ortasında kare düşüyordu.
-    // 2b: logo 1 → 0 ve %100 → %85 (180 ms × 1,15), ease-out: dairenin içine "girer"
+    // 2b: logo 1 → 0 (180 ms × 1,15), ease-out. Altında aynı yer ve boyda dairedeki sembol var: logo solarken sembol
+    // onun yerini alır (logo küçülmez; küçülseydi altındaki sembolle iki ayrı boy üst üste görünürdü).
     var l0 = W_2A * ACILIS_YAVAS, l1 = (W_2A + W_LOGO_SOL) * ACILIS_YAVAS;
     anim(logo, [{ offset: 0, opacity: 1, transform: lT(1) }, { offset: o(l0), opacity: 1, transform: lT(1, 0.01), easing: LOGO_EGRI },
-      { offset: o(l1), opacity: 0, transform: lT(LOGO_KUCUK) }, { offset: 1, opacity: 0, transform: lT(LOGO_KUCUK, 0.01) }], sec);
-    // 2b: ev ikonu tek atış 1 → 1,12 → 1 (260 ms × 1,15), her yarısı cubic-bezier(0.3, 0, 0.3, 1). Daire değil, yalnız ikon.
-    var a0 = W_2A * ACILIS_YAVAS, a1 = (W_2A + W_2B) / 2 * ACILIS_YAVAS, a2 = W_2B * ACILIS_YAVAS;
-    anim(ev, [{ offset: 0, transform: "translateY(0px) scale(1)" }, { offset: o(a0), transform: "translateY(0.01px) scale(1)", easing: ATIS_EGRI },
-      { offset: o(a1), transform: "translateY(0px) scale(" + ATIS + ")", easing: ATIS_EGRI },
-      { offset: o(a2), transform: "translateY(0px) scale(1)" }, { offset: 1, transform: "translateY(0.01px) scale(1)" }], sec);
+      { offset: o(l1), opacity: 0, transform: lT(1) }, { offset: 1, opacity: 0, transform: lT(1, 0.01) }], sec);
     var kS = (LOGO + SON) / TUM;
     var secS = { duration: TUM, fill: "forwards" };
     var kB = (LOGO + SON + SOLMA) / TUM;
@@ -429,7 +450,7 @@
     }, function () {});
     // ACIK − 30'da (hareket bitmeden, ekrana dokunmadan) bakılır: veri hazır ve ana ekran çizildiyse iş yok, solma
     // SON'da kendiliğinden başlar. Değilse solma bekletilir; ACIK'tan sonra (desen ekranı kaplamış, durgun) veri gelince
-    // (en fazla 1,5 sn; sonra iskelet ekran) ana ekran açılır, çizildiği kareden hemen sonra solma kaldığı yerden sürer.
+    // (en fazla VERI_BEKLE = 300 ms; sonra iskelet ekran, veri gelince yerini alır) ana ekran açılır, çizildiği kareden hemen sonra solma kaldığı yerden sürer.
     var simdi0 = function () { return document.timeline && t0 != null ? document.timeline.currentTime - t0 : 0; };
     setTimeout(function () {
       if (perde !== d || bitti) return;
@@ -447,7 +468,7 @@
             if (n != null) solmalar.forEach(function (a) { a.startTime = n - (LOGO + SON); });
             else solmalar.forEach(function (a) { a.play(); });
           });
-        }, 1500);
+        }, VERI_BEKLE);
       }, Math.max(0, LOGO + ACIK - simdi0()));
     }, Math.max(0, LOGO + ACIK - 30 - simdi0()));
   }
@@ -497,13 +518,14 @@
         if (!sessionStorage.getItem("vt-acilis")) { sessionStorage.setItem("vt-acilis", "1"); webIlk = true; }
       } catch (e) { webIlk = false; }
     }
-    if (!girisli() || (!native && !webIlk)) { splashGizle(); return; }
+    if (!girisli() || (!native && !webIlk)) { ilkZeminBirak(); temaGeriAl(); splashGizle(); return; }
 
     bitti = false;
     perde = perdeKur();
     atlanabilir(perde);
     var d = perde;
     logoHazir(d, function () {
+      ilkZeminBirak();
       splashGizle();
       if (kilitAcik()) kilitSor(d, function () { oynat(d); });
       else oynat(d);
@@ -543,5 +565,5 @@
     cikisBagla: function (fn) { cikisFn = fn; }
   };
 
-  try { sogukAcilis(); } catch (e) { splashGizle(); try { if (perde) perde.remove(); } catch (x) {} }
+  try { sogukAcilis(); } catch (e) { ilkZeminBirak(); temaGeriAl(); splashGizle(); try { if (perde) perde.remove(); } catch (x) {} }
 })();

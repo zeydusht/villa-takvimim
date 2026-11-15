@@ -137,32 +137,54 @@
     }).catch(function () {});
   };
 
+  // aynı anda birden çok yenileme istenirse tek istek gider (açılışta arka plan yenilemesi ile 401 yenilemesi çakışmasın)
+  var yenileniyor = null;
   function tokenYenile() {
+    if (yenileniyor) return yenileniyor;
     var o = VT.oturum;
     if (!o || !o.refresh_token) return Promise.reject(new Error("Oturum yok"));
-    return authIstek("token?grant_type=refresh_token", { refresh_token: o.refresh_token })
+    var bitir = function () { yenileniyor = null; };
+    yenileniyor = authIstek("token?grant_type=refresh_token", { refresh_token: o.refresh_token })
       .then(function (d) { oturumYaz(d); return d; });
+    yenileniyor.then(bitir, bitir);
+    return yenileniyor;
   }
 
   // Uygulama, sunucu fonksiyonlarına (ör. drive-aktar) giderken süresi dolan oturumu yenileyebilsin
   VT.jetonYenile = tokenYenile;
 
-  function jetonGecerliMi(t) {
+  function jetonGecerliMi(t, pay) {
     try {
       var g = JSON.parse(atob(t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
-      return g.exp ? (g.exp * 1000 > Date.now() + 30000) : true;
+      return g.exp ? (g.exp * 1000 > Date.now() + (pay || 30000)) : true;
     } catch (e) { return false; }
   }
+
+  // cihazda kayıtlı oturum var mı (ağa gitmeden; açılışta ilk ekranı seçmek için)
+  VT.oturumKayitli = function () { var o = oturumOku(); return !!(o && o.access_token); };
 
   VT.oturumuGeriYukle = function () {
     var o = oturumOku();
     if (!o) return Promise.resolve(null);
     VT.oturum = o;
+    var reddedildi = function (e) {
+      var m = String((e && e.message) || "");
+      return /refresh|invalid|geçersiz|expired|not found/i.test(m) && !/ulaşılamadı|network|failed to fetch/i.test(m);
+    };
+    // Jeton en az 5 dk daha geçerliyse yenilemeyi beklemeden devam: veri açılışta hemen yüklenmeye başlar,
+    // yenileme arka planda yapılır. Sunucu oturumu reddederse çıkış yapılır ve uygulamaya haber verilir.
+    if (o.access_token && jetonGecerliMi(o.access_token, 5 * 60000)) {
+      tokenYenile().catch(function (e) {
+        if (!reddedildi(e)) return;
+        oturumYaz(null);
+        try { window.dispatchEvent(new Event("vt-oturum-bitti")); } catch (x) {}
+      });
+      return Promise.resolve(VT.oturum);
+    }
     return tokenYenile().then(function () { return VT.oturum; })
       .catch(function (e) {
-        var m = String((e && e.message) || "");
         // Sunucu oturumu açıkça reddettiyse çıkış yap
-        if (/refresh|invalid|geçersiz|expired|not found/i.test(m) && !/ulaşılamadı|network|failed to fetch/i.test(m)) {
+        if (reddedildi(e)) {
           oturumYaz(null);
           return null;
         }

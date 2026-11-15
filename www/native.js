@@ -74,7 +74,8 @@
   function stilAyarla() {
     if (!P.StatusBar || !P.StatusBar.setStyle) return;
     var bar = document.querySelector(".appBar");
-    var yesil = !!(bar && bar.offsetParent !== null);
+    // açılış animasyonu (koyu #10180D perde) ekrandayken de beyaz yazı
+    var yesil = !!document.getElementById("acilis") || !!(bar && bar.offsetParent !== null);
     var stil = yesil ? "DARK" : "LIGHT"; // DARK = beyaz yazı, LIGHT = koyu yazı
     if (stil === sonStil) return;
     sonStil = stil;
