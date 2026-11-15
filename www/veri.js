@@ -356,7 +356,9 @@
           rez.filter(function (r) { return r.villa_id === v.id; }).forEach(function (r) {
             var mm = maliHar[r.id] || {};
             var od = odemeHar[r.id] || [];
+            var on = onaylar(r);
             m.rez.push({
+              girisOnay: on.girisOnay, cikisOnay: on.cikisOnay,
               id: r.id, start: r.baslangic, end: r.bitis, guest: r.misafir,
               phone: r.telefon || "", people: r.kisi ? String(r.kisi) : "",
               note: r.aciklama || "", color: r.renk || "#0B5B57", kod: r.kod || undefined,
@@ -393,6 +395,33 @@
     });
   };
 
+  // 17.4: giriş / çıkış onayı (rezervasyonlar.giris_onay / cikis_onay + _onaylayan). Bakıcı da yazar.
+  // tur: "giris" | "cikis"; zaman: ISO zaman damgası ya da null (geri al)
+  VT.onayYaz = function (rezId, tur, zaman) {
+    var k = VT.kullanici(), b = {};
+    b[tur + "_onay"] = zaman || null;
+    b[tur + "_onaylayan"] = zaman && k ? k.id : null;
+    return api("rezervasyonlar?id=eq." + encodeURIComponent(rezId), {
+      method: "PATCH", donus: "return=representation", body: b
+    }).then(function (d) {
+      if (Array.isArray(d) && !d.length) throw new Error("Yetkiniz yok");
+      return d;
+    });
+  };
+  // 17.4: bakıcı ödemeyi para tablolarına dokunmadan kaydeder; fonksiyon yeni kalan tutarı döndürür
+  VT.bakiciOdemeEkle = function (rezId, tutar, not) {
+    return VT.rpc("bakici_odeme_ekle", { p_rez: rezId, p_tutar: Math.round(tutar), p_not: not || null }).then(function (d) {
+      var x = Array.isArray(d) ? d[0] : d;
+      if (x && typeof x === "object") { var a = Object.keys(x); x = a.length ? x[a[0]] : null; }
+      var n = Number(x);
+      return isNaN(n) ? null : Math.max(0, Math.round(n));
+    });
+  };
+  // onay sütunları (yoksa undefined)
+  function onaylar(r) {
+    return { girisOnay: r.giris_onay || undefined, cikisOnay: r.cikis_onay || undefined };
+  }
+
   // Bakıcının göreceği kalan tutarlar: r.kalanSunucu (depozito dahil), r.depozitoSunucu
   VT.bakiciKalanlar = function (v) {
     return VT.rpc("bakici_kalanlar", { p_villa: v.id }).then(function (satirlar) {
@@ -401,6 +430,7 @@
       (v.rez || []).forEach(function (r) {
         var x = m[r.id];
         r.kalanSunucu = x ? Math.max(0, Math.round(Number(x.kalan) || 0)) : 0;
+        r.kalanBilinir = !!x;
         r.depozitoSunucu = x ? Math.max(0, Math.round(Number(x.depozito) || 0)) : 0;
       });
     }).catch(function () {});
@@ -506,7 +536,9 @@
         rez: [], fiyatlar: {}, giderler: [], gelirler: [], fotolar: [], misafirNot: {}
       };
       (s[1] || []).forEach(function (r) {
+        var on = onaylar(r);
         m.rez.push({
+          girisOnay: on.girisOnay, cikisOnay: on.cikisOnay,
           id: r.id, start: r.baslangic, end: r.bitis, guest: r.misafir,
           phone: r.telefon || "", people: r.kisi ? String(r.kisi) : "",
           note: r.aciklama || "", color: r.renk || "#0B5B57", kod: r.kod || undefined,

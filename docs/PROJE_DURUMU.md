@@ -459,6 +459,53 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       · Kare düşmesi (dönüşümlü, önceki turla): 1x'te yeni 10 denemenin 2'sinde (3 kare), önceki 10'un 1'inde (1 kare); hepsi
         sayfa zamanı ~1800 ms'de, iki sürümde aynı anda. 4x'te ikisi de 0.
       · iPhone Safari'de ölçülmedi.
+- [x] Görev 17 — Villa ekranı: Sıradaki öne, giriş saati, yerleştirme onayı, gezinme · Claude Code (16 Kasım). Netlify'a yüklenmedi.
+      Ayrıntı: `docs/GOREV17.md`.
+      17.1) "Sıradaki" kartı villa başlığının hemen altında. Üst satırda "SIRADAKİ" ve yanında zaman etiketi
+      ("Bugün" yeşil dolu; "Yarın", "N gün sonra" açık lacivert; 7 gün ve sonrası kısa tarih). Tarih satırı kalktı.
+      Altında "16:00 · abc girecek" (çıkışta "10:00 · abc çıkacak"), sağda kırmızı "13.000 ₺ alınacak" ya da yeşil "Ödeme alındı".
+      17.2) Durum Türkiye saatine göre (UTC+3). Giriş günü 16:00'dan önce ve yerleştirilmediyse "Boş" + "Bugün 16:00'da abc girecek".
+      Saat geçti ya da onay verildiyse "Dolu · abc" + "Bugün 16:00'da giriş yaptı" / "14:42'de yerleştirildi". Çıkış günü 10:00'a
+      (ya da "çıktı" onayına) kadar dolu, sonra boş. Aynı kural ana ekran kartlarında, dolu/boş sayısında, "Bugün ve yarın" kartında
+      ve Takvim sekmesinde ("Yerleşti", "Çıktı" etiketleri). Takvim hücresindeki yarım gün çizimi değişmedi. Saat 10:00 / 16:00'ı
+      geçince açık ekran kendiliğinden güncelleniyor (30 sn'de bir bakılır; panel açıkken beklenir).
+      17.3) Villa ekranındaki 3 özet kutusu (Doluluk · Bu ay · Sonraki giriş) kalktı. Hızlı işlem hapları ay başlığı ile gün
+      başlıkları arasında, tek yerde: + Rezervasyon · Teklif · Fiyat gir · Opsiyon · Paylaş. Sığmayınca ekranın sağ kenarındaki hap
+      ~yarım görünür (390 px'te %41; haplar arası boşluk ve iç boşluk otomatik ayarlanır). Sağda 32 px beyaza solan gölge, sona
+      gelince kaybolur; başta değilse solda gölge. Cihazda ilk görüşte haplar 400 ms sola kayıp geri gelir ("vt-hap-ipucu";
+      hareketi azalt açıksa yok).
+      17.4) Rezervasyon detayının en üstünde (giriş günü ya da villanın sıradaki girişi):
+        · Büyük "13.000 ₺ alınacak (5.000 ₺ depozito dahil)" ve yeşil "Ödemeyi al ve misafiri yerleştir" (giriş günü değilse "Ödemeyi al").
+        · Panel: "Alınan tutar" ("Tamamı · 13.000 ₺" seçili, değiştirilebilir) → Kaydet → aynı panelde kayarak
+          "Misafiri yerleştirdiniz mi?" → "Evet, yerleştirdim" / "Henüz değil". Evet: onay saatiyle kaydedilir, başarı titreşimi,
+          "✓ abc yerleştirildi · 13.000 ₺ alındı", villa anında "Dolu".
+        · Giriş günü "Ödeme almadan yerleştir"; ödeme tamamsa doğrudan "Misafiri yerleştir".
+        · Onaydan sonra "Yerleştirildi · 14:42 · geri al".
+        · Çıkış günü "Misafir çıktı mı?" → "Evet, çıktı" → depozito iadesi kartı (8.5) hemen açılır; "Çıktı · 10:12 · geri al".
+        · Sahip ödemeyi mevcut yoldan (odemeler, not: "Girişte alındı · 14:40") kaydeder.
+        · Bakıcı rpc/bakici_odeme_ekle(p_rez, p_tutar, p_not) ile kaydeder; p_not = "Bakıcı aldı · <bakıcının adı> · 14:40".
+          Dönen yeni kalan ekranda kullanılır.
+        · Onay: rezervasyonlar.giris_onay / cikis_onay (+ _onaylayan = kullanıcı id) PATCH ile.
+        · Hata olursa düzgün mesaj çıkar: fonksiyon/sütun yoksa "bu özellik sunucuda henüz hazır değil", yetki yoksa "yetkiniz yok",
+          bağlantı yoksa "İnternet bağlantınızı kontrol edin". Onay reddedilirse ekran eski hâline döner.
+      17.5) Her sekme kendi yığınını hatırlıyor: villa (ya da Gelir & gider vb. alt ekranı) açıkken Hesap/Takvim'e geçip
+      Villalar'a dönünce aynı villa, aynı ay ve aynı kaydırma konumu. Seçili sekmeye tekrar basınca kök (villa → liste);
+      kökteyken en üste kayar. Takvim ve Hesap'ta da seçiliyken basınca en üste kayar, dönünce kaldığı yerde.
+      · Tarayıcı testleri (Chrome, sahte sunucu, saat 01:09 / 14:40 / 16:30 / çıkış günü 09:00 ve 10:30): hepsi beklenen gibi.
+        Sahip, bakıcı, bakıcı-fonksiyon-yok, onay-sütunu-yok, çıkış akışı, sekme dönüşleri, İngilizce görünüm denendi; eski
+        testler (hap, detay, yenileme, ipucu, kilit, giriş) geçti. iPhone'da denenmedi.
+      · Veritabanı: 17.4'ün sütunları ve bakici_odeme_ekle fonksiyonu Claude tarafından kurulacak; kuruldukları bu turda
+        DOĞRULANMADI (veritabanına dokunulmadı). Aşağıdaki "Görev 17" bölümüne bakın.
+
+## Veritabanı için gerekenler (Görev 17) — Claude kuracak (uygulama hazır, kurulum doğrulanmadı)
+1. `rezervasyonlar`: `giris_onay`, `cikis_onay` (timestamptz), `giris_onaylayan`, `cikis_onaylayan` (uuid). Uygulama
+   okurken bu sütunları kullanır, yazarken `PATCH rezervasyonlar?id=eq.<id>` gönderir. Bakıcı da yazabilmeli; yazma izni
+   yoksa ve satır dönmezse uygulama "yetkiniz yok" der.
+2. `rpc/bakici_odeme_ekle(p_rez uuid, p_tutar bigint, p_not text)`: yeni kalan tutarı döndürsün (sayı ya da tek sütunlu satır).
+   Sahip tarafında Gelir & gider'de "kim aldı" görünsün diye **p_not, odemeler.aciklama'ya yazılmalı** (uygulama
+   "Bakıcı aldı · Ali · 14:40" gönderiyor; Gelir & gider ödeme satırında not olarak görünür).
+3. Kurulmadan önce de uygulama çalışır: bakıcı ödemesinde "bu özellik sunucuda henüz hazır değil. Villa sahibine haber verin.",
+   yerleştirmede "bu özellik sunucuda henüz hazır değil" mesajı çıkar, ekran eski hâline döner.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).

@@ -680,7 +680,23 @@
     "Bağlantı kurulamadı":"Could not connect", "Bağlantı kurulamadı.":"Could not connect.",
     "Oturumunuzun süresi dolmuş. Tekrar giriş yapın.":"Your session has expired. Please sign in again.",
     "Yetkiniz yok":"You do not have permission",
-    "Bu bağlantı artık geçerli değil.":"This link is no longer valid."
+    "Bu bağlantı artık geçerli değil.":"This link is no longer valid.",
+    // Görev 17
+    "Ödeme alındı":"Payment received", "Ödemeyi al":"Take payment",
+    "Ödemeyi al ve misafiri yerleştir":"Take payment and check in guest",
+    "Ödeme almadan yerleştir":"Check in without payment", "Misafiri yerleştir":"Check in guest",
+    "Misafir çıktı mı?":"Has the guest checked out?", "Evet, çıktı":"Yes, checked out",
+    "Misafiri yerleştirdiniz mi?":"Did you check the guest in?", "Evet, yerleştirdim":"Yes, checked in",
+    "Henüz değil":"Not yet", "Alınan tutar":"Amount received", "Tamamı":"Full amount", "geri al":"undo",
+    "Yerleştirildi":"Checked in", "Yerleşti":"Checked in", "Çıktı":"Checked out",
+    "Yerleştirme geri alındı":"Check-in undone", "Çıkış geri alındı":"Check-out undone",
+    "Kaydedilemedi: bu özellik sunucuda henüz hazır değil. Biraz sonra tekrar deneyin.":"Could not save: this feature is not ready on the server yet. Please try again later.",
+    "Kaydedilemedi: bu rezervasyonu değiştirme yetkiniz yok.":"Could not save: you do not have permission to change this reservation.",
+    "Kaydedilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Could not save. Check your internet connection and try again.",
+    "Ödeme kaydedilemedi: bu özellik sunucuda henüz hazır değil. Villa sahibine haber verin.":"Payment could not be saved: this feature is not ready on the server yet. Please let the villa owner know.",
+    "Ödeme kaydedilemedi: bu villada ödeme alma yetkiniz yok.":"Payment could not be saved: you are not allowed to take payments for this villa.",
+    "Ödeme kaydedilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Payment could not be saved. Check your internet connection and try again.",
+    "Ödeme kaydedilemedi.":"Payment could not be saved."
   };
 
   // ---------- kalıplı metinler ----------
@@ -693,6 +709,22 @@
   var GORELI = "(bugün|yarın|\\d+ gün sonra)";
 
   var K = [
+    // Görev 17: saate göre durum, yerleştirme, ödeme
+    [/^Bugün (\d+:\d+)'(?:da|de|ta|te) (.+) girecek$/, "$2 checks in today at $1"],
+    [/^Bugün (\d+:\d+)'(?:da|de|ta|te) giriş yaptı$/, "Checked in today at $1"],
+    [/^Bugün (\d+:\d+)'(?:da|de|ta|te) çıkış$/, "Check-out today at $1"],
+    [/^(\d+:\d+)'(?:da|de|ta|te) yerleştirildi$/, "Checked in at $1"],
+    [/^(Yerleştirildi|Yerleşti) · (\d+:\d+)$/, "Checked in · $2"],
+    [/^Çıktı · (\d+:\d+)$/, "Checked out · $1"],
+    [/^Tamamı · (.+)$/, "Full amount · $1"],
+    [/^(.+) bugün çıktı · (.+)$/, function (_, a, b) { return a + " checked out today · " + D.cevir(b); }],
+    [/^(.+) bugün çıktı\. (.+)$/, function (_, a, b) { return a + " checked out today. " + D.cevir(b); }],
+    [/^(.+) yerleştirildi · (.+) alındı$/, "$1 checked in · $2 received"],
+    [/^· (.+) yerleştirildi$/, "· $1 checked in"],
+    [/^· (.+) giriş yaptı$/, "· $1 checked in"],
+    [/^· (.+) çıktı$/, "· $1 checked out"],
+    [/^(.+) yerleştirildi$/, "$1 checked in"],
+    [/^(.+) çıktı$/, "$1 checked out"],
     [/^(\d+) gün sonra$/, "In $1 days"],
     // Görev 13
     [/^%(\d+) indirim$/, "$1% off"],
