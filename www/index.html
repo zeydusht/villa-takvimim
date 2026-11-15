@@ -125,7 +125,7 @@
   .hapKap::before{left:0; background:linear-gradient(to right,#fff,rgba(255,255,255,0))}
   .hapKap::after{right:0; background:linear-gradient(to left,#fff,rgba(255,255,255,0))}
   .hapKap.solGolge::before, .hapKap.sagGolge::after{opacity:1}
-  .hap{flex:none; display:inline-flex; align-items:center; gap:.375rem; height:2.5rem; padding:0 1rem 0 .8125rem;
+  .hap{flex:none; display:inline-flex; align-items:center; gap:.375rem; height:3rem; padding:0 1rem 0 .8125rem;
     border-radius:999px; border:1.5px solid var(--r22,#DCDEDD); background:var(--r12,#ECEDEC); color:var(--ry,#3F4843);
     font-size:.9375rem; font-weight:500; white-space:nowrap; transition:background var(--hiz-bas)}
   .hap svg.ik{color:var(--r,#5F6A64)}
@@ -1119,6 +1119,39 @@
     color:var(--muted); font-size:.9375rem; text-decoration:underline}
   .hazirSec.on{box-shadow:inset 0 0 0 2px var(--lacivert)}
   @media (prefers-reduced-motion: reduce){ .akisIc{transition:none} .akisIc:not(.ikinci) #ak-s2, .akisIc.ikinci #ak-s1{transition:none} }
+  /* 18.2: seçili aralık — aradaki tam geceler koyu yeşil (fiyat beyaz), giriş/çıkış günü yarım açık yeşil */
+  .cell.secIc .fy{opacity:.92}
+  .cell.secBas, .cell.secSon{color:var(--ink)}
+  /* 18.3: seçim paneli — alt menünün hemen üstünde, alttan kayar */
+  .secPanel{position:fixed; left:0; right:0; bottom:var(--menu-h); z-index:47; background:#fff;
+    border-top:1px solid var(--line); border-radius:18px 18px 0 0; box-shadow:0 -6px 24px rgba(16,22,19,.10);
+    padding:.75rem 1rem .875rem; max-width:40rem; margin:0 auto;
+    transform:translateY(calc(100% + var(--menu-h))); visibility:hidden;
+    transition:transform var(--hiz-ac) cubic-bezier(.2,.8,.2,1), visibility 0s linear var(--hiz-ac)}
+  .secPanel.acik{transform:none; visibility:visible; transition:transform var(--hiz-ac) cubic-bezier(.2,.8,.2,1), visibility 0s}
+  body.panelAcik .secPanel{visibility:hidden}
+  body.secPanelAcik .wrap{padding-bottom:calc(7rem + env(safe-area-inset-bottom) + var(--secPanelH, 9rem))}
+  .spUst{display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-height:3rem}
+  .spMetin{display:flex; flex-direction:column; min-width:0}
+  .spBas{font-size:1.0625rem; line-height:1.3; overflow-wrap:anywhere}
+  .spAlt{font-size:.9375rem; color:var(--muted); line-height:1.3; margin-top:.125rem}
+  .spKapat{flex:none; width:3rem; height:3rem; border-radius:99px; display:flex; align-items:center; justify-content:center;
+    background:var(--soft); color:var(--ink); border:0; transition:transform var(--hiz-bas), background-color var(--hiz-bas)}
+  .spKapat:active{transform:scale(.97); background:var(--line)}
+  .spUyari{display:flex; align-items:center; gap:.375rem; color:var(--uyari); font-size:.9375rem; margin-top:.375rem}
+  .spBtnler{display:grid; gap:.5rem; margin-top:.625rem}
+  .spBtn{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.25rem; min-width:0;
+    min-height:4rem; padding:.5rem .25rem; border-radius:var(--kose); font-size:.9375rem; line-height:1.15;
+    background:var(--r12,#ECEDEC); color:var(--ry,#3F4843); border:1.5px solid var(--r22,#DCDEDD);
+    transition:transform var(--hiz-bas), background-color var(--hiz-bas)}
+  .spBtn span{white-space:nowrap}
+  .spBtn svg.ik{color:var(--r,#5F6A64)}
+  .spBtn.ana{background:var(--ok); border-color:var(--ok); color:#fff}
+  .spBtn.ana svg.ik{color:#fff}
+  .spBtn:active{transform:scale(.97); background:var(--r22,#DCDEDD)}
+  .spBtn.ana:active{background:#08443F}
+  @media (max-width:370px){ .spBtn{font-size:.875rem} }
+  @media (prefers-reduced-motion: reduce){ .secPanel, .secPanel.acik{transition:none} }
   /* 11.8 alt menü: seçili sekmede dolu ikon */
   .sekmeler button svg.ik{width:22px; height:22px}
 </style>
@@ -1618,6 +1651,8 @@
 
 </div>
 
+<!-- 18.3: tarih seçimi paneli (alt menünün hemen üstünde, alttan kayar) -->
+<div class="secPanel" id="secPanel" aria-live="polite"></div>
 <nav class="sekmeler hide" id="sekmeler" aria-label="Ana menü"><div class="sekmeIc"><i class="kabarcik anlik" id="kabarcik" aria-hidden="true"></i>
   <button data-sekme="ana" data-sik="ev"><span>Villalar</span></button>
   <button data-sekme="ajanda" data-sik="takvim"><span>Takvim</span></button>
@@ -2183,8 +2218,8 @@
   function hapHTML(is,sinif,ik,yazi){
     return '<button class="hap '+sinif+'" data-is="'+is+'">'+ikon(ik,{boy:18})+"<span>"+esc(cev(yazi))+"</span></button>";
   }
-  // 17.3: yatay kaydırılan hap sırası kaydırılabildiğini belli etsin:
-  //  · sığmıyorsa haplar arası boşluk (6–16 px) ayarlanır, ekranın sağ kenarına denk gelen hap yarım görünür
+  // 17.3 / 18.4: yatay kaydırılan hap sırası kaydırılabildiğini belli etsin:
+  //  · haplar içeriğe göre genişler, hiçbiri küçültülmez ya da yazısı kesilmez (18.4)
   //  · sağda 32 px beyaza solan gölge; sona gelince kaybolur. Başta değilse solda gölge çıkar
   //  · cihazda ilk kez görüldüğünde haplar 400 ms sola kayıp geri gelir (hareketi azalt açıksa yok)
   var HAP_IPUCU="vt-hap-ipucu";
@@ -2197,29 +2232,7 @@
     }
     if(!el._golgeBagli){ el._golgeBagli=true; el.addEventListener("scroll",golge,{passive:true}); }
     var l=Array.prototype.slice.call(el.children);
-    el.style.gap="";
-    l.forEach(function(b){ b.style.paddingLeft=b.style.paddingRight=""; });
     if(!l.length || el.offsetParent===null){ golge(); return; }
-    var pl=parseFloat(getComputedStyle(el).paddingLeft)||0, W=el.clientWidth;
-    var cs0=getComputedStyle(l[0]), pS=parseFloat(cs0.paddingLeft)||0, pR=parseFloat(cs0.paddingRight)||0;
-    var gen=l.map(function(b){ return b.getBoundingClientRect().width; });
-    var top=pl+gen.reduce(function(a,x){ return a+x; },0)+8*(gen.length-1);
-    if(top>W){
-      // aralık (6–16 px) ve hap iç boşluğu (her yanda −5…+6 px) birlikte aranır; kenara denk gelen hap ~yarı görünsün
-      var enIyi={g:8,d:0,p:9};
-      for(var d=-5; d<=6; d++){
-        for(var g=6; g<=16; g+=0.5){
-          var x=pl;
-          for(var i=0;i<gen.length;i++){
-            var w=gen[i]+2*d;
-            if(x+w>W){ var f=Math.abs((W-x)/w-0.5)+Math.abs(d)*0.004; if(x<W-8 && f<enIyi.p) enIyi={g:g,d:d,p:f}; break; }
-            x+=w+g;
-          }
-        }
-      }
-      el.style.gap=enIyi.g+"px";
-      if(enIyi.d) l.forEach(function(b){ b.style.paddingLeft=(pS+enIyi.d)+"px"; b.style.paddingRight=(pR+enIyi.d)+"px"; });
-    }
     golge();
     var ilk=false;
     try{ ilk=!localStorage.getItem(HAP_IPUCU); }catch(e){ ilk=false; }
@@ -2584,6 +2597,7 @@
     kabarcikYerle();
     grupBoslari();
     if(id!=="fiyatEkran"){ var fb=document.getElementById("fyBar"); if(fb) fb.classList.add("hide"); }
+    if(id!=="takvim") secPanelKapat();   // 18.3
     var bar=document.getElementById("appBar");
     if(bar) bar.classList[(id==="giris"||id==="onay"||id==="sifre")?"add":"remove"]("hide");
     var gb=document.getElementById("barGeri");
@@ -3253,13 +3267,24 @@
       else if(tekGece) bg=rk(ak.color);
       else if(sa) bg="linear-gradient("+SEAM+","+rk(sa.color,.38)+" 49.5%,transparent 50.5%)";
       else if(ak) bg="linear-gradient("+SEAM+",transparent 49.5%,"+rk(ak.color,.38)+" 50.5%)";
-      else if(k===S.start) bg="#F1F5F3";
       var onc=gun(fmt(addDays(date,-1))), son=gun(fmt(addDays(date,1))), col=(lead+d-1)%7;
       var rl=!(sa&&onc.aksam&&onc.aksam.id===sa.id)||col===0;
       var rr=!(ak&&son.sabah&&son.sabah.id===ak.id)||col===6;
-      var secAra=!!(S.secim && k>=S.secim.start && k<=S.secim.end);
-      var opsG=(!sa && !ak) ? opsGece(v,k) : null;
-      var cls="cell"+((tam||tekGece)?" full":"")+(opsG?" ops":"")+(k===tk?" today":"")+((k===S.start||secAra)?" sel":"")+(k<tk?" gecmis":"");
+      // 18.2: seçili aralık rezervasyonların çizim diliyle: aradaki tam geceler koyu yeşil, giriş günü sağ-alt yarı,
+      // çıkış günü sol-üst yarı açık yeşil; sadece başlangıç seçiliyken yeşil çerçeve + açık yeşil zemin
+      var sc=S.secim, secBas=!!(sc && k===sc.start), secSon=!!(sc && k===sc.end), secIc=!!(sc && k>sc.start && k<sc.end);
+      var SECA=tint("#0B5B57",.38), tekBas=!sc && k===S.start;
+      if(secIc) bg="#0B5B57";
+      else if(secBas) bg="linear-gradient("+SEAM+","+(sa?rk(sa.color,.38):"transparent")+" 49.5%,"+SECA+" 50.5%)";
+      else if(secSon) bg="linear-gradient("+SEAM+","+SECA+" 49.5%,"+(ak?rk(ak.color,.38):"transparent")+" 50.5%)";
+      else if(tekBas) bg="#E3EFEC";
+      if(sc && k>sc.start && k<=sc.end && col!==0) rl=false;
+      if(sc && k>=sc.start && k<sc.end && col!==6) rr=false;
+      if(secBas) rl=!(sa&&onc.aksam&&onc.aksam.id===sa.id)||col===0;
+      if(secSon) rr=!(ak&&son.sabah&&son.sabah.id===ak.id)||col===6;
+      var opsG=(!sa && !ak && !secIc) ? opsGece(v,k) : null;
+      var cls="cell"+((tam||tekGece||secIc)?" full":"")+(opsG?" ops":"")+(k===tk?" today":"")+(tekBas?" sel":"")+
+        (secIc?" secIc":"")+(secBas?" secBas":"")+(secSon?" secSon":"")+(k<tk?" gecmis":"");
       var st="background:"+bg+";border-radius:"+(rl?"10px":"0")+" "+(rr?"10px":"0")+" "+(rr?"10px":"0")+" "+(rl?"10px":"0");
       var fi=paraGorur()?v.fiyatlar[k]:0;
       // dolu günde (akşamı dolu) fiyat yerine misafirin baş harfleri
@@ -3270,44 +3295,14 @@
     document.getElementById("grid").innerHTML=h;
 
     var hint=document.getElementById("hint");
-    if(S.uyari) hint.innerHTML='<span class="warn">'+esc(S.uyari)+"</span>";
+    if(S.uyari && !(S.start||S.secim||S.rezModu)) hint.innerHTML='<span class="warn">'+esc(S.uyari)+"</span>";
     else hint.innerHTML="<span>Boş güne dokunup tarih seçin. Dolu güne dokununca rezervasyon açılır. Giriş "+GIRIS+", çıkış "+CIKIS+".</span>";
     var vz=document.getElementById("vazgec");
     if(vz) vz.onclick=function(){ S.start=null; S.rezModu=false; ciz(); };
     hint.classList.remove("vurgu");
-    // Rezervasyon eklerken takvimin üstünde sabit adım şeridi: 1/2 giriş, 2/2 çıkış
-    var ser=document.getElementById("adimSerit");
-    ser.classList.remove("secimKart");
-    if(S.secim){
-      // 13.7: iki tarih seçildi → Rezervasyon ekle (ana) · Teklif gönder (lacivert)
-      var sgc=Math.round((parse(S.secim.end)-parse(S.secim.start))/86400000);
-      ser.classList.add("secimKart");
-      ser.innerHTML='<div class="skUst"><span>'+esc(aralikYazi({b:S.secim.start,s:S.secim.end}))+" · "+esc(cev(sgc+" gece"))+"</span>"+
-          '<button class="linkBtn" id="adimVazgec">'+esc(cev("Vazgeç"))+"</button></div>"+
-        '<div class="skBtn"><button class="big" data-ik="takvim-arti" id="secRez">'+esc(cev("Rezervasyon ekle"))+"</button>"+
-          (teklifVerebilir()?'<button class="big renkli is-para" data-ik="rozet-yuzde" id="secTeklif">'+esc(cev("Teklif gönder"))+"</button>":"")+
-          '<button class="big renkli is-ops" data-ik="saat" id="secOps">'+esc(cev("Opsiyon koy"))+"</button></div>";
-      var ab3=document.getElementById("appBar");
-      ser.style.top=(((ab3&&!ab3.classList.contains("hide"))?ab3.offsetHeight:0)+8)+"px";
-      ser.classList.remove("hide");
-      document.getElementById("adimVazgec").onclick=function(){ S.secim=null; ciz(); };
-      document.getElementById("secRez").onclick=function(){ S.taslak=S.secim; S.secim=null; ciz(); form(); };
-      var stk=document.getElementById("secTeklif");
-      if(stk) stk.onclick=function(){
-        var sc=S.secim; S.secim=null; ciz(); ozelTeklifSheet(aktif(),{giris:sc.start,cikis:sc.end}); };
-      document.getElementById("secOps").onclick=function(){
-        var sc=S.secim; S.secim=null; ciz(); opsiyonSheet(aktif(),sc); };
-    } else if(S.start || S.rezModu){
-      var niyetAd={teklif:cev("Teklif"),ops:cev("Opsiyon")}[S.start?S.rezNiyet:S.rezModu];
-      ser.innerHTML="<span>"+(niyetAd?esc(niyetAd)+" · ":"")+(S.start
-          ? esc(cev("2/2 · Çıkış gününe dokunun"))+'<span class="adimAlt">'+esc(cev("Giriş: "+kisa(S.start)))+"</span>"
-          : esc(cev("1/2 · Giriş gününe dokunun")))+"</span>"+
-        '<button id="adimVazgec">'+esc(cev("Vazgeç"))+"</button>";
-      var ab=document.getElementById("appBar");
-      ser.style.top=(((ab&&!ab.classList.contains("hide"))?ab.offsetHeight:0)+8)+"px";
-      ser.classList.remove("hide");
-      document.getElementById("adimVazgec").onclick=function(){ S.start=null; S.rezModu=false; S.rezNiyet=false; S.uyari=""; ciz(); };
-    } else ser.classList.add("hide");
+    // 18.3: seçim işlemleri altta (başparmak bölgesi), alt menünün hemen üstünde kayan panel
+    document.getElementById("adimSerit").classList.add("hide");
+    secPanelCiz(v);
 
     // Bugünden sonraki ilk 6 rezervasyon; fazlası "Tümünü gör" panelinde (ay ay)
     // 12.4: en yakın olay ayrı kartta; listede tekrar etmez
@@ -3402,45 +3397,103 @@
       : "Misafirlerinizin fotoğrafları, boş günleri ve fiyatları görüp size WhatsApp\'tan istek gönderebileceği bir sayfa oluşturur.";
   }
 
+  // 18.1: tarih seçimi (durum makinesi) — misafir sayfası g.html'de de aynı kural
+  //  · hiçbir şey seçili değil → dokunulan gün başlangıç (akşamı dolu güne dokunmak rezervasyonu açar)
+  //  · sadece başlangıç S → Y > S: S–Y aralığı (arada dolu gece varsa Y yeni başlangıç + uyarı);
+  //    Y < S: Y yeni başlangıç; Y = S: seçim kalkar
+  //  · aralık seçiliyken herhangi bir güne dokunmak seçimi kaldırır (yeni seçim başlamaz)
+  function secimBitir(){
+    S.secim=null; S.start=null; S.rezNiyet=false; S.rezModu=false; S.uyari=""; ciz();
+  }
+  // 18.3: alttaki seçim paneli. Sadece başlangıç: "Giriş: 24 Kasım · Şimdi çıkış gününe dokunun" + ✕.
+  // Aralık: "24 → 27 Kasım · 3 gece · 9.000 ₺" + ✕ ve eşit genişlikte Rezervasyon · Teklif · Opsiyon.
+  function secPanelCiz(v){
+    var p=document.getElementById("secPanel"); if(!p) return;
+    var takvimAcik=!document.getElementById("takvim").classList.contains("hide");
+    var durum=!takvimAcik||!v ? "" : (S.secim ? "aralik" : (S.start ? "bas" : (S.rezModu ? "niyet" : "")));
+    if(!durum){ secPanelKapat(); return; }
+    var x='<button class="spKapat" id="spKapat" aria-label="'+esc(cev("Seçimi kaldır"))+'">'+ikon("x",{boy:22})+"</button>";
+    var uy=S.uyari?'<div class="spUyari">'+ikon("uyari-ucgen",{boy:16})+"<span>"+esc(cev(S.uyari))+"</span></div>":"";
+    var niyetAd={teklif:"Teklif",ops:"Opsiyon"};
+    var h="";
+    if(durum==="niyet"){
+      h='<div class="spUst"><div class="spMetin"><span class="spBas">'+esc(cev(niyetAd[S.rezModu]||"Rezervasyon"))+"</span>"+
+        '<span class="spAlt">'+esc(cev("Misafirin gireceği güne dokunun"))+"</span></div>"+x+"</div>"+uy;
+    } else if(durum==="bas"){
+      h='<div class="spUst"><div class="spMetin"><span class="spBas">'+esc(cev("Giriş: "+kisa(S.start)))+"</span>"+
+        '<span class="spAlt">'+esc(cev("Şimdi çıkış gününe dokunun"))+"</span></div>"+x+"</div>"+uy;
+    } else {
+      var sc=S.secim, a=parse(sc.start), z=parse(sc.end), gc=Math.round((z-a)/86400000);
+      var tarih=a.getMonth()===z.getMonth() ? a.getDate()+" → "+z.getDate()+" "+AYLAR[z.getMonth()] : kisa(sc.start)+" → "+kisa(sc.end);
+      var hs=paraGorur()?hesapla(v,sc.start,sc.end):{toplam:0,eksik:1};
+      var ust=tarih+" · "+cev(gc+" gece")+((hs.toplam>0 && !hs.eksik)?" · "+para(hs.toplam):"");
+      var btn=[];
+      btn.push('<button class="spBtn ana" id="spRez">'+ikon("takvim-arti",{boy:22})+"<span>"+esc(cev("Rezervasyon"))+"</span></button>");
+      if(teklifVerebilir()) btn.push('<button class="spBtn is-para" id="spTeklif">'+ikon("rozet-yuzde",{boy:22})+"<span>"+esc(cev("Teklif"))+"</span></button>");
+      if(sahipMi() && duzenlenebilir()) btn.push('<button class="spBtn is-ops" id="spOps">'+ikon("saat",{boy:22})+"<span>"+esc(cev("Opsiyon"))+"</span></button>");
+      h='<div class="spUst"><div class="spMetin"><span class="spBas">'+esc(ust)+"</span></div>"+x+"</div>"+
+        '<div class="spBtnler" style="grid-template-columns:repeat('+btn.length+',minmax(0,1fr))">'+btn.join("")+"</div>";
+    }
+    var yeni=!p.classList.contains("acik");
+    p.innerHTML=h;
+    p.classList.add("acik");
+    document.body.classList.add("secPanelAcik");
+    document.documentElement.style.setProperty("--secPanelH",p.offsetHeight+"px");
+    document.getElementById("spKapat").onclick=function(){ titret("hafif"); secimBitir(); };
+    var al=function(){ var sc=S.secim; S.secim=null; S.start=null; ciz(); return sc; };
+    var r1=document.getElementById("spRez"), r2=document.getElementById("spTeklif"), r3=document.getElementById("spOps");
+    if(r1) r1.onclick=function(){ S.taslak=al(); form(); };
+    if(r2) r2.onclick=function(){ var sc=al(); ozelTeklifSheet(aktif(),{giris:sc.start,cikis:sc.end}); };
+    if(r3) r3.onclick=function(){ var sc=al(); opsiyonSheet(aktif(),sc); };
+    // panel dokunulan günün üstüne binerse sayfa o kadar kayar (takvimin son satırı panelin altında kalmasın)
+    if(yeni) requestAnimationFrame(function(){
+      var k=S.secim?S.secim.end:S.start; if(!k) return;
+      var c=document.querySelector('#grid .cell[data-k="'+k+'"]'); if(!c) return;
+      var alt=c.getBoundingClientRect().bottom, ust=window.innerHeight-p.offsetHeight-document.getElementById("sekmeler").offsetHeight-12;
+      if(alt>ust) try{ window.scrollBy({top:alt-ust, behavior:azHareket()?"auto":"smooth"}); }catch(e){ window.scrollBy(0,alt-ust); }
+    });
+  }
+  function secPanelKapat(){
+    var p=document.getElementById("secPanel"); if(!p) return;
+    p.classList.remove("acik");
+    document.body.classList.remove("secPanelAcik");
+  }
   document.getElementById("grid").addEventListener("click",function(ev){
     var b=ev.target.closest(".cell"); if(!b) return;
     var k=b.dataset.k; S.uyari="";
-    if(S.secim){ S.secim=null; }                       // 13.7: seçim kartı açıkken yeni dokunuş yeni seçim başlatır
-    if(!S.start) S.rezNiyet=S.rezModu||false;          // "+ Rezervasyon" (ya da Teklif / Opsiyon) ile başladıysa doğrudan ilgili panel
-    S.rezModu=false;
-    if(S.salt && !gun(k).sabah && !gun(k).aksam){
-      S.uyari="Villa şu anda başkası tarafından düzenleniyor."; ciz(); return;
-    }
-
     var o=gun(k), tam=!!(o.sabah&&o.aksam);
-
+    if(S.secim){ secimBitir(); return; }
     if(!S.start){
-      // Seçim yokken: akşamı dolu olan gün (giriş günü veya ara gün) rezervasyonu açar.
-      // O güne yeni giriş yapılamayacağı için seçime başlamanın anlamı yok.
+      // akşamı dolu gün (giriş günü veya ara gün) rezervasyonu açar: o güne yeni giriş yapılamaz
       if(o.aksam){
         if(tam && o.sabah.id!==o.aksam.id) ikisi(o.sabah,o.aksam);
         else detay(o.aksam);
         return;
       }
       var opT=opsGece(aktif(),k);
-      if(opT && sahipMi()){ opsDetay(aktif(),opT); return; }
-      // Sadece sabahı dolu (birinin çıkış günü) ya da tamamen boş: seçime başla
+      if(opT && sahipMi() && !S.rezModu){ opsDetay(aktif(),opT); return; }
+      if(S.salt){ S.uyari="Villa şu anda başkası tarafından düzenleniyor."; ciz(); return; }
+      // "+ Rezervasyon" (ya da Teklif / Opsiyon) hapıyla başladıysa aralık seçilince doğrudan ilgili panel açılır
+      S.rezNiyet=S.rezModu||false; S.rezModu=false;
       S.start=k; ciz(); return;
     }
-
-    // Seçim sürüyor: tamamen dolu güne çıkış yapılamaz
-    if(tam){ S.uyari="O gün tamamen dolu, başka bir çıkış günü seçin."; ciz(); return; }
-    var a=parse(S.start), c=parse(k);
-    var from=a<=c?a:c, to=a<=c?c:a;
-    var hata=dogrula(from,to);
+    if(k===S.start){ secimBitir(); return; }
+    if(k<S.start){
+      if(o.aksam){ S.uyari="O günün akşamı dolu, başka bir gün seçin."; ciz(); return; }
+      S.start=k; ciz(); return;
+    }
+    // Y > S
+    if(dogrula(parse(S.start),parse(k))){
+      if(!o.aksam) S.start=k;
+      S.uyari="Bu tarihler arasında dolu gün var."; titret("uyari"); ciz(); return;
+    }
+    var tsl={start:S.start, end:k, color:renkSec(aktif().rez,parse(S.start),parse(k))};
     S.start=null;
-    if(hata){ S.uyari=hata; ciz(); return; }
-    var tsl={start:fmt(from), end:fmt(to), color:renkSec(aktif().rez,from,to)};
-    if(sahipMi() && duzenlenebilir() && !S.rezNiyet){ S.secim=tsl; ciz(); return; }
     var niyet=S.rezNiyet; S.rezNiyet=false;
     if(niyet==="teklif"){ ciz(); ozelTeklifSheet(aktif(),{giris:tsl.start,cikis:tsl.end}); return; }
     if(niyet==="ops"){ ciz(); opsiyonSheet(aktif(),tsl); return; }
-    S.taslak=tsl; ciz(); form();
+    if(niyet){ S.taslak=tsl; ciz(); form(); return; }
+    S.secim=tsl; ciz();
   });
 
   document.getElementById("siradaki").addEventListener("click",function(ev){
@@ -3467,10 +3520,11 @@
     var is=b.dataset.is;
     if(is==="rez" || is==="teklif" || is==="ops"){
       // 16.4: Teklif / Opsiyon da tarih seçtirir; iki gün seçilince doğrudan ilgili panel açılır
-      S.secim=null; S.start=null; S.rezModu=(is==="rez")?true:is; ciz();
+      S.secim=null; S.start=null; S.uyari=""; S.rezModu=(is==="rez")?true:is; ciz();
+      // 18.3: takvim görünsün; ne yapılacağı alttaki panelde yazar
       try{
-        var se=document.getElementById("adimSerit"), ab2=document.getElementById("appBar");
-        window.scrollTo({top:se.getBoundingClientRect().top+window.scrollY-((ab2?ab2.offsetHeight:0)+8), behavior:"smooth"});
+        var se=document.querySelector("#takvim .monthbar"), ab2=document.getElementById("appBar");
+        window.scrollTo({top:se.getBoundingClientRect().top+window.scrollY-((ab2?ab2.offsetHeight:0)+8), behavior:azHareket()?"auto":"smooth"});
       }catch(x){}
     }
     else if(is==="fiyat") fiyatEkranAc();

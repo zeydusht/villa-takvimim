@@ -347,7 +347,7 @@
   var DILLER={
     "Uygunluk":"Availability","Ev hakkında":"About the house","Öne çıkan özellikler":"Highlights",
     "Oda ve banyo bilgileri":"Rooms and bathrooms","Ev olanakları":"Amenities","Konum":"Location",
-    "Ev kuralları":"House rules","Bilmeniz gerekenler":"Good to know","İptal ve iade":"Cancellation and refunds","Opsiyonlu":"On hold","Bu tarihler şu an opsiyonlu.":"These dates are currently on hold.","Haritayı büyüt":"Enlarge map","Evin yaklaşık bölgesi gösteriliyor.":"The approximate area of the house is shown.","Takvim":"Calendar","Giriş ve çıkış gününe dokunun":"Tap your check-in and check-out days","Fiyat":"Price","Size özel teklif":"A special offer for you","size özel":"special price",
+    "Ev kuralları":"House rules","Bilmeniz gerekenler":"Good to know","İptal ve iade":"Cancellation and refunds","Opsiyonlu":"On hold","Bu tarihler şu an opsiyonlu.":"These dates are currently on hold.","Bu tarihler arasında dolu gün var.":"Some nights between these dates are booked.","Bu güne giriş yapılamıyor, dolu.":"Check-in is not possible on this day, it is booked.","Haritayı büyüt":"Enlarge map","Evin yaklaşık bölgesi gösteriliyor.":"The approximate area of the house is shown.","Takvim":"Calendar","Giriş ve çıkış gününe dokunun":"Tap your check-in and check-out days","Fiyat":"Price","Size özel teklif":"A special offer for you","size özel":"special price",
     "Bu teklif artık geçerli değil. Güncel fiyatlar aşağıda.":"This offer is no longer valid. Current prices are below.",
     "Bu teklifin süresi doldu. Güncel fiyatlar aşağıda.":"This offer has expired. Current prices are below.",
     "Bu tarihler artık dolu, lütfen başka tarih seçin.":"These dates are no longer available, please choose other dates.","Yakınlarda ne var?":"What's nearby?","Haritada göster":"Show on map","Haritada aç":"Open in maps",
@@ -952,21 +952,27 @@
   }
 
   function secimTemizle(){ sec={bas:null,bit:null}; uyariMetin=""; takvimCiz(); altCiz(); secimKutusu(); }
+  // 18.1: seçim kuralı (uygulamadaki villa takvimiyle aynı)
+  //  · hiçbir şey seçili değil → dokunulan gün giriş
+  //  · sadece giriş S → Y > S: S–Y (arada dolu gece varsa Y yeni giriş + uyarı); Y < S: Y yeni giriş; Y = S: seçim kalkar
+  //  · aralık seçiliyken herhangi bir güne dokunmak seçimi kaldırır (yeni seçim başlamaz)
   function gunTikla(k){
     uyariMetin="";
     if(k<fmt(bugun)) return;
-    // 14.4: seçili giriş ya da çıkış gününe tekrar dokunmak seçimi temizler
-    if((sec.bas && k===sec.bas) || (sec.bit && k===sec.bit)){ secimTemizle(); return; }
-    if(opsGece(k) && (!sec.bas || sec.bit)){ uyariMetin="Bu tarihler şu an opsiyonlu."; takvimCiz(); altCiz(); secimKutusu(); return; }
-    if(!sec.bas || sec.bit){
-      if(!girisUygun(k)){ uyariMetin="Bu güne giriş yapılamıyor, dolu."; }
-      else sec={bas:k,bit:null};
-    } else if(k<=sec.bas){
-      if(girisUygun(k)) sec={bas:k,bit:null};
+    if(sec.bas && sec.bit){ secimTemizle(); return; }
+    var girisOlur=function(){ return girisUygun(k) && !opsGece(k); };
+    var girisUyari=function(){ uyariMetin=opsGece(k)?"Bu tarihler şu an opsiyonlu.":"Bu güne giriş yapılamıyor, dolu."; };
+    if(!sec.bas){
+      if(girisOlur()) sec={bas:k,bit:null}; else girisUyari();
+    } else if(k===sec.bas){ secimTemizle(); return; }
+    else if(k<sec.bas){
+      if(girisOlur()) sec={bas:k,bit:null}; else girisUyari();
     } else {
-      if(!cikisUygun(k)) uyariMetin="Bu güne çıkış yapılamıyor, dolu.";
-      else if(!araBos(sec.bas,k)) uyariMetin=((function(){ for(var d=new Date(sec.bas);fmt(d)<k;d.setDate(d.getDate()+1)) if(opsGece(fmt(d))) return 1; })()?"Bu tarihler şu an opsiyonlu.":"Seçtiğiniz aralıkta dolu günler var.");
-      else sec.bit=k;
+      if(cikisUygun(k) && araBos(sec.bas,k)) sec.bit=k;
+      else {
+        uyariMetin=((function(){ for(var d=new Date(sec.bas);fmt(d)<k;d.setDate(d.getDate()+1)) if(opsGece(fmt(d))) return 1; })()?"Bu tarihler şu an opsiyonlu.":"Bu tarihler arasında dolu gün var.");
+        if(girisOlur()) sec={bas:k,bit:null};
+      }
     }
     takvimCiz(); altCiz(); secimKutusu();
   }

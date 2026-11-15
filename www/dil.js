@@ -696,7 +696,11 @@
     "Ödeme kaydedilemedi: bu özellik sunucuda henüz hazır değil. Villa sahibine haber verin.":"Payment could not be saved: this feature is not ready on the server yet. Please let the villa owner know.",
     "Ödeme kaydedilemedi: bu villada ödeme alma yetkiniz yok.":"Payment could not be saved: you are not allowed to take payments for this villa.",
     "Ödeme kaydedilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Payment could not be saved. Check your internet connection and try again.",
-    "Ödeme kaydedilemedi.":"Payment could not be saved."
+    "Ödeme kaydedilemedi.":"Payment could not be saved.",
+    // Görev 18
+    "Misafirin gireceği güne dokunun":"Tap the guest's check-in day",
+    "Şimdi çıkış gününe dokunun":"Now tap the check-out day", "Bu tarihler arasında dolu gün var.":"Some nights between these dates are booked.",
+    "O günün akşamı dolu, başka bir gün seçin.":"That evening is booked, pick another day."
   };
 
   // ---------- kalıplı metinler ----------
@@ -709,6 +713,8 @@
   var GORELI = "(bugün|yarın|\\d+ gün sonra)";
 
   var K = [
+    // Görev 18: seçim paneli "24 → 27 Kasım · 3 gece · 9.000 ₺"
+    [/^(.+) → (.+) · (\d+) gece(?: · (.+))?$/, function (_, a, b, n, t) { return a + " → " + b + " · " + n + " nights" + (t ? " · " + t : ""); }],
     // Görev 17: saate göre durum, yerleştirme, ödeme
     [/^Bugün (\d+:\d+)'(?:da|de|ta|te) (.+) girecek$/, "$2 checks in today at $1"],
     [/^Bugün (\d+:\d+)'(?:da|de|ta|te) giriş yaptı$/, "Checked in today at $1"],
