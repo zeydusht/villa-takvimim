@@ -46,3 +46,33 @@ Desenli gövde genişler, tüm ekranı kaplar:
 - Başlamadan önce `img.decode()` + iki `requestAnimationFrame`.
 - **Doğrulama zorunlu:** Playwright ile 390×844'te 60 fps video kaydı al, her karede kapsül/baş tepesini ve gövde genişliğini ölç; yukarıdaki tablolarla karşılaştır. Her satırda sapma ±1,5 puan / ±17 ms'den büyük olmasın. Ölçüm tablosunu `docs/ACILIS_DOGRULAMA.md`'ye yaz. Chrome DevTools'ta 4× CPU yavaşlatmada kare düşmesi olmasın.
 - "Hareketi azalt": logo 400 ms → 200 ms solma → ana ekran (değişmez).
+
+## Villa Takvimim sürümü (Zeyd, 15 Kasım): ortada nefes anı
+
+_Yukarıdaki Wise tablolarının yerine bu ritim uygulanır (`www/acilis.js`). Önceki "ACILIS_YAVAS = 1.35" talimatının yerine geçer._
+
+**ACILIS_YAVAS = 1.15:** aşağıdaki bütün süreler Wise hızında yazılı; ekranda hepsi 1,15 ile çarpılır. Logo beklemesi bunun dışında: **1000 ms, sabit**.
+
+| Aşama | Wise hızında | Ekranda (× 1,15) | Ne olur |
+|---|---|---|---|
+| 0. Logo | – | 0–1000 ms | Koyu zemin, ortada logo, kıpırtısız |
+| 1. Baş gösterme | 0–300 | 0–345 | Aynen yukarıdaki 1. aşama tabloları (kapsül + aşağıdan yetişen daire) |
+| 2a. Yavaşlayarak ortaya | 300–600 | 345–690 | Baş %12,4'ten, dairenin MERKEZİ logonun merkezinin 30 pt altına gelene kadar yükselir. `cubic-bezier(0.2, 0.7, 0.3, 1)`. Gövde genişliği %29 sabit |
+| 2b. Ortada nefes | 600–860 | 690–989 | Baş son 30 pt'yi çok yavaş alır, daire merkezi logonun merkezine tam oturur (`ease-out`) |
+| 2c. Hızlanarak tepeye | 860–1280 | 989–1472 | Baş ortadan %100'e çıkar, `cubic-bezier(0.6, 0, 0.9, 0.45)`. Gövde %29 → %49,7 |
+| 3. Tam açılma | 1280–1447 | 1472–1664 | Aynen yukarıdaki 3. aşama tablosu, süre × 1,15 |
+| 4. Bekleme + geçiş | 1447–1697 | 1664–1952 | 17 ms tam desen; sonra 233 ms solma (`cubic-bezier(0.4, 0, 0.2, 1)`) + ana ekran 12 pt aşağıdan yerine |
+
+**Toplam: 1000 ms logo + ~1952 ms animasyon ≈ 2,95 sn.**
+
+**2b sırasında:**
+- Logo opaklığı 1 → 0 ve boyu %100 → %85, 180 ms (ekranda 207 ms), `ease-out`. Logo dairenin içine "girer".
+- Dairenin içindeki ev ikonu tek atış yapar: ölçek 1 → 1,12 → 1, 260 ms (ekranda 299 ms). İki yarının her biri `cubic-bezier(0.3, 0, 0.3, 1)`. Yalnızca ikon atar, daire atmaz.
+
+**2c'deki gövde genişliği:** Wise tablosundaki artış kısmı (500–816 ms: 29 → 29,2 → 30,5 → 33,8 → 38,5 → 43,1 → 47,2 → 48,7 → 49,2 → 49,7) 2c'nin 420 ms'sine oranla yayılır. Wise'ta 500 ms 2c'nin başına (860), 816 ms sonuna (1280) denk gelir; aralar doğrusal.
+
+**Logo ve ikon:**
+- Logo başın önünde durur. Arkasında zemin renginde dolu bir siluet var; böylece baş altına girerken pencerelerinden daire görünmez, logo solunca daire ortaya çıkar.
+- Logo ile ev ikonu aynı merkezde.
+- Boyda ödünleşim: logo daireden büyük (iPhone 390×844'te logo 118 px, daire 104 px). Bu yüzden ikon logoyla aynı boyda olamıyor. Ev, atışın tepesinde (× 1,12) bile dairenin kenarına 4 px kalacak en büyük boyda (390 px genişlikte kutu 78 px, görünen ev ~66 px). Çizgi kalınlığı logonun çatı çizgisiyle aynı oranda.
+- 2c'den sonra baş, 2c'nin bitiş hızıyla ekranın üstünden çıkar.

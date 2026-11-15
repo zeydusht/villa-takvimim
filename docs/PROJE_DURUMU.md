@@ -404,6 +404,21 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       · Kare düşmesi (performans izi): 1x'te 10/10 denemede sıfır. 4x'te 24 denemenin 22'sinde sıfır; 2 denemede toplam 4 + 1 kare
         (nedeni yakalanamadı, tekrarlanmadı).
       · iPhone Safari'de ölçülmedi.
+- [x] Açılış animasyonu ORTADA NEFES ANI · Claude Code (15 Kasım). Netlify'a yüklenmedi. Yeni ritim `docs/ACILIS_OLCUMLER.md`'de
+      "Villa Takvimim sürümü (Zeyd, 15 Kasım): ortada nefes anı" bölümünde. ACILIS_YAVAS = 1,15 (tüm süreler çarpılır), logo 1000 ms sabit.
+      2a: baş yavaşlayarak ortaya (daire merkezi logonun 30 pt altına), 2b: ortada nefes (daire logoya oturur; logo 1→0 ve %100→%85
+      küçülerek daireye girer; ev ikonu bir kez 1→1,12→1 atar), 2c: hızlanarak tepeye, gövde %29→%49,7. Toplam ~2,95 sn.
+      Logo artık başın önünde (arkasında zemin renginde siluet; baş altına girerken pencerelerinden daire görünmez); dönüşümü px ile
+      ve ortadan ölçekli (sol üste kaymaz). Ev ikonu logoyla aynı merkezde; logo (118 px) daireden (104 px) büyük olduğu için aynı boy
+      mümkün değil, ev atışta da daireye sığacak en büyük boyda (~66 px görünür, eskiden ~33). Ayrıntı: `docs/ACILIS_DOGRULAMA.md`.
+      · Kare kare: baş 0,11 / daire 0,12 / gövde 0,48 puan; logo opaklığı 0,005, ölçeği 0,008; ikon ölçeği 0,013.
+      · 2b sonunda daire merkezi logo merkezine x 0,0 / y −0,5 px (ölçüt ±2 pt); Android görünümünde (logo 120 px) de aynı.
+      · Playwright 60 fps kayıt (7 kayıt): boşluk yok; 33,3 ms çizim hattı gecikmesi düşülünce 179/179 satır geçti (en çok 1,39 puan).
+      · Solma 1683,6 ms'de başlıyor, eğriden fark 0,002.
+      · Kare düşmesi: son seride 1x 12/12 ve 4x 12/12 denemede sıfır. İlk 1x serisinde 12 denemenin 3'ünde 1–2 kare düştü; iz,
+        sayfanın kareyi zamanında ürettiğini, tarayıcının ekran birleştiricisinin beklediğini gösterdi (logo/ikon kapatılınca da
+        rastgele duraklamalar oldu: makine yükü).
+      · iPhone Safari'de ölçülmedi.
 
 ## Veritabanı için gerekenler (Görev 8) — YAPILDI (8 Kasım, Claude)
 Kayıt: docs/VERITABANI_GOREV8.sql. Uygulama tarafı da bağlandı (8 Kasım, Claude Code).

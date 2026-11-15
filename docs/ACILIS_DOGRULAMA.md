@@ -1,186 +1,461 @@
-# Açılış animasyonu — doğrulama (docs/ACILIS_OLCUMLER.md'ye göre)
+# Açılış animasyonu — doğrulama ("ortada nefes anı" ritmi)
 
-_Claude Code, 15 Kasım 2026. Uygulama: `www/acilis.js`. Ortam: Windows 11, Chrome (Playwright `playwright-core` 1.49.1 ve Puppeteer ile sürülen, ekran kartı açık başsız Chrome), 390×844 görünüm, iPhone kullanıcı aracısı, sahte sunucu. iPhone Safari'de ölçülmedi._
+_Claude Code, 15 Kasım 2026. Uygulama: `www/acilis.js`. Şartname: `docs/ACILIS_OLCUMLER.md` → "Villa Takvimim sürümü (Zeyd, 15 Kasım): ortada nefes anı"._
+
+_Ortam: Windows 11 ve Chrome. Chrome'u Playwright (`playwright-core` 1.49.1) ve Puppeteer sürdü; başsız mod, ekran kartı açık. 390×844 görünüm, iPhone kullanıcı aracısı, sahte sunucu. iPhone Safari'de ölçülmedi._
 
 ## Uygulama özeti
-- Tablolardaki anahtar kareler WAAPI `offset` ile birebir girildi, kareler arası `linear`. Tek zaman çizelgesi; bütün animasyonlar aynı `startTime` ile başlıyor. Animasyonlar, native açılış ekranı gizlenip desen görseli çözüldükten sonra (`img.decode()` + iki `requestAnimationFrame`) başlıyor.
-  - 0–800: logo bekleme.
-  - 800 + (0–983): kapsül, daire ve gövde hareketi.
-  - 800 + (983–1000): tam desen, sabit.
-  - 800 + (1000–1233): desen 1→0, `cubic-bezier(0.4, 0, 0.2, 1)`; ana ekran 0→1 ve 12 px aşağıdan yerine.
-- Limon kapsül: genişlik %29, düz #9FE870, üstü yuvarlak. 300 ms'den sonra başın çevresindeki halka olur; tepesi "baş tepesi" tablosunu izler.
-- Koyu daire: #163300, çap kapsül genişliğinin %92'si, içinde #9FE870 ev ikonu (çapın %42'si, kalın çizgi).
-  - 0–300: daire tablosunu izler.
-  - 300'den sonra kapsül tepesinin %0,4 altında, yani 12,4 − 12,0.
-  - 816'dan sonra 800–816 arasındaki hızla (2,4 px/ms) ekranın üstünden çıkar.
-- Desenli gövde (`acilis-doku.webp`): tepesi dairenin ortasında, yani desen dairenin arkasından açılır. Genişliği tablodan alınır.
-  - Uygulama: sol ve sağ yarıda birer kırpma kutusu; içlerinde dış üst köşesi yuvarlak (yarıçap = kapsülün yarısı) kaplar `translate` ile yükselip yana açılıyor. İçteki desen ters `translate` ile ekrana göre sabit.
-  - Yalnızca `transform` ve `opacity` kullanılıyor; `scaleX`, `clip-path`, `top`/`height` animasyonu yok.
-- "Hareketi azalt" açıkken: logo 400 ms → 200 ms solma → ana ekran (değişmedi).
+- **ACILIS_YAVAS = 1,15.** Bütün süreler Wise hızında yazılıp ekranda 1,15 ile çarpılıyor. Logo beklemesi 1000 ms ve sabit. Ekrandaki zamanlar (t = 0 logo beklemesinin sonu):
+  - 0–345: baş gösterme (Wise tabloları).
+  - 345–690: 2a, yavaşlayarak ortaya.
+  - 690–989: 2b, ortada nefes.
+  - 989–1472: 2c, hızlanarak tepeye.
+  - 1472–1664: tam açılma.
+  - 1664–1684: tam desen.
+  - 1684–1952: solma.
+- **Beklenen değerler acilis.js'ten bağımsız hesaplandı.** Doğrulamadaki beklenen eğriler şartnameden ayrı bir Python modeliyle yeniden hesaplandı: tablolar, `cubic-bezier` eğrileri ve oranla yayılan genişlik.
+- **Anahtar kareler.** 1. ve 3. aşamalar tablo zamanlarında (aralar doğrusal). 2a–2c'de eğriler her 4 ms'de bir anahtar kare olarak örneklendi (aralar doğrusal); eğriden sapma 0,05 px'ten az. Logo ve ev ikonu kendi eğrileriyle ayrı animasyonlarda.
+- **Tek zaman çizelgesi.** Bütün animasyonlar aynı `startTime` ile başlıyor ve yalnızca `transform` ile `opacity` kullanılıyor.
+- **Logo sol üst kayması için önlem.** Logonun animasyonlu dönüşümü ortalama kaydırmasını px ile içeriyor (`translate(-w/2, -h/2) scale(s)`) ve `transform-origin` ortada. Böylece küçülürken köşeye kaymıyor. Ölçüldü: görünür olduğu 44 karede ortası ekran ortasından en çok 0,5 px uzakta.
+- **Logo başın önünde.** Arkasında zemin renginde dolu bir siluet var. Baş altına girerken pencerelerinden daire görünmüyor; logo solunca daire ve ev ortaya çıkıyor.
+- **Ev ikonunun boyu (ödünleşim).** Logo 118 px, daire 104 px; ikon logoyla aynı boyda olamıyor. Ev, atışın tepesinde (× 1,12) bile daire kenarına 4 px kalacak en büyük boyda:
+  - kutu 78,3 px, görünen ev yaklaşık 66 px (eskiden yaklaşık 33 px);
+  - çizgi kalınlığı 6,9 px, logonun çatı çizgisiyle aynı oranda.
 
-## Geliştirme sırasında bulunan ve düzeltilen sorunlar
-1. **Gövdeyi `scale` ile genişletmek takıldı.** Gerçek zamanlı kayıtta 366–716 ms arası kare gelmedi: tarayıcı, ters ölçeklenen deseni büyük ölçekte yeniden çiziyordu. Sol/sağ yarım kapları `translate` ile açma yöntemine geçildi; kayıt 60 fps oldu.
-2. **Ana ekranın yerleşimi kareyi düşürüyordu.** Veri hareket sırasında gelince uzun bir yerleşim işi çalışıyor, hareketin bir karesi kaçıyordu.
-   - Logo ve hareket boyunca ana ekran `content-visibility: hidden` ile çizilmiyor.
-   - Veri logo beklemesinde gelirse ana ekran hemen açılıyor ve durgun ekranda yerleşiyor.
-   - Veri hareket sırasında gelirse ana ekran 983'te açılıyor ve solma, ana ekran çizildikten hemen sonra başlıyor.
-3. **Animasyonlar başlarken/biterken ana iş parçacığı uyanıyordu.** Bu, 4x yavaşlatmada kare düşürüyordu.
-   - Gecikmeli başlangıç (`delay`) yerine bekleme karesi kullanıldı.
-   - Hareket animasyonları 983'te bitmiyor; solmanın sonuna (+100 ms kuyruk) kadar son değerde duruyor.
-   - 983'teki "veri hazır mı" kontrolü ekrana dokunmayan bir zamanlayıcıyla yapılıyor.
-4. **Sabit bekleme kareleri ana iş parçacığını uyandırıyordu.** Solmaya kadar değeri sabit duran anahtar kareler, tarayıcının ~1500 ms'de ana iş parçacığını uyandırıp 9 animasyonlu öğenin biçimini yeniden hesaplamasına yol açıyordu. İzde betik yoktu, gerekçe "Animation"; 4x'te 10 denemenin 7'sinde 1 kare düşüyordu. Bekleme kareleri gözle görülmeyecek kadar değişken yapıldı (perdede 0,01 px kayma, ana ekranda 0,0001 opaklık).
+## 1. Kare kare ölçüm (Playwright; animasyon durdurulup her ana gidildi)
+- **Ölçülen anlar:** Wise zamanıyla her 20 ms (ekranda 23 ms), aşama sınırları ve 2b'de her 10 ms.
+- **Geometri:** Logo gizlenerek ölçüldü (`visibility:hidden`; geometri değişmez).
+  - Baş tepesi: orta sütundaki ilk ön plan pikseli.
+  - Daire tepesi: ilk #163300 pikseli.
+  - Gövde genişliği: alttan 3. satır.
+- **Logo:** Yalnızca logo görünürken ölçüldü. Opaklık en parlak pikselden, ölçek kutu genişliğinden.
+- **Ev ikonu ölçeği:** Daire içindeki limon piksellerin genişliğinden ölçüldü.
+- **Birim:** puan (ekran yüksekliğinin/genişliğinin %'si).
 
-## 1. Kare kare ölçüm (Playwright, animasyon durdurulup her tablo zamanına gidilerek)
-Ekran görüntüsünde ölçüldü:
-- Kapsül/baş tepesi: orta sütunda ilk ön plan pikseli.
-- Daire tepesi: orta sütunda ilk #163300 pikseli.
-- Gövde genişliği: alttan 3. satırdaki ön plan pikselleri.
+**En büyük sapmalar:**
+- Baş tepesi 0,11, daire tepesi 0,12, gövde 0,48 puan. Gövdedeki 0,2–0,5'lik sapma yuvarlamadan: 390 px'te 1 piksel 0,26 puan.
+- Logo opaklığı 0,005, logo ölçeği 0,008.
+- Ev ikonu ölçeği 0,013. Bu, 66 px'lik ikonda 1 pikselin karşılığı.
 
-Logo bu ölçümde maviye boyandı (kapsülle aynı renk olduğu için ayırt edilemezdi); geometri değişmez. Birim: puan (ekran yüksekliğinin/genişliğinin %'si).
+| t (ms) | Wise t | baş tepesi % beklenen → ölçülen | daire tepesi % | gövde genişliği % |
+|---|---|---|---|---|
+| 0 | 0 | 0.0 → 0.00 (+0.00) | – | – |
+| 23 | 20 | 1.6 → 1.66 (+0.06) | – | – |
+| 46 | 40 | 3.2 → 3.20 (-0.00) | – | – |
+| 69 | 60 | 4.6 → 4.62 (+0.06) | – | – |
+| 92 | 80 | 5.7 → 5.69 (+0.01) | – | – |
+| 115 | 100 | 6.8 → 6.87 (+0.07) | – | – |
+| 138 | 120 | 7.6 → 7.70 (+0.06) | – | – |
+| 161 | 140 | 8.5 → 8.53 (+0.05) | – | – |
+| 184 | 160 | 9.2 → 9.24 (+0.02) | 2.5 → 2.49 (-0.01) | – |
+| 207 | 180 | 9.9 → 9.95 (+0.09) | 4.5 → 4.50 (+0.00) | – |
+| 230 | 200 | 10.5 → 10.55 (+0.05) | 6.5 → 6.40 (-0.10) | – |
+| 253 | 220 | 10.9 → 11.02 (+0.08) | 7.9 → 7.82 (-0.08) | – |
+| 276 | 240 | 11.4 → 11.37 (-0.01) | 9.3 → 9.24 (-0.06) | – |
+| 299 | 260 | 11.8 → 11.85 (+0.09) | 10.4 → 10.31 (-0.09) | – |
+| 322 | 280 | 12.1 → 12.09 (+0.01) | 11.2 → 11.14 (-0.06) | – |
+| 345 | 300 | 12.4 → 12.44 (+0.04) | 12.0 → 11.97 (-0.03) | 29.0 → 28.97 (-0.03) |
+| 368 | 320 | 21.6 → 21.68 (+0.04) | 21.2 → 21.21 (-0.04) | 29.0 → 29.23 (+0.23) |
+| 391 | 340 | 29.8 → 29.86 (+0.08) | 29.4 → 29.27 (-0.12) | 29.0 → 29.23 (+0.23) |
+| 414 | 360 | 36.2 → 36.26 (+0.07) | 35.8 → 35.78 (-0.00) | 29.0 → 29.23 (+0.23) |
+| 437 | 380 | 40.9 → 41.00 (+0.09) | 40.5 → 40.40 (-0.10) | 29.0 → 29.23 (+0.23) |
+| 460 | 400 | 44.3 → 44.31 (-0.00) | 43.9 → 43.84 (-0.08) | 29.0 → 29.23 (+0.23) |
+| 483 | 420 | 46.8 → 46.80 (-0.00) | 46.4 → 46.33 (-0.07) | 29.0 → 29.23 (+0.23) |
+| 506 | 440 | 48.6 → 48.70 (+0.07) | 48.2 → 48.22 (-0.00) | 29.0 → 29.23 (+0.23) |
+| 529 | 460 | 50.0 → 50.00 (+0.02) | 49.6 → 49.53 (-0.05) | 29.0 → 29.23 (+0.23) |
+| 552 | 480 | 51.0 → 51.07 (+0.09) | 50.6 → 50.47 (-0.11) | 29.0 → 29.23 (+0.23) |
+| 575 | 500 | 51.7 → 51.78 (+0.06) | 51.3 → 51.30 (-0.01) | 29.0 → 29.23 (+0.23) |
+| 598 | 520 | 52.2 → 52.25 (+0.01) | 51.8 → 51.78 (-0.07) | 29.0 → 29.23 (+0.23) |
+| 621 | 540 | 52.6 → 52.61 (-0.00) | 52.2 → 52.13 (-0.08) | 29.0 → 29.23 (+0.23) |
+| 644 | 560 | 52.8 → 52.84 (+0.00) | 52.4 → 52.37 (-0.07) | 29.0 → 29.23 (+0.23) |
+| 667 | 580 | 53.0 → 52.96 (-0.01) | 52.6 → 52.49 (-0.08) | 29.0 → 29.23 (+0.23) |
+| 690 | 600 | 53.0 → 53.08 (+0.07) | 52.6 → 52.61 (-0.00) | 29.0 → 29.23 (+0.23) |
+| 701.5 | 610 | 53.2 → 53.32 (+0.08) | 52.8 → 52.73 (-0.11) | 29.0 → 29.23 (+0.23) |
+| 713 | 620 | 53.5 → 53.55 (+0.10) | 53.1 → 52.96 (-0.09) | 29.0 → 29.23 (+0.23) |
+| 724.5 | 630 | 53.7 → 53.67 (+0.01) | 53.3 → 53.20 (-0.06) | 29.0 → 29.23 (+0.23) |
+| 736 | 640 | 53.9 → 53.91 (+0.04) | 53.5 → 53.44 (-0.03) | 29.0 → 29.23 (+0.23) |
+| 747.5 | 650 | 54.1 → 54.15 (+0.08) | 53.7 → 53.55 (-0.11) | 29.0 → 29.23 (+0.23) |
+| 759 | 660 | 54.3 → 54.27 (+0.01) | 53.9 → 53.79 (-0.07) | 29.0 → 29.23 (+0.23) |
+| 770.5 | 670 | 54.4 → 54.50 (+0.06) | 54.0 → 54.03 (-0.02) | 29.0 → 29.23 (+0.23) |
+| 782 | 680 | 54.6 → 54.62 (-0.01) | 54.2 → 54.15 (-0.08) | 29.0 → 29.23 (+0.23) |
+| 793.5 | 690 | 54.8 → 54.86 (+0.05) | 54.4 → 54.38 (-0.02) | 29.0 → 29.23 (+0.23) |
+| 805 | 700 | 55.0 → 54.98 (+0.00) | 54.6 → 54.50 (-0.07) | 29.0 → 29.23 (+0.23) |
+| 816.5 | 710 | 55.1 → 55.21 (+0.08) | 54.7 → 54.62 (-0.12) | 29.0 → 29.23 (+0.23) |
+| 828 | 720 | 55.3 → 55.33 (+0.04) | 54.9 → 54.86 (-0.04) | 29.0 → 29.23 (+0.23) |
+| 839.5 | 730 | 55.4 → 55.45 (+0.01) | 55.0 → 54.98 (-0.07) | 29.0 → 29.23 (+0.23) |
+| 851 | 740 | 55.6 → 55.69 (+0.10) | 55.2 → 55.09 (-0.09) | 29.0 → 29.23 (+0.23) |
+| 862.5 | 750 | 55.7 → 55.81 (+0.08) | 55.3 → 55.21 (-0.11) | 29.0 → 29.23 (+0.23) |
+| 874 | 760 | 55.9 → 55.92 (+0.07) | 55.5 → 55.45 (-0.00) | 29.0 → 29.23 (+0.23) |
+| 885.5 | 770 | 56.0 → 56.04 (+0.07) | 55.6 → 55.57 (-0.00) | 29.0 → 29.23 (+0.23) |
+| 897 | 780 | 56.1 → 56.16 (+0.08) | 55.7 → 55.57 (-0.11) | 29.0 → 29.23 (+0.23) |
+| 908.5 | 790 | 56.2 → 56.28 (+0.10) | 55.8 → 55.69 (-0.10) | 29.0 → 29.23 (+0.23) |
+| 920 | 800 | 56.3 → 56.28 (+0.00) | 55.9 → 55.81 (-0.07) | 29.0 → 29.23 (+0.23) |
+| 931.5 | 810 | 56.4 → 56.40 (+0.04) | 56.0 → 55.92 (-0.03) | 29.0 → 29.23 (+0.23) |
+| 943 | 820 | 56.4 → 56.52 (+0.09) | 56.0 → 55.92 (-0.10) | 29.0 → 29.23 (+0.23) |
+| 954.5 | 830 | 56.5 → 56.52 (+0.03) | 56.1 → 56.04 (-0.04) | 29.0 → 29.23 (+0.23) |
+| 966 | 840 | 56.5 → 56.64 (+0.11) | 56.1 → 56.04 (-0.08) | 29.0 → 29.23 (+0.23) |
+| 977.5 | 850 | 56.6 → 56.64 (+0.08) | 56.2 → 56.04 (-0.11) | 29.0 → 29.23 (+0.23) |
+| 989 | 860 | 56.6 → 56.64 (+0.07) | 56.2 → 56.16 (-0.00) | 29.0 → 29.23 (+0.23) |
+| 1012 | 880 | 56.6 → 56.64 (+0.03) | 56.2 → 56.16 (-0.04) | 29.2 → 29.23 (+0.04) |
+| 1035 | 900 | 56.7 → 56.75 (+0.02) | 56.3 → 56.28 (-0.06) | 29.7 → 29.74 (+0.00) |
+| 1058 | 920 | 57.0 → 56.99 (+0.03) | 56.6 → 56.52 (-0.04) | 30.3 → 30.77 (+0.45) |
+| 1081 | 940 | 57.3 → 57.35 (+0.07) | 56.9 → 56.87 (-0.01) | 31.2 → 31.28 (+0.11) |
+| 1104 | 960 | 57.7 → 57.70 (-0.01) | 57.3 → 57.23 (-0.08) | 32.2 → 32.31 (+0.14) |
+| 1127 | 980 | 58.2 → 58.29 (+0.04) | 57.8 → 57.82 (-0.03) | 33.2 → 33.33 (+0.17) |
+| 1150 | 1000 | 58.9 → 59.00 (+0.09) | 58.5 → 58.41 (-0.11) | 34.3 → 34.36 (+0.06) |
+| 1173 | 1020 | 59.7 → 59.72 (-0.01) | 59.3 → 59.24 (-0.08) | 35.7 → 35.90 (+0.18) |
+| 1196 | 1040 | 60.7 → 60.78 (+0.11) | 60.3 → 60.19 (-0.08) | 37.1 → 37.44 (+0.31) |
+| 1219 | 1060 | 61.8 → 61.85 (+0.06) | 61.4 → 61.37 (-0.01) | 38.5 → 38.97 (+0.43) |
+| 1242 | 1080 | 63.1 → 63.15 (+0.06) | 62.7 → 62.68 (-0.01) | 39.9 → 40.00 (+0.07) |
+| 1265 | 1100 | 64.6 → 64.69 (+0.10) | 64.2 → 64.10 (-0.09) | 41.3 → 41.54 (+0.23) |
+| 1288 | 1120 | 66.3 → 66.35 (+0.02) | 65.9 → 65.88 (-0.06) | 42.7 → 43.08 (+0.38) |
+| 1311 | 1140 | 68.3 → 68.36 (+0.02) | 67.9 → 67.89 (-0.06) | 44.0 → 44.10 (+0.13) |
+| 1334 | 1160 | 70.7 → 70.73 (+0.06) | 70.3 → 70.26 (-0.02) | 45.2 → 45.64 (+0.43) |
+| 1357 | 1180 | 73.4 → 73.46 (+0.06) | 73.0 → 72.99 (-0.01) | 46.4 → 46.67 (+0.22) |
+| 1380 | 1200 | 76.6 → 76.66 (+0.07) | 76.2 → 76.18 (-0.01) | 47.5 → 47.69 (+0.23) |
+| 1403 | 1220 | 80.4 → 80.45 (+0.03) | 80.0 → 79.98 (-0.04) | 48.1 → 48.21 (+0.06) |
+| 1426 | 1240 | 85.1 → 85.19 (+0.07) | 84.7 → 84.72 (-0.01) | 48.8 → 49.23 (+0.45) |
+| 1449 | 1260 | 91.2 → 91.23 (+0.04) | 90.8 → 90.76 (-0.03) | 49.2 → 49.23 (+0.00) |
+| 1472 | 1280 | – | – | 49.7 → 49.74 (+0.04) |
+| 1495 | 1300 | – | – | 51.4 → 51.79 (+0.39) |
+| 1518 | 1320 | – | – | 54.4 → 54.87 (+0.48) |
+| 1541 | 1340 | – | – | 58.4 → 58.46 (+0.04) |
+| 1564 | 1360 | – | – | 63.7 → 64.10 (+0.36) |
+| 1587 | 1380 | – | – | 70.2 → 70.26 (+0.09) |
+| 1610 | 1400 | – | – | 78.5 → 78.97 (+0.47) |
+| 1633 | 1420 | – | – | 87.5 → 87.69 (+0.20) |
+| 1656 | 1440 | – | – | 96.8 → 96.92 (+0.07) |
+| 1664 | 1447 | – | – | 100.0 → 100.00 (+0.02) |
 
-| t (ms) | kapsül/baş tepesi: tablo → ölçülen (sapma) | daire tepesi | gövde genişliği |
+**2b: logo ve ev ikonu**
+
+| t (ms) | logo opaklığı beklenen → ölçülen | logo ölçeği | ev ikonu ölçeği |
 |---|---|---|---|
-| 0 | 0.0 → 0.00 (+0.00) | – | – |
-| 50 | 4.0 → 4.03 (+0.03) | – | – |
-| 100 | 6.8 → 6.87 (+0.07) | – | – |
-| 150 | 8.9 → 9.00 (+0.10) | 1.5 → 1.42 (-0.08) | – |
-| 200 | 10.5 → 10.55 (+0.05) | 6.5 → 6.40 (-0.10) | – |
-| 250 | 11.6 → 11.61 (+0.01) | 10.0 → 9.95 (-0.05) | – |
-| 300 | 12.4 → 12.44 (+0.04) | 12.0 → 11.97 (-0.03) | 29.0 → 28.97 (-0.03) |
-| 350 | 17.4 → 17.42 (+0.02) | – | 29.0 → 29.23 (+0.23) |
-| 400 | 24.5 → 24.53 (+0.03) | – | 29.0 → 29.23 (+0.23) |
-| 450 | 32.1 → 32.11 (+0.01) | – | 29.0 → 29.23 (+0.23) |
-| 500 | 40.3 → 40.40 (+0.10) | – | 29.0 → 29.23 (+0.23) |
-| 516 | 43.0 → 43.01 (+0.01) | – | 29.2 → 29.23 (+0.03) |
-| 550 | 48.6 → 48.70 (+0.10) | – | 30.5 → 30.77 (+0.27) |
-| 600 | 56.8 → 56.87 (+0.07) | – | 33.8 → 33.85 (+0.05) |
-| 650 | 65.6 → 65.64 (+0.04) | – | 38.5 → 38.97 (+0.47) |
-| 700 | 74.8 → 74.88 (+0.08) | – | 43.1 → 43.59 (+0.49) |
-| 750 | 84.7 → 84.72 (+0.02) | – | 47.2 → 47.69 (+0.49) |
-| 783 | 91.6 → 91.71 (+0.11) | – | 48.7 → 48.72 (+0.02) |
-| 800 | 95.5 → 95.50 (-0.00) | – | 49.2 → 49.23 (+0.03) |
-| 816 | 100.0 → 100.00 (+0.00) | – | 49.7 → 49.74 (+0.04) |
-| 833 | – | – | 51.0 → 51.28 (+0.28) |
-| 850 | – | – | 53.3 → 53.33 (+0.03) |
-| 867 | – | – | 56.4 → 56.41 (+0.01) |
-| 883 | – | – | 60.0 → 60.00 (+0.00) |
-| 900 | – | – | 64.9 → 65.13 (+0.23) |
-| 917 | – | – | 70.5 → 70.77 (+0.27) |
-| 933 | – | – | 77.2 → 77.44 (+0.24) |
-| 950 | – | – | 84.6 → 84.62 (+0.02) |
-| 967 | – | – | 92.8 → 92.82 (+0.02) |
-| 983 | – | – | 100.0 → 100.00 (+0.00) |
+| 667 | 1.000 → 1.000 | 1.000 → 1.00 | – |
+| 690 | 1.000 → 1.000 | 1.000 → 1.00 | 1.000 → 1.000 |
+| 701.5 | 0.909 → 0.909 | 0.986 → 0.98 | 1.003 → 1.000 |
+| 713 | 0.822 → 0.822 | 0.973 → 0.97 | 1.013 → 1.000 |
+| 724.5 | 0.740 → 0.740 | 0.961 → 0.97 | 1.030 → 1.030 |
+| 736 | 0.660 → 0.659 | 0.949 → 0.95 | 1.049 → 1.045 |
+| 747.5 | 0.584 → 0.587 | 0.938 → 0.93 | 1.068 → 1.061 |
+| 759 | 0.512 → 0.510 | 0.927 → 0.93 | 1.083 → 1.076 |
+| 770.5 | 0.443 → 0.442 | 0.916 → 0.92 | 1.095 → 1.091 |
+| 782 | 0.377 → 0.375 | 0.907 → 0.90 | 1.104 → 1.091 |
+| 793.5 | 0.315 → 0.312 | 0.897 → 0.90 | 1.110 → 1.106 |
+| 805 | 0.258 → 0.260 | 0.889 → 0.88 | 1.115 → 1.106 |
+| 816.5 | 0.205 → 0.202 | 0.881 → 0.88 | 1.118 → 1.121 |
+| 828 | 0.156 → 0.154 | 0.873 → 0.88 | 1.119 → 1.121 |
+| 839.5 | 0.113 → 0.111 | 0.867 → – (çok soluk) | 1.120 → 1.121 |
+| 851 | 0.075 → 0.072 | 0.861 → – (çok soluk) | 1.117 → 1.121 |
+| 862.5 | 0.044 → 0.043 | 0.857 → – (çok soluk) | 1.107 → 1.106 |
+| 874 | 0.021 → 0.024 | 0.853 → – (çok soluk) | 1.090 → 1.091 |
+| 885.5 | 0.005 → 0.000 | 0.851 → – (çok soluk) | 1.071 → 1.061 |
+| 897 | 0.000 → 0.000 | 0.850 → – (çok soluk) | 1.052 → 1.045 |
+| 908.5 | 0.000 → 0.000 | 0.850 → – (çok soluk) | 1.037 → 1.030 |
+| 920 | 0.000 → 0.000 | 0.850 → – (çok soluk) | 1.025 → 1.030 |
+| 931.5 | 0.000 → 0.000 | 0.850 → – (çok soluk) | 1.016 → 1.015 |
+| 943 | 0.000 → 0.000 | 0.850 → – (çok soluk) | 1.010 → 1.000 |
+| 954.5 | 0.000 → 0.000 | 0.850 → – (çok soluk) | 1.005 → 1.000 |
+| 966 | 0.000 → 0.000 | 0.850 → – (çok soluk) | 1.002 → 1.000 |
+| 977.5 | 0.000 → 0.000 | 0.850 → – (çok soluk) | 1.001 → 1.000 |
+| 989 | 0.000 → 0.000 | 0.850 → – (çok soluk) | 1.000 → 1.000 |
+| 1012 | 0.000 → 0.000 | 0.850 → – (çok soluk) | – |
 
-**En büyük sapma:** kapsül/baş 0,11 · daire 0,10 · gövde 0,49 puan. Gövdedeki 0,2–0,5 sapma, 390 px'te 1 pikselin 0,26 puana denk gelmesinden kaynaklanan yuvarlama.
+**2b hizası: daire merkezi − logo merkezi (ölçüt ±2 pt)**
+- Logo ortası t = 0 karesinden ölçüldü: (195, 422), genişlik 118 px.
+- Daire merkezi şöyle bulundu: dikeyde daire tepesi + çap/2, yatayda dairenin sol ve sağ kenarının ortası.
+- **2b sonunda (989 ms): x 0,0 px, y −0,5 px.** 2b boyunca dikey uzaklık beklenen eğriyi ±0,5 px içinde izliyor.
+
+| t (ms) | daire merkezi − logo merkezi: x (px) | y (px) | beklenen y |
+|---|---|---|---|
+| 690 | +0.0 | +29.5 | +30.0 |
+| 701.5 | +0.0 | +28.5 | +28.1 |
+| 713 | +0.0 | +26.5 | +26.3 |
+| 724.5 | +0.0 | +24.5 | +24.5 |
+| 736 | +0.0 | +22.5 | +22.8 |
+| 747.5 | +0.0 | +21.5 | +21.1 |
+| 759 | +0.0 | +19.5 | +19.5 |
+| 770.5 | +0.0 | +17.5 | +17.9 |
+| 782 | +0.0 | +16.5 | +16.3 |
+| 793.5 | +0.0 | +14.5 | +14.9 |
+| 805 | +0.0 | +13.5 | +13.4 |
+| 816.5 | +0.0 | +12.5 | +12.1 |
+| 828 | +0.0 | +10.5 | +10.7 |
+| 839.5 | +0.0 | +9.5 | +9.5 |
+| 851 | +0.0 | +8.5 | +8.3 |
+| 862.5 | +0.0 | +7.5 | +7.1 |
+| 874 | +0.0 | +5.5 | +6.0 |
+| 885.5 | +0.0 | +4.5 | +5.0 |
+| 897 | +0.0 | +4.5 | +4.1 |
+| 908.5 | +0.0 | +3.5 | +3.2 |
+| 920 | +0.0 | +2.5 | +2.4 |
+| 931.5 | +0.0 | +1.5 | +1.7 |
+| 943 | +0.0 | +1.5 | +1.2 |
+| 954.5 | +0.0 | +0.5 | +0.7 |
+| 966 | +0.0 | +0.5 | +0.3 |
+| 977.5 | +0.0 | +0.5 | +0.1 |
+| 989 | +0.0 | -0.5 | +0.0 |
+
+**Android görünümü:** Logo 120 px ve ekranın tam ortasında. 989 ms'de daire merkezi logo merkezine x 0,0 px, y −0,5 px uzaklıkta.
 
 ## 2. Gerçek zamanlı 60 fps ekran kaydı (Playwright)
-Kayıt Playwright içinden CDP screencast ile alındı: her kare zaman damgalı PNG. Playwright'ın kendi `recordVideo` özelliği sabit 25 fps olduğu için kullanılmadı. Logo yine maviye boyandı. Zaman, animasyonun t = 0 anına (logo beklemesinin sonu) göre.
+**Yöntem:**
+- Kayıt CDP screencast ile alındı (her kare zaman damgalı PNG).
+- Logo gizlendi.
+- Satırlar: Wise zamanıyla her 20 ms ve aşama sınırları (179 satır: baş tepesi, daire tepesi ve gövde genişliği).
+- Ölçüt: her satırda ±1,5 puan ya da ±17 ms.
 
-**Kare akışı (5 kayıt, 1x CPU):** 0–1000 ms arasında 60–61 kare; ortalama aralık 16,66 ms; en uzun aralık 16,9–17,7 ms. Boşluk yok.
+**Ekran gecikmesi:** Önceki doğrulamada (bkz. git geçmişi) DevTools izinden ölçülen çizim hattı gecikmesi ortanca 33,3 ms'ydi, yani iki kare. Kayıttaki zaman damgası karenin ekrana çıktığı an; animasyon ise karenin başında örnekleniyor. "Düzeltilmiş" sütun ham zamandan sabit 33,3 ms çıkarıyor.
 
-**Ekran gecikmesi:** Kayıttaki zaman damgası, karenin ekrana çıktığı an. Animasyon ise karenin başladığı anda örnekleniyor. Bu fark bağımsız olarak DevTools performans izinden ölçüldü: hareket sırasında BeginFrame → ekran ortanca **33,3 ms** (1x ve 4x'te aynı, en çok 33,5–50 ms). Bu, tarayıcının iki karelik çizim hattı; ham ölçümler tablonun her yerinde bu kadar geride. Aşağıdaki "düzeltilmiş" sütun ham zamandan sabit 33,3 ms çıkarıyor (eğriye uydurma değil, izden ölçülen değer).
+**Sonuçlar:**
+- **Kare akışı:** 7 kaydın hepsinde 0–1700 ms arasında 102–103 kare. Ortalama aralık 16,66 ms, en uzun aralık 16,8–17,3 ms. Boşluk yok.
+- **1x, 5 kayıt:**
+  - 4 kayıtta hat iki karelik. Ham zaman damgasıyla 179 satırın 66–68'i ölçütü KARŞILAMIYOR (sapma en çok 13,4 puan). 33,3 ms düzeltmeyle 179/179 satır geçti; en büyük sapma 1,32–1,39 puan.
+  - Gecikme her kayda ayrı uydurulunca 31,5 ms çıktı: 179/179 satır geçti, en büyük sapma 1,11–1,17 puan.
+  - 1 kayıtta hat tek karelikti (uydurulan gecikme 15 ms). O kayıtta ham ölçümle de 179/179 satır geçti, en büyük sapma 6,8 puan; bu satırlar zaman ölçütüyle geçti.
+- **4x CPU yavaşlatma, 2 kayıt:** düzeltmeyle 179/179 satır geçti, en büyük sapma 1,33 ve 1,39 puan.
+- **En büyük sapmanın yeri:** 2a'nın başında (345 ms). Baş burada 0,12 px/ms'den bir anda yaklaşık 3,5 px/ms hıza geçiyor (şartnamedeki `cubic-bezier(0.2, 0.7, 0.3, 1)` başlangıcı). 1 ms'lik zaman farkı bile 0,4 puan ediyor.
+- **2b sonu hizası (gerçek zamanlı, son 60 ms):** daire merkezi logo merkezine x 0,0 px, y +1,5 / +0,5 / +0,5 / −0,5 px. ±2 pt içinde.
 
-- **Ham:** 12 kaydın 11'inde zaman sapması tutarlı biçimde +25…+33 ms (değer sapması en çok 15,4 puan). Bu kayıtlarda ham zaman damgasıyla ±17 ms ölçütü KARŞILANMIYOR (48 satırın 31–32'si dışarıda); sapmanın tamamı yukarıdaki çizim hattı gecikmesi. 1 kayıtta tarayıcı tek karelik hatta çalıştı (~16 ms); o kayıtta ham ölçümle de 48/48 satır geçti.
-- **33,3 ms düzeltmeyle:** 5 kaydın hepsinde 48 satırın tamamı ±1,5 puan içinde. En büyük sapmalar: 0,44 · 0,48 · 0,51 · 0,51 · 0,49 puan.
-- **Gecikme her kayda ayrı uydurulunca** (6 kayıt): 32,0–32,5 ms; 48/48 satır geçti, en büyük sapma 0,28–0,42 puan.
-- **4x CPU yavaşlatmalı 2 kayıt:** düzeltmeyle 48/48 satır ±1,5 puan veya ±17 ms içinde. En büyük değer sapması 1,23 ve 3,78 puan; bu satırlar zaman ölçütüyle geçti.
+<details><summary>Örnek kayıt (2. kayıt), tüm satırlar</summary>
 
-Örnek kayıt (1. kayıt), tüm satırlar:
+##### Baş (halka) tepesi (% yükseklik)
 
-#### Kapsül / baş tepesi (% yükseklik)
-| t (ms) | tablo | ölçülen (ham) | sapma | zaman sapması (ms) | ölçülen (−33,3 ms) | sapma |
-|---|---|---|---|---|---|---|
-| 0 | 0.0 | 0.00 | +0.00 | +0.0 | 0.03 | +0.03 |
-| 50 | 4.0 | 1.35 | -2.65 | +30.6 | 4.06 | +0.06 |
-| 100 | 6.8 | 4.95 | -1.85 | +29.2 | 6.88 | +0.08 |
-| 150 | 8.9 | 7.60 | -1.30 | +29.0 | 8.90 | +0.00 |
-| 200 | 10.5 | 9.49 | -1.01 | +27.4 | 10.56 | +0.06 |
-| 250 | 11.6 | 10.91 | -0.69 | +25.3 | 11.62 | +0.02 |
-| 300 | 12.4 | 11.98 | -0.42 | +19.4 | 12.49 | +0.09 |
-| 350 | 17.4 | 14.13 | -3.27 | +31.3 | 17.47 | +0.07 |
-| 400 | 24.5 | 19.87 | -4.63 | +31.5 | 24.62 | +0.12 |
-| 450 | 32.1 | 27.10 | -5.00 | +31.6 | 32.22 | +0.12 |
-| 500 | 40.3 | 34.92 | -5.38 | +32.1 | 40.35 | +0.05 |
-| 516 | 43.0 | 37.54 | -5.46 | +31.8 | 43.11 | +0.11 |
-| 550 | 48.6 | 43.22 | -5.38 | +32.1 | 48.66 | +0.06 |
-| 600 | 56.8 | 51.39 | -5.41 | +32.2 | 56.84 | +0.04 |
-| 650 | 65.6 | 59.80 | -5.80 | +32.5 | 65.60 | -0.00 |
-| 700 | 74.8 | 68.71 | -6.09 | +32.3 | 74.84 | +0.04 |
-| 750 | 84.7 | 78.18 | -6.52 | +32.1 | 84.80 | +0.10 |
-| 783 | 91.6 | 84.74 | -6.86 | +32.4 | 91.66 | +0.06 |
-| 800 | 95.5 | 88.30 | -7.20 | +32.4 | 95.60 | +0.10 |
-| 816 | 100.0 | 91.59 | -8.41 | +32.8 | 100.00 | +0.00 |
+| t (ms) | beklenen | ölçülen (ham) | sapma | zaman sapması (ms) | ölçülen (−33.3 ms) | sapma | sonuç |
+|---|---|---|---|---|---|---|---|
+| 0 | 0.0 | 0.00 | +0.00 | +0.0 | 0.01 | +0.01 | ✓ |
+| 23 | 1.6 | 0.00 | -1.60 | +20.9 | 1.64 | +0.04 | ✓ (gecikme düzeltilince) |
+| 46 | 3.2 | 0.91 | -2.29 | +30.8 | 3.28 | +0.08 | ✓ (gecikme düzeltilince) |
+| 69 | 4.6 | 2.55 | -2.01 | +30.2 | 4.63 | +0.07 | ✓ (gecikme düzeltilince) |
+| 92 | 5.7 | 4.06 | -1.62 | +30.2 | 5.71 | +0.03 | ✓ (gecikme düzeltilince) |
+| 115 | 6.8 | 5.27 | -1.53 | +28.4 | 6.80 | -0.00 | ✓ (gecikme düzeltilince) |
+| 138 | 7.6 | 6.29 | -1.35 | +30.5 | 7.67 | +0.03 | ✓ |
+| 161 | 8.5 | 7.27 | -1.21 | +29.0 | 8.57 | +0.09 | ✓ |
+| 184 | 9.2 | 8.21 | -1.01 | +26.4 | 9.27 | +0.05 | ✓ |
+| 207 | 9.9 | 8.98 | -0.88 | +26.4 | 9.92 | +0.06 | ✓ |
+| 230 | 10.5 | 9.62 | -0.88 | +26.1 | 10.58 | +0.08 | ✓ |
+| 253 | 10.9 | 10.29 | -0.65 | +25.3 | 10.97 | +0.03 | ✓ |
+| 276 | 11.4 | 10.80 | -0.58 | +22.5 | 11.46 | +0.08 | ✓ |
+| 299 | 11.8 | 11.24 | -0.52 | +22.5 | 11.84 | +0.08 | ✓ |
+| 322 | 12.1 | 11.69 | -0.39 | +17.2 | 12.17 | +0.09 | ✓ |
+| 345 | 12.4 | 12.02 | -0.38 | +16.5 | 13.76 | +1.36 | ✓ |
+| 368 | 21.6 | 12.54 | -9.11 | +22.4 | 21.69 | +0.05 | ✓ (gecikme düzeltilince) |
+| 391 | 29.8 | 17.55 | -12.23 | +33.1 | 29.77 | -0.01 | ✓ (gecikme düzeltilince) |
+| 414 | 36.2 | 26.50 | -9.69 | +32.5 | 36.15 | -0.03 | ✓ (gecikme düzeltilince) |
+| 437 | 40.9 | 33.45 | -7.45 | +33.1 | 40.85 | -0.05 | ✓ (gecikme düzeltilince) |
+| 460 | 44.3 | 38.90 | -5.41 | +33.0 | 44.31 | -0.00 | ✓ (gecikme düzeltilince) |
+| 483 | 46.8 | 42.92 | -3.88 | +32.3 | 46.81 | +0.01 | ✓ (gecikme düzeltilince) |
+| 506 | 48.6 | 45.79 | -2.83 | +31.8 | 48.64 | +0.02 | ✓ (gecikme düzeltilince) |
+| 529 | 50.0 | 47.90 | -2.08 | +31.0 | 50.02 | +0.04 | ✓ (gecikme düzeltilince) |
+| 552 | 51.0 | 49.44 | -1.54 | +30.5 | 51.03 | +0.05 | ✓ (gecikme düzeltilince) |
+| 575 | 51.7 | 50.61 | -1.11 | +28.8 | 51.79 | +0.08 | ✓ |
+| 598 | 52.2 | 51.49 | -0.75 | +25.6 | 52.34 | +0.09 | ✓ |
+| 621 | 52.6 | 52.12 | -0.49 | +21.8 | 52.68 | +0.07 | ✓ |
+| 644 | 52.8 | 52.53 | -0.31 | +17.2 | 52.92 | +0.08 | ✓ |
+| 667 | 53.0 | 52.85 | -0.12 | +0.0 | 52.97 | -0.00 | ✓ |
+| 690 | 53.0 | 52.96 | -0.05 | +0.0 | 53.13 | +0.12 | ✓ |
+| 713 | 53.5 | 53.06 | -0.39 | +12.9 | 53.49 | +0.03 | ✓ |
+| 736 | 53.9 | 53.27 | -0.60 | +25.0 | 53.96 | +0.09 | ✓ |
+| 759 | 54.3 | 53.76 | -0.50 | +20.6 | 54.28 | +0.03 | ✓ |
+| 782 | 54.6 | 54.14 | -0.49 | +21.4 | 54.73 | +0.10 | ✓ |
+| 805 | 55.0 | 54.51 | -0.47 | +21.1 | 55.06 | +0.09 | ✓ |
+| 828 | 55.3 | 54.91 | -0.38 | +16.8 | 55.39 | +0.09 | ✓ |
+| 851 | 55.6 | 55.24 | -0.35 | +15.8 | 55.59 | +0.01 | ✓ |
+| 874 | 55.9 | 55.51 | -0.34 | +17.1 | 55.92 | +0.07 | ✓ |
+| 897 | 56.1 | 55.77 | -0.31 | +16.1 | 56.14 | +0.06 | ✓ |
+| 920 | 56.3 | 56.07 | -0.21 | +7.1 | 56.31 | +0.03 | ✓ |
+| 943 | 56.4 | 56.24 | -0.19 | +7.3 | 56.47 | +0.04 | ✓ |
+| 966 | 56.5 | 56.40 | -0.13 | +0.0 | 56.64 | +0.11 | ✓ |
+| 989 | 56.6 | 56.56 | -0.00 | +0.0 | 56.64 | +0.07 | ✓ |
+| 1012 | 56.6 | 56.64 | +0.03 | +0.0 | 56.64 | +0.03 | ✓ |
+| 1035 | 56.7 | 56.64 | -0.10 | +0.0 | 56.77 | +0.04 | ✓ |
+| 1058 | 57.0 | 56.70 | -0.26 | +10.2 | 57.00 | +0.04 | ✓ |
+| 1081 | 57.3 | 56.86 | -0.42 | +18.6 | 57.32 | +0.05 | ✓ |
+| 1104 | 57.7 | 57.18 | -0.53 | +20.1 | 57.81 | +0.10 | ✓ |
+| 1127 | 58.2 | 57.59 | -0.66 | +21.7 | 58.30 | +0.05 | ✓ |
+| 1150 | 58.9 | 58.08 | -0.84 | +24.0 | 58.91 | -0.00 | ✓ |
+| 1173 | 59.7 | 58.62 | -1.10 | +27.8 | 59.79 | +0.07 | ✓ |
+| 1196 | 60.7 | 59.37 | -1.30 | +28.5 | 60.77 | +0.10 | ✓ |
+| 1219 | 61.8 | 60.33 | -1.46 | +27.4 | 61.89 | +0.10 | ✓ |
+| 1242 | 63.1 | 61.38 | -1.71 | +28.1 | 63.16 | +0.08 | ✓ (gecikme düzeltilince) |
+| 1265 | 64.6 | 62.52 | -2.07 | +30.0 | 64.65 | +0.05 | ✓ (gecikme düzeltilince) |
+| 1288 | 66.3 | 63.98 | -2.36 | +29.8 | 66.43 | +0.09 | ✓ (gecikme düzeltilince) |
+| 1311 | 68.3 | 65.63 | -2.72 | +30.0 | 68.38 | +0.03 | ✓ (gecikme düzeltilince) |
+| 1334 | 70.7 | 67.43 | -3.25 | +31.4 | 70.79 | +0.11 | ✓ (gecikme düzeltilince) |
+| 1357 | 73.4 | 69.67 | -3.72 | +31.1 | 73.48 | +0.09 | ✓ (gecikme düzeltilince) |
+| 1380 | 76.6 | 72.18 | -4.41 | +31.6 | 76.67 | +0.08 | ✓ (gecikme düzeltilince) |
+| 1403 | 80.4 | 75.21 | -5.21 | +31.4 | 80.51 | +0.09 | ✓ (gecikme düzeltilince) |
+| 1426 | 85.1 | 78.71 | -6.42 | +31.9 | 85.20 | +0.08 | ✓ (gecikme düzeltilince) |
+| 1449 | 91.2 | 82.96 | -8.23 | +32.3 | 91.18 | -0.02 | ✓ (gecikme düzeltilince) |
 
-#### Koyu daire tepesi (% yükseklik)
-| t (ms) | tablo | ölçülen (ham) | sapma | zaman sapması (ms) | ölçülen (−33,3 ms) | sapma |
-|---|---|---|---|---|---|---|
-| 150 | 1.5 | 1.42 | -0.08 | +0.0 | 1.47 | -0.03 |
-| 200 | 6.5 | 3.13 | -3.37 | +32.4 | 6.43 | -0.07 |
-| 250 | 10.0 | 7.60 | -2.40 | +31.4 | 9.97 | -0.03 |
-| 300 | 12.0 | 10.57 | -1.43 | +30.1 | 12.01 | +0.01 |
+##### Koyu daire tepesi (% yükseklik)
 
-(0, 60, 100 ms satırlarında daire ekranın altında, görünmüyor: tabloda −14 / −14 / −6.)
+| t (ms) | beklenen | ölçülen (ham) | sapma | zaman sapması (ms) | ölçülen (−33.3 ms) | sapma | sonuç |
+|---|---|---|---|---|---|---|---|
+| 184 | 2.5 | 0.71 | -1.79 | +16.4 | 2.46 | -0.04 | ✓ |
+| 207 | 4.5 | 1.44 | -3.06 | +33.5 | 4.46 | -0.04 | ✓ (gecikme düzeltilince) |
+| 230 | 6.5 | 3.52 | -2.98 | +32.6 | 6.40 | -0.10 | ✓ (gecikme düzeltilince) |
+| 253 | 7.9 | 5.60 | -2.30 | +31.7 | 7.89 | -0.01 | ✓ (gecikme düzeltilince) |
+| 276 | 9.3 | 7.25 | -2.05 | +31.2 | 9.26 | -0.04 | ✓ (gecikme düzeltilince) |
+| 299 | 10.4 | 8.61 | -1.79 | +31.9 | 10.40 | -0.00 | ✓ (gecikme düzeltilince) |
+| 322 | 11.2 | 9.96 | -1.24 | +31.5 | 11.11 | -0.09 | ✓ |
+| 345 | 12.0 | 10.77 | -1.23 | +31.0 | 13.19 | +1.19 | ✓ |
+| 368 | 21.2 | 11.75 | -9.50 | +26.1 | 21.21 | -0.04 | ✓ (gecikme düzeltilince) |
+| 391 | 29.4 | 17.08 | -12.31 | +33.2 | 29.23 | -0.15 | ✓ (gecikme düzeltilince) |
+| 414 | 35.8 | 25.92 | -9.87 | +33.0 | 35.68 | -0.11 | ✓ (gecikme düzeltilince) |
+| 437 | 40.5 | 32.97 | -7.53 | +33.4 | 40.38 | -0.12 | ✓ (gecikme düzeltilince) |
+| 460 | 43.9 | 38.43 | -5.49 | +33.3 | 43.77 | -0.15 | ✓ (gecikme düzeltilince) |
+| 483 | 46.4 | 42.44 | -3.96 | +32.9 | 46.34 | -0.07 | ✓ (gecikme düzeltilince) |
+| 506 | 48.2 | 45.25 | -2.98 | +33.2 | 48.17 | -0.06 | ✓ (gecikme düzeltilince) |
+| 529 | 49.6 | 47.43 | -2.15 | +32.0 | 49.55 | -0.03 | ✓ (gecikme düzeltilince) |
+| 552 | 50.6 | 48.96 | -1.62 | +31.8 | 50.55 | -0.03 | ✓ (gecikme düzeltilince) |
+| 575 | 51.3 | 50.14 | -1.18 | +30.6 | 51.26 | -0.06 | ✓ |
+| 598 | 51.8 | 51.02 | -0.82 | +28.2 | 51.74 | -0.10 | ✓ |
+| 621 | 52.2 | 51.52 | -0.68 | +31.3 | 52.17 | -0.04 | ✓ |
+| 644 | 52.4 | 52.02 | -0.43 | +26.2 | 52.33 | -0.11 | ✓ |
+| 667 | 52.6 | 52.26 | -0.31 | +27.5 | 52.50 | -0.07 | ✓ |
+| 690 | 52.6 | 52.42 | -0.19 | +22.7 | 52.66 | +0.05 | ✓ |
+| 713 | 53.1 | 52.59 | -0.47 | +16.7 | 53.01 | -0.04 | ✓ |
+| 736 | 53.5 | 52.79 | -0.68 | +28.9 | 53.39 | -0.08 | ✓ |
+| 759 | 53.9 | 53.22 | -0.64 | +28.7 | 53.81 | -0.05 | ✓ |
+| 782 | 54.2 | 53.66 | -0.57 | +26.1 | 54.14 | -0.09 | ✓ |
+| 805 | 54.6 | 53.99 | -0.58 | +28.5 | 54.47 | -0.11 | ✓ |
+| 828 | 54.9 | 54.32 | -0.57 | +30.1 | 54.79 | -0.10 | ✓ |
+| 851 | 55.2 | 54.65 | -0.54 | +30.2 | 55.12 | -0.07 | ✓ |
+| 874 | 55.5 | 54.97 | -0.48 | +28.1 | 55.39 | -0.06 | ✓ |
+| 897 | 55.7 | 55.30 | -0.38 | +23.1 | 55.65 | -0.03 | ✓ |
+| 920 | 55.9 | 55.51 | -0.37 | +25.6 | 55.83 | -0.04 | ✓ |
+| 943 | 56.0 | 55.76 | -0.27 | +18.3 | 56.00 | -0.03 | ✓ |
+| 966 | 56.1 | 55.93 | -0.20 | +13.6 | 56.04 | -0.08 | ✓ |
+| 989 | 56.2 | 56.04 | -0.12 | +0.0 | 56.16 | -0.00 | ✓ |
+| 1012 | 56.2 | 56.13 | -0.07 | +0.0 | 56.16 | -0.04 | ✓ |
+| 1035 | 56.3 | 56.16 | -0.17 | +3.3 | 56.30 | -0.04 | ✓ |
+| 1058 | 56.6 | 56.22 | -0.33 | +18.3 | 56.52 | -0.03 | ✓ |
+| 1081 | 56.9 | 56.39 | -0.49 | +24.8 | 56.85 | -0.03 | ✓ |
+| 1104 | 57.3 | 56.70 | -0.60 | +24.6 | 57.21 | -0.09 | ✓ |
+| 1127 | 57.8 | 57.03 | -0.82 | +29.2 | 57.78 | -0.07 | ✓ |
+| 1150 | 58.5 | 57.49 | -1.03 | +31.3 | 58.44 | -0.08 | ✓ |
+| 1173 | 59.3 | 58.14 | -1.18 | +30.3 | 59.26 | -0.06 | ✓ |
+| 1196 | 60.3 | 58.89 | -1.38 | +30.5 | 60.18 | -0.10 | ✓ |
+| 1219 | 61.4 | 59.74 | -1.65 | +31.9 | 61.32 | -0.07 | ✓ (gecikme düzeltilince) |
+| 1242 | 62.7 | 60.78 | -1.90 | +32.0 | 62.62 | -0.07 | ✓ (gecikme düzeltilince) |
+| 1265 | 64.2 | 62.05 | -2.15 | +31.4 | 64.17 | -0.03 | ✓ (gecikme düzeltilince) |
+| 1288 | 65.9 | 63.42 | -2.51 | +32.1 | 65.87 | -0.06 | ✓ (gecikme düzeltilince) |
+| 1311 | 67.9 | 65.07 | -2.88 | +32.1 | 67.90 | -0.04 | ✓ (gecikme düzeltilince) |
+| 1334 | 70.3 | 66.95 | -3.32 | +32.3 | 70.20 | -0.08 | ✓ (gecikme düzeltilince) |
+| 1357 | 73.0 | 69.14 | -3.85 | +32.3 | 72.95 | -0.05 | ✓ (gecikme düzeltilince) |
+| 1380 | 76.2 | 71.59 | -4.60 | +33.2 | 76.20 | +0.01 | ✓ (gecikme düzeltilince) |
+| 1403 | 80.0 | 74.74 | -5.28 | +32.0 | 80.04 | +0.02 | ✓ (gecikme düzeltilince) |
+| 1426 | 84.7 | 78.23 | -6.49 | +32.4 | 84.72 | +0.00 | ✓ (gecikme düzeltilince) |
+| 1449 | 90.8 | 82.49 | -8.31 | +32.6 | 90.70 | -0.09 | ✓ (gecikme düzeltilince) |
 
-#### Gövde genişliği (% genişlik)
-| t (ms) | tablo | ölçülen (ham) | sapma | zaman sapması (ms) | ölçülen (−33,3 ms) | sapma |
-|---|---|---|---|---|---|---|
-| 300 | 29.0 | 28.97 | -0.03 | +0.0 | 28.98 | -0.02 |
-| 350 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 |
-| 400 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 |
-| 450 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 |
-| 500 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 |
-| 516 | 29.2 | 29.23 | +0.03 | +0.0 | 29.23 | +0.03 |
-| 550 | 30.5 | 29.25 | -1.25 | +26.1 | 30.80 | +0.30 |
-| 600 | 33.8 | 31.83 | -1.97 | +29.6 | 33.89 | +0.09 |
-| 650 | 38.5 | 35.43 | -3.07 | +31.7 | 38.50 | -0.00 |
-| 700 | 43.1 | 40.05 | -3.05 | +31.6 | 43.11 | +0.01 |
-| 750 | 47.2 | 44.66 | -2.54 | +30.8 | 47.20 | +0.00 |
-| 783 | 48.7 | 47.19 | -1.51 | +27.6 | 48.73 | +0.03 |
-| 800 | 49.2 | 48.23 | -0.97 | +26.7 | 49.26 | +0.06 |
-| 816 | 49.7 | 48.72 | -0.98 | +27.0 | 49.74 | +0.04 |
-| 833 | 51.0 | 49.25 | -1.75 | +28.4 | 51.31 | +0.31 |
-| 850 | 53.3 | 49.81 | -3.49 | +31.3 | 53.44 | +0.14 |
-| 867 | 56.4 | 51.39 | -5.01 | +31.5 | 56.63 | +0.23 |
-| 883 | 60.0 | 53.39 | -6.61 | +32.4 | 60.09 | +0.09 |
-| 900 | 64.9 | 56.56 | -8.34 | +31.4 | 65.34 | +0.44 |
-| 917 | 70.5 | 60.31 | -10.19 | +32.7 | 70.65 | +0.15 |
-| 933 | 77.2 | 65.25 | -11.95 | +32.2 | 77.57 | +0.37 |
-| 950 | 84.6 | 70.52 | -14.08 | +32.2 | 84.99 | +0.39 |
-| 967 | 92.8 | 77.87 | -14.93 | +32.9 | 92.86 | +0.06 |
-| 983 | 100.0 | 84.85 | -15.15 | +32.5 | 100.00 | +0.00 |
+##### Gövde genişliği (% genişlik)
 
-(29'da sabit kalan satırlarda "zaman sapması" anlamsız, "–".)
+| t (ms) | beklenen | ölçülen (ham) | sapma | zaman sapması (ms) | ölçülen (−33.3 ms) | sapma | sonuç |
+|---|---|---|---|---|---|---|---|
+| 345 | 29.0 | 28.97 | -0.03 | +0.0 | 29.16 | +0.16 | ✓ |
+| 368 | 29.0 | 29.00 | +0.00 | +0.0 | 29.23 | +0.23 | ✓ |
+| 391 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 414 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 437 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 460 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 483 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 506 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 529 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 552 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 575 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 598 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 621 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 644 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 667 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 690 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 713 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 736 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 759 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 782 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 805 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 828 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 851 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 874 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 897 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 920 | 29.0 | 29.23 | +0.23 | – | 29.23 | +0.23 | ✓ |
+| 943 | 29.0 | 29.23 | +0.23 | -55.9 | 29.23 | +0.23 | ✓ |
+| 966 | 29.0 | 29.23 | +0.23 | -32.9 | 29.23 | +0.23 | ✓ |
+| 989 | 29.0 | 29.23 | +0.23 | -9.9 | 29.23 | +0.23 | ✓ |
+| 1012 | 29.2 | 29.23 | +0.04 | +0.0 | 29.62 | +0.44 | ✓ |
+| 1035 | 29.7 | 29.31 | -0.43 | +11.3 | 29.82 | +0.08 | ✓ |
+| 1058 | 30.3 | 29.74 | -0.57 | +16.9 | 30.53 | +0.21 | ✓ |
+| 1081 | 31.2 | 30.21 | -0.96 | +21.2 | 31.24 | +0.06 | ✓ |
+| 1104 | 32.2 | 30.92 | -1.25 | +25.5 | 32.46 | +0.29 | ✓ |
+| 1127 | 33.2 | 31.97 | -1.18 | +24.0 | 33.51 | +0.35 | ✓ |
+| 1150 | 34.3 | 32.88 | -1.43 | +26.1 | 34.41 | +0.11 | ✓ |
+| 1173 | 35.7 | 34.07 | -1.65 | +24.4 | 35.83 | +0.11 | ✓ (gecikme düzeltilince) |
+| 1196 | 37.1 | 35.19 | -1.94 | +29.1 | 37.25 | +0.12 | ✓ (gecikme düzeltilince) |
+| 1219 | 38.5 | 36.61 | -1.93 | +29.0 | 38.66 | +0.12 | ✓ (gecikme düzeltilince) |
+| 1242 | 39.9 | 38.03 | -1.90 | +29.1 | 40.07 | +0.14 | ✓ (gecikme düzeltilince) |
+| 1265 | 41.3 | 39.44 | -1.87 | +28.6 | 41.49 | +0.18 | ✓ (gecikme düzeltilince) |
+| 1288 | 42.7 | 40.85 | -1.85 | +28.2 | 42.90 | +0.21 | ✓ (gecikme düzeltilince) |
+| 1311 | 44.0 | 42.28 | -1.70 | +27.6 | 44.31 | +0.33 | ✓ (gecikme düzeltilince) |
+| 1334 | 45.2 | 43.68 | -1.53 | +25.8 | 45.69 | +0.48 | ✓ (gecikme düzeltilince) |
+| 1357 | 46.4 | 45.10 | -1.35 | +22.3 | 46.62 | +0.18 | ✓ |
+| 1380 | 47.5 | 46.06 | -1.40 | +27.3 | 47.62 | +0.15 | ✓ |
+| 1403 | 48.1 | 47.30 | -0.85 | +23.4 | 48.33 | +0.18 | ✓ |
+| 1426 | 48.8 | 48.01 | -0.77 | +22.6 | 49.03 | +0.25 | ✓ |
+| 1449 | 49.2 | 48.72 | -0.51 | +18.6 | 49.74 | +0.51 | ✓ |
+| 1472 | 49.7 | 49.42 | -0.28 | +6.4 | 50.13 | +0.43 | ✓ |
+| 1495 | 51.4 | 49.74 | -1.66 | +20.1 | 51.95 | +0.54 | ✓ (gecikme düzeltilince) |
+| 1518 | 54.4 | 50.99 | -3.40 | +25.3 | 54.73 | +0.33 | ✓ (gecikme düzeltilince) |
+| 1541 | 58.4 | 53.39 | -5.04 | +28.4 | 58.53 | +0.10 | ✓ (gecikme düzeltilince) |
+| 1564 | 63.7 | 56.68 | -7.07 | +31.2 | 64.12 | +0.37 | ✓ (gecikme düzeltilince) |
+| 1587 | 70.2 | 61.29 | -8.88 | +32.2 | 70.83 | +0.66 | ✓ (gecikme düzeltilince) |
+| 1610 | 78.5 | 67.66 | -10.84 | +31.3 | 78.96 | +0.46 | ✓ (gecikme düzeltilince) |
+| 1633 | 87.5 | 75.17 | -12.33 | +31.7 | 88.01 | +0.52 | ✓ (gecikme düzeltilince) |
+| 1656 | 96.8 | 83.88 | -12.97 | +31.5 | 96.76 | -0.09 | ✓ (gecikme düzeltilince) |
+| 1664.05 | 100.0 | 87.11 | -12.87 | +31.7 | 99.48 | -0.51 | ✓ (gecikme düzeltilince) |
 
-#### Solma (1000–1233), 3 kayıt
-Desen opaklığı karelerden yaklaşık ölçüldü: (kare − ana ekran) / (desen − ana ekran), medyan; 33,3 ms düzeltmeli.
-- Solma her kayıtta tam **1000 ms'de** başlıyor.
-- Beklenen `1 − cubic-bezier(0.4,0,0.2,1)` eğrisinden en büyük fark **0,002** (opaklık birimi).
-- Örnek: 1049 ms'de beklenen 0,847, ölçülen 0,847; 1099 ms'de beklenen 0,338, ölçülen 0,337.
+</details>
+
+**Solma (gerçek renklerle 2 kayıt):**
+- Desen opaklığı (kare − ana ekran) / (desen − ana ekran) oranının medyanıyla ölçüldü; 33,3 ms düzeltmeli.
+- Solma her kayıtta 1683,6 ms'de başlıyor.
+- Beklenen `1 − cubic-bezier(0.4, 0, 0.2, 1)` eğrisinden en büyük fark 0,002 opaklık birimi.
 
 ## 3. Kare düşmesi (Chrome DevTools performans izi, Puppeteer, 390×844, 3x piksel yoğunluğu)
-**Sayım yöntemi:** Her ekran yenilemesinde sayfadan yeni bir kare çizilip çizilmediğine bakıldı. Tarayıcının "değişiklik yok" diye kare üretmediği anlar düşme sayılmadı. Ekranın hiç çizmediği yenilemeler (iki çizim arası > 1,5 yenileme) düşme sayıldı. Pencereler:
-- hareket: 800–1783 ms
-- bekleme + solma: 1783–2033 ms
+**Sayım yöntemi (önceki doğrulamayla aynı):**
+- Her ekran yenilemesinde sayfadan yeni kare çizilip çizilmediğine bakıldı.
+- "Değişiklik yok" anları düşme sayılmadı.
+- Ekranın hiç çizmediği yenilemeler düşme sayıldı.
 
-Logo beklemesi ölçüme alınmadı: o sırada ekranda hiçbir şey kıpırdamıyor.
+**Pencereler:** hareket 1000–2664 ms, bekleme + solma 2664–2952 ms (sayfa zamanı, logo dahil).
 
-| CPU | deneme | hareket boyunca düşen kare | solma boyunca düşen kare |
-|---|---|---|---|
-| 1x | 10 | 0 (10/10 denemede sıfır) | 0 |
-| 4x | 24 | 22 denemede sıfır; 2 denemede toplam 4 (902/919/942 ms ve 1002 ms) | 23 denemede sıfır; 1 denemede 1 (1833 ms) |
+| Seri | CPU | deneme | hareket boyunca düşen kare | solma boyunca düşen kare |
+|---|---|---|---|---|
+| son seri | 1x | 12 | 0 (12/12) | 0 |
+| son seri | 4x | 12 | 0 (12/12) | 0 |
+| ilk seri (aynı kod) | 1x | 12 | 9 denemede sıfır; 3 denemede 1–2 kare (1734, 1750, 1767 ms) | 0 |
 
-4x'teki bu 2 denemenin nedeni yakalanamadı; sonraki 8 denemede tekrarlanmadı. Bu sürümden önce 4x'te hemen her denemede 1–2 kare düşüyordu (yukarıdaki 3. ve 4. maddeler). Ölçütün ("4× CPU yavaşlatmada kare düşmesi olmasın") bu ortamda karşılandığı tam olarak söylenemez: 24 denemenin 22'sinde karşılandı.
+**İlk serideki düşmeler incelendi:**
+- Sayfanın kompozitörü o karelerde de her kareyi zamanında üretmiş (0,4 ms).
+- Kareyi ekrana basan tarayıcı süreci (GPU sürecindeki ekran birleştiricisi) bir yenileme boyunca beklemiş: kare 1766,5'te gönderildi, 1779'da alındı.
+- Neden ayırt etmek için iki deneme yapıldı:
+  - logo animasyonu kapalı (8 deneme);
+  - ikon atışı kapalı (8 deneme).
+- İki denemede de birer denemede 9–13 karelik, yaklaşık 200 ms süren duraklamalar oldu. Bunlar 2b'de değil, rastgele yerlerdeydi (1066–1200 ve 2000–2200 ms).
+- Sonuç: düşmeler logo ya da ikon animasyonundan değil, o sırada makinedeki yükten geliyor. Kod değiştirilmeden alınan son 24 denemenin hiçbirinde kare düşmedi.
+- Karşılaştırma: aynı gün önceki sürüm (5640acc) 1x'te 8 denemede 0 düştü.
+- "Hiç kare düşmesin" ölçütü son seride karşılandı. İlk seri bu ortamda arada düşme olabildiğini gösteriyor.
 
 ## 4. Diğer kontroller
-- **Dokununca:** perde anında kalkıyor, ana ekran görünür, animasyon kalmıyor.
-- **Hareketi azalt:** logo ~400 ms, sonra 200 ms solma, ana ekran.
+- **Dokununca:** perde anında kalkıyor; ana ekran görünür, animasyon kalmıyor.
+- **Hareketi azalt:** logo yaklaşık 400 ms, sonra 200 ms solma, ana ekran (değişmedi).
 - **Yavaş veri:**
-  - Veri 1 sn'de gelince solma 1000'de, perde ~2,2 sn'de kalkıyor.
-  - 2,5 sn'de gelince desende bekleyip veri gelince soluyor.
-  - 6 sn'de gelince desende en fazla 1,5 sn bekliyor, sonra iskelet ekran.
-- **Android görünümü:** logo 120 px ve tam ortada.
+  - 1 sn: solma 1683,6'da, perde yaklaşık 3,1 sn'de kalkıyor.
+  - 2,5 sn: perde yaklaşık 3,05 sn'de kalkıyor.
+  - 6 sn: desende en fazla 1,5 sn bekleyip yaklaşık 4,4 sn'de soluyor, iskelet ekran.
+- **5 sn güvenlik sınırı:** en kötü durum (desen çözülmesi 400 ms + 1000 logo + 1664 hareket + 1500 veri bekleme + 268 solma) yaklaşık 4,87 sn, sınırın altında.
 - **Eski testler geçti:** kilit/Face ID, giriş, hap, yenileme, detay, ipucu.
 
 ## Bilinen sınırlar
-- iPhone Safari'de ölçülmedi. Yarım kapların `translate` ile açılması seçildi; `clip-path` sürümü denenmedi.
-- Bütün ölçümler masaüstü Chrome'un başsız modunda alındı. Gerçek cihazda çizim hattı gecikmesi farklı olabilir; bu gecikme hareketin biçimini değil yalnızca ekrana çıkış anını kaydırır.
+- iPhone Safari'de ve gerçek cihazda ölçülmedi. Bütün ölçümler masaüstü Chrome'un başsız modunda alındı.
+- Gerçek cihazda çizim hattı gecikmesi farklı olabilir. Bu gecikme hareketin biçimini değil, yalnızca ekrana çıkış anını kaydırır.
+- Ev ikonu logoyla aynı boyda değil (yukarıdaki ödünleşim). Logo 2b'de önde solup küçülerek bu farkı kapatıyor.
