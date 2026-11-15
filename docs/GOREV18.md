@@ -45,8 +45,8 @@ _Hazırlayan: Claude (ürün yöneticisi), 16 Kasım 2026, gece. Zeyd uyuyor; sa
 
 ## C. Teklifler ve Fiyatlar
 
-- [ ] **18.8 "İsimsiz teklif" yazmasın.** Teklif listesinde misafir adı varsa "Hasan Bey · 24–27 Kasım", yoksa sadece "Teklif · 24–27 Kasım". "İsimsiz" kelimesi hiçbir yerde geçmesin.
-- [ ] **18.9 Fiyatlar: yıl seçici, eski fiyatlar görünsün.**
+- [x] **18.8 "İsimsiz teklif" yazmasın.** Teklif listesinde misafir adı varsa "Hasan Bey · 24–27 Kasım", yoksa sadece "Teklif · 24–27 Kasım". "İsimsiz" kelimesi hiçbir yerde geçmesin.
+- [x] **18.9 Fiyatlar: yıl seçici, eski fiyatlar görünsün.**
   - Ekranın üstünde yıl seçici: ‹ **2026** › (ya da yan yana yıl hapları: 2025 · **2026** · 2027). Varsayılan bu yıl.
   - Seçili yılın **12 ayı** (Ocak–Aralık) listelenir. "Nisan 2028'e kadar" uzayan liste kalksın.
   - Geçmiş aylar da açılır ve fiyatları görünür ("geçen sene kaç liraya vermiştim?"); geçmiş aylar soluk ve küçük "geçmiş" etiketli; düzenlenebilir ama kaydederken "Bu ay geçmişte kaldı, yine de değiştirilsin mi?" sorusu.

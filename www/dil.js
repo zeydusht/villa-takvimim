@@ -698,6 +698,26 @@
     "Ödeme kaydedilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Payment could not be saved. Check your internet connection and try again.",
     "Ödeme kaydedilemedi.":"Payment could not be saved.",
     // Görev 18
+    "geçmiş":"past",
+    "Önceki yıl":"Previous year",
+    "Sonraki yıl":"Next year",
+    "Bu ay geçmişte kaldı, yine de değiştirilsin mi?":"This month is in the past. Change it anyway?",
+    "Seçtiğiniz aylardan bazıları geçmişte kaldı, yine de değiştirilsin mi?":"Some of the selected months are in the past. Change them anyway?",
+    "Evet, değiştir":"Yes, change",
+    "Henüz rezervasyon yok":"No reservations yet",
+    "Yaklaşan rezervasyon yok":"No upcoming reservations",
+    "İlk rezervasyonunuzu girin":"Enter your first reservation",
+    "Yeni rezervasyon girin":"Enter a new reservation",
+    "Nasıl yapılır?":"How does it work?",
+    "Turu geç":"Skip tour",
+    "1. Misafirin gireceği güne dokunun":"1. Tap the guest's check-in day",
+    "2. Çıkacağı güne dokunun":"2. Tap the check-out day",
+    "3. Rezervasyon'a dokunun":"3. Tap Reservation",
+    "Misafirin gireceği güne, sonra çıkacağı güne dokunun.":"Tap the guest's check-in day, then the check-out day.",
+    "Şimdi çıkacağı güne dokunun.":"Now tap the check-out day.",
+    "Burada her zaman sıradaki iş yazar: kim girecek, ne kadar alınacak.":"Here you always see what's next: who checks in and how much to collect.",
+    "Rezervasyon, teklif ya da opsiyon seçin.":"Choose reservation, offer or hold.",
+    "Takvim sekmesinde tüm villalarınızın giriş-çıkışları, Hesap'ta ayarlar.":"The Calendar tab shows check-ins and check-outs for all your villas; settings are under Account.",
     "Misafirin gireceği güne dokunun":"Tap the guest's check-in day",
     "Şimdi çıkış gününe dokunun":"Now tap the check-out day", "Bu tarihler arasında dolu gün var.":"Some nights between these dates are booked.",
     "O günün akşamı dolu, başka bir gün seçin.":"That evening is booked, pick another day."
@@ -714,6 +734,8 @@
 
   var K = [
     // Görev 18: seçim paneli "24 → 27 Kasım · 3 gece · 9.000 ₺"
+    [/^Geçen yıl: (.+)$/, "Last year: $1"],
+    [/^Teklif · (.+)$/, "Offer · $1"],
     [/^(.+) → (.+) · (\d+) gece(?: · (.+))?$/, function (_, a, b, n, t) { return a + " → " + b + " · " + n + " nights" + (t ? " · " + t : ""); }],
     // Görev 17: saate göre durum, yerleştirme, ödeme
     [/^Bugün (\d+:\d+)'(?:da|de|ta|te) (.+) girecek$/, "$2 checks in today at $1"],
