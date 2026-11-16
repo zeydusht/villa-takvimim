@@ -96,7 +96,7 @@ _Hazırlayan: Claude (ürün yöneticisi), 16 Kasım 2026, gece. Zeyd uyuyor; sa
 
 ## F. Aşağı çekip yenile
 
-- [ ] **18.18 Yenileme göstergesi üst çubuğa bağlı.** Şu an göstergesi üst çubuğun üstünde açılan boşlukta. iOS/Chrome'daki gibi: içerik aşağı çekildikçe gösterge **üst çubuğun hemen altından** içerikle birlikte aşağı iner (parmağı takip eder, lastik etkisi), 36 px daire içinde yeşil dönen ok, çekme mesafesiyle dönerek dolar; eşiği geçince titreşim + dönmeye başlar; bitince yukarı kayıp kaybolur, "✓ Güncel".
+- [x] **18.18 Yenileme göstergesi üst çubuğa bağlı.** Şu an göstergesi üst çubuğun üstünde açılan boşlukta. iOS/Chrome'daki gibi: içerik aşağı çekildikçe gösterge **üst çubuğun hemen altından** içerikle birlikte aşağı iner (parmağı takip eder, lastik etkisi), 36 px daire içinde yeşil dönen ok, çekme mesafesiyle dönerek dolar; eşiği geçince titreşim + dönmeye başlar; bitince yukarı kayıp kaybolur, "✓ Güncel".
 
 ## G. Takvim sekmesi (alt menü) — baştan, anlaşılır
 

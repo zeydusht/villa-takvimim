@@ -196,11 +196,15 @@
   .kurBtn{flex:none; background:var(--ok); color:#fff; padding:.5rem 1rem; border-radius:.625rem;
     font-size:.875rem}
   /* Görev 16.8: aşağı çekip yenile göstergesi */
-  .yenileGos{position:fixed; left:50%; top:0; width:2.5rem; height:2.5rem; margin-left:-1.25rem; border-radius:50%;
+  /* 18.18: üst çubuğun (z 45) altında; 36 px daire */
+  .yenileGos{position:fixed; left:50%; top:0; width:2.25rem; height:2.25rem; margin-left:-1.125rem; border-radius:50%;
     background:#fff; box-shadow:0 2px 12px rgba(16,22,19,.16); display:flex; align-items:center; justify-content:center;
-    color:var(--ok); z-index:46; opacity:0; pointer-events:none; will-change:transform,opacity}
-  .yenileGos.birak{transition:transform var(--hiz-kapa) ease-in, opacity var(--hiz-kapa) ease-in}
+    color:var(--ok); z-index:44; opacity:0; pointer-events:none; will-change:transform,opacity}
+  .yenileGos .yenileOk{display:flex}
+  .yenileGos.birak{transition:transform var(--hiz-ac) cubic-bezier(.2,.8,.2,1), opacity var(--hiz-ac) ease-out}
   .yenileGos.donuyor svg{animation:yenileDon .8s linear infinite}
+  /* iOS'un kendi sayfa esnemesi üst çubuğun üstünde boşluk açmasın; çekme etkisini uygulama veriyor */
+  html{overscroll-behavior-y:none}
   @keyframes yenileDon{to{transform:rotate(360deg)}}
   /* Görev 16.7: kapatılabilir ipucu kartı (ana ekranda en fazla 1) */
   .ipucu{position:relative; display:flex; gap:.75rem; align-items:flex-start; background:var(--r12); border-radius:1rem;
@@ -2458,49 +2462,74 @@
       else if(e==="ana") cizAna();
     },function(h){ yenileniyor=false; throw h; });
   }
+  // 18.18: gösterge üst çubuğa bağlı (iOS / Chrome gibi): içerik aşağı çekildikçe gösterge üst çubuğun hemen altından
+  // içerikle birlikte iner, parmağı lastik etkisiyle izler; 36 px daire içinde yeşil ok çekme mesafesiyle dönerek dolar;
+  // eşiği geçince titreşim + dönmeye başlar; bırakınca yenilenir, bitince yukarı kayıp kaybolur, "✓ Güncel".
   (function(){
-    var gos=null, basY=0, basX=0, izle=false, cekme=0, ESIK=64;
+    var gos=null, ekran=null, basY=0, basX=0, izle=false, cekme=0, ESIK=64, EN=112, TUT=56, esikte=false;
     var ekranUygun=function(){
-      return !!yenilenenEkran() && !document.querySelector(".overlay") &&
+      return !!yenilenenEkran() && !document.querySelector(".overlay") && !document.querySelector(".tur") &&
         !document.body.classList.contains("panelAcik") && !document.getElementById("acilis");
     };
     var ustBosluk=function(){ var ab=document.getElementById("appBar"); return (ab && !ab.classList.contains("hide")) ? ab.getBoundingClientRect().bottom : 0; };
-    var yer=function(y,don){ gos.style.transform="translateY("+y+"px) rotate("+don+"deg)"; };
     var kur=function(){
       if(gos) return gos;
       gos=document.createElement("div"); gos.className="yenileGos"; gos.setAttribute("aria-hidden","true");
-      gos.innerHTML=ikon("yenile",{boy:20,kalinlik:2.25}); document.body.appendChild(gos); return gos;
+      gos.innerHTML='<span class="yenileOk">'+ikon("yenile",{boy:20,kalinlik:2.25})+"</span>";
+      document.body.appendChild(gos); return gos;
     };
-    var kaldir=function(){ if(!gos) return; gos.classList.add("birak"); gos.style.opacity="0"; yer(ustBosluk()-48,0);
-      setTimeout(function(){ if(gos){ gos.classList.remove("birak","donuyor"); } },240); };
+    // gösterge: üst çubuğun altında saklı (−40 px), çekildikçe iner; ölçek ve opaklık çekmeyle dolar
+    var ciz=function(c,gecis){
+      var g=kur(), o=Math.min(1,c/ESIK), ok=g.firstChild;
+      g.classList[gecis?"add":"remove"]("birak");
+      g.style.transform="translateY("+(ustBosluk()-40+c)+"px) scale("+(0.6+0.4*o)+")";
+      g.style.opacity=String(c<=0?0:Math.min(1,o*1.3));
+      if(!g.classList.contains("donuyor")) ok.style.transform="rotate("+Math.round(c*4)+"deg)";
+      if(ekran){
+        ekran.style.transition=gecis?"transform var(--hiz-ac) cubic-bezier(.2,.8,.2,1)":"none";
+        ekran.style.transform=c>0?"translateY("+c+"px)":"";
+      }
+    };
+    var bitir=function(){
+      ciz(0,true);
+      var e=ekran;
+      setTimeout(function(){
+        if(gos){ gos.classList.remove("birak","donuyor"); gos.firstChild.style.transform=""; }
+        if(e && e!==ekran){ e.style.transition=""; e.style.transform=""; }
+        if(e===ekran && !izle){ e.style.transition=""; e.style.transform=""; ekran=null; }
+      },260);
+    };
+    // lastik etkisi: çekme arttıkça yavaşlar (en fazla EN px)
+    var lastik=function(dy){ return EN*(1-Math.exp(-dy/EN)); };
     document.addEventListener("touchstart",function(e){
-      izle=false; cekme=0;
+      izle=false; cekme=0; esikte=false;
       if(yenileniyor || !e.touches || e.touches.length!==1) return;
       if(!(S.bulut && window.VT && VT.girisli && VT.girisli())) return;
       if(window.scrollY>0 || !ekranUygun()) return;
       var t=e.touches[0]; if(t.clientX<=32) return;     // soldan kaydırma = geri
       basY=t.clientY; basX=t.clientX; izle=true;
+      ekran=document.getElementById(yenilenenEkran());
     },{passive:true});
     document.addEventListener("touchmove",function(e){
       if(!izle) return;
       var t=e.touches[0], dy=t.clientY-basY, dx=Math.abs(t.clientX-basX);
-      if(dy<=0 || window.scrollY>0 || dx>dy){ if(cekme>0){ cekme=0; kaldir(); } return; }
-      cekme=Math.min(dy*.5, ESIK*1.4);
-      kur(); gos.classList.remove("birak");
-      gos.style.opacity=String(Math.min(1,cekme/ESIK));
-      yer(ustBosluk()-48+cekme+8, cekme*4);
-    },{passive:true});
-    var bitti=function(){
+      if(dy<=0 || window.scrollY>0 || dx>dy){ if(cekme>0){ cekme=0; esikte=false; bitir(); } return; }
+      cekme=lastik(dy);
+      if(cekme>=ESIK && !esikte){ esikte=true; titret("hafif"); kur().classList.add("donuyor"); }
+      else if(cekme<ESIK && esikte){ esikte=false; kur().classList.remove("donuyor"); }
+      ciz(cekme,false);
+      if(e.cancelable) e.preventDefault();
+    },{passive:false});
+    var birak=function(){
       if(!izle) return; izle=false;
-      if(cekme<ESIK){ if(cekme>0) kaldir(); cekme=0; return; }
+      if(cekme<ESIK){ if(cekme>0) bitir(); cekme=0; return; }
       cekme=0;
-      gos.classList.add("birak","donuyor"); gos.style.opacity="1"; yer(ustBosluk()+16,0);
-      titret("hafif");
-      buluttanYenile().then(function(){ kaldir(); bildir("✓ "+cev("Güncel")); },
-        function(){ kaldir(); bildir(cev("Yenilenemedi. İnternetinizi kontrol edin.")); });
+      kur().classList.add("donuyor"); ciz(TUT,true);
+      buluttanYenile().then(function(){ bitir(); bildir("✓ "+cev("Güncel")); },
+        function(){ bitir(); bildir(cev("Yenilenemedi. İnternetinizi kontrol edin.")); });
     };
-    document.addEventListener("touchend",bitti,{passive:true});
-    document.addEventListener("touchcancel",function(){ if(izle){ izle=false; if(cekme>0) kaldir(); cekme=0; } },{passive:true});
+    document.addEventListener("touchend",birak,{passive:true});
+    document.addEventListener("touchcancel",function(){ if(izle){ izle=false; if(cekme>0) bitir(); cekme=0; } },{passive:true});
   })();
 
   // 17.2: durum saate bağlı — çıkış (10:00) ve giriş (16:00) saati geçince açık ekran kendiliğinden güncellenir
