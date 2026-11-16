@@ -560,6 +560,24 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       5) İki standart eğri (:root): --egri-gecis (yer değiştirme, kapanış) ve --egri-giris (belirme); paneller, ekran geçişleri,
          sihirbaz, bildirimler, rehber ve misafir sayfası bunları kullanıyor (açılış animasyonuna dokunulmadı).
 
+- [x] Görev 20 — Rehber düzeltmeleri, tarih seçim paneli, form sadeleştirme (Zeyd'in iPhone kaydından) · Claude Code (16 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi. Ayrıntı: `docs/GOREV20.md`, QA: `docs/qa/gorev20/` (README, capraz-butonlar.md).
+      A) Rehber: baloncuk hedefle asla çakışmaz (üstte → altta → yer yoksa görünen alanın en üstünde tek satır şerit
+         "Misafirin adını yazın · Tamam"); klavye açıkken sabit "Kaydet" çubuğu formun sonunda akar (alanı örtmesin).
+         Perde dokunuşu ve kaydırmayı yutmaz: karartılmış yerden kaydırılabilir, hedef dışındaki dokunuşlar belge düzeyinde
+         iptal edilir (baloncuk sallanır). "Bu işlemi biliyor musunuz?" sorusu ve işlem bazında kapatma kalktı; "Yardımı kapat"
+         Yardımlı modu kapatır ("Yardım kapatıldı. Hesap → Yardım'dan tekrar açabilirsiniz.", 2 sn). Ücret kartında "Değiştir"
+         → alan + "Tamam"; kartta açık düzenleme varken rehberde "İleri" pasif; kapora tutarında da "Tamam" (özet satırı).
+         Rezervasyon ve opsiyon rehberine "Not" adımı.
+      B) Rehbersiz takvim seçimi: ilk dokunuşta takvim ekranın ortasına (400 ms, --egri-gecis; tamamen görünüyorsa kaymaz,
+         küçük ekranda seçili günler panelin üstünde). Panel büyük, alttan kayar (320 ms, --egri-giris); başlık kalın ve yeşil:
+         "Çıkış gününü seçin" + "Giriş: 27 Kasım Cuma · 16:00". Aralıkta "27 → 28 Kasım · 1 gece", sağda büyük toplam,
+         döküm satırı, 3 eşit buton; içerik 40 ms arayla belirir; ekranın geri kalanı %35 kararır (dokununca seçim kalkar).
+         Toplam = geceler + kısa konaklama (depozito hariç), tek yerde: `www/fiyat.js` (uygulama ve misafir sayfası).
+      C) Rezervasyon formundan "Teklif olarak gönder" / "Fiyatı mesajla gönder", paylaşım panelinden "Özel teklif oluştur" kalktı.
+      D) Klavye: dokununca odak bizde (önce panel içi kaydırma, sonra focus({preventScroll:true})); panel klavyeyle birlikte
+         kayar; klavye kapanınca panel yerinde kalır (gerekirse altına boşluk). GERÇEK İPHONE'DA TEST EDİLECEK.
+
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
    ```sql

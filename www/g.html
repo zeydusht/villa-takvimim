@@ -336,6 +336,7 @@
 <script src="ikonlar.js"></script>
 <script src="ozellik.js"></script>
 <script src="adlar.js"></script>
+<script src="fiyat.js"></script>
 <script>
 (function(){
   var C=window.VILLA_CONFIG||{};
@@ -941,16 +942,12 @@
     if(!sec.bas||!sec.bit) return 0;
     return Math.round((new Date(sec.bit)-new Date(sec.bas))/86400000);
   }
+  // 20.7: konaklama ücreti uygulamayla aynı fonksiyondan (fiyat.js): geceler + kısa konaklama, depozito hariç
   function toplam(){
-    var t=0, eksik=0;
-    var d=new Date(sec.bas);
-    while(fmt(d)<sec.bit){
-      var f=(D.fiyat||{})[fmt(d)];
-      if(f) t+=f; else eksik++;
-      d.setDate(d.getDate()+1);
-    }
-    return {tutar:t, eksik:eksik};
+    var e=D.ek||{}, k=VTFiyat.konaklama({fiyatlar:D.fiyat, bas:sec.bas, bit:sec.bit, kisaSinir:e.sinir, kisaUcret:e.ucret});
+    return {tutar:k.geceler, eksik:k.eksik, ek:k.ek, toplam:k.toplam};
   }
+
 
   function secimTemizle(){ sec={bas:null,bit:null}; uyariMetin=""; takvimCiz(); altCiz(); secimKutusu(); }
   // 18.1: seçim kuralı (uygulamadaki villa takvimiyle aynı)
@@ -1054,8 +1051,7 @@
       return;
     }
     var t=toplam(), gc=geceSay();
-    var e2=D.ek||{}, ekU2=(e2.sinir&&e2.ucret&&gc<=e2.sinir)?e2.ucret:0;
-    var satir=teklifAktif() ? nf.format(TK.konaklama)+" ₺" : (t.eksik? CEV("Fiyatı sorun") : nf.format(t.tutar+ekU2)+" ₺");
+    var satir=teklifAktif() ? nf.format(TK.konaklama)+" ₺" : (t.eksik? CEV("Fiyatı sorun") : nf.format(t.toplam)+" ₺");
     var dep2=depTutar();
     bar.innerHTML='<div class="ic">'+
       '<div class="altozet"><span><span class="altTarih">'+tarihMetni()+"</span> · "+gc+" gece · "+kisiOzet().join(", ")+"</span>"+
@@ -1155,7 +1151,7 @@
   var dokumAcik=false;
   function fiyatOzet(){
     var t=toplam(), gc=geceSay(), b=D.bilgi||{};
-    var ek=(D.ek&&D.ek.sinir&&D.ek.ucret&&gc<=D.ek.sinir)?D.ek.ucret:0;
+    var ek=t.ek;
     var dep=b.depozito||0, gece=gc+" "+(EN?(gc===1?"night":"nights"):"gece");
     if(teklifAktif()) dep=TK.depozito||dep;
     var not="";   // 14.7: depozito artık ayrı kartta (depKart)
@@ -1179,7 +1175,7 @@
         }).join("")+"</div>":"");
     }
     if(ek) h+='<div class="fs"><span>'+CEV("Kısa konaklama ücreti")+"</span><span>+"+nf.format(ek)+" ₺</span></div>";
-    h+='<div class="fs fsTop"><span>'+CEV("Toplam")+"</span><span>"+nf.format(t.tutar+ek)+" ₺</span></div>"+not;
+    h+='<div class="fs fsTop"><span>'+CEV("Toplam")+"</span><span>"+nf.format(t.toplam)+" ₺</span></div>"+not;
     return h;
   }
   function dokumTikla(e,sonra){
@@ -1197,10 +1193,10 @@
     var b=D.bilgi||{}, mx=parseInt(b.kapasite||"20",10)||20;
     if(!sec.bas||!sec.bit){ el.innerHTML=""; return; }
     var t=toplam(), gc=geceSay();
-    var ek=(D.ek&&D.ek.sinir&&D.ek.ucret&&gc<=D.ek.sinir)?D.ek.ucret:0;
+    var ek=t.ek;
     // Toplam = konaklama + kısa konaklama ücreti. Depozito toplama EKLENMEZ, ayrı satırda yazılır.
     var tka=teklifAktif(), eksik=t.eksik && !tka;
-    var konaklamaT=tka ? TK.konaklama : t.tutar+ek;
+    var konaklamaT=tka ? TK.konaklama : t.toplam;
 
     var h='<h3 class="fiyatBas">'+ik("cuzdan",22)+"<span>"+CEV("Fiyat")+"</span></h3>";
     if(!eksik) h+='<div class="fiyatKutu">'+fiyatOzet()+"</div>";

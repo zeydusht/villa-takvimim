@@ -20,11 +20,14 @@
      geri      : fn                               "Geri"de önce bu çalışır (ör. başlangıç seçimini kaldır)
      istege    : true                             hedef yoksa adım atlanır (yoksa rehber sessizce kapanır)
      dokunulmaz: true                             delik görünür ama dokunuş geçmez
+     ileri_eger: fn                               "İleri" yalnız bu doğruysa etkin (ör. kartta açık düzenleme yoksa)
      soluk     : fn → [öğe]                       deliğin içinde kalan ama bu adımla ilgisi olmayan öğeler (karartılır, dokunulmaz)
      gizli     : true                             perde ve baloncuk yok; yalnız olayı bekler (ör. fotoğraflar yüklenince ✓)
    }
    Kullanım: Rehber.ayarla({cevir, titret, ikon, bildir, kenar}); Rehber.baslat(tanim); Rehber.bildir("olay");
-   Yardımlı mod tercihleri cihazda (localStorage "vt-yardim"; okunamazsa varsayılan: açık). */
+   Yardımlı mod tercihi cihazda (localStorage "vt-yardim"; okunamazsa varsayılan: açık).
+   Görev 20: perde dokunuşu/kaydırmayı yutmaz (pointer-events:none); hedef dışındaki dokunuşlar belge düzeyinde yakalanıp
+   iptal edilir (kaydırma ve sürükleme serbest). Baloncuk hedefle asla çakışmaz: üstte → altta → (yer yoksa) üstte tek satır şerit. */
 (function () {
   "use strict";
   var R = {};
@@ -47,6 +50,7 @@
     adYaz: "Misafirin adını yazın.",
     adIstege: "Misafirin adı (isteğe bağlı).",
     telefon: "Misafirin telefonu (isteğe bağlı).",
+    not: "Not eklemek isterseniz yazın (isteğe bağlı).",
     kisi: "Kaç kişi gelecek? − ve + ile ayarlayın.",
     // tutarlar
     ucret: "Toplam ücret burada. Değiştirmek için ‘Değiştir’e dokunabilirsiniz.",
@@ -107,16 +111,14 @@
     var x = null;
     try { x = JSON.parse(localStorage.getItem(ANAHTAR) || "null"); } catch (e) { x = null; }
     if (!x || typeof x !== "object") x = {};
-    P = { acik: x.acik !== false, kapali: x.kapali || {}, tamam: x.tamam || {}, soruldu: x.soruldu || {} };
+    P = { acik: x.acik !== false };
     return P;
   }
   function tercihYaz() { try { localStorage.setItem(ANAHTAR, JSON.stringify(P)); } catch (e) {} }
   R.modAcik = function () { return tercih().acik; };
   R.modAyarla = function (ac) { tercih().acik = !!ac; tercihYaz(); };
-  // bu işlem rehberle mi başlasın: mod açık ve bu işlemin yardımı kapatılmamış
-  R.gerekli = function (ad) { var p = tercih(); return p.acik && !p.kapali[ad]; };
-  R.kapaliSayisi = function () { return Object.keys(tercih().kapali).length; };
-  R.hepsiniAc = function () { var p = tercih(); p.kapali = {}; p.soruldu = {}; p.tamam = {}; tercihYaz(); };
+  // işlem rehberle mi başlasın: Yardımlı mod açık mı (20.3: işlem bazında kapatma yok)
+  R.gerekli = function () { return tercih().acik; };
 
   // ================= GÖRÜNÜM =================
   // 19B.5: uygulamanın iki standart eğrisi (index.html :root'ta tanımlı; yoksa aynı değerler)
@@ -139,9 +141,8 @@
       "box-shadow:0 0 0 3px #9FE0C9,0 0 0 200vmax rgba(16,22,19,.6);transition:opacity 200ms " + EI + "}" +
     ".rh.yok .rhDelik{box-shadow:0 0 0 200vmax rgba(16,22,19,.6)}" +
     ".rh.kayar .rhDelik{transition:transform 450ms " + EG + ",width 450ms " + EG + ",height 450ms " + EG + ",opacity 200ms " + EI + "}" +
-    ".rhEngel{position:absolute;left:0;top:0;width:0;height:0;pointer-events:auto;touch-action:none}" +
-    ".rhEngel.rhOrta{display:none}.rh.dokunulmaz .rhEngel.rhOrta{display:block}" +
-    ".rhSoluk{position:absolute;left:0;top:0;width:0;height:0;pointer-events:auto;touch-action:none;background:rgba(16,22,19,.6);border-radius:12px}" +
+    // 20.2: perde dokunuşu ve kaydırmayı yutmaz; hedef dışındaki dokunuşu belge düzeyinde yakalayıcı iptal eder
+    ".rhSoluk{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;background:rgba(16,22,19,.6);border-radius:12px}" +
     ".rhBalon{position:absolute;left:16px;right:16px;top:0;margin:0 auto;max-width:26rem;pointer-events:auto;transition:opacity 200ms " + EI + "}" +
     // baloncuk çerçeveyle aynı eğri ve sürede, aynı anda kayar
     ".rh.kayar .rhBalon{transition:top 450ms " + EG + ",opacity 200ms " + EI + "}" +
@@ -153,6 +154,14 @@
     ".rhKapat{min-height:3rem;padding:0 .625rem;border:0;background:none;color:#5F6A64;font:inherit;font-size:.9375rem;" +
       "white-space:nowrap;border-radius:99px;cursor:pointer}" +
     ".rhKapat:active{background:#F1F5F3}" +
+    ".rhKapatX{display:none;font-size:1.375rem;line-height:1}" +
+    // 20.1: yer yokken tek satırlık şerit (görünen alanın en üstünde): "Misafirin adını yazın · Tamam"
+    ".rh.serit .rhIc{display:flex;align-items:center;gap:.5rem;padding:.25rem .25rem .25rem 1rem;border-radius:14px}" +
+    ".rh.serit .rhUst{order:3;margin:0}.rh.serit .rhSay,.rh.serit .rhKapatYazi,.rh.serit .rhGeri{display:none}" +
+    ".rh.serit .rhKapatX{display:inline}.rh.serit .rhKapat{min-width:3rem;padding:0}" +
+    ".rh.serit .rhMetin{flex:1;min-width:0;margin:0;font-size:1rem;line-height:1.3}" +
+    ".rh.serit .rhAlt{margin:0}.rh.serit .rhIleri{flex:none;padding:0 1rem}" +
+    ".rhIleri:disabled{opacity:.45}" +
     ".rhMetin{font-size:1.125rem;line-height:1.4;margin-top:.125rem}" +
     ".rhMetinEski{position:absolute;left:1rem;right:1rem;font-size:1.125rem;line-height:1.4;pointer-events:none}" +
     ".rhVurgu{color:#0B5B57;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}" +
@@ -174,9 +183,6 @@
       "justify-content:center;margin:0 auto 1rem;font-size:2.25rem;line-height:1}" +
     ".rhKartBas{font-family:var(--serif,Georgia,serif);font-weight:400;font-size:1.5rem;line-height:1.25}" +
     ".rhKartAlt{font-size:1rem;line-height:1.45;color:#5F6A64;margin-top:.5rem}" +
-    ".rhKart .rhSoruBtn{display:block;width:100%;min-height:3.25rem;border-radius:.75rem;font:inherit;font-size:1rem;margin-top:.625rem;cursor:pointer;text-align:center}" +
-    ".rhKart .rhEvet{background:#0B5B57;color:#fff;border:0;margin-top:1.25rem}" +
-    ".rhKart .rhHayir{background:#fff;color:#101613;border:2px solid #5F6A64}" +
     // sihirbaz ipucu baloncuğu (perdesiz)
     ".rhIpucu{display:flex;gap:.625rem;align-items:flex-start;background:#E3EFEC;color:#0B3E3B;border-radius:14px;" +
       "padding:.75rem .875rem;font-size:1rem;line-height:1.4;margin:0 0 1rem;position:relative}" +
@@ -236,6 +242,10 @@
     var vv = window.visualViewport;
     return kl > 0 || !!(vv && window.innerHeight - vv.height > 80);
   }
+  function odakGirdi() {
+    var ae = document.activeElement;
+    return (ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName) && klavyeAcik() && D && D.a && hedefler(D.a).some(function (x) { return x.contains(ae); })) ? ae : null;
+  }
   function odakAlani(els) {
     var ae = document.activeElement;
     if (!els.length || !ae || !/^(INPUT|TEXTAREA)$/.test(ae.tagName) || !klavyeAcik()) return els;
@@ -281,9 +291,9 @@
     var o = document.createElement("div");
     o.className = "rh araniyor yok";
     o.innerHTML = '<div class="rhDelik"></div>' +
-      '<div class="rhEngel"></div><div class="rhEngel"></div><div class="rhEngel"></div><div class="rhEngel"></div><div class="rhEngel rhOrta"></div>' +
       '<div class="rhBalon" role="dialog" aria-modal="true" aria-live="polite"><div class="rhIc">' +
-        '<div class="rhUst"><span class="rhSay"></span><button type="button" class="rhKapat">' + esc(cev("Yardımı kapat")) + "</button></div>" +
+        '<div class="rhUst"><span class="rhSay"></span><button type="button" class="rhKapat" aria-label="' + esc(cev("Yardımı kapat")) + '">' +
+          '<span class="rhKapatYazi">' + esc(cev("Yardımı kapat")) + '</span><span class="rhKapatX" aria-hidden="true">×</span></button></div>' +
         '<div class="rhMetin"></div>' +
         '<div class="rhAlt"><button type="button" class="rhGeri">' + esc(cev("Geri")) + '</button><button type="button" class="rhIleri"></button></div>' +
       '</div><span class="rhOk ust"></span></div>';
@@ -293,18 +303,14 @@
       t: t, o: o, i: -1, a: null, gecmis: [], raf: 0, anahtar: "", basari: null, basariAlt: null,
       delik: q(".rhDelik"), balon: q(".rhBalon"), ic: q(".rhIc"), ok: q(".rhOk"), ilk: true,
       say: q(".rhSay"), metin: q(".rhMetin"), alt: q(".rhAlt"), geri: q(".rhGeri"), ileri: q(".rhIleri"),
-      engel: o.querySelectorAll(".rhEngel"),
       a_gizli: function () { return !!(this.a && this.a.gizli); }
     };
     o.addEventListener("click", function (e) {
       if (!D || D.o !== o) return;
-      if (e.target.closest(".rhKapat")) { titret("hafif"); bitir(false); return; }
+      if (e.target.closest(".rhKapat")) { titret("hafif"); yardimiKapat(); return; }
       if (e.target.closest(".rhGeri")) { titret("hafif"); geri(); return; }
-      if (e.target.closest(".rhIleri")) { titret("hafif"); ilerle(); return; }
-      if (e.target.closest(".rhEngel,.rhSoluk")) { salla(); }
+      if (e.target.closest(".rhIleri")) { if (!D.ileri.disabled) { titret("hafif"); ilerle(); } else salla(); return; }
     });
-    // perde üstünde kaydırma yok (sayfa hedeften kaçmasın)
-    o.addEventListener("touchmove", function (e) { if (e.target.closest(".rhEngel,.rhSoluk") && e.cancelable) e.preventDefault(); }, { passive: false });
     adimaGit(sec.bas || 0, 1);
     D.raf = requestAnimationFrame(dongu);
     return true;
@@ -388,9 +394,11 @@
     var sonAdim = D.i === sonGorunen();
     D.ileri.textContent = cev(a.bekle === "deger" ? "Tamam" : (sonAdim ? "Bitir" : "İleri"));
     D.ileri.classList.toggle("hide", !(a.bekle === "ileri" || (a.bekle === "deger" && degerVar())));
+    D.ileri.disabled = !ileriEtkin();
     D.geri.classList.toggle("hide", !geriGosterilir());
     D.alt.classList.toggle("hide", D.ileri.classList.contains("hide") && D.geri.classList.contains("hide"));
   }
+  function ileriEtkin() { var a = D.a; try { return !a.ileri_eger || !!a.ileri_eger(); } catch (e) { return true; } }
   function sonGorunen() {
     var l = D.t.adimlar;
     for (var j = l.length - 1; j > D.i; j--) if (!l[j].gizli && !atlaMi(l[j])) return j;
@@ -456,10 +464,12 @@
       D.o.classList.remove("araniyor");
     } else {
       // hedef büyüdüyse (ör. kapora alanı açıldı) ya da görünen alan değiştiyse (klavye açıldı/kapandı) yeniden ekrana getir
-      var hb = birlesik(els).height, ga = alan().alt;
+      var hb = birlesik(els).height, ga = gorunenAlan().alt;
       if (Math.abs(hb - D.boy) > 40 || (D.alanAlt && Math.abs(ga - D.alanAlt) > 40)) { D.boy = hb; D.alanAlt = ga; gorunurYap(els); }
       D.alanAlt = ga;
     }
+    var ie = ileriEtkin();
+    if (D.ileri.disabled === ie) D.ileri.disabled = !ie;
     if (a.bekle === "deger") {
       var dv = degerVar();
       if (dv === D.ileri.classList.contains("hide")) {
@@ -542,34 +552,43 @@
     var o = D.o.getBoundingClientRect(), ox = o.left, oy = o.top;   // kabın başlangıcı (ekran koordinatı)
     var r = els.length ? birlesik(els) : null;
     var bw = D.balon.offsetWidth, bh = D.balon.offsetHeight, bl = D.balon.offsetLeft;
+    // iki boyun ölçüsü saklanır (biçim değiştikçe her karede yeniden ölçülmesin)
+    if (D.serit) D.bhSerit = bh; else D.bhTam = bh;
+    var bhT = D.bhTam || bh, bhS = D.bhSerit || 64, serit = false;
     var x, y, x2, y2, by, okYon;
     if (r) {
       // delik ekrana kırpılmaz (kenarları ekran dışında kalabilir): böylece kaydırmada hedefle birlikte hareket eder
       x = r.left - pay; x2 = r.right + pay; y = r.top - pay; y2 = r.bottom + pay;
       var vy = Math.max(g.ust + 6, y), vy2 = Math.min(g.alt - 6, y2);
       var altBos = g.alt - vy2, ustBos = vy - g.ust;
-      if (altBos >= bh + 22) { by = y2 + 14; okYon = "ust"; }
-      else if (ustBos >= bh + 22) { by = y - 14 - bh; okYon = "alt"; }
+      // 20.1 sıra: (1) hedefin üstünde yer varsa üstüne, (2) yoksa altına, (3) ikisinde de yoksa görünen alanın en üstünde
+      // tek satır şerit (hedef şeridin altında kalır), (4) hedef ekrandan büyükse: baloncuk altta, delik üstteki kısım
+      if (ustBos >= bhT + 22) { by = y - 14 - bhT; okYon = "alt"; }
+      else if (altBos >= bhT + 22) { by = y2 + 14; okYon = "ust"; }
+      else if (vy - g.ust >= bhS + 18 || vy2 - vy + bhS + 30 <= g.alt - g.ust) { serit = true; by = g.ust + 6; okYon = "alt"; }
+      // çok dar alan: etiketle birlikte sığmıyorsa en azından yazı kutusunun kendisi şeridin altında açık kalır
+      else if (odakGirdi() && (function () { var q = odakGirdi().getBoundingClientRect();
+        return q.top - pay - g.ust >= bhS + 12 || q.height + 2 * pay + bhS + 24 <= g.alt - g.ust; })()) { serit = true; by = g.ust + 6; okYon = "alt"; }
+      // klavye açık ve hiçbir yerleşim sığmıyor (çok küçük görünen alan): en küçük biçim olan şerit
+      else if (klavyeAcik()) { serit = true; by = g.ust + 6; okYon = "alt"; }
       else {
-        // hedef ekrandan büyük: baloncuk altta, delik onun üstünde kalan kısım
-        by = g.alt - bh - 10; okYon = "ust";
+        by = g.alt - bhT - 10; okYon = "ust";
         if (y2 > by - 14) y2 = Math.max(vy + 24, by - 14);
       }
     } else {
       x = x2 = W / 2; y = y2 = (g.ust + g.alt) / 2; by = Math.round((g.ust + g.alt - bh) / 2); okYon = "yok";
     }
     D.o.classList.toggle("yok", !r);
+    if (serit !== !!D.serit) {
+      // biçim değişti: yeni boyla bir sonraki karede yeniden yerleşir
+      D.serit = serit; D.o.classList.toggle("serit", serit);
+      if (serit && D.bulundu) seritYer();
+      return;
+    }
     var w = x2 - x, h = y2 - y;
     // delik: kap koordinatı (kaydırmada değişmez → yazılmaz → tarayıcı kaydırmasıyla aynı karede)
     yaz(D.delik, "transform", "translate(" + Math.round(x - ox) + "px," + Math.round(y - oy) + "px)");
     yaz(D.delik, "width", Math.max(0, Math.round(w)) + "px"); yaz(D.delik, "height", Math.max(0, Math.round(h)) + "px");
-    // dokunuşu yutan perde parçaları: ekranın deliğin dışında kalan kısmı (görünmez; kap koordinatında)
-    var H = g.H, ex = -ox, ey = -oy, ex2 = ex + W, ey2 = ey + H, cx = x - ox, cy = y - oy, cx2 = x2 - ox, cy2 = y2 - oy;
-    kutu(D.engel[0], ex, ey, W, Math.max(0, cy - ey));
-    kutu(D.engel[1], ex, cy2, W, Math.max(0, ey2 - cy2));
-    kutu(D.engel[2], ex, cy, Math.max(0, cx - ex), cy2 - cy);
-    kutu(D.engel[3], cx2, cy, Math.max(0, ex2 - cx2), cy2 - cy);
-    kutu(D.engel[4], cx, cy, cx2 - cx, cy2 - cy);
     var sl = [];
     if (a.soluk) { try { sl = (a.soluk() || []).filter(gorunur); } catch (e) { sl = []; } }
     D.soluk = D.soluk || [];
@@ -584,11 +603,29 @@
     });
     // baloncuk: kap koordinatında "top" (transform değil: "hareketi azalt" açıkken basılı öğelerin transform'u sıfırlanıyor)
     yaz(D.balon, "top", Math.round(by - oy) + "px");
-    D.ok.className = "rhOk " + okYon;
+    D.ok.className = "rhOk " + (serit ? "yok" : okYon);
     if (r) {
       var cxo = Math.max(22, Math.min(bw - 22, (x + x2) / 2 - ox - bl));
       yaz(D.ok, "left", Math.round(cxo) + "px");
     }
+  }
+  // şerit modunda hedefin üstü şeridin altına gelsin (hedef hiç kapanmasın)
+  function seritYer() {
+    var els = odakAlani(hedefler(D.a)); if (!els.length) return;
+    var r = birlesik(els), g = gorunenAlan(), bhS = D.bhSerit || 64, ust = g.ust + bhS + 18;
+    // etiketle birlikte sığmıyorsa yazı kutusu esas alınır
+    var oi = odakGirdi();
+    if (oi && r.bottom - r.top + 16 > g.alt - ust) r = oi.getBoundingClientRect();
+    if (r.top - 8 >= ust) return;
+    kaydirIste(els[0], Math.round(r.top - 8 - ust));
+  }
+  function kaydirIste(el, dy) {
+    var kap = kaydirici(el), dav = azH() ? "auto" : "smooth";
+    if (A.kaydir) { try { A.kaydir(kap || window, dy); return; } catch (e) {} }
+    try {
+      if (kap) kap.scrollBy({ top: dy, behavior: dav });
+      else window.scrollBy({ top: dy, behavior: dav });
+    } catch (e) { if (kap) kap.scrollTop += dy; else window.scrollBy(0, dy); }
   }
   // hedef görünmüyorsa (ya da baloncuğa yer yoksa) önce ona kaydır
   function kaydirici(el) {
@@ -600,11 +637,11 @@
   }
   function gorunurYap(els) {
     if (D.a.kaydirma === false) return;
-    var r = birlesik(els), g = alan(), k = { ust: 0, alt: 0 };
+    var r = birlesik(els), g = gorunenAlan(), k = { ust: 0, alt: 0 };
     try { if (A.kenar) k = A.kenar(els[0]) || k; } catch (e) {}
     // hedef [ust, alt] içinde görünmeli (üstte sabit çubuk, altta menü/panel); baloncuk perdenin üstünde her yere girebilir
     var ust = g.ust + (k.ust || 0), alt = g.alt - (k.alt || 0);
-    var bh = D.balon.offsetHeight || 150, ARA = 24, hedefUst = null;
+    var bh = D.bhTam || D.balon.offsetHeight || 150, ARA = 24, hedefUst = null, bhS = D.bhSerit || 64;
     var icinde = function (top) { return top >= ust + 8 && top + r.height <= alt - 8; };
     var altta = function (top) { return top + r.height + ARA + bh <= g.alt - 8; };
     var ustte = function (top) { return top - ARA - bh >= g.ust + 8; };
@@ -614,21 +651,50 @@
       var t1 = ust + 12, t2 = Math.max(ust + 8, g.ust + 8 + bh + ARA);
       if (altta(t1)) hedefUst = t1;
       else if (t2 + r.height <= alt - 8) hedefUst = t2;
-      else hedefUst = ust + (alt - ust - r.height) / 2;
+      // baloncuk iki yana da sığmıyor: şerit üstte, hedef hemen altında
+      else hedefUst = Math.max(ust + 8, g.ust + bhS + 26);
     } else {
       if (r.top >= ust - 4 && r.top <= ust + 40) return;
       hedefUst = ust + 8;
     }
     var dy = Math.round(r.top - hedefUst);
     if (Math.abs(dy) < 4) return;
-    var kap = kaydirici(els[0]), dav = azH() ? "auto" : "smooth";
-    if (A.kaydir) { try { A.kaydir(kap || window, dy); return; } catch (e) {} }
-    try {
-      if (kap) kap.scrollBy({ top: dy, behavior: dav });
-      else window.scrollBy({ top: dy, behavior: dav });
-    } catch (e) { if (kap) kap.scrollTop += dy; else window.scrollBy(0, dy); }
+    kaydirIste(els[0], dy);
   }
 
+  // 20.2: rehber açıkken hedefin dışındaki dokunuşlar iptal edilir, baloncuk sallanır. Kaydırma ve sürükleme serbest:
+  // parmak 10 px'ten fazla kaydıysa dokunuş sayılmaz. touchend iptal edilince ne tıklama ne odak (klavye) oluşur.
+  function engelVar() { return !!(D && D.a && !D.a.gizli && !D.ortu && D.bulundu); }
+  function izinli(t) {
+    if (!t || !t.closest) return true;
+    if (D.o.contains(t) || t.closest(".rhSon")) return true;
+    var a = D.a;
+    if (a.dokunulmaz) return false;
+    if (a.soluk) { try { if ((a.soluk() || []).some(function (x) { return x && x.contains(t); })) return false; } catch (e) {} }
+    return hedefler(a).some(function (x) { return x.contains(t); });
+  }
+  var DOK = null;
+  document.addEventListener("touchstart", function (e) {
+    DOK = null;
+    if (!engelVar() || !e.touches || e.touches.length !== 1) return;
+    DOK = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: e.target, kaydi: false };
+  }, { capture: true, passive: true });
+  document.addEventListener("touchmove", function (e) {
+    if (!DOK || !e.touches[0]) return;
+    if (Math.abs(e.touches[0].clientX - DOK.x) > 10 || Math.abs(e.touches[0].clientY - DOK.y) > 10) DOK.kaydi = true;
+  }, { capture: true, passive: true });
+  document.addEventListener("touchend", function (e) {
+    var d = DOK; DOK = null;
+    if (!d || d.kaydi || !engelVar() || izinli(d.t)) return;
+    if (e.cancelable) e.preventDefault();
+    salla();
+  }, { capture: true, passive: false });
+  document.addEventListener("click", function (e) {
+    // uygulamanın kendi programla tıklamaları (ör. dosya seçiciyi açmak) engellenmez; yalnız kullanıcı dokunuşu
+    if (!e.isTrusted || !engelVar() || izinli(e.target)) return;
+    e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+    salla();
+  }, true);
   // dokunuş bekleyen adım: hedefe dokunulunca (uygulamanın kendi işi bittikten sonra) geçilir
   document.addEventListener("click", function (e) {
     if (!D || !D.a || D.a.bekle !== "dokunus" || D.a.gizli || D.ortu) return;
@@ -665,6 +731,14 @@
     }
   };
   R.kapat = function () { bitir(false); };
+  // 20.3: baloncuktaki "Yardımı kapat": Yardımlı mod tamamen kapanır (Hesap → Yardım'dan açılır). Uygulama turu yalnız kapanır.
+  function yardimiKapat() {
+    var t = D && D.t, acikti = tercih().acik;
+    bitir(false);
+    if (!t || t.sormaz || !acikti) return;
+    R.modAyarla(false);
+    try { if (A.bildir) A.bildir(cev("Yardım kapatıldı. Hesap → Yardım'dan tekrar açabilirsiniz."), 2000); } catch (e) {}
+  }
 
   // ================= BİTİŞ: ✓ + "… kaydedildi" + başarı titreşimi =================
   function bitir(tamamlandi) {
@@ -677,26 +751,11 @@
     else { o.classList.add("kapaniyor"); setTimeout(function () { if (o.parentNode) o.remove(); }, 190); }
     var t = d.t;
     if (tamamlandi) {
-      var p = tercih(), sor = false;
-      if (!t.sormaz) {
-        p.tamam[t.ad] = (p.tamam[t.ad] || 0) + 1;
-        if (p.tamam[t.ad] >= 3 && !p.soruldu[t.ad] && p.acik) { p.soruldu[t.ad] = 1; sor = true; }
-        tercihYaz();
-      }
       var m = d.basari || t.basari;
-      if (m) basariGoster(m, d.basariAlt || t.basariAlt, sor ? t.ad : null);
-      else if (sor) soruGoster(t.ad);
+      if (m) basariGoster(m, d.basariAlt || t.basariAlt);
     }
     if (t.bitince) { try { t.bitince(!!tamamlandi); } catch (e) {} }
   }
-  // dışarıdan: rehbersiz biten işlem için de aynı başarı ve sayım (ör. sihirbaz)
-  R.tamamla = function (ad, m, alt) {
-    var p = tercih(), sor = false;
-    p.tamam[ad] = (p.tamam[ad] || 0) + 1;
-    if (p.tamam[ad] >= 3 && !p.soruldu[ad] && p.acik) { p.soruldu[ad] = 1; sor = true; }
-    tercihYaz();
-    if (m) basariGoster(m, alt, sor ? ad : null); else if (sor) soruGoster(ad);
-  };
   function sonKart(html, sure, sonra) {
     sonKaldir(true);
     cssKur();
@@ -722,29 +781,14 @@
     return { o: o, kapa: kapa };
   }
   function sonKaldir(anlik) { if (B) { var b = B; B = null; clearTimeout(b._z); if (anlik) b.remove(); else if (b._kapa) b._kapa(); } }
-  function basariGoster(m, alt, sorAd) {
+  function basariGoster(m, alt) {
     titret("basari");
     var tik = ikonHTML("tik", 38) || "✓";
     sonKart('<div class="rhTik" aria-hidden="true">' + tik + "</div>" +
       '<div class="rhKartBas">' + esc(cev(m)) + "</div>" +
       (alt ? '<div class="rhKartAlt">' + esc(cev(alt)) + "</div>" : ""),
-      alt ? 2200 : 1400,
-      sorAd ? function () { setTimeout(function () { soruGoster(sorAd); }, 60); } : null);
+      alt ? 2200 : 1400, null);
   }
-  // 19.2: aynı rehber 3 kez sonuna kadar bitince bir kez sorulur
-  function soruGoster(ad) {
-    var k = sonKart('<div class="rhKartBas">' + esc(cev("Bu işlemi artık biliyor musunuz?")) + "</div>" +
-      '<div class="rhKartAlt">' + esc(cev("Bu işlem için yardımı kapatayım mı?")) + "</div>" +
-      '<button type="button" class="rhSoruBtn rhEvet">' + esc(cev("Evet, kapat")) + "</button>" +
-      '<button type="button" class="rhSoruBtn rhHayir">' + esc(cev("Hayır, açık kalsın")) + "</button>", 0, null);
-    k.o.querySelector(".rhEvet").onclick = function () {
-      titret("hafif");
-      var p = tercih(); p.kapali[ad] = 1; tercihYaz(); k.kapa();
-      try { if (A.bildir) A.bildir(cev("Bu işlemin yardımı kapandı. Hesap → Yardım'dan yeniden açabilirsiniz.")); } catch (e) {}
-    };
-    k.o.querySelector(".rhHayir").onclick = function () { titret("hafif"); k.kapa(); };
-  }
-
   // 19.9: perdesiz küçük ipucu (sihirbazın her adımında üstte)
   R.ipucuHTML = function (m) {
     return '<div class="rhIpucu" role="note">' + ikonHTML("bilgi-i", 20) + "<span>" + metinHTML(m) + "</span></div>";

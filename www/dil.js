@@ -697,6 +697,13 @@
     "Ödeme kaydedilemedi: bu villada ödeme alma yetkiniz yok.":"Payment could not be saved: you are not allowed to take payments for this villa.",
     "Ödeme kaydedilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Payment could not be saved. Check your internet connection and try again.",
     "Ödeme kaydedilemedi.":"Payment could not be saved.",
+    // Görev 20
+    "konaklama":"stay",
+    "kısa konaklama":"short-stay fee",
+    "depozito ayrıca":"deposit separate",
+    "Yardım kapatıldı. Hesap → Yardım'dan tekrar açabilirsiniz.":"Help is off. You can turn it back on in Account → Help.",
+    "Alınan kapora":"Down payment received",
+    "Not eklemek isterseniz yazın (isteğe bağlı).":"Add a note if you like (optional).",
     // Görev 19: rehberler (rehber.js sözlüğü), Yardımlı mod
     "Misafirin *gireceği* güne dokunun.":"Tap the day the guest *checks in*.",
     "Şimdi misafirin *çıkacağı* güne dokunun.":"Now tap the day the guest *checks out*.",
