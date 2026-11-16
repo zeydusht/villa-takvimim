@@ -544,6 +544,22 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       · Kendi bulduklarım: teklifteki %5/%10/%15 ve ödemedeki "Henüz değil" düğmeleri 44 px idi → 48 px.
       · Kalanlar: gerçek iPhone'da (klavye, titreşim) denenmedi; "Bize ulaşın" numarası hâlâ boş.
 
+- [x] Görev 19B — Rehber ve klavye ince ayarı (Zeyd'in iPhone denemesinden) · Claude Code (16 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi. Ayrıntı: `docs/GOREV19B.md`, QA: `docs/qa/gorev19b/` (README).
+      1) Rehberde nabız yok: çerçeve sabit, ilk görünüşte 200 ms'de solarak belirir (takvimdeki ilk boş günün nabzı da kalktı).
+      2) Çerçeve hedeften hedefe 450 ms, --egri-gecis ile tek harekette kayar (tek "delik" öğesi: konum transform, boyut
+         genişlik/yükseklik; perde = 200vmax box-shadow). Baloncuk aynı anda, aynı eğriyle kayar; metin 120 ms çapraz geçiş.
+         Ölçüm: geçişte kareler ortalama 16,7 ms, en uzun 16,9 ms.
+      3) Kaydırmada gecikme yok: rehber katmanı hedefin kaydırma kabının içinde (sayfa: belge; panel: panelin kendisi; sabit öğe:
+         ekran). Ölçüm: 10 kare kaydırmada çerçeve–hedef farkı 0 px (sayfada ve panelde).
+      4) Klavye: panel açıkken arkadaki sayfa kilitli (body position:fixed, konum saklanır, kapanınca geri döner). Klavye açılınca
+         panelin alt kenarı klavyenin hemen üstünde (--klavye; uygulamada @capacitor/keyboard, resize: none, keyboardWillShow;
+         web'de visualViewport). Odaklanan alan yalnız gerekiyorsa 250 ms'de kaydırılır. Rehber açıkken odaklı alan rehberin
+         hedefi olur, baloncuk alanı kapatmaz. Tüm yazı alanları ≥ 16 px.
+         GERÇEK İPHONE'DA TEST EDİLECEK (iOS'un klavye açılırken web görünümünü kaydırması emülasyonda yok).
+      5) İki standart eğri (:root): --egri-gecis (yer değiştirme, kapanış) ve --egri-giris (belirme); paneller, ekran geçişleri,
+         sihirbaz, bildirimler, rehber ve misafir sayfası bunları kullanıyor (açılış animasyonuna dokunulmadı).
+
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
    ```sql

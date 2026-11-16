@@ -22,6 +22,16 @@
     try { if (P.SplashScreen && P.SplashScreen.hide) P.SplashScreen.hide({ fadeOutDuration: 150 }); } catch (e) {}
   }, 3000);
 
+  // ---------- 19B.4 klavye ----------
+  // iOS'ta web görünümü klavyeyle küçülmez (capacitor.config: Keyboard.resize = "none"); klavye yüksekliği uygulamaya
+  // bildirilir, panelin alt kenarı klavyenin hemen üstüne oturur (index.html → VTKlavye). Android kendi boyutlandırmasını yapar.
+  try {
+    if (P.Keyboard && P.Keyboard.addListener && platform === "ios") {
+      P.Keyboard.addListener("keyboardWillShow", function (b) { if (window.VTKlavye) window.VTKlavye((b && b.keyboardHeight) || 0); });
+      P.Keyboard.addListener("keyboardWillHide", function () { if (window.VTKlavye) window.VTKlavye(0); });
+    }
+  } catch (e) {}
+
   // ---------- dış linkler ----------
   // App içinde yeni sekme olmadığı için bu linkler hiçbir şey yapmıyordu.
   // Web linkleri uygulama içi tarayıcıda, WhatsApp / telefon / e-posta ise

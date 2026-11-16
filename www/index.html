@@ -33,11 +33,13 @@
     --ana-basili:#084743;         /* yeşil ana buton basınca */
     --tehlike-cerceve:#C4718A;    /* kırmızı butonların çerçevesi */
     --tehlike-basili-zemin:#FBF1F4;
-    /* Hareket süreleri (Görev 9): hiçbiri 300ms'den uzun değil. Açılış ease-out, kapanış ease-in. */
+    /* Hareket süreleri (Görev 9). Eğriler (19B.5): yer değiştirme ve kapanış --egri-gecis, belirme / giriş --egri-giris. */
     --hiz-bas:100ms;              /* basma / renk tepkisi */
     --hiz-ac:220ms;               /* panel, bildirim açılışı */
     --hiz-kapa:180ms;             /* panel, bildirim kapanışı */
     --hiz-ekran:200ms;            /* sihirbaz adımı, ilerleme çubuğu */
+    --egri-gecis:cubic-bezier(0.65, 0, 0.35, 1);   /* yer değiştirme: yavaş başla, hızlan, yavaşlayarak dur */
+    --egri-giris:cubic-bezier(0.22, 1, 0.36, 1);   /* belirme / giriş: hızlı gelir, yumuşakça oturur */
     --gecis:var(--hiz-bas);
     --serif: ui-serif, Georgia, "Times New Roman", serif;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -93,7 +95,7 @@
   .kurulum .kBaslik{font-family:var(--serif); font-size:1.1875rem; letter-spacing:-.02em}
   .kurulum .kSay{font-size:.875rem; color:var(--muted); font-variant-numeric:tabular-nums}
   .ilerleme{height:.375rem; border-radius:99px; background:#D3DAD6; overflow:hidden; margin:.625rem 0 .375rem}
-  .ilerleme i{display:block; height:100%; background:var(--ok); border-radius:99px; transition:width var(--hiz-ekran) ease-out}
+  .ilerleme i{display:block; height:100%; background:var(--ok); border-radius:99px; transition:width var(--hiz-ekran) var(--egri-gecis)}
   .tikli{display:flex; align-items:center; gap:.75rem}
   .tik{flex:none; width:1.5rem; height:1.5rem; border-radius:99px; border:2px solid var(--cerceve);
     display:flex; align-items:center; justify-content:center; color:#fff}
@@ -201,7 +203,7 @@
     background:#fff; box-shadow:0 2px 12px rgba(16,22,19,.16); display:flex; align-items:center; justify-content:center;
     color:var(--ok); z-index:44; opacity:0; pointer-events:none; will-change:transform,opacity}
   .yenileGos .yenileOk{display:flex}
-  .yenileGos.birak{transition:transform var(--hiz-ac) cubic-bezier(.2,.8,.2,1), opacity var(--hiz-ac) ease-out}
+  .yenileGos.birak{transition:transform var(--hiz-ac) var(--egri-gecis), opacity var(--hiz-ac) var(--egri-giris)}
   .yenileGos.donuyor svg{animation:yenileDon .8s linear infinite}
   /* iOS'un kendi sayfa esnemesi üst çubuğun üstünde boşluk açmasın; çekme etkisini uygulama veriyor */
   html{overscroll-behavior-y:none}
@@ -337,13 +339,13 @@
   .ftIzgara{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.375rem; margin-top:1rem; position:relative}
   .fTile{aspect-ratio:1; border-radius:.5rem; background-size:cover; background-position:center;
     background-color:var(--soft); width:100%; padding:0; position:relative; touch-action:manipulation;
-    -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; transition:transform var(--hiz-ekran) ease-out}
+    -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; transition:transform var(--hiz-ekran) var(--egri-gecis)}
   .fTile.sec{outline:3px solid var(--ok); outline-offset:-3px}
   .fTile .tik{position:absolute; top:.375rem; right:.375rem; background:rgba(255,255,255,.9)}
   .fTile .tik.on{background:var(--ok)}
   .kapakEt{position:absolute; top:.375rem; left:.375rem; background:rgba(16,22,19,.72); color:#fff;
     font-size:.6875rem; letter-spacing:.04em; padding:.1875rem .4375rem; border-radius:99px}
-  .ftIzgara.siraliyor .fTile{transition:transform var(--hiz-ekran) ease-out}
+  .ftIzgara.siraliyor .fTile{transition:transform var(--hiz-ekran) var(--egri-gecis)}
   .ftIzgara .fTile.suruk{transition:none; z-index:5; box-shadow:0 12px 28px rgba(16,22,19,.32)}
   .ftAlt{position:fixed; left:0; right:0; bottom:0; background:rgba(255,255,255,.97); border-top:1px solid var(--line);
     padding:.75rem 1.25rem calc(.75rem + env(safe-area-inset-bottom)); z-index:40}
@@ -407,7 +409,7 @@
   .shUst{display:flex; align-items:center; gap:.75rem; margin:.25rem 0 1.25rem}
   .shUst .ilerleme{flex:1; margin:0}
   /* 18.14: sihirbaz çubuğu genişlik yerine transform ile kayarak dolar */
-  #shCubuk{width:100% !important; transform-origin:0 50%; transform:scaleX(0); transition:transform 280ms cubic-bezier(.2,.8,.2,1)}
+  #shCubuk{width:100% !important; transform-origin:0 50%; transform:scaleX(0); transition:transform 280ms var(--egri-gecis)}
   #sihirbaz{position:relative}
   .shEski{position:absolute; left:0; right:0; overflow:hidden; pointer-events:none}
   .shAciklama{margin:-.25rem 0 1rem}
@@ -681,7 +683,11 @@
 
   /* modal */
   .overlay{position:fixed; inset:0; background:rgba(16,22,19,.35); display:flex; z-index:50;
-    align-items:flex-start; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch}
+    align-items:flex-start; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    /* 19B.4: klavye açıkken panelin alt kenarı klavyenin hemen üstünde */
+    bottom:var(--klavye,0px); overscroll-behavior:contain}
+  /* 19B.4: klavye açıkken sayfadaki (panel dışı) alanlar da klavyenin üstüne kaydırılabilsin */
+  body.klavyeAcik{padding-bottom:var(--klavye,0px)}
   .sheet{width:100%; max-width:28rem; background:#fff; border-radius:1rem 1rem 0 0; padding:1.5rem;
     padding-bottom:calc(1.5rem + env(safe-area-inset-bottom)); margin-top:auto}
   @media(min-width:640px){ .sheet{border-radius:1rem; margin:auto} }
@@ -690,11 +696,11 @@
   .x{position:absolute; top:-.625rem; right:-.75rem; width:3rem; height:3rem; line-height:0;
     color:var(--ink); display:flex; align-items:center; justify-content:center; border-radius:99px;
     border:var(--cerceve-kalinlik) solid var(--cerceve); background:#fff; overflow:hidden; isolation:isolate;
-    transition:transform var(--hiz-bas) ease-out, border-color var(--hiz-bas)}
+    transition:transform var(--hiz-bas) var(--egri-giris), border-color var(--hiz-bas)}
   .x svg{position:relative; z-index:1}
   /* basınca daire merkezden açık yeşille dolar ve hafif küçülür */
   .x::before{content:""; position:absolute; inset:0; border-radius:inherit; background:var(--basili-zemin);
-    transform:scale(0); transition:transform var(--hiz-bas) ease-out}
+    transform:scale(0); transition:transform var(--hiz-bas) var(--egri-giris)}
   .x:active, .x.basildi{transform:scale(.92); border-color:var(--basili-cerceve)}
   .x:active::before, .x.basildi::before{transform:scale(1)}
   .sheet > .x{top:.75rem; right:.75rem}
@@ -705,32 +711,32 @@
   .sheet.cekiliyor{transition:none}
   /* 9.5 Paneller: aşağıdan kayarak açılır, arka plan %40 kararır; kapanışta tersi */
   .overlay{background:rgba(16,22,19,.4)}
-  .overlay:not(.gorucu):not(.anlik){animation:perdeKarar var(--hiz-ac) ease-out}
-  .overlay > .sheet{animation:perdeAc var(--hiz-ac) ease-out}
-  .overlay.kapaniyor{animation:perdeAydin var(--hiz-kapa) ease-in forwards; pointer-events:none}
-  .overlay.kapaniyor > .sheet{animation:perdeKapa var(--hiz-kapa) ease-in forwards}
+  .overlay:not(.gorucu):not(.anlik){animation:perdeKarar var(--hiz-ac) var(--egri-giris)}
+  .overlay > .sheet{animation:perdeAc var(--hiz-ac) var(--egri-giris)}
+  .overlay.kapaniyor{animation:perdeAydin var(--hiz-kapa) var(--egri-gecis) forwards; pointer-events:none}
+  .overlay.kapaniyor > .sheet{animation:perdeKapa var(--hiz-kapa) var(--egri-gecis) forwards}
   @keyframes perdeKarar{from{background-color:rgba(16,22,19,0)}}
   @keyframes perdeAydin{to{background-color:rgba(16,22,19,0)}}
   @keyframes perdeAc{from{transform:translateY(100%)}}
   @keyframes perdeKapa{to{transform:translateY(100%)}}
   /* 9.3 bildirim: 8px aşağıdan belirir, solarak gider */
-  .bildirim{animation:bildirGel var(--hiz-ac) ease-out}
-  .bildirim.gidiyor{animation:bildirGit var(--hiz-kapa) ease-in forwards}
+  .bildirim{animation:bildirGel var(--hiz-ac) var(--egri-giris)}
+  .bildirim.gidiyor{animation:bildirGit var(--hiz-kapa) var(--egri-gecis) forwards}
   @keyframes bildirGel{from{opacity:0; transform:translate(-50%,8px)}}
   @keyframes bildirGit{to{opacity:0}}
   /* 9.3 değişen önemli rakam / 9.6 yeni satır: bir kez açık yeşil */
-  .parla{animation:parla 600ms ease-out}
+  .parla{animation:parla 600ms var(--egri-giris)}
   @keyframes parla{0%,40%{background-color:#D5EBE4}100%{background-color:transparent}}
-  .yeniSatir{animation:satirGel var(--hiz-ac) ease-out}
+  .yeniSatir{animation:satirGel var(--hiz-ac) var(--egri-giris)}
   @keyframes satirGel{from{opacity:0; transform:translateY(-8px)}}
-  .cell.yeniParla{animation:halka 600ms ease-out}
+  .cell.yeniParla{animation:halka 600ms var(--egri-giris)}
   @keyframes halka{0%{box-shadow:inset 0 0 0 0 #9FD4C4}35%{box-shadow:inset 0 0 0 4px #9FD4C4}100%{box-shadow:inset 0 0 0 0 rgba(159,212,196,0)}}
   /* 9.8 ay değişince kısa solma */
-  .aySolma{animation:aySolma 150ms ease-out}
+  .aySolma{animation:aySolma 150ms var(--egri-giris)}
   @keyframes aySolma{from{opacity:.35}}
   /* 9.7 sihirbaz adımları */
-  .kayIleri{animation:kayIleri var(--hiz-ekran) ease-out}
-  .kayGeri{animation:kayGeri var(--hiz-ekran) ease-out}
+  .kayIleri{animation:kayIleri var(--hiz-ekran) var(--egri-giris)}
+  .kayGeri{animation:kayGeri var(--hiz-ekran) var(--egri-giris)}
   @keyframes kayIleri{from{opacity:0; transform:translateX(28px)}}
   @keyframes kayGeri{from{opacity:0; transform:translateX(-28px)}}
   /* 9.2 iskelet satırlar: sabit açık gri; 400ms'den kısa yüklemede hiç görünmez */
@@ -754,7 +760,7 @@
     .kayIleri, .kayGeri, .yeniSatir, .bildirim, .overlay > .sheet, .overlay.kapaniyor > .sheet{animation:none !important}
     :active, .basili, .x.basildi{transform:none !important}
   }
-  .sheet{transition:transform var(--hiz-ac) ease-out}
+  .sheet{transition:transform var(--hiz-ac) var(--egri-gecis)}
   .kapatAlt{width:100%; margin-top:.5rem; padding:.875rem 0; border-radius:.75rem; font-size:1rem;
     text-align:center; background:var(--soft); color:var(--ink)}
   .sheet{position:relative}
@@ -836,10 +842,10 @@
   @media (max-width:360px){ .okutu{padding:.5rem .5625rem} .okutu .lab{letter-spacing:.02em; min-height:2.6em} }
   /* 10.2 / 10.6 yuvarlak çerçeveli ok butonları; basınca merkezden dolar */
   .barGeri, .nav button{position:relative; overflow:hidden; isolation:isolate; border-radius:99px;
-    width:3rem; height:3rem; transition:transform var(--hiz-bas) ease-out, border-color var(--hiz-bas), color var(--hiz-bas)}
+    width:3rem; height:3rem; transition:transform var(--hiz-bas) var(--egri-giris), border-color var(--hiz-bas), color var(--hiz-bas)}
   .barGeri svg, .nav button svg{position:relative; z-index:1}
   .barGeri::before, .nav button::before{content:""; position:absolute; inset:0; border-radius:inherit;
-    transform:scale(0); transition:transform var(--hiz-bas) ease-out}
+    transform:scale(0); transition:transform var(--hiz-bas) var(--egri-giris)}
   .barGeri{border:2px solid rgba(255,255,255,.8); background:rgba(255,255,255,.14); margin:-.5rem .25rem -.5rem -.125rem}
   .barGeri::before{background:#fff}
   .barGeri:active{opacity:1; transform:scale(.92); color:var(--ok)}
@@ -929,7 +935,7 @@
   .anaBas .ozetEt .durumEt{min-height:3rem}
   /* 18.16: villayı basılı tutup sürükleyerek sırala */
   .kartlar .kart{-webkit-touch-callout:none; -webkit-user-select:none; user-select:none}
-  .kartlar.siraliyor .kart{transition:transform 200ms cubic-bezier(.2,.8,.2,1)}
+  .kartlar.siraliyor .kart{transition:transform 200ms var(--egri-gecis)}
   .kartlar .kart.suruk{position:relative; z-index:5; transition:none !important; box-shadow:0 14px 34px rgba(16,22,19,.22);
     background:#fff}
   .siraIpucu{display:flex; align-items:center; gap:.5rem; margin-top:1rem; padding:.25rem .25rem .25rem .875rem; border-radius:var(--kose);
@@ -953,7 +959,7 @@
   .sekmeler button{position:relative; z-index:1; background:none !important}
   .sekmeler button.on{color:var(--ok)}
   .kabarcik{position:absolute; top:0; bottom:0; left:0; width:calc(100% / 3); z-index:0; pointer-events:none;
-    transition:transform var(--hiz-ekran) ease-out}
+    transition:transform var(--hiz-ekran) var(--egri-gecis)}
   .kabarcik::before{content:""; position:absolute; inset:.3125rem .5rem; border-radius:99px; background:var(--basili-zemin)}
   .kabarcik.anlik{transition:none}
 
@@ -1101,7 +1107,7 @@
   .msSatir{display:flex; align-items:flex-start; gap:.625rem; padding:.625rem .5rem .625rem .75rem; border-bottom:1px solid var(--line); margin-bottom:-1px}
   .msSatir > .ikKutu{margin-top:.25rem}
   .msAlan{flex:1 1 auto; min-width:0; display:grid; gap:.375rem}
-  .msAlan input{width:100%; min-height:2.5rem; padding:.375rem .625rem; font-size:.9375rem; border:1.5px solid var(--line); border-radius:.625rem; background:#fff}
+  .msAlan input{width:100%; min-height:2.5rem; padding:.375rem .625rem; font-size:1rem; border:1.5px solid var(--line); border-radius:.625rem; background:#fff}
   .msAlt{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:.375rem}
   .msAlt input{min-width:0}
   .msYak{grid-column:1 / -1; font-size:.75rem; color:var(--muted); margin-top:-.125rem}
@@ -1228,7 +1234,7 @@
   .akisDurum .linkBtn{color:var(--ok); text-decoration:underline; min-height:2.75rem; padding:0 .25rem}
   .akisAyrac{color:var(--ok)}
   .akisKayar{overflow:hidden; margin:0 -.25rem}
-  .akisIc{display:flex; width:200%; transition:transform .28s cubic-bezier(.2,.7,.3,1)}
+  .akisIc{display:flex; width:200%; transition:transform .28s var(--egri-gecis)}
   .akisIc.ikinci{transform:translateX(-50%)}
   .akisSayfa{width:50%; flex:none; padding:.25rem; box-sizing:border-box}
   .akisIc:not(.ikinci) #ak-s2, .akisIc.ikinci #ak-s1{visibility:hidden; transition:visibility 0s .28s}
@@ -1245,8 +1251,8 @@
     border-top:1px solid var(--line); border-radius:18px 18px 0 0; box-shadow:0 -6px 24px rgba(16,22,19,.10);
     padding:.75rem 1rem .875rem; max-width:40rem; margin:0 auto;
     transform:translateY(calc(100% + var(--menu-h))); visibility:hidden;
-    transition:transform var(--hiz-ac) cubic-bezier(.2,.8,.2,1), visibility 0s linear var(--hiz-ac)}
-  .secPanel.acik{transform:none; visibility:visible; transition:transform var(--hiz-ac) cubic-bezier(.2,.8,.2,1), visibility 0s}
+    transition:transform var(--hiz-ac) var(--egri-gecis), visibility 0s linear var(--hiz-ac)}
+  .secPanel.acik{transform:none; visibility:visible; transition:transform var(--hiz-ac) var(--egri-gecis), visibility 0s}
   body.panelAcik .secPanel{visibility:hidden}
   body.secPanelAcik .wrap{padding-bottom:calc(7rem + env(safe-area-inset-bottom) + var(--secPanelH, 9rem))}
   .spUst{display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-height:3rem}
@@ -1274,7 +1280,7 @@
   body.rhTarih #villaHapKap{display:none}
   .cell.turNabiz{z-index:1; overflow:visible}
   .cell.turNabiz::after{content:""; position:absolute; inset:-2px; border-radius:12px; border:3px solid var(--ok); pointer-events:none;
-    animation:turNabiz 1.2s ease-out infinite}
+    animation:none}
   @keyframes turNabiz{0%{transform:scale(.9); opacity:1}100%{transform:scale(1.35); opacity:0}}
   @media (prefers-reduced-motion: reduce){ .cell.turNabiz::after{animation:none} }
   /* 11.8 alt menü: seçili sekmede dolu ikon */
@@ -1920,6 +1926,9 @@
     return t+"'"+ek;
   }
   // ---- Görev 9: his ve hız ----
+  // 19B.5: standart eğriler (WAAPI için :root'taki değişkenden okunur)
+  var egriAl=function(ad){ var v=""; try{ v=getComputedStyle(document.documentElement).getPropertyValue("--egri-"+ad).trim(); }catch(e){}
+    return v || (ad==="gecis" ? "cubic-bezier(0.65, 0, 0.35, 1)" : "cubic-bezier(0.22, 1, 0.36, 1)"); };
   var azHareket=function(){ try{ return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } };
   // Gerçek titreşim (yalnız uygulama içinde; web'de hiçbir şey yapmaz). Hesap → Titreşim ile kapatılabilir.
   var TITRESIM="villa-takvim-titresim";
@@ -2395,7 +2404,7 @@
         if(el.offsetParent===null) return;
         Array.prototype.forEach.call(el.children,function(b){
           b.animate([{transform:"translateX(0)"},{transform:"translateX(-56px)",offset:.5},{transform:"translateX(0)"}],
-                    {duration:800, easing:"ease-in-out"});
+                    {duration:800, easing:egriAl("gecis")});
         });
       },500);
     }
@@ -2542,7 +2551,7 @@
       g.style.opacity=String(c<=0?0:Math.min(1,o*1.3));
       if(!g.classList.contains("donuyor")) ok.style.transform="rotate("+Math.round(c*4)+"deg)";
       if(ekran){
-        ekran.style.transition=gecis?"transform var(--hiz-ac) cubic-bezier(.2,.8,.2,1)":"none";
+        ekran.style.transition=gecis?"transform var(--hiz-ac) var(--egri-gecis)":"none";
         ekran.style.transform=c>0?"translateY("+c+"px)":"";
       }
     };
@@ -2782,7 +2791,7 @@
     var onceki=null;
     if(id==="giris" && window.girisEkraniModu){ var acik=document.getElementById("giris"); if(acik && acik.classList.contains("hide")) girisEkraniModu(); }
     EKRANLAR.forEach(function(x){ var e=document.getElementById(x); if(e && !e.classList.contains("hide")) onceki=x; });
-    var simdiY=window.scrollY||0;
+    var simdiY=sayfaY();
     if(onceki) KAYDIR[onceki]=simdiY;
     EKRANLAR.forEach(function(x){
       document.getElementById(x).classList[x===id?"remove":"add"]("hide"); });
@@ -2821,16 +2830,16 @@
         requestAnimationFrame(function(){
           yeniEl.style.opacity="";
           try{ yeniEl._gecis=yeniEl.animate([{opacity:0,transform:"translateX("+X+"px)"},{opacity:1,transform:"translateX(0)"}],
-            {duration:X?260:200, easing:"cubic-bezier(0.2,0.8,0.2,1)"}); }catch(e){}
+            {duration:X?260:200, easing:egriAl("giris")}); }catch(e){}
         });
       }
     }
     var hedef=0;
     if(onceki===id) hedef=simdiY;                                              // aynı ekran yeniden çizildi: yerinde kal
     else if(geriDon || (onceki && SEVIYE[id]<=SEVIYE[onceki])) hedef=KAYDIR[id]||0;   // geri ya da sekme: kaldığı yer
-    try{ window.scrollTo(0,hedef); }catch(e){}
+    sayfayaKaydir(hedef);
     // ekranı çağıran kod içeriği hemen ardından çizer; çizimden sonra konumu bir kez daha uygula
-    if(hedef) requestAnimationFrame(function(){ if(!document.getElementById(id).classList.contains("hide")) window.scrollTo(0,hedef); });
+    if(hedef) requestAnimationFrame(function(){ if(!document.getElementById(id).classList.contains("hide")) sayfayaKaydir(hedef); });
   }
 
   // 10.12: dolu / boş etiketine dokununca liste süzülür, tekrar dokununca hepsi
@@ -3176,7 +3185,7 @@
         var t=el; el=null; if(!t) return;
         // bırakılan kart yeni yuvasına kayar, sonra liste yeni sırayla çizilir
         t.style.transform="translateY("+(yuva[hedef].y-yuva[ilk].y)+"px) scale(1)";
-        t.style.transition="transform 180ms cubic-bezier(.2,.8,.2,1)";
+        t.style.transition="transform 180ms var(--egri-gecis)";
         setTimeout(function(){
           kap.classList.remove("siraliyor");
           if(hedef!==ilk){
@@ -3833,7 +3842,9 @@
   // Metinler tek sözlükte: Rehber.M (rehber.js); aynı tür adım hep aynı cümle.
   var RM=Rehber.M;
   Rehber.ayarla({
-    cevir:cev, titret:titret, bildir:function(m){ bildir(m); },
+    cevir:cev, titret:titret, bildir:function(m){ bildir(m); }, klavye:function(){ return KLAVYE.h; },
+    // hedefi ekrana getiren kaydırma da 250 ms, --egri-gecis (klavyeyle aynı hareket)
+    kaydir:function(kap,dy){ yumusakKaydir(kap,dy,250); },
     ikon:function(ad,o){ return window.ikon ? window.ikon(ad,o) : ""; },
     // hedef ekrana getirilirken üst çubuğun, alt menünün ya da seçim panelinin altında kalmasın
     kenar:function(el){
@@ -7610,17 +7621,17 @@
     shBagla(a);
     try{ window.scrollTo(0,0); }catch(e){}
     if(eski){
-      var X=24*(yon>0?1:-1), sure=280, egri="cubic-bezier(0.2,0.8,0.2,1)";
+      var X=24*(yon>0?1:-1), sure=280, egri=egriAl("gecis"), giris=egriAl("giris");
       eski.animate([{opacity:1,transform:"translateX(0)"},{opacity:0,transform:"translateX("+(-X)+"px)"}],{duration:sure,easing:egri,fill:"forwards"})
         .finished.then(function(){ eski.remove(); },function(){ eski.remove(); });
       el.animate([{opacity:0,transform:"translateX("+X+"px)"},{opacity:1,transform:"translateX(0)"}],{duration:sure,easing:egri});
       // adım içeriği: çizim 0,96 → 1 + solma (320 ms); altındaki öğeler 40 ms arayla belirir
       var ciz0=el.querySelector(".cizim");
-      if(ciz0) ciz0.animate([{opacity:0,transform:"scale(.96)"},{opacity:1,transform:"scale(1)"}],{duration:320,easing:egri,fill:"backwards"});
+      if(ciz0) ciz0.animate([{opacity:0,transform:"scale(.96)"},{opacity:1,transform:"scale(1)"}],{duration:320,easing:giris,fill:"backwards"});
       var k=0;
       Array.prototype.forEach.call(el.children,function(c){
         if(c.classList.contains("cizim")) return;
-        c.animate([{opacity:0,transform:"translateY(8px)"},{opacity:1,transform:"translateY(0)"}],{duration:240,delay:80+40*(k++),easing:egri,fill:"backwards"});
+        c.animate([{opacity:0,transform:"translateY(8px)"},{opacity:1,transform:"translateY(0)"}],{duration:240,delay:80+40*(k++),easing:giris,fill:"backwards"});
       });
     }
   }
@@ -9425,6 +9436,88 @@
     };
   }
 
+  // ================= 19B.4 KLAVYE VE PANEL KİLİDİ =================
+  // Panel açıkken arkadaki sayfa kilitli: body kaydırma konumu saklanarak position:fixed olur; panel kapanınca eski yere döner.
+  var KILIT={acik:false, y:0};
+  function sayfaKilitle(){
+    if(KILIT.acik) return;
+    KILIT.acik=true; KILIT.y=window.scrollY||0;
+    var b=document.body.style; b.position="fixed"; b.top=(-KILIT.y)+"px"; b.left="0"; b.right="0"; b.width="100%";
+  }
+  function sayfaKilitAc(){
+    if(!KILIT.acik) return;
+    KILIT.acik=false;
+    var b=document.body.style; b.position=""; b.top=""; b.left=""; b.right=""; b.width="";
+    try{ window.scrollTo(0,KILIT.y); }catch(e){}
+  }
+  function kilitDenetle(){ if(document.querySelector(".overlay:not(.kapaniyor)")) sayfaKilitle(); else sayfaKilitAc(); }
+  // kilitliyken sayfanın "kaydırma konumu" saklanan değerdir (ekran değişirse yeni konum kilit açılınca uygulanır)
+  function sayfaY(){ return KILIT.acik ? KILIT.y : (window.scrollY||0); }
+  function sayfayaKaydir(y){ if(KILIT.acik) KILIT.y=y; else { try{ window.scrollTo(0,y); }catch(e){} } }
+
+  // Klavye: uygulamada (Capacitor Keyboard, resize: none) yükseklik keyboardWillShow'dan gelir (native.js → VTKlavye);
+  // web'de visualViewport küçülmesinden hesaplanır. --klavye: panelin alt kenarı bu kadar yukarıda biter.
+  var KLAVYE={h:0, native:false};
+  window.VTKlavye=function(h){ KLAVYE.native=true; klavyeUygula(h); };
+  function klavyeUygula(h){
+    h=Math.max(0,Math.round(h||0));
+    if(h===KLAVYE.h) return;
+    KLAVYE.h=h;
+    document.documentElement.style.setProperty("--klavye",h+"px");
+    document.body.classList.toggle("klavyeAcik",h>0);
+    if(h>0) requestAnimationFrame(function(){ alanGoster(document.activeElement); });
+  }
+  if(window.visualViewport){
+    var vvBak=function(){
+      if(KLAVYE.native) return;
+      var vv=window.visualViewport, h=window.innerHeight-vv.height-vv.offsetTop;
+      klavyeUygula(h>80?h:0);
+      // Android gibi görünen alanın kendisi küçüldüyse odaklı alan yine görünür kalsın
+      if(h<=80) alanGoster(document.activeElement);
+    };
+    window.visualViewport.addEventListener("resize",vvBak);
+  }
+  // 250 ms, --egri-gecis ile yumuşak kaydırma (tarayıcının "smooth"u eğri seçtirmiyor)
+  function bezier(x1,y1,x2,y2){
+    var c=function(t,a,b){ return 3*a*t*(1-t)*(1-t)+3*b*t*t*(1-t)+t*t*t; };
+    return function(x){ var lo=0, hi=1, t=x; for(var i=0;i<20;i++){ t=(lo+hi)/2; if(c(t,x1,x2)<x) lo=t; else hi=t; } return c(t,y1,y2); };
+  }
+  var EGRI_GECIS=bezier(0.65,0,0.35,1);
+  function yumusakKaydir(kap,dy,sure){
+    if(!dy) return;
+    var pencere=(kap===window), bas=pencere?sayfaY():kap.scrollTop;
+    if(azHareket()){ if(pencere) sayfayaKaydir(bas+dy); else kap.scrollTop=bas+dy; return; }
+    var t0=null;
+    var adim=function(t){
+      if(t0===null) t0=t;
+      var k=Math.min(1,(t-t0)/sure), y=bas+dy*EGRI_GECIS(k);
+      if(pencere) window.scrollTo(0,y); else kap.scrollTop=y;
+      if(k<1) requestAnimationFrame(adim);
+    };
+    requestAnimationFrame(adim);
+  }
+  // odaklanan alan: sadece panelin içinde ve klavyenin üstünde görünür kalacak kadar kaydırılır; zaten görünüyorsa hiç
+  function alanGoster(el){
+    if(!el || !/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || /^(checkbox|radio|file|date|hidden)$/.test(el.type)) return;
+    // rehber bu alanı gösteriyorsa yerleşimi o yapar (alan + baloncuk birlikte sığsın; iki ayrı kaydırma olmasın)
+    if(window.Rehber && Rehber.hedefte(el)) return;
+    var r=el.getBoundingClientRect(), PAY=16;
+    var ov=el.closest(".overlay");
+    if(ov){
+      var o=ov.getBoundingClientRect(), alt=o.bottom-PAY, ust=o.top+PAY;
+      var as=ov.querySelector(".altSabit");
+      if(as && !as.contains(el)) alt-=as.offsetHeight;
+      var dy=r.bottom>alt ? r.bottom-alt : (r.top<ust ? r.top-ust : 0);
+      if(Math.abs(dy)>1) yumusakKaydir(ov,dy,250);
+      return;
+    }
+    var ab=document.getElementById("appBar"), ustS=(ab && !ab.classList.contains("hide")) ? ab.getBoundingClientRect().bottom : 0;
+    var altS=window.innerHeight-KLAVYE.h-PAY, dy2=r.bottom>altS ? r.bottom-altS : (r.top<ustS+PAY ? r.top-ustS-PAY : 0);
+    if(Math.abs(dy2)>1) yumusakKaydir(window,dy2,250);
+  }
+  // klavye zaten açıkken başka alana geçilince
+  document.addEventListener("focusin",function(e){ if(KLAVYE.h>0) requestAnimationFrame(function(){ alanGoster(e.target); }); });
+
   function kopyala(metin,mesaj){
     try{
       var t=document.createElement("textarea");
@@ -9454,6 +9547,7 @@
     o.addEventListener("click",function(e){ if(e.target.closest("[data-kapat]")) kapat(); });
     o.addEventListener("click",function(e){ if(e.target===o) kapat(); });
     document.body.appendChild(o);
+    kilitDenetle();
     var x=o.querySelector(".x");
     if(x) x.onclick=function(){ x.classList.add("basildi"); setTimeout(function(){ kapat(); },100); };
     asagiCekKapat(o,sh);
@@ -9483,8 +9577,8 @@
   // Paneli kapat: aşağı kayar, arka plan açılır (--hiz-kapa). anlik=true ise hemen kaldırır.
   function kapatOverlay(o,anlik){
     if(!o || o.classList.contains("kapaniyor")) return;
-    if(anlik || azHareket()){ o.remove(); return; }
-    o.classList.add("kapaniyor");
+    if(anlik || azHareket()){ o.remove(); kilitDenetle(); return; }
+    o.classList.add("kapaniyor"); kilitDenetle();
     setTimeout(function(){ if(o.parentNode) o.remove(); },190);
   }
   function kapat(anlik){
@@ -9504,6 +9598,7 @@
       S.ustDetay=false; S.aktif=null;
     }
     document.body.classList[document.querySelector(".overlay:not(.kapaniyor)")?"add":"remove"]("panelAcik");
+    kilitDenetle();
   }).observe(document.body,{childList:true}); }catch(e){}
   // Tarayıcının alert() kutusu yerine uygulamanın kendi paneli.
   // Açık bir formun üstüne ayrı katman olarak açılır, formu kapatmaz.
