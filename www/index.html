@@ -14,6 +14,19 @@
 <meta name="apple-mobile-web-app-title" content="Villa Takvim">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
+<!-- 24.4: ana ekrandan açılan web uygulamasında sayfa yüklenene kadar iPhone bu görseli gösterir (beyaz kare olmasın). Logo
+     web açılışının ilk karesiyle aynı yerde ve boyutta (docs/qa/gorev24/acilis.md). -->
+<link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/acilis/acilis-1320x2868.png">
+<link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/acilis/acilis-1206x2622.png">
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/acilis/acilis-1290x2796.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/acilis/acilis-1179x2556.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/acilis/acilis-1284x2778.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/acilis/acilis-1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/acilis/acilis-1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/acilis/acilis-1242x2688.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="img/acilis/acilis-828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 360px) and (device-height: 780px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="img/acilis/acilis-1080x2340.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="img/acilis/acilis-750x1334.png">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -684,16 +697,16 @@
   /* modal */
   .overlay{position:fixed; inset:0; background:rgba(16,22,19,.35); display:flex; z-index:50;
     align-items:flex-start; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;
-    /* 19B.4: klavye açıkken panelin alt kenarı klavyenin hemen üstünde */
-    bottom:var(--klavye,0px); overscroll-behavior:contain;
-    /* 20.9: klavye açılıp kapanırken panel sıçramadan, klavyeyle birlikte kayar */
-    transition:bottom 250ms var(--egri-gecis)}
+    overscroll-behavior:contain}
+  /* 24.1: panel ekranın tamamını kaplar; klavye payı panelin kendi beyaz alt dolgusudur (--klavye). Klavye kapanırken arkadaki
+     sayfa görünmez, panel kendi yerine 300 ms'de iner. */
   /* 19B.4: klavye açıkken sayfadaki (panel dışı) alanlar da klavyenin üstüne kaydırılabilsin */
-  body.klavyeAcik{padding-bottom:var(--klavye,0px); --rhKlavyePb:var(--klavye,0px)}
+  /* 24.1: sayfanın (panel dışı) alt payı; klavye kapanınca 300 ms sonra kalkar (o arada sayfa son yerine iner, zıplamaz) */
+  body{padding-bottom:var(--klavyeSayfa,0px); --rhKlavyePb:var(--klavyeSayfa,0px)}
   /* 20.1: klavye açıkken paneldeki sabit "Kaydet" çubuğu alanın üstüne binmesin: formun sonunda akar */
   body.klavyeAcik .altSabit{position:static}
   .sheet{width:100%; max-width:28rem; background:#fff; border-radius:1rem 1rem 0 0; padding:1.5rem;
-    padding-bottom:calc(1.5rem + env(safe-area-inset-bottom)); margin-top:auto}
+    padding-bottom:calc(1.5rem + env(safe-area-inset-bottom) + var(--klavye,0px)); margin-top:auto}
   @media(min-width:640px){ .sheet{border-radius:1rem; margin:auto} }
   .sheet h2, .sheet h3{font-family:var(--serif); font-size:1.5rem; letter-spacing:-.02em; margin:0;
     font-weight:400; line-height:1.25}
@@ -764,7 +777,10 @@
     .kayIleri, .kayGeri, .yeniSatir, .bildirim, .overlay > .sheet, .overlay.kapaniyor > .sheet{animation:none !important}
     :active, .basili, .x.basildi{transform:none !important}
   }
-  .sheet{transition:transform var(--hiz-ac) var(--egri-gecis)}
+  /* 24.1: klavye payı (alt dolgu) 300 ms'de, --egri-gecis ile; klOlc = son yerleşimi ölçerken geçiş kapalı */
+  .sheet{transition:transform var(--hiz-ac) var(--egri-gecis), padding-bottom 300ms var(--egri-gecis)}
+  html.klOlc .sheet{transition:none!important}
+  @media (prefers-reduced-motion: reduce){ .sheet{transition:none} }
   .kapatAlt{width:100%; margin-top:.5rem; padding:.875rem 0; border-radius:.75rem; font-size:1rem;
     text-align:center; background:var(--soft); color:var(--ink)}
   .sheet{position:relative}
@@ -3867,7 +3883,7 @@
       });
     }
     odakCiz();
-    // 20.5: dokununca takvim ekranın ortasına (tamamen görünüyorsa kaymaz)
+    // 24.3: ilk güne (ve çıkış gününe) dokununca takvimin tamamı panelin üstündeki görünür alanın ortasına (400 ms, tek kaydırma)
     if(durumDegisti && (durum==="bas" || durum==="aralik")) takvimOrtala();
   }
   // takvim kutusu: ay başlığı + günler
@@ -3884,21 +3900,24 @@
     var ust=(ab && !ab.classList.contains("hide")) ? Math.max(0,ab.getBoundingClientRect().bottom) : 0;
     var menu=(sk && !sk.classList.contains("hide")) ? sk.offsetHeight : 0;
     var alt=window.innerHeight-menu-(p && p.classList.contains("acik") ? p.offsetHeight : 0);
-    if(k.top>=ust+4 && k.bottom<=alt-4) return;
-    var bos=alt-ust, yuk=k.bottom-k.top;
-    if(yuk<=bos-16){ yumusakKaydir(window,Math.round(k.top-(ust+(bos-yuk)/2)),400); return; }
-    // takvim panelle birlikte sığmıyor (küçük ekran): seçili günler panelin üstünde görünür kalsın
-    var l=[S.start, S.secim&&S.secim.start, S.secim&&S.secim.end].filter(Boolean).map(function(x){ return document.querySelector('#grid .cell[data-k="'+x+'"]'); }).filter(Boolean);
-    if(!l.length){ yumusakKaydir(window,Math.round(k.top-(ust+8)),400); return; }
-    var su=Math.min.apply(null,l.map(function(c){ return c.getBoundingClientRect().top; })),
-        sa=Math.max.apply(null,l.map(function(c){ return c.getBoundingClientRect().bottom; }));
-    if(sa>alt-12) yumusakKaydir(window,Math.round(Math.min(sa-(alt-12), su-(ust+8))),400);
-    else if(su<ust+8) yumusakKaydir(window,Math.round(su-(ust+8)),400);
+    var bos=alt-ust, yuk=k.bottom-k.top, dy;
+    if(yuk<=bos-16) dy=k.top-(ust+(bos-yuk)/2);                      // sığıyor: tam ortaya
+    else {
+      // sığmıyor (küçük ekran): takvimin alt satırları panelin üstünde kalır; seçili gün üstten taşmaz
+      dy=k.bottom-(alt-8);
+      var c=S.start && document.querySelector('#grid .cell[data-k="'+S.start+'"]');
+      if(c) dy=Math.min(dy,c.getBoundingClientRect().top-(ust+8));
+    }
+    // sayfanın kaydırma sınırı içinde (sayfa sonu panelin payıyla uzar: body.secPanelAcik .wrap)
+    var y0=sayfaY(), max=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
+    dy=Math.round(Math.max(-y0,Math.min(max-y0,dy)));
+    if(Math.abs(dy)>2) yumusakKaydir(window,dy,400);
   }
-  // 20.6: aralık seçiliyken karartma (takvim ve panel aydınlık). Karartılmış yere dokunmak seçimi kaldırır; kaydırma serbest.
+  // 20.6 / 24.3: giriş günü ya da aralık seçiliyken karartma %35 (takvim ve panel aydınlık): odak takvimde. Karartılmış yere
+  // dokunmak seçimi kaldırır; kaydırma ve takvime dokunma serbest.
   var ODAK={el:null, raf:0, k:""};
   function odakAcikMi(){
-    return !!S.secim && !!aktif() && !document.getElementById("takvim").classList.contains("hide") && !(window.Rehber && Rehber.aktif());
+    return !!(S.secim || S.start) && !!aktif() && !document.getElementById("takvim").classList.contains("hide") && !(window.Rehber && Rehber.aktif());
   }
   function odakCiz(){
     if(!odakAcikMi()){
@@ -3944,9 +3963,9 @@
   // Metinler tek sözlükte: Rehber.M (rehber.js); aynı tür adım hep aynı cümle.
   var RM=Rehber.M;
   Rehber.ayarla({
-    cevir:cev, titret:titret, bildir:function(m,sure){ bildir(m,sure); }, klavye:function(){ return KLAVYE.h; },
-    // hedefi ekrana getiren kaydırma da 250 ms, --egri-gecis (klavyeyle aynı hareket)
-    kaydir:function(kap,dy){ yumusakKaydir(kap,dy,250); },
+    cevir:cev, titret:titret, bildir:function(m,sure){ bildir(m,sure); },
+    // 24.1: klavyenin OTURMUŞ hâli (açılırken ara karelerde değişmez); hareketliyken rehber yeni adımı yerleştirmeyi bekler
+    klavye:function(){ return KLAVYE.h; }, klavyeUst:function(){ return KLAVYE.ust; }, klavyeHareketli:klavyeHareketli, klavyeKalan:klavyeKalan,
     // 21.3: sayfadaki geçici üst boşluk kalkarken sayfa yerinde kalsın (panel açıkken sayfa kilitli: saklanan konum düzeltilir)
     sayfaKaydir:function(dy){ if(KILIT.acik){ KILIT.y=Math.max(0,KILIT.y+dy); document.body.style.top=(-KILIT.y)+"px"; } else window.scrollBy(0,dy); },
     ikon:function(ad,o){ return window.ikon ? window.ikon(ad,o) : ""; },
@@ -4028,7 +4047,10 @@
     rez:function(){ return {ad:"rez", basari:"Rezervasyon kaydedildi", bitis_olayi:"kaydedildi:rez", bitince:rhNabizKaldir,
       adimlar:rhTarih(true).concat([
         // 20.4: kartın tamamı hedef; kartta açık düzenleme varken "İleri" pasif
-        {hedef:rhTek("#f-ucret"), metin:RM.ucret, bekle:"ileri", istege:true, ileri_eger:function(){ return !pq("#f-ucret .ucAlan"); }},
+        // 24.2: bir satırın "Değiştir"i açıkken hedef geçici olarak o fiyat alanı + yanındaki Tamam; Tamam'la yine tüm kart
+        {hedef:function(){ return pq("#f-ucret .ucDuzen") || pq("#f-ucret"); },
+         metin:function(){ return pq("#f-ucret .ucDuzen") ? RM.ucretDuzen : RM.ucret; },
+         bekle:"ileri", istege:true, ileri_eger:function(){ return !pq("#f-ucret .ucAlan"); }},
         {hedef:rhAlan("#f-guest"), deger:"#f-guest", metin:RM.adYaz, bekle:"deger"},
         {hedef:rhAlan("#f-kisiAz"), metin:RM.kisi, bekle:"ileri"},
         {hedef:rhAlan("#f-phone"), metin:RM.telefon, bekle:"ileri"},
@@ -5198,7 +5220,8 @@
       Array.prototype.forEach.call(el.querySelectorAll("[data-ud]"),function(bt){
         bt.onclick=function(){
           var k=bt.dataset.ud; acik[k]=!acik[k]; kartCiz();
-          var inp=document.getElementById("f-u-"+k); if(inp){ inp.focus(); try{ inp.setSelectionRange(0,inp.value.length); }catch(x){} }
+          // 24.1: odak sayfayı kaydırmaz; alan klavye oturunca klavyenin üstüne gelir (klavyeyeHizala)
+          var inp=document.getElementById("f-u-"+k); if(inp){ try{ inp.focus({preventScroll:true}); }catch(x){ inp.focus(); } try{ inp.setSelectionRange(0,inp.value.length); }catch(x){} }
         };
       });
       Array.prototype.forEach.call(el.querySelectorAll("[data-ut]"),function(bt){
@@ -9589,44 +9612,143 @@
   function sayfaY(){ return KILIT.acik ? KILIT.y : (window.scrollY||0); }
   function sayfayaKaydir(y){ if(KILIT.acik) KILIT.y=y; else { try{ window.scrollTo(0,y); }catch(e){} } }
 
-  // Klavye: uygulamada (Capacitor Keyboard, resize: none) yükseklik keyboardWillShow'dan gelir (native.js → VTKlavye);
-  // web'de visualViewport küçülmesinden hesaplanır. --klavye: panelin alt kenarı bu kadar yukarıda biter.
-  // 23.1: karar görünen alana (visualViewport) göre; uygulamanın bildirdiği yükseklik (keyboardWillShow / DidShow) yalnız
-  // görünen alan klavyeyi göstermiyorsa kullanılır (önceki klavyenin yüksekliği saklanıp kullanılmaz).
-  var KLAVYE={h:0, native:false, nativeH:0};
-  function klavyeHesapla(){
-    var vv=window.visualViewport, v=vv ? Math.round(window.innerHeight-vv.height-vv.offsetTop) : 0;
-    if(vv && window.innerHeight-vv.height>80) return Math.max(0,v);
-    return KLAVYE.native ? KLAVYE.nativeH : 0;
+  // ================= 24.1 TEK KLAVYE KURALI (uygulamanın tamamı + rehber) =================
+  // 1) Yazı alanına odaklanınca hiçbir şey hemen kaymaz (focus({preventScroll:true})).
+  // 2) Klavyenin açılması bitene kadar beklenir: görünen alan (visualViewport) 120 ms değişmeyince "klavye oturdu";
+  //    uygulamada (Capacitor) keyboardDidShow.
+  // 3) Sonra TEK yumuşak kaydırma (300 ms, --egri-gecis): alanın alt kenarı görünen alanın altının 12 pt üstüne. Alan zaten
+  //    oradaysa ya da daha yukarıda ama görünüyorsa kaydırma yok. Panelin klavye payı (--klavye) aynı anda, aynı eğriyle büyür.
+  // 4) Rehber açıksa pencere ve baloncuk alanla birlikte gider (rehber her karede hedefi çizer; baloncuğun yeri
+  //    Rehber.klavyeKutu'dan gelir).
+  // 5) Klavye kapanırken hiçbir şey kaydırılmaz: panel kendi yerine 300 ms'de iner (--klavye → 0).
+  // 6) Klavye açılırken ara karelerde hiçbir hizalama yapılmaz.
+  // Tek giriş: klavyeyeHizala(alan). Başka klavye hizalama kodu yok.
+  var KLAVYE={h:0, ust:0, native:false, nativeH:0, bekle:null, degisti:0, eskiH:0};
+  // görünen alanın altı ölçüsü: visualViewport küçüldüyse ondan; değilse (uygulama, resize: none) bildirilen klavye yüksekliği
+  function klavyeOlc(){
+    var vv=window.visualViewport, H=window.innerHeight;
+    if(vv && H-vv.height>80) return {h:Math.max(0,Math.round(H-vv.height-vv.offsetTop)), ust:Math.max(0,Math.round(vv.offsetTop))};
+    return {h:KLAVYE.native ? KLAVYE.nativeH : 0, ust:0};
   }
-  window.VTKlavye=function(h){ KLAVYE.native=true; KLAVYE.nativeH=Math.max(0,Math.round(h||0)); klavyeUygula(klavyeHesapla()); };
-  function klavyeUygula(h){
-    h=Math.max(0,Math.round(h||0));
+  function vvIz(){ var vv=window.visualViewport; return vv ? Math.round(vv.height)+":"+Math.round(vv.offsetTop) : ""; }
+  function zaman(){ return (window.performance && performance.now) ? performance.now() : Date.now(); }
+  // klavyenin oturmuş hâli: --klavye (panelin ve sayfanın alt payı) ve body.klavyeAcik. Hizalama yapmaz.
+  function klavyeUygula(m){
+    var h=Math.max(0,Math.round(m.h||0));
+    KLAVYE.ust=h ? (m.ust||0) : 0;
     if(h===KLAVYE.h) return;
-    var onceki=KLAVYE.h;
-    // 20.9: klavye kapanınca panel aynı yerde kalsın: panel büyürken kaydırma konumu sınırdan taşacaksa
-    // panelin altına o kadar boşluk eklenir (içerik yerinde durur, geri zıplamaz)
-    if(onceki>h) Array.prototype.forEach.call(document.querySelectorAll(".overlay:not(.kapaniyor)"),function(ov){
-      var sh=ov.querySelector(".sheet"); if(!sh) return;
-      var yeniMax=ov.scrollHeight-(ov.clientHeight+(onceki-h)), fark=ov.scrollTop-yeniMax;
-      if(fark>0){ var b=(+sh.dataset.klavyeBosluk||0)+Math.ceil(fark); sh.dataset.klavyeBosluk=b;
-        sh.style.paddingBottom="calc(1.5rem + env(safe-area-inset-bottom) + "+b+"px)"; }
-    });
-    KLAVYE.h=h; if(h>0) KLAVYE.son=h;
-    document.documentElement.style.setProperty("--klavye",h+"px");
+    KLAVYE.eskiH=KLAVYE.h+klavyeKalan(); KLAVYE.h=h; KLAVYE.degisti=zaman();
+    var kok=document.documentElement, fark=KLAVYE.eskiH-h;
+    kok.style.setProperty("--klavye",h+"px");
     document.body.classList.toggle("klavyeAcik",h>0);
-    // panel klavyeyle birlikte 250 ms'de küçülür; alanın yeri küçülme bitince kesinleşir
-    if(h>0){ requestAnimationFrame(function(){ alanGoster(document.activeElement); });
-      clearTimeout(KLAVYE.z); KLAVYE.z=setTimeout(function(){ alanGoster(document.activeElement); },280); }
+    clearTimeout(KLAVYE.sz);
+    if(fark<=0){ kok.style.setProperty("--klavyeSayfa",h+"px"); return; }
+    // 5) klavye kapanıyor: içerik son kaydırma sınırının ötesindeyse 300 ms'de oraya iner (panelin alt payıyla aynı eğri;
+    // tarayıcı kaydırmayı birden kırpıp zıplatmasın)
+    Array.prototype.forEach.call(document.querySelectorAll(".overlay:not(.kapaniyor)"),function(ov){
+      var son=ov.scrollHeight-ov.clientHeight-fark;
+      if(ov.scrollTop>son+1) yumusakKaydir(ov,son-ov.scrollTop,300);
+    });
+    if(!KILIT.acik){
+      var sonS=document.documentElement.scrollHeight-window.innerHeight-fark;
+      if((window.scrollY||0)>sonS+1) yumusakKaydir(window,sonS-(window.scrollY||0),300);
+    }
+    KLAVYE.sz=setTimeout(function(){ kok.style.setProperty("--klavyeSayfa",KLAVYE.h+"px"); },320);
   }
+  function klavyeyeHizala(alan){
+    var t=zaman();
+    KLAVYE.bekle={alan:alan||null, t0:t, degisti:t, iz:vvIz(), didShow:false, will:false};
+    if(!KLAVYE.raf) KLAVYE.raf=requestAnimationFrame(klavyeBekle);
+  }
+  function klavyeBekle(){
+    KLAVYE.raf=0;
+    var b=KLAVYE.bekle; if(!b) return;
+    var t=zaman(), iz=vvIz();
+    if(iz!==b.iz){ b.iz=iz; b.degisti=t; }
+    // klavye hiç gelmiyorsa (masaüstü, donanım klavyesi) görünen alan hiç değişmez: 300 ms sonra klavyesiz hizalanır
+    var m=klavyeOlc(), sabit=t-b.degisti>=120, hic=b.degisti===b.t0 && !b.will, bekle=hic ? 300 : 600, hazir;
+    if(KLAVYE.native) hazir=b.didShow || (sabit && !b.will && (m.h>0 || t-b.t0>=bekle)) || t-b.t0>=900;
+    else hazir=sabit && (m.h>0 || t-b.t0>=bekle);
+    if(!hazir){ KLAVYE.raf=requestAnimationFrame(klavyeBekle); return; }
+    KLAVYE.bekle=null;
+    klavyeOtur(m,b.alan);
+  }
+  // rehber için: klavye oturmayı bekliyor (açılırken yerleşim henüz belli değil)
+  function klavyeHareketli(){ return !!KLAVYE.bekle || !!KLAVYE.kapanabilir; }
+  // panelin klavye payının 300 ms'lik geçişinde daha ne kadar küçüleceği (büyüyecekse eksi): rehber son yerleşime göre hesaplar
+  function klavyeKalan(){
+    var t=zaman()-KLAVYE.degisti;
+    if(t>=300 || azHareket()) return 0;
+    return (KLAVYE.eskiH-KLAVYE.h)*(1-EGRI_GECIS(Math.max(0,t)/300));
+  }
+  // hedefin kaydırma kabı: panel ya da sayfa; sabit / yapışkan bir öğedeyse kaydırılmaz
+  function kaydirmaKabi(el){
+    for(var p=el; p && p!==document.body; p=p.parentElement){
+      var ps=getComputedStyle(p).position;
+      if(ps==="sticky") return null;
+      if(ps==="fixed") return p.classList.contains("overlay") ? p : null;
+    }
+    return window;
+  }
+  // klavye oturdu: önce son yerleşim ölçülür (--klavye son değerinde, geçiş kapalı), sonra her şey eski yerinden
+  // aynı 300 ms'de ve aynı eğriyle son yerine gider (panelin alt payı CSS geçişiyle, içerik tek kaydırmayla)
+  function klavyeOtur(m,alan){
+    var el=(alan && alan===document.activeElement && yaziAlani(alan)) ? alan : null;
+    var eskiH=KLAVYE.h, kok=document.documentElement;
+    // klavye yok (masaüstü, donanım klavyesi): alanı örten bir şey yok, kaydırma da yok
+    if(!el || !(m.h>0)){ klavyeUygula(m); return; }
+    var degisir=Math.round(m.h)!==eskiH;
+    if(degisir) kok.classList.add("klOlc");
+    klavyeUygula(m);
+    var S=kaydirmaKabi(el), rk=null;
+    try{ if(window.Rehber && Rehber.klavyeKutu) rk=Rehber.klavyeKutu(el); }catch(x){ rk=null; }
+    var r=rk ? rk.kutu : (el.closest(".field")||el.closest(".ucDuzen")||el).getBoundingClientRect();
+    // görünen alan: klavyenin üstü ∩ panel (panelin sabit "Kaydet" çubuğu hariç); sayfada üst çubuk hariç
+    var ust=KLAVYE.ust, alt=window.innerHeight-KLAVYE.h, ov=el.closest(".overlay");
+    if(ov){
+      var o=ov.getBoundingClientRect(); ust=Math.max(ust,o.top); alt=Math.min(alt,o.bottom);
+      var as=ov.querySelector(".altSabit");
+      if(as && !as.contains(el) && getComputedStyle(as).position==="sticky") alt-=as.offsetHeight;
+    } else {
+      var ab=document.getElementById("appBar");
+      if(ab && !ab.classList.contains("hide")) ust=Math.max(ust,ab.getBoundingClientRect().bottom);
+    }
+    var hat=alt-12, tepe=ust+12+(rk ? rk.ust : 0), dy=0;
+    if(r.bottom>hat+1 || r.top<tepe-1){
+      dy=r.bottom-hat;
+      // alan görünen alandan uzunsa (uzun not) üst kenarı görünür kalsın; rehberde hedefin altı hatta durur
+      if(!rk && r.top-dy<tepe) dy=r.top-tepe;
+    }
+    var s0=S ? (S===window ? sayfaY() : S.scrollTop) : 0, s1=s0;
+    if(S && dy){
+      var max=S===window ? Math.max(0,document.documentElement.scrollHeight-window.innerHeight) : Math.max(0,S.scrollHeight-S.clientHeight);
+      s1=Math.max(0,Math.min(max,s0+dy));
+    }
+    if(degisir){
+      // geçiş eski değerden başlasın: eski değer bir kez çizilir, sonra geçiş açılır ve son değer verilir
+      kok.style.setProperty("--klavye",eskiH+"px"); void document.body.offsetHeight;
+      kok.classList.remove("klOlc"); void document.body.offsetHeight;
+      kok.style.setProperty("--klavye",KLAVYE.h+"px");
+    }
+    if(S && Math.abs(s1-s0)>1) yumusakKaydir(S,s1-s0,300);
+  }
+  window.VTKlavye=function(h,oturdu){
+    KLAVYE.native=true; KLAVYE.nativeH=Math.max(0,Math.round(h||0));
+    if(!KLAVYE.nativeH){ KLAVYE.bekle=null; klavyeUygula({h:0}); return; }                // keyboardWillHide
+    var ae=document.activeElement;
+    if(!KLAVYE.bekle) klavyeyeHizala(yaziAlani(ae) ? ae : null);
+    var b=KLAVYE.bekle;
+    if(oturdu) b.didShow=true;                                                              // keyboardDidShow
+    else { b.will=true; b.didShow=false; b.degisti=zaman(); }                               // keyboardWillShow
+  };
   if(window.visualViewport){
-    var vvBak=function(){
-      var h=klavyeHesapla();
-      klavyeUygula(h);
-      // Android gibi görünen alanın kendisi küçüldüyse odaklı alan yine görünür kalsın
-      if(!h) alanGoster(document.activeElement);
-    };
-    window.visualViewport.addEventListener("resize",vvBak);
+    window.visualViewport.addEventListener("resize",function(){
+      var m=klavyeOlc(), ae=document.activeElement;
+      // klavye kapanıyor (yazı alanında odak yok): panel hemen kendi yerine inmeye başlar, hizalama yok
+      if(!yaziAlani(ae)){ if(m.h<KLAVYE.h){ KLAVYE.bekle=null; klavyeUygula({h:0}); } return; }
+      // klavye açılıyor / yüksekliği değişti (tip, "Otomatik doldur" çubuğu): oturunca bir kez hizalanır
+      if(!KLAVYE.bekle && Math.abs(m.h-KLAVYE.h)>1) klavyeyeHizala(ae);
+    });
   }
   // 250 ms, --egri-gecis ile yumuşak kaydırma (tarayıcının "smooth"u eğri seçtirmiyor)
   function bezier(x1,y1,x2,y2){
@@ -9651,44 +9773,13 @@
     };
     requestAnimationFrame(adim);
   }
-  // odaklanan alan: sadece panelin içinde ve klavyenin üstünde görünür kalacak kadar kaydırılır; zaten görünüyorsa hiç
-  function alanGoster(el){
-    if(!el || !/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || /^(checkbox|radio|file|date|hidden)$/.test(el.type)) return;
-    // rehber bu alanı gösteriyorsa yerleşimi o yapar (alan + baloncuk birlikte sığsın; iki ayrı kaydırma olmasın)
-    if(window.Rehber && Rehber.hedefte(el)) return;
-    var r=el.getBoundingClientRect(), PAY=16;
-    var ov=el.closest(".overlay");
-    if(ov){
-      var o=ov.getBoundingClientRect(), alt=o.bottom-PAY, ust=o.top+PAY;
-      var as=ov.querySelector(".altSabit");
-      if(as && !as.contains(el)) alt-=as.offsetHeight;
-      var dy=r.bottom>alt ? r.bottom-alt : (r.top<ust ? r.top-ust : 0);
-      if(Math.abs(dy)>1) yumusakKaydir(ov,dy,250);
-      return;
-    }
-    var ab=document.getElementById("appBar"), ustS=(ab && !ab.classList.contains("hide")) ? ab.getBoundingClientRect().bottom : 0;
-    var altS=window.innerHeight-KLAVYE.h-PAY, dy2=r.bottom>altS ? r.bottom-altS : (r.top<ustS+PAY ? r.top-ustS-PAY : 0);
-    if(Math.abs(dy2)>1) yumusakKaydir(window,dy2,250);
-  }
-  // 20.9: dokunarak odaklanmada iOS'un kendi sayfa/panel kaydırması olmasın: alan önce (tahmini) klavyenin üstüne
-  // kendimiz kaydırırız (yalnız gerekiyorsa), sonra focus({preventScroll:true}). Kaydırma hareketi dokunuş sayılmaz.
   function yaziAlani(t){
     if(!t || !/^(INPUT|TEXTAREA)$/.test(t.tagName) || t.readOnly || t.disabled) return false;
     if(t.tagName==="INPUT" && !/^(text|tel|number|email|url|search|password)$/.test(t.type||"text")) return false;
     return !t.closest(".tarihKutu");
   }
-  function onceKaydir(el){
-    if(window.Rehber && Rehber.hedefte(el)) return;   // rehber kendi yerleştirir
-    var kb=KLAVYE.son || Math.round(window.innerHeight*0.42), r=el.getBoundingClientRect(), PAY=16;
-    var ov=el.closest(".overlay");
-    if(ov){
-      var as=ov.querySelector(".altSabit"), alt=window.innerHeight-kb-PAY-((as && !as.contains(el))?as.offsetHeight:0);
-      if(r.bottom>alt) yumusakKaydir(ov,Math.round(r.bottom-alt),250);
-      return;
-    }
-    var alt2=window.innerHeight-kb-PAY;
-    if(r.bottom>alt2) yumusakKaydir(window,Math.round(r.bottom-alt2),250);
-  }
+  // 20.9 / 24.1: dokunarak odaklanmada iOS'un kendi sayfa/panel kaydırması olmasın: focus({preventScroll:true}).
+  // Kaydırma hareketi dokunuş sayılmaz.
   var ODK=null;
   document.addEventListener("touchstart",function(e){
     ODK=null;
@@ -9703,11 +9794,22 @@
     var o=ODK; ODK=null;
     if(!o || o.kaydi || e.defaultPrevented) return;
     if(e.cancelable) e.preventDefault();
-    onceKaydir(o.el);
     try{ o.el.focus({preventScroll:true}); }catch(x){ o.el.focus(); }
   },{capture:true, passive:false});
-  // klavye zaten açıkken başka alana geçilince
-  document.addEventListener("focusin",function(e){ if(KLAVYE.h>0) requestAnimationFrame(function(){ alanGoster(e.target); }); });
+  // her odakta (dokunuş, program, alandan alana geçiş) aynı kural
+  document.addEventListener("focusin",function(e){ if(yaziAlani(e.target)) klavyeyeHizala(e.target); });
+  // odak yazı alanından çıktı: aynı dokunuşta başka yazı alanına geçmediyse (ör. kapora düğmesi tutar alanını açar) klavye
+  // kapanıyor; panel kendi yerine inmeye başlar. O kare boyunca rehber yeni yerleşimi bekler (klavyeHareketli).
+  document.addEventListener("focusout",function(e){
+    if(yaziAlani(e.relatedTarget)) return;
+    KLAVYE.kapanabilir=true;
+    requestAnimationFrame(function(){
+      KLAVYE.kapanabilir=false;
+      if(yaziAlani(document.activeElement)) return;
+      KLAVYE.bekle=null;
+      if(KLAVYE.h) klavyeUygula({h:0});
+    });
+  });
 
   function kopyala(metin,mesaj){
     try{

@@ -775,6 +775,8 @@
     "Bu işlem için yardım":"Help for this task",
     "Açıkken her işlemde adım adım yardım gösterilir.":"When on, step-by-step help is shown for every task.",
     "Yardımlı mod kapatıldı. Panellerdeki ? ile yine yardım alabilirsiniz.":"Guided mode is off. You can still get help with the ? on each panel.",
+    // Görev 24
+    "Yeni tutarı yazın, sonra ‘Tamam’a dokunun.":"Enter the new amount, then tap ‘Done’.",
     // Görev 18
     "Ödemeler":"Payments",
     "Villama bakıcı ekle":"Add a caretaker to my villa",

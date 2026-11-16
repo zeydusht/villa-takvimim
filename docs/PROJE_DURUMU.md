@@ -1,6 +1,6 @@
 # Villa Takvim — Proje Durumu
 
-_Son güncelleme: 16 Kasım 2026_
+_Son güncelleme: 17 Kasım 2026_
 
 ## Ne bu?
 Villa Takvim'in (villatakvim.netlify.app) iPhone/Android uygulaması. App adı: **Villa Takvimim**.
@@ -612,6 +612,26 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Genel: hedef her karede seçiciyle bulunur, ResizeObserver ile içerik kayınca yeniden hizalama, hedef 300 ms'de yoksa adım
       atlanır (konsola uyarı), rehberde yakalanmamış hata olursa rehber sessizce kapanır (form kullanılabilir kalır).
       GERÇEK İPHONE'DA TEST EDİLECEK (iOS'un resize olaylarının gerçek sırası).
+      (Görev 24'te klavye hizalaması baştan sadeleştirildi; yukarıdaki "her değişimde yeniden hizalama" ve ResizeObserver kalktı.)
+
+- [x] Görev 24 — Klavye ve rehber sadeleşti, takvim odağı, beyaz ekran · Claude Code (17 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi. Ayrıntı: `docs/GOREV24.md`, ne kaldırıldı: `docs/qa/gorev24/sadelestirme.md`,
+      testler: `docs/qa/gorev24/test.md`, regresyon: `docs/qa/gorev24/README.md`.
+      24.1 tek klavye kuralı (index.html `klavyeyeHizala`, başka klavye hizalama kodu yok): odakta hiçbir şey kaymaz; klavye
+      oturunca (görünen alan 120 ms sabit / uygulamada keyboardDidShow) TEK kaydırma, 300 ms --egri-gecis: alanın altı görünen
+      alanın 12 pt üstüne; alan zaten görünüyorsa kaydırma yok; klavye yoksa (masaüstü) kaydırma yok. Rehber açıksa pencere ve
+      baloncuk alanla birlikte (Rehber.klavyeKutu); rehber klavyenin oturmuş hâlini kullanır. Klavye kapanınca panel kendi yerine
+      300 ms'de iner. Panel artık ekranı kaplar; klavye payı panelin beyaz alt dolgusu (.sheet padding-bottom, --klavye):
+      klavye kapanırken arkadan takvim görünmez. Kaldırılanlar: onceKaydir, alanGoster (4 çağrı), 20.9 klavyeBosluk,
+      .overlay bottom geçişi, rehberde visualViewport resize/scroll dinleyicileri, her karede hatDenetle, ResizeObserver
+      zinciri, geçiş sonrası düzeltme.
+      24.2 ücret kartında "Değiştir" açıkken rehber hedefi o fiyat alanı + Tamam ("Yeni tutarı yazın, sonra ‘Tamam’a
+      dokunun."); Tamam'da yine tüm kart, kart zıplamaz. Değiştir odağı sayfayı kaydırmaz.
+      24.3 takvimde giriş günü seçilince takvimin tamamı panelin üstündeki alanın ortasına (400 ms); sığmazsa son satırları
+      panelin 8 pt üstünde, seçili gün görünür. Giriş günü seçiliyken de takvim dışı %35 kararır.
+      24.4 manifest zemin/tema #10180D; www/img/acilis/ 11 iPhone açılış görseli (apple-touch-startup-image, logo web
+      açılışının ilk karesiyle aynı yer ve boyut, durum çubuğu payı dahil). Zeyd ana ekrandaki simgeyi silip yeniden eklemeli.
+      GERÇEK İPHONE'DA TEST EDİLECEK (klavye olaylarının sırası, açılış görselinin gösterilmesi ve durum çubuğu payı).
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.

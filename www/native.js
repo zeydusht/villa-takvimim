@@ -28,9 +28,9 @@
   try {
     if (P.Keyboard && P.Keyboard.addListener && platform === "ios") {
       P.Keyboard.addListener("keyboardWillShow", function (b) { if (window.VTKlavye) window.VTKlavye((b && b.keyboardHeight) || 0); });
-      // 23.1: klavye tipi değişince ya da "Otomatik doldur" çubuğu sonradan gelince son yükseklik DidShow'da doğrulanır.
-      // Rehberin odak hattı kararını görünen alana (visualViewport) göre verir; bu yükseklik yalnız yedek.
-      P.Keyboard.addListener("keyboardDidShow", function (b) { if (window.VTKlavye && b && b.keyboardHeight) window.VTKlavye(b.keyboardHeight); });
+      // 24.1: DidShow = "klavye oturdu": alan bundan sonra tek kaydırmayla klavyenin üstüne gelir (klavyeyeHizala).
+      // Görünen alan (visualViewport) küçüldüyse karar ona göre; bu yükseklik yalnız yedek.
+      P.Keyboard.addListener("keyboardDidShow", function (b) { if (window.VTKlavye && b && b.keyboardHeight) window.VTKlavye(b.keyboardHeight, true); });
       P.Keyboard.addListener("keyboardWillHide", function () { if (window.VTKlavye) window.VTKlavye(0); });
     }
   } catch (e) {}

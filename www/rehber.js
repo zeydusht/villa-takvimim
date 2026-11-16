@@ -35,9 +35,13 @@
    pencere yeni hedefin boyuna aynı anda, aynı eğriyle uyar. Kaydırma yetmezse kaba geçici boşluk eklenir.
    Görev 22: baloncuktaki ✕ yalnız o anki rehberi kapatır (Yardımlı mod değişmez, bildirim yok); kalınan adım panelde saklanır
    (panelin "?" düğmesi oradan devam ettirir). Kalıcı kapatma yalnız Hesap → Yardım'dan.
-   Görev 23: odak hattı her karede güncel visualViewport'tan; görünen alan her değiştiğinde (klavye açılırken art arda) yeniden
-   hizalanır. Hedef her karede seçiciyle yeniden bulunur; içerik kayınca (ResizeObserver) yeniden hizalanır. Hedef 300 ms'de
-   bulunmazsa adım atlanır (konsola uyarı). Rehberde yakalanmamış hata olursa rehber sessizce kapanır, ekran kullanılabilir kalır. */
+   Görev 23: hedef her karede seçiciyle yeniden bulunur. Hedef 300 ms'de
+   bulunmazsa adım atlanır (konsola uyarı). Rehberde yakalanmamış hata olursa rehber sessizce kapanır, ekran kullanılabilir kalır.
+   Görev 24: klavye hizalaması TEK yerde (index.html klavyeyeHizala): rehber klavyenin oturmuş hâlini kullanır (A.klavye), klavye
+   açılırken ara karelerde hiçbir şey hizalamaz. Odaktaki alan rehberin hedefindeyse kaydırmayı klavyeyeHizala yapar; rehber
+   yalnız pencereyi ve baloncuğu hedefle birlikte çizer (Rehber.klavyeKutu baloncuğun yerini verir). Görünen alan dinleyicileri,
+   ResizeObserver ve geçiş sonrası düzeltme kaldırıldı. Hedef değişince (ör. ücret kartında satır içi düzenleme açıldı) pencere
+   300 ms'de yeni hedefe uyar; hedef görünmüyorsa bir kez hizalanır. */
 (function () {
   "use strict";
   var R = {};
@@ -64,6 +68,7 @@
     kisi: "Kaç kişi gelecek? − ve + ile ayarlayın.",
     // tutarlar
     ucret: "Toplam ücret burada. Değiştirmek için ‘Değiştir’e dokunabilirsiniz.",
+    ucretDuzen: "Yeni tutarı yazın, sonra ‘Tamam’a dokunun.",
     kapora: "Kapora aldıysanız açın ve tutarı yazın.",
     kaporaAc: "Kapora aldıysanız düğmeyi açın.",
     kaporaTutar: "Alınan kapora tutarını yazın.",
@@ -267,12 +272,14 @@
     if (!Array.isArray(l)) l = [l];
     return l.filter(gorunur);
   }
-  // 19B.4: klavye açıkken hedefin içindeki odaklı alan (etiketiyle) asıl hedef olur: baloncuk onu kapatmaz
-  function klavyeAcik() {
-    var kl = 0; try { if (A.klavye) kl = A.klavye() || 0; } catch (e) {}
+  // 24.1: klavyenin OTURMUŞ yüksekliği (uygulamadan; açılırken ara karelerde değişmez). Uygulama vermezse görünen alandan.
+  function klavyeH() {
+    if (A.klavye) { try { return A.klavye() || 0; } catch (e) { return 0; } }
     var vv = window.visualViewport;
-    return kl > 0 || !!(vv && window.innerHeight - vv.height > 80);
+    return (vv && window.innerHeight - vv.height > 80) ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
   }
+  // 19B.4: klavye açıkken hedefin içindeki odaklı alan (etiketiyle) asıl hedef olur: baloncuk onu kapatmaz
+  function klavyeAcik() { return klavyeH() > 0; }
   function odakGirdi() {
     var ae = document.activeElement;
     return (ae && /^(INPUT|TEXTAREA)$/.test(ae.tagName) && klavyeAcik() && D && D.a && hedefler(D.a).some(function (x) { return x.contains(ae); })) ? ae : null;
@@ -281,7 +288,7 @@
     var ae = document.activeElement;
     if (!els.length || !ae || !/^(INPUT|TEXTAREA)$/.test(ae.tagName) || !klavyeAcik()) return els;
     if (!els.some(function (x) { return x.contains(ae); })) return els;
-    return [ae.closest(".field") || ae];
+    return [ae.closest(".field") || ae.closest(".ucDuzen") || ae];
   }
   R.hedefte = function (el) {
     if (!D || !D.a || D.a.gizli || !el) return false;
@@ -308,18 +315,11 @@
     if (r) { r.width = r.right - r.left; r.height = r.bottom - r.top; }
     return r;
   }
-  // görünen alan (klavye açıkken klavyenin üstü, aksesuar / "Otomatik doldur" çubuğu dahil)
-  // 23.1: her çağrıda güncel visualViewport (height + offsetTop); klavye yüksekliği saklanmaz. Uygulamadan gelen klavye yüksekliği
-  // (keyboardWillShow / DidShow) yalnız görünen alan klavyeyi henüz göstermiyorsa yedek olarak kullanılır.
+  // görünen alan (klavye açıkken klavyenin üstü, aksesuar / "Otomatik doldur" çubuğu dahil). 24.1: oturmuş klavyeye göre.
   function alan() {
-    var vv = window.visualViewport, H = window.innerHeight, ust = 0, yuk = H;
-    if (vv) { ust = vv.offsetTop; yuk = vv.height; }
-    var alt = ust + yuk, kl = 0;
-    if (!(vv && H - yuk > 80)) {
-      try { if (A.klavye) kl = A.klavye() || 0; } catch (e) {}
-      if (kl) alt = Math.min(alt, H - kl);
-    }
-    return { ust: ust, alt: alt, W: window.innerWidth, H: Math.max(H, ust + yuk) };
+    var H = window.innerHeight, kl = klavyeH(), ust = 0;
+    if (kl && A.klavyeUst) { try { ust = A.klavyeUst() || 0; } catch (e) {} }
+    return { ust: ust, alt: H - kl, W: window.innerWidth, H: H };
   }
   function atlaMi(a) { try { return !!(a.atla_eger && a.atla_eger()); } catch (e) { return false; } }
   function esles(beklenen, olay) {
@@ -359,8 +359,6 @@
     }));
     document.documentElement.classList.add("rhAcik");
     try {
-      // 23.2: hedef ya da içerik boyu değişince (alan açılıp kapandı) yeniden hizalama denetimi
-      if (window.ResizeObserver) D.ro = new ResizeObserver(function () { if (D) D.rs = true; });
       adimaGit(sec.bas === "bos" ? ilkBos(t) : (sec.bas || 0), 1);
     } catch (e) { cokme(e); return false; }
     if (!D) return true;
@@ -385,7 +383,7 @@
     try { console.error("Rehber hatası (rehber kapatıldı):", e); } catch (x) {}
     try { bitir(false); } catch (x) {
       var d = D; D = null;
-      try { if (d) { cancelAnimationFrame(d.raf); if (d.ro) d.ro.disconnect(); if (d.o && d.o.parentNode) d.o.remove(); } } catch (y) {}
+      try { if (d) { cancelAnimationFrame(d.raf); if (d.o && d.o.parentNode) d.o.remove(); } } catch (y) {}
       document.documentElement.classList.remove("rhAcik");
     }
   }
@@ -405,8 +403,7 @@
     D.i = i; D.a = l[i];
     var a = D.a;
     if (a.hazirla) { try { a.hazirla(); } catch (e) {} }
-    D.bulundu = false; D.bas = simdi(); D.yokBas = 0; D.anahtar = ""; D.sabitK = ""; D.sabitN = 0; D.ofs = null; D.rs = false;
-    if (D.ro) { D.ro.disconnect(); D.izlenen = null; }
+    D.bulundu = false; D.bas = simdi(); D.yokBas = 0; D.anahtar = ""; D.sabitK = ""; D.sabitN = 0; D.elsK = ""; D.degisti = false;
     D.o.classList.toggle("gizli", !!a.gizli);
     D.o.classList.toggle("dokunulmaz", !!a.dokunulmaz);
     // sadece ilk adımda gizli başlar (200 ms'de solarak belirir); sonraki adımlarda delik eski yerinde bekler, sonra kayar
@@ -420,15 +417,6 @@
     if (a.gizli || !a.hedef) { icerik(false); D.metinBekliyor = false; }
   }
   function ilerle() { if (D) adimaGit(D.i + 1, 1); }
-  // 23.2 ResizeObserver: adımın hedefleri ve kaydırma kabının içeriği (panel / sayfa)
-  function izle(els) {
-    if (!D.ro) return;
-    var k = els.slice();
-    var sh = els[0].closest && els[0].closest(".sheet"); k.push(sh || document.body);
-    if (D.izlenen && D.izlenen.length === k.length && k.every(function (x, j) { return D.izlenen[j] === x; })) return;
-    D.ro.disconnect(); D.izlenen = k;
-    k.forEach(function (x) { try { D.ro.observe(x); } catch (e) {} });
-  }
   function geri() {
     if (!D || !D.gecmis.length) return;
     var a = D.a;
@@ -470,7 +458,8 @@
     }
     D.say.innerHTML = top > 1 ? h : "";
     D.say.setAttribute("aria-label", cev(sira + "/" + top));
-    var m = typeof a.metin === "function" ? a.metin() : a.metin;
+    var m = metinAl(a);
+    D.metinSon = m;
     D.metin.innerHTML = metinHTML(m || "");
     var sonAdim = D.i === sonGorunen();
     D.ileri.textContent = cev(a.bekle === "deger" ? "Tamam" : (sonAdim ? "Bitir" : "İleri"));
@@ -479,6 +468,7 @@
     D.geri.classList.toggle("hide", !geriGosterilir());
     altDuzen();
   }
+  function metinAl(a) { try { return (typeof a.metin === "function" ? a.metin() : a.metin) || ""; } catch (e) { return ""; } }
   // 21.1: yalnız "Geri" varsa üst satıra geçer (baloncuk kısa kalır, uzun hedeflerle birlikte sığar)
   function altDuzen() {
     var tekGeri = D.ileri.classList.contains("hide") && !D.geri.classList.contains("hide");
@@ -518,6 +508,8 @@
   function donguIc() {
     var d = D;
     var a = D.a; if (!a) return;
+    // katman kabının içeriğiyle aynı boyda kalır (beklerken de): eski boyu panelin kaydırma alanını uzatmasın
+    if (D.o.parentNode && D.o.parentNode !== document.body) katmanBoyu();
     // görünmez bekleme (ör. fotoğraflar yükleniyor): 10 dakikada olay gelmezse sessizce biter
     if (a.gizli) { if (simdi() - D.bas > 600000) bitir(false); return; }
     if (a.bekle === "olay" && a.kosul) {
@@ -546,6 +538,10 @@
     if (ortu !== !!D.ortu) { D.ortu = ortu; D.o.classList.toggle("duraklat", ortu); D.anahtar = ""; }
     if (ortu) return;
     if (!D.bulundu) {
+      // 24.1: klavye oturmayı bekliyor ya da panel klavye payını değiştiriyor: yerleşim henüz son hâlinde değil, beklenir.
+      // (odaktaki alan bu adımın hedefindeyse klavye oturunca adımı klavyeyeHizala yerleştirir: R.klavyeKutu)
+      var kh = false; try { kh = !!(A.klavyeHareketli && A.klavyeHareketli()); } catch (e) {}
+      if (kh && t - D.bas < 1500) return;
       // hedef yerine oturana kadar (panel açılırken kayıyor olabilir) bekle: 3 kare aynı yerde ya da 600 ms
       var q = durgunBirlesik(els), k = [q.left, q.top, q.width, q.height].map(Math.round).join(",");
       if (k !== D.sabitK) { D.sabitK = k; D.sabitN = 0; }
@@ -556,22 +552,19 @@
       hizala(els, 420, D.ilk);
       D.ilk = false;
       D.o.classList.remove("araniyor");
-    } else {
-      // 21.4 / 23.1: görünen alan değişince (klavye açıldı, kapandı, tipi değişti, "Otomatik doldur" çubuğu geldi; klavye
-      // animasyonu boyunca art arda) odak hattı yeniden hesaplanır ve hizalanır. Büyük sıçrama 250 ms'de; küçük adımlar
-      // (animasyonun kareleri, aksesuar çubuğu) aynı karede: pencere klavyeyle birlikte hareket eder.
-      var hb = birlesik(els).height;
-      if (!hatDenetle(els)) {
-        if (!D.tw && Math.abs(hb - D.boy) > 40) { D.boy = hb; hizala(els, 420); }
-        else if (!D.tw && D.rs) {
-          // 23.2: içerik boyu değişti (ör. üstte bir alan açıldı): hedef sayfada / panelde kaydıysa yeniden hizala
-          D.rs = false;
-          var S0 = kaydirKabi(els[0]), of = birlesik(els).bottom + (S0 ? kabY(S0) : 0);
-          if (D.ofs != null && Math.abs(of - D.ofs) > 1.5) { D.boy = hb; hizala(els, 250); }
-        }
+      D.elsK = elsAnahtar(els);
+    } else if (!D.tw || D.tw.takip) {
+      // 24.2: hedef değişti (satır içi düzenleme açıldı / kapandı, klavye oturdu / kapandı): pencere hemen, 300 ms'de yeni
+      // hedefe uyar. Kaydırma gerekip gerekmediğine klavye durunca (yerleşim son hâlindeyken) bir kez bakılır.
+      var ek = elsAnahtar(els);
+      if (ek !== D.elsK) { D.elsK = ek; D.degisti = true; darAyarla(els, odakAlan(els[0])); D.boy = birlesik(els).height; takip(300); }
+      if (D.degisti && !D.tw) {
+        var kh2 = false; try { kh2 = !!(A.klavyeHareketli && A.klavyeHareketli()); } catch (e) {}
+        if (!kh2) { D.degisti = false; hedefDegisti(els); }
       }
     }
-    izle(els);
+    // metni duruma bağlı adım (ör. ücret kartında düzenleme açıkken "Yeni tutarı yazın…"): metin değişince çapraz geçiş
+    if (typeof a.metin === "function" && !D.metinBekliyor && metinAl(a) !== D.metinSon) icerik(true);
     var ie = ileriEtkin();
     if (D.ileri.disabled === ie) D.ileri.disabled = !ie;
     if (a.bekle === "deger") {
@@ -582,15 +575,35 @@
         D.anahtar = "";
       }
     }
-    // geçişten sonra bir kez denetim: kaydırma sınırı / klavye animasyonu yüzünden hat tutmadıysa küçük düzeltme
-    // (kullanıcı bu arada elle kaydırdıysa dokunulmaz)
-    if (!D.tw && D.denetim && t - D.denetim.zaman > 80) {
-      var dn = D.denetim; D.denetim = null;
-      var elle = dn.S && Math.abs(kabY(dn.S) - dn.y) > 2;
-      if (!elle && Math.abs(durgunBirlesik(els).bottom - dn.alt) > 1.5 && !D.duzeltildi) { D.duzeltildi = true; hizala(els, 200); }
-      else D.duzeltildi = false;
-    }
     if (d === D) { if (D.tw) gecisAdim(); else yerlestir(els); }
+  }
+  var KIMLIK = 0;
+  function elsAnahtar(els) {
+    return els.map(function (e) { return e._rhK || (e._rhK = ++KIMLIK); }).join(",") + (klavyeAcik() ? "k" : "");
+  }
+  // 24.2: hedef değişti ve klavye durdu. Odaktaki alan hedefteyse kaydırma klavyeyeHizala'nın; hedef baloncuğuyla görünüyorsa
+  // kaydırma yok; görünmüyorsa bir kez hizalanır.
+  function hedefDegisti(els) {
+    if (odakGirdi()) return;
+    var g = odakAlan(els[0]), bh = darAyarla(els, g), r = birlesik(els);
+    if (r.top - bh - 8 < g.ust + 4 || r.bottom > g.alt - 4) hizala(els, 300);
+  }
+  // pencere ve baloncuk şimdiki yerlerinden, hedefi her karede izleyerek ona uyar (içeriği kaydırmaz)
+  function takip(sure) {
+    var dr = D.delik.getBoundingClientRect(), br = D.balon.getBoundingClientRect();
+    if (!(dr.width > 0) || D.o.classList.contains("araniyor")) { D.tw = null; return; }
+    D.tw = { takip: true, t0: simdi(), sure: azH() ? 0 : sure, S: null,
+      eskiD: { l: dr.left, t: dr.top, w: dr.width, h: dr.height }, eskiB: { l: br.left, w: br.width } };
+  }
+  // baloncuk: klavye açıkken tam biçim hedefin üstüne sığmıyorsa tek satırlık kısa biçim. Baloncuğun boyu döner.
+  function darAyarla(els, g) {
+    var r = birlesik(els), pay = D.pay, yeniB = balonOlcu(r.left - pay, r.width + 2 * pay, g.W);
+    var ew = D.balon.style.width; D.balon.style.width = yeniB.w + "px";
+    D.o.classList.remove("dar");
+    var bh = D.balon.offsetHeight;
+    if (klavyeAcik() && g.ust + 12 + bh + r.height > odakHatti(els[0], g)) { D.o.classList.add("dar"); bh = D.balon.offsetHeight; }
+    D.balon.style.width = ew;
+    return bh;
   }
   // hedefin kabı: sabit (position:fixed) bir panelin içindeyse o panel (kaydırma kabı), sabit başka bir öğeyse ekran,
   // değilse sayfa (belge). Katman bu kaba yerleşir; kaydırmada tarayıcı katmanı hedefle aynı karede taşır.
@@ -660,7 +673,12 @@
   }
   function kabY(S) { return S === window ? (window.scrollY || 0) : S.scrollTop; }
   function kabaYaz(S, y) { if (S === window) window.scrollTo(0, y); else S.scrollTop = y; }
-  function kabMax(S) { return S === window ? Math.max(0, document.documentElement.scrollHeight - window.innerHeight) : Math.max(0, S.scrollHeight - S.clientHeight); }
+  // 24.1: panelin klavye payı geçişteyse (klavye kapanıyor / açıldı) kaydırma sınırı geçişin SONUNDAKİ değer
+  function kabMax(S) {
+    if (S === window) return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    var k = 0; try { if (A.klavyeKalan) k = A.klavyeKalan() || 0; } catch (e) {}
+    return Math.max(0, S.scrollHeight - S.clientHeight - k);
+  }
   // hedefin görünebileceği alan: ekran (klavye hariç) ∩ panel; sayfada üst çubuk ve alt menü/panel hariç
   function odakAlan(el) {
     var g = alan(), k = { ust: 0, alt: 0 };
@@ -730,18 +748,8 @@
     solukCiz(d);
   }
   // 21.2: yeni hedefi odak hattına getir. Pencere ve baloncuk eski ekran yerinden yeni boya geçer; içerik kayar.
-  // 23.1: odak hattının dayandığı görünen alan (son hizalamadaki) ile şimdiki farklıysa yeniden hizala
-  function hatImza(el) { var g = odakAlan(el); return { alt: g.alt, kl: klavyeAcik() }; }
-  function hatDenetle(els) {
-    var h = hatImza(els[0]), o = D.hat;
-    if (!o || (Math.abs(h.alt - o.alt) <= 1.5 && h.kl === o.kl)) return false;
-    D.boy = birlesik(els).height;
-    hizala(els, (Math.abs(h.alt - o.alt) > 40 || h.kl !== o.kl) ? 250 : 0);
-    return true;
-  }
   function hizala(els, sure, ilk) {
     if (!els.length) return;
-    D.hat = hatImza(els[0]);
     var a = D.a; D.pay = a.pay != null ? a.pay : 4;
     var pay = D.pay;
     // eski görsel durum (ekran koordinatı): pencere ve baloncuk buradan başlar
@@ -754,6 +762,8 @@
     }
     kapYerles(els[0]);
     katmanBoyu();
+    // 24.1: odaktaki yazı alanı bu hedefteyse kaydırma klavyeyeHizala'nın: pencere yalnız hedefe uyar
+    if (odakGirdi()) { darAyarla(els, odakAlan(els[0])); takip(sure); return; }
     var S = kaydirKabi(els[0]), g = odakAlan(els[0]), r = durgunBirlesik(els);
     // yapışkan (sticky) hedef (ör. panelin "Kaydet"i): o paneldeki alt boşluk kalkar ki hedef panelin altına otursun
     if (!S && D.bosluk) {
@@ -762,14 +772,8 @@
       if (kal.length) { D.bosluk = D.bosluk.filter(function (b) { return kal.indexOf(b) < 0; }); boslukKaldir(kal); }
     }
     var hw = r.width + 2 * pay, hl = r.left - pay, yeniB = balonOlcu(hl, hw, g.W);
-    // baloncuğun son genişlikteki boyu (aynı karede ölçülür, ekrana yansımaz)
-    var ew = D.balon.style.width; D.balon.style.width = yeniB.w + "px";
-    var kl = klavyeAcik();
-    D.o.classList.remove("dar");
-    var bh = D.balon.offsetHeight;
-    // klavye açıkken tam baloncuk hedefin üstüne sığmıyorsa tek satırlık kısa biçim (yine hedefin hemen üstünde)
-    if (kl && g.ust + 12 + bh + r.height > odakHatti(els[0], g)) { D.o.classList.add("dar"); bh = D.balon.offsetHeight; }
-    D.balon.style.width = ew;
+    // baloncuğun son genişlikteki boyu (aynı karede ölçülür, ekrana yansımaz); klavye açıkken sığmazsa kısa biçim
+    var kl = klavyeAcik(), bh = darAyarla(els, g);
     var dy = 0;
     if (S) {
       var Y = odakHatti(els[0], g);
@@ -790,23 +794,25 @@
     r = durgunBirlesik(els);   // boşluk eklenince hedef yeri (ekranda) değişmez; yine de taze ölç
     var yeniD = { l: hl, t: r.top - dy - pay, w: hw, h: r.height + 2 * pay };
     D.tw.eskiD = eskiD || yeniD; D.tw.yeniD = yeniD;
-    D.tw.hedefAlt = r.bottom - dy;      // geçiş bitince hedefin alt kenarının olması gereken yer (denetim için)
-    D.tw.els = els;
     D.tw.eskiB = eskiB || yeniB; D.tw.yeniB = yeniB;
     gecisAdim();
   }
   function ara(a, b, e) { return a + (b - a) * e; }
   function gecisAdim() {
     var tw = D.tw, k = tw.sure ? Math.min(1, (simdi() - tw.t0) / tw.sure) : 1, e = egriFn()(k);
+    if (tw.takip) {
+      // hedef her karede yeniden ölçülür (bu arada klavyeyeHizala içeriği kaydırıyor olabilir)
+      var hs = odakAlani(hedefler(D.a)); if (!hs.length) { D.tw = null; return; }
+      var q = birlesik(hs), p = D.pay;
+      tw.yeniD = { l: q.left - p, t: q.top - p, w: q.width + 2 * p, h: q.height + 2 * p };
+      tw.yeniB = balonOlcu(tw.yeniD.l, tw.yeniD.w, alan().W);
+    }
     // içerik kaydırması ve pencere boyu aynı karede, aynı eğriyle
     if (tw.S) kabaYaz(tw.S, ara(tw.s0, tw.s1, e));
     katmanBoyu();
     var d = { l: ara(tw.eskiD.l, tw.yeniD.l, e), t: ara(tw.eskiD.t, tw.yeniD.t, e), w: ara(tw.eskiD.w, tw.yeniD.w, e), h: ara(tw.eskiD.h, tw.yeniD.h, e) };
     ciz(d, { l: ara(tw.eskiB.l, tw.yeniB.l, e), w: ara(tw.eskiB.w, tw.yeniB.w, e) });
-    if (k >= 1) {
-      D.denetim = { alt: tw.hedefAlt, zaman: simdi(), S: tw.S, y: tw.S ? kabY(tw.S) : 0 }; D.tw = null;
-      var hs = odakAlani(hedefler(D.a)); if (hs.length) D.ofs = birlesik(hs).bottom + (tw.S ? kabY(tw.S) : 0);
-    }
+    if (k >= 1) D.tw = null;
   }
   // ---------- 21.3 geçici boşluk ----------
   // alt: içerik sonuna boşluk (panelde panelin sonuna, sayfada belgenin sonuna)
@@ -870,9 +876,8 @@
   R.olcum = function () {
     if (!D || !D.a) return null;
     var els = odakAlani(hedefler(D.a)); if (!els.length) return null;
-    var r = birlesik(els), d = D.delik.getBoundingClientRect(), b = D.balon.getBoundingClientRect(), g = odakAlan(els[0]), kl = 0;
-    try { kl = A.klavye ? A.klavye() || 0 : 0; } catch (e) {}
-    var vv = window.visualViewport, klavyeUst = klavyeAcik() ? (vv && window.innerHeight - vv.height > 80 ? vv.offsetTop + vv.height : window.innerHeight - kl) : null;
+    var r = birlesik(els), d = D.delik.getBoundingClientRect(), b = D.balon.getBoundingClientRect(), g = odakAlan(els[0]);
+    var klavyeUst = klavyeAcik() ? window.innerHeight - klavyeH() : null;
     return { hedef: { ust: r.top, alt: r.bottom, sol: r.left, sag: r.right }, pencere: { ust: d.top, alt: d.bottom, sol: d.left, sag: d.right },
       balon: { ust: b.top, alt: b.bottom, sol: b.left, sag: b.right }, hat: odakHatti(els[0], g), alanUst: g.ust, alanAlt: g.alt,
       klavyeUst: klavyeUst, gecis: !!D.tw, adim: D.i };
@@ -926,13 +931,28 @@
     var el = degerAlani();
     if (el && e.target === el && el.tagName === "INPUT" && String(el.value || "").trim()) { e.preventDefault(); ilerle(); }
   }), true);
-  // 23.1: görünen alanın her değişiminde (resize / kayma olayı, klavye animasyonu boyunca art arda) hemen denetle
-  if (window.visualViewport) ["resize", "scroll"].forEach(function (ad) {
-    window.visualViewport.addEventListener(ad, guvenli(function () {
-      if (!D || !D.a || D.a.gizli || !D.bulundu || D.ortu) return;
-      var els = odakAlani(hedefler(D.a)); if (els.length) hatDenetle(els);
-    }));
-  });
+  // 24.1: klavye oturdu ve odaktaki alan rehberin hedefinde (index.html klavyeyeHizala çağırır). Rehber pencereyi ve baloncuğu
+  // hedefle birlikte çizer; kaydırmayı klavyeyeHizala yapar. Dönen: hizalanacak kutu ve üstünde baloncuk için gereken yer.
+  R.klavyeKutu = function (el) {
+    try {
+      if (!D || !D.a || D.a.gizli || D.ortu || !R.hedefte(el)) return null;
+      var els = odakAlani(hedefler(D.a)); if (!els.length) return null;
+      D.pay = D.a.pay != null ? D.a.pay : 4;
+      kapYerles(els[0]);
+      if (!D.bulundu) {
+        // adım klavye açılırken başladı (ör. kapora düğmesi açıldı): adım burada, kaydırmayla aynı anda yerleşir
+        D.bulundu = true;
+        if (D.metinBekliyor) { D.metinBekliyor = false; icerik(!D.ilk); }
+        D.ilk = false;
+        D.o.classList.remove("araniyor");
+      }
+      var g = odakAlan(els[0]), bh = darAyarla(els, g), r = birlesik(els);
+      D.boy = r.height;
+      takip(300);
+      D.elsK = elsAnahtar(els);
+      return { kutu: r, ust: bh + 8 };
+    } catch (e) { cokme(e); return null; }
+  };
 
   // uygulamadan gelen olay: "baslangic", "aralik", "secimTemizlendi", "panel:fiyat", "kaydedildi:rez"…
   R.bildir = function (olay, veri) { try { bildirIc(olay, veri); } catch (e) { cokme(e); } };
@@ -969,7 +989,6 @@
       } catch (e) {}
     }
     cancelAnimationFrame(d.raf); clearTimeout(d.balT);
-    if (d.ro) { try { d.ro.disconnect(); } catch (e) {} }
     boslukKaldir(d.bosluk);
     if (d.a && d.a.cikis) { try { d.a.cikis(); } catch (e) {} }
     var o = d.o;
