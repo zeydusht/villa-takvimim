@@ -632,6 +632,20 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       24.4 manifest zemin/tema #10180D; www/img/acilis/ 11 iPhone açılış görseli (apple-touch-startup-image, logo web
       açılışının ilk karesiyle aynı yer ve boyut, durum çubuğu payı dahil). Zeyd ana ekrandaki simgeyi silip yeniden eklemeli.
       GERÇEK İPHONE'DA TEST EDİLECEK (klavye olaylarının sırası, açılış görselinin gösterilmesi ve durum çubuğu payı).
+      (24.3'teki takvim kaydırması iPhone'da çalışmıyordu; Görev 25'te yeniden yapıldı.)
+
+- [x] Görev 25 — Takvim seçiminde iki aşamalı otomatik konumlama · Claude Code (17 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi. Ayrıntı: `docs/GOREV25.md`, sebep: `docs/qa/gorev25/sebep.md`,
+      testler: `docs/qa/gorev25/README.md`.
+      Sebep: 24.3'teki kaydırma her karede kendi yazdığı sayfa konumunu geri okuyup 2 px'ten fazla fark görünce "kullanıcı
+      kaydırdı" sayıp duruyordu; iPhone'da sayfanın kaydırma konumu geç bildirildiği için 3–5 px'te duruyordu (taklitle
+      yeniden üretildi). Görev 24 testi de "sayfa en üstte" durumunu denememişti (test yardımcısı günü önce ortaya kaydırıyordu).
+      Yeni: takvimKonumla — aşama 1 (giriş günü): ay başlığı üst çubuğun 8 pt altına; sığmazsa ızgaranın son satırı panelin
+      12 pt üstüne. Aşama 2 (çıkış günü): ızgaranın son satırı panelin 12 pt üstüne; ızgara sığmazsa seçili satırlar ortada.
+      Panelin animasyonu bitince, gerçek yeri ölçülerek; tek hareket 400 ms --egri-gecis; konum geri okunmaz, kullanıcının
+      dokunuşu/kaydırması animasyonu bırakır. Seçim kalkınca sayfa yerinde kalır (panel payı gerekmeyene kadar kalır: secPay).
+      Rehberli seçimde konumu rehber verir (alt panel gizli, baloncuk takvimin üstünde).
+      GERÇEK İPHONE'DA TEST EDİLECEK.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.

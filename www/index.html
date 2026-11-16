@@ -1289,7 +1289,7 @@
     transition:transform var(--hiz-kapa) var(--egri-gecis), visibility 0s linear var(--hiz-kapa)}
   .secPanel.acik{transform:none; visibility:visible; transition:transform 320ms var(--egri-giris), visibility 0s}
   body.panelAcik .secPanel{visibility:hidden}
-  body.secPanelAcik .wrap{padding-bottom:calc(7rem + env(safe-area-inset-bottom) + var(--secPanelH, 9rem))}
+  body.secPanelAcik .wrap, body.secPay .wrap{padding-bottom:calc(7rem + env(safe-area-inset-bottom) + var(--secPanelH, 9rem))}
   .spUst{display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-height:3rem}
   .spMetin{display:flex; flex-direction:column; min-width:0}
   /* 20.5: başlık kalın ve yeşil (bu panelde kalın yazı serbest) */
@@ -2832,6 +2832,7 @@
   var KAYDIR={};
   function goster(id,geriDon){
     var onceki=null;
+    document.body.classList.remove("secPay");
     if(id==="giris" && window.girisEkraniModu){ var acik=document.getElementById("giris"); if(acik && acik.classList.contains("hide")) girisEkraniModu(); }
     EKRANLAR.forEach(function(x){ var e=document.getElementById(x); if(e && !e.classList.contains("hide")) onceki=x; });
     var simdiY=sayfaY();
@@ -3865,7 +3866,7 @@
     p.dataset.durum=durum;
     p.innerHTML=h;
     p.classList.add("acik");
-    document.body.classList.add("secPanelAcik");
+    document.body.classList.add("secPanelAcik"); document.body.classList.remove("secPay");
     var ph=p.offsetHeight+"px";
     if(S.secPanelH!==ph){ S.secPanelH=ph; document.documentElement.style.setProperty("--secPanelH",ph); }
     document.getElementById("spKapat").onclick=function(){ titret("hafif"); secimBitir(); };
@@ -3883,8 +3884,8 @@
       });
     }
     odakCiz();
-    // 24.3: ilk güne (ve çıkış gününe) dokununca takvimin tamamı panelin üstündeki görünür alanın ortasına (400 ms, tek kaydırma)
-    if(durumDegisti && (durum==="bas" || durum==="aralik")) takvimOrtala();
+    // 25: iki aşamalı konumlama (giriş günü → takvim üst çubuğun altına; çıkış günü → ızgaranın son satırı panelin üstüne)
+    if(durumDegisti && (durum==="bas" || durum==="aralik")) takvimKonumla(durum);
   }
   // takvim kutusu: ay başlığı + günler
   function takvimKutu(){
@@ -3893,25 +3894,85 @@
     var r1=a.getBoundingClientRect(), r2=g.getBoundingClientRect();
     return {left:Math.min(r1.left,r2.left), top:Math.min(r1.top,r2.top), right:Math.max(r1.right,r2.right), bottom:Math.max(r1.bottom,r2.bottom)};
   }
-  function takvimOrtala(){
-    if(window.Rehber && Rehber.aktif()) return;   // rehber kendi yerleştirir
-    var k=takvimKutu(); if(!k) return;
-    var ab=document.getElementById("appBar"), sk=document.getElementById("sekmeler"), p=document.getElementById("secPanel");
+  // ================= 25: TAKVİM SEÇİMİNDE İKİ AŞAMALI KONUMLAMA =================
+  // Aşama 1 (giriş günü): ay başlığı (ay adı + ‹ ›) üst çubuğun 8 pt altına. Ayın satırları panelin üstüne sığmıyorsa öncelik
+  //   ızgaranın son satırı: panelin 12 pt üstünde (ay başlığı üst çubuğun altına girebilir).
+  // Aşama 2 (çıkış günü, panel büyür): ızgaranın son satırı panelin 12 pt üstünde; ızgara sığmıyorsa seçili aralığın satırları
+  //   ortada.
+  // İkisinde de: panelin animasyonu bitince ve panelin GERÇEK yeri ölçülerek; tek hareket, 400 ms, --egri-gecis.
+  // 25 sebep (docs/qa/gorev25/sebep.md): 24.3'teki kaydırma, yazdığı konumu her karede geri okuyup 2 px'ten fazla fark görünce
+  // "kullanıcı kaydırdı" sayıp duruyordu; iPhone'da sayfanın kaydırma konumu geç bildirildiği için ilk karelerde duruyordu.
+  // Burada kaydırma konumu geri okunmaz; kullanıcının elle kaydırması parmak / tekerlek olayından anlaşılır.
+  var TK={raf:0, no:0, iptal:false};
+  ["touchstart","wheel"].forEach(function(ad){ document.addEventListener(ad,function(){ TK.iptal=true; },{capture:true, passive:true}); });
+  // seçim kalktıktan sonra kalan pay: kullanıcı yukarı kaydırıp pay gereksiz olunca kalkar (sayfa zıplamaz)
+  window.addEventListener("scroll",function(){
+    if(!document.body.classList.contains("secPay")) return;
+    var ek=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--secPanelH"))||0, d=document.documentElement;
+    if(d.scrollTop+window.innerHeight<=d.scrollHeight-ek-1) document.body.classList.remove("secPay");
+  },{passive:true});
+  function takvimKonumla(asama){
+    if(window.Rehber && Rehber.aktif()) return;   // rehberli seçimde yerleşimi rehber yapar (alttaki panel gizli)
+    var no=++TK.no;
+    cancelAnimationFrame(TK.raf);
+    var p=document.getElementById("secPanel");
+    var basla=function(){
+      if(no!==TK.no || !p.classList.contains("acik")) return;
+      var dy=takvimHedef(asama); if(dy==null) return;
+      var y0=document.documentElement.scrollTop||window.pageYOffset||0, max=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
+      dy=Math.round(Math.max(-y0,Math.min(max-y0,dy)));
+      if(Math.abs(dy)<=1) return;
+      if(azHareket()){ window.scrollTo(0,y0+dy); return; }
+      TK.iptal=false;
+      var t0=null;
+      var adim=function(t){
+        if(no!==TK.no || TK.iptal) return;           // kullanıcı dokundu / kaydırdı ya da yeni seçim: bırak
+        if(t0===null) t0=t;
+        var k=Math.min(1,(t-t0)/400);
+        window.scrollTo(0,Math.round(y0+dy*EGRI_GECIS(k)));
+        if(k<1) TK.raf=requestAnimationFrame(adim);
+      };
+      TK.raf=requestAnimationFrame(adim);
+    };
+    // panelin kayma (320 ms) ve içerik (sırayla belirme) animasyonları bitsin: panelin yeri ve boyu son hâlinde ölçülür
+    var bitti=false, son=function(){ if(bitti) return; bitti=true; requestAnimationFrame(basla); };
+    var anim=[]; try{ anim=p.getAnimations({subtree:true}); }catch(e){}
+    if(anim.length && !azHareket()){
+      Promise.all(anim.map(function(a){ return a.finished.catch(function(){}); })).then(son);
+      setTimeout(son,900);
+    } else son();
+  }
+  // gereken kaydırma (px; + aşağı) — null: takvim görünmüyor
+  function takvimHedef(asama){
+    var mb=document.querySelector("#takvim .monthbar"), g=document.getElementById("grid"), p=document.getElementById("secPanel");
+    if(!mb || !g || g.offsetParent===null) return null;
+    var hucre=Array.prototype.filter.call(g.querySelectorAll(".cell"),function(c){ return c.offsetHeight>0; });
+    if(!hucre.length) return null;
+    var ab=document.getElementById("appBar");
     var ust=(ab && !ab.classList.contains("hide")) ? Math.max(0,ab.getBoundingClientRect().bottom) : 0;
-    var menu=(sk && !sk.classList.contains("hide")) ? sk.offsetHeight : 0;
-    var alt=window.innerHeight-menu-(p && p.classList.contains("acik") ? p.offsetHeight : 0);
-    var bos=alt-ust, yuk=k.bottom-k.top, dy;
-    if(yuk<=bos-16) dy=k.top-(ust+(bos-yuk)/2);                      // sığıyor: tam ortaya
-    else {
-      // sığmıyor (küçük ekran): takvimin alt satırları panelin üstünde kalır; seçili gün üstten taşmaz
-      dy=k.bottom-(alt-8);
-      var c=S.start && document.querySelector('#grid .cell[data-k="'+S.start+'"]');
+    var pUst=p.getBoundingClientRect().top, alan=pUst-12;          // ızgaranın son satırının olacağı en alt yer
+    var rs=hucre.map(function(c){ return c.getBoundingClientRect(); });
+    var gUst=Math.min.apply(null,rs.map(function(r){ return r.top; })), gAlt=Math.max.apply(null,rs.map(function(r){ return r.bottom; }));
+    var dy;
+    if(asama==="bas"){
+      dy=mb.getBoundingClientRect().top-(ust+8);
+      if(gAlt-dy>alan) dy=gAlt-alan;                                    // sığmıyor: son satır panelin 12 pt üstünde
+      // seçilen gün üst çubuğun altında kalmasın
+      var c=S.start && g.querySelector('.cell[data-k="'+S.start+'"]');
       if(c) dy=Math.min(dy,c.getBoundingClientRect().top-(ust+8));
+      return dy;
     }
-    // sayfanın kaydırma sınırı içinde (sayfa sonu panelin payıyla uzar: body.secPanelAcik .wrap)
-    var y0=sayfaY(), max=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
-    dy=Math.round(Math.max(-y0,Math.min(max-y0,dy)));
-    if(Math.abs(dy)>2) yumusakKaydir(window,dy,400);
+    dy=gAlt-alan;
+    if(gUst-dy<ust+4){
+      // ızgara üst çubuk ile panel arasına sığmıyor: seçili aralığın satırları ortada
+      var sc=S.secim, sec=sc ? hucre.filter(function(x){ var k=x.dataset.k; return k && k>=sc.start && k<=sc.end; }) : [];
+      if(sec.length){
+        var su=Math.min.apply(null,sec.map(function(x){ return x.getBoundingClientRect().top; })),
+            sa=Math.max.apply(null,sec.map(function(x){ return x.getBoundingClientRect().bottom; }));
+        dy=(su+sa)/2-(ust+alan)/2;
+      }
+    }
+    return dy;
   }
   // 20.6 / 24.3: giriş günü ya da aralık seçiliyken karartma %35 (takvim ve panel aydınlık): odak takvimde. Karartılmış yere
   // dokunmak seçimi kaldırır; kaydırma ve takvime dokunma serbest.
@@ -3933,7 +3994,7 @@
       if(!odakAcikMi()){ odakCiz(); return; }
       var k=takvimKutu();
       if(k){
-        var pay=8, x=k.left-pay, y=k.top-pay+(window.scrollY||0), w=k.right-k.left+2*pay, h=k.bottom-k.top+2*pay;
+        var pay=8, x=k.left-pay, y=k.top-pay-document.documentElement.getBoundingClientRect().top, w=k.right-k.left+2*pay, h=k.bottom-k.top+2*pay;
         var a=[x,y,w,h].map(Math.round).join(",");
         if(a!==ODAK.k){ ODAK.k=a; el.style.transform="translate("+Math.round(x)+"px,"+Math.round(y)+"px)"; el.style.width=Math.round(w)+"px"; el.style.height=Math.round(h)+"px"; }
       }
@@ -3954,7 +4015,12 @@
   function secPanelKapat(){
     var p=document.getElementById("secPanel"); if(!p) return;
     p.classList.remove("acik"); p.dataset.durum="";
+    TK.no++; cancelAnimationFrame(TK.raf);
+    // 25.3: seçim kalkınca sayfa olduğu yerde kalır: panelin payı kalkınca sayfa kısalıp yukarı zıplayacaksa pay, kullanıcı
+    // yukarı kaydırıp gereksiz hâle gelene kadar kalır (secPay)
+    var yy=document.documentElement.scrollTop||0;
     document.body.classList.remove("secPanelAcik");
+    if(document.body.classList.contains("secPay") || yy>document.documentElement.scrollHeight-window.innerHeight) document.body.classList.add("secPay");
     odakCiz();
   }
 
