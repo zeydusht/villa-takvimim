@@ -115,7 +115,7 @@ _Hazırlayan: Claude (ürün yöneticisi), 16 Kasım 2026, gece. Zeyd uyuyor; sa
 - [ ] **18.21 Yardım.** Hesap'ta "Yardım" bölümü: "Uygulama turunu tekrar göster", "Sık sorulan sorular" (5–6 madde: rezervasyon nasıl girilir, kapora/depozito nedir, bakıcı nasıl eklenir, fiyat tüm aya nasıl girilir, villa sayfası nasıl paylaşılır, teklif nedir), "Bize ulaşın".
 
 ## I. Kendi bulduğun eksikler
-- [ ] **18.22** Yukarıdakileri yaparken ilk kez kullanan biri gözüyle tüm ekranları (Villalarım, villa, rezervasyon formu/detayı, Fiyatlar, Teklifler, Gelir & gider, Fotoğraflar, Villa bilgileri, Takvim, Hesap, misafir sayfası) gez. Taşan, kesilen, üst üste binen, anlaşılmayan, tutarsız yazılan (aynı şeye iki ad), dokunma alanı 48 px'ten küçük olan her şeyi düzelt. Yaptıklarını `docs/qa/gorev18/ek-duzeltmeler.md`'de madde madde listele (önce/sonra görüntüsüyle).
+- [x] **18.22** Yukarıdakileri yaparken ilk kez kullanan biri gözüyle tüm ekranları (Villalarım, villa, rezervasyon formu/detayı, Fiyatlar, Teklifler, Gelir & gider, Fotoğraflar, Villa bilgileri, Takvim, Hesap, misafir sayfası) gez. Taşan, kesilen, üst üste binen, anlaşılmayan, tutarsız yazılan (aynı şeye iki ad), dokunma alanı 48 px'ten küçük olan her şeyi düzelt. Yaptıklarını `docs/qa/gorev18/ek-duzeltmeler.md`'de madde madde listele (önce/sonra görüntüsüyle).
 
 ---
 

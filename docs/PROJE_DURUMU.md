@@ -497,6 +497,43 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       · Veritabanı: 17.4'ün sütunları ve bakici_odeme_ekle fonksiyonu Claude tarafından kurulacak; kuruldukları bu turda
         DOĞRULANMADI (veritabanına dokunulmadı). Aşağıdaki "Görev 17" bölümüne bakın.
 
+- [x] Görev 18 — Gece görevi: tarih seçimi, kurulum turu, Villalarım, Takvim sekmesi, akıcılık · Claude Code (16–17 Kasım gecesi).
+      Netlify'a yüklenmedi; her bölüm GitHub'a gönderildi (test: https://zeydusht.github.io/villa-takvimim/). Ayrıntı: `docs/GOREV18.md`,
+      QA: `docs/qa/gorev18/` (önce/sonra görüntüleri 390×844 ve 360×740, `secim-testi.md` 40/40, `ek-duzeltmeler.md`).
+      A) Tarih seçimi durum makinesi (uygulama + misafir sayfası): başlangıç → aralık; Y < S yeni başlangıç; Y = S ya da aralık
+         seçiliyken herhangi bir dokunuş seçimi kaldırır; arada dolu gece varsa Y yeni başlangıç + "Bu tarihler arasında dolu gün var.".
+         Seçim rezervasyon çizim diliyle (tam geceler koyu yeşil, giriş/çıkış yarım açık yeşil). Seçim işlemleri alt menünün üstünde
+         kayan panelde (başlangıç bilgisi + ✕; aralıkta "24 → 27 Kasım · 3 gece · 9.000 ₺" ve eşit genişlikte Rezervasyon · Teklif ·
+         Opsiyon). Üstteki adım şeridi kalktı. Haplar içeriğe göre, 48 px.
+      B) "Sıradaki" kartı rezervasyon yokken de var ("Nasıl yapılır?" → takvim turu, gerçek dokunuşlarla). Takvim başlığıyla üstteki
+         kart arasında 24 px; ay okları 48 px. Villa yönetimi: Villa bilgileri · Fiyatlar · Teklifler · Misafirler · Gelir & gider · Bakıcılar.
+      C) "İsimsiz" kalktı ("Hasan Bey · 24–27 Kasım" / "Teklif · 24–27 Kasım"). Fiyatlar: yıl seçici, seçili yılın 12 ayı, geçmiş aylar
+         soluk + "geçmiş" etiketi (düzenlerken onay sorusu), "Geçen yıl: 7.000–9.000 ₺" notu, "Tüm yıla fiyat gir" seçili yıl için.
+      D) "Villa ekle" yalnız ad sorar → 7 adımlı sihirbaz (ad+konum, kapasite kartları, nesi var, bu ayın fiyatı, fotoğraflar 0/20,
+         iletişim, villa sayfası tek butonla) → "Villanız hazır!" → "Takvime git" → ilk kez 4 adımlı uygulama turu. Her adımda çizim
+         (codex ile 5 yeni çizim: sihirbaz-kapasite/ozellikler/fiyat/iletisim/sayfa). Geçişler: sihirbazda yatay kayma, ekranlar arası
+         30 px kayma + solma, basınca 0,97; ölçüm: geçişlerde kareler 16,7 ms (gün dokunuşu 20–40 ms).
+      E) Villalarım: başlığın sağında dolu/boş etiketleri, altında yalnız "+ Villa ekle"; villalar basılı tutup sürükleyerek sıralanır
+         (sıra cihazda); "Bugün ve yarın" en fazla 4 satır + "+N olay daha · Takvim'de gör", satır rezervasyonu açar.
+      F) Aşağı çekip yenile: gösterge üst çubuğun altından içerikle birlikte iner (lastik etkisi), eşikte titreşim, "✓ Güncel".
+      G) Takvim sekmesi yeniden: tek cümle özet, büyük gün başlıkları, her olay ayrı kart, kapalı-açılır "N villada misafir var".
+      H) Hesap: "Villama bakıcı ekle" (villa seçimi → davet), Yardım: turu tekrar göster, 6 soruluk SSS, "Bize ulaşın".
+      I) Ek düzeltmeler (`docs/qa/gorev18/ek-duzeltmeler.md`): turuncu/hardal renkler paletten çıktı (kaydet düğmeleri hep yeşil),
+         detayda tutar tekrarı ve "Ödeme gir/Ödemeyi al" çift adı, villa başlığındaki "Sıradaki" tekrarı, 48 px dokunma alanları.
+      · Kalanlar: "Bize ulaşın" için destek WhatsApp numarası (DESTEK_WHATSAPP) girilmeli; villa sırası şimdilik yalnız cihazda
+        (aşağıda veritabanı taslağı); gerçek iPhone'da denenmedi.
+
+## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
+1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
+   ```sql
+   alter table public.villa_erisim add column if not exists sira integer;
+   -- kullanıcı yalnız kendi satırının sırasını değiştirebilsin
+   create policy p_erisim_sira on public.villa_erisim for update
+     using (kullanici = auth.uid()) with check (kullanici = auth.uid());
+   ```
+   Kurulunca uygulama `villa_erisim?select=villa_id,rol,sira` ile okuyup sıralar, sürükleyince `PATCH villa_erisim?kullanici=eq.<id>&villa_id=eq.<villa>`
+   ile `sira` yazar (uygulama tarafı bu kurulunca yapılacak). Var olan `villa_erisim` güncelleme izinleri kontrol edilmeden kurulmamalı.
+
 ## Veritabanı için gerekenler (Görev 17) — Claude kuracak (uygulama hazır, kurulum doğrulanmadı)
 1. `rezervasyonlar`: `giris_onay`, `cikis_onay` (timestamptz), `giris_onaylayan`, `cikis_onaylayan` (uuid). Uygulama
    okurken bu sütunları kullanır, yazarken `PATCH rezervasyonlar?id=eq.<id>` gönderir. Bakıcı da yazabilmeli; yazma izni

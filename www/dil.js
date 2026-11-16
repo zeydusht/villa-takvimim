@@ -698,6 +698,7 @@
     "Ödeme kaydedilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Payment could not be saved. Check your internet connection and try again.",
     "Ödeme kaydedilemedi.":"Payment could not be saved.",
     // Görev 18
+    "Ödemeler":"Payments",
     "Villama bakıcı ekle":"Add a caretaker to my villa",
     "Kod ya da bağlantıyla davet edin":"Invite with a code or link",
     "Hangi villanıza bakıcı eklemek istiyorsunuz?":"Which villa do you want to add a caretaker to?",
@@ -776,6 +777,7 @@
 
   var K = [
     // Görev 18: seçim paneli "24 → 27 Kasım · 3 gece · 9.000 ₺"
+    [/^(.+) bugün çıktı\.$/, "$1 checked out today."],
     [/^(\d+) villada misafir var$/, "Guests in $1 villas"],
     [/^(Bugün|Bu hafta|30 günde) (\d+) giriş · (\d+) çıkış$/, function (_, a, g, c) { return ({"Bugün":"Today","Bu hafta":"This week","30 günde":"Next 30 days"})[a] + ": " + g + " check-ins · " + c + " check-outs"; }],
     [/^Giriş (\d+:\d+)$/, "Check-in $1"],

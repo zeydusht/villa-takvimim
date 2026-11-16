@@ -1207,6 +1207,8 @@
   .sirAlindi{display:inline-flex; align-items:center; gap:.25rem; font-size:.9375rem; color:var(--ok); white-space:nowrap}
   #siradaki:not(:empty){margin:0 0 1.5rem}
   .sirKart.sirBos{background:#fff; border-style:dashed}
+  /* 18.22: dokunma alanı en az 48 px */
+  .ucDegis{min-height:3rem !important}
   .sirKart.sirBos:active{transform:none; background:#fff}
   .sirBosYazi{font-size:.9375rem; color:var(--muted)}
   .sirBosAlt{display:block; font-size:1.125rem; line-height:1.3; margin-top:.5rem}
@@ -1859,7 +1861,10 @@
   })();
 (function(){
   "use strict";
-  var PALET=["#0B5B57","#A8431E","#3C4E8C","#7A4B8C","#4F6B22","#B0761A","#9B2C4A","#2E6E8E"];
+  // 18.22: renk kuralı (Görev 11–12) — sarı/turuncu yok; eski turuncu (#A8431E) ve hardal (#B0761A) yerine mürdüm ve arduvaz
+  var PALET=["#0B5B57","#8C3A5E","#3C4E8C","#7A4B8C","#4F6B22","#5A6B7A","#9B2C4A","#2E6E8E"];
+  var RENK_DEGIS={"#a8431e":"#8C3A5E","#b0761a":"#5A6B7A"};
+  function renkDuzelt(c){ return RENK_DEGIS[String(c||"").toLowerCase()]||c; }
   var AYLAR=(window.DIL&&DIL.AYLAR[DIL.dil])||["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
   var K2="villa-takvim-v2", K1="villa-takvim-v1", SEAM="110deg";
   var GIRIS="16:00", CIKIS="10:00";
@@ -2022,7 +2027,8 @@
     if(degisti){ b.ozellikler=kalan; b.olanaklar=ol; }
   }
   function duzelt(v){
-    v.color=v.color||PALET[0];
+    v.color=renkDuzelt(v.color||PALET[0]);
+    (v.rez||[]).forEach(function(r){ if(r.color) r.color=renkDuzelt(r.color); });
     v.fotolar=v.fotolar||[];
     v.fiyatlar=v.fiyatlar||{};
     v.giderler=v.giderler||[];
@@ -2217,11 +2223,11 @@
     if(giren && !girdiMi(giren,s)){
       return { bas:"Villa boş", renk:null, alt:"Bugün "+saatEk(GIRIS)+" "+giren.guest+" girecek", bugunGiris:true, r:giren };
     }
+    // 18.22: sıradaki iş hemen alttaki "Sıradaki" kartında; başlıkta tekrar edilmez
     if(cikan){
-      return { bas:"Villa boş", renk:null,
-               alt:cikan.guest+" bugün çıktı. "+sonrakiMetin() };
+      return { bas:"Villa boş", renk:null, alt:cikan.guest+" bugün çıktı." };
     }
-    return { bas:"Villa boş", renk:null, alt:sonrakiMetin() };
+    return { bas:"Villa boş", renk:null, alt:"Bugün giriş veya çıkış yok." };
   }
 
   // Dolu: koyu yeşil "● Dolu · Ad Soyad"; boş: açık gri "● Boş" (villa ekranı ve villa kartları)
@@ -4890,7 +4896,7 @@
       alan("f-phone","Telefon","İsteğe bağlı","telefon")+
       kapora+
       '<div style="margin-top:1rem">'+alan("f-note","Not","İsteğe bağlı","text")+"</div>"+
-      '<div class="altSabit"><button class="big" data-ik="tik" id="f-kaydet" style="background:'+t.color+'">Rezervasyonu kaydet</button></div>');
+      '<div class="altSabit"><button class="big" data-ik="tik" id="f-kaydet">Rezervasyonu kaydet</button></div>');
 
     var isim=document.getElementById("f-guest"), btn=document.getElementById("f-kaydet");
     var isimHata=document.getElementById("f-guest-hata");
@@ -5070,7 +5076,7 @@
       l.push(e("a","is-rez","telefon","Ara",'href="tel:'+esc(n)+'"'));
       l.push(e("a","is-wa","mesaj","WhatsApp",'href="https://wa.me/'+esc(n.slice(1))+'" target="_blank" rel="noopener"'));
     }
-    if(paraGorur()) l.push(e("button","is-para","cuzdan","Ödeme gir",'type="button" id="d-odeme"'));
+    if(paraGorur()) l.push(e("button","is-para","cuzdan","Ödemeler",'type="button" id="d-odeme"'));
     if(duzenlenebilir()) l.push(e("button","is-rez","kalem","Düzenle",'type="button" id="d-duzenle"'));
     return l.length?'<div class="eylemSira">'+l.join("")+"</div>":"";
   }
@@ -5112,6 +5118,8 @@
     var dDz=document.getElementById("d-duzenle");
     if(dDz) dDz.onclick=function(){ duzenleSheet(r); };
     akisBagla(aktif(),r);
+    var ustTutar=document.querySelector(".overlay:not(.kapaniyor) .akisTutar"), altTutar=document.querySelector(".overlay:not(.kapaniyor) .detayPara .alinacakBuyuk");
+    if(ustTutar && altTutar) altTutar.remove();
     depIadeBagla(r);
     var dOd=document.getElementById("d-odeme"), dFr=document.getElementById("d-form");
     if(dOd) dOd.onclick=function(){ odemeSheet(r,{donus:"detay"}); };
@@ -5364,7 +5372,7 @@
           alan("dz-ek","Kısa konaklama ücreti (₺)","","tel",k.ek?binlik(k.ek):"")+"</div>"+
           alan("dz-dep","Hasar depozitosu (₺)","","tel",k.dep?binlik(k.dep):""); })() : "")+
       '<div class="sm warn" id="dz-hata" style="min-height:1.25rem"></div>'+
-      '<button class="big" data-ik="tik" id="dz-kaydet" style="background:'+r.color+'">Değişiklikleri kaydet</button>');
+      '<button class="big" data-ik="tik" id="dz-kaydet">Değişiklikleri kaydet</button>');
 
     ["dz-tutar","dz-ek","dz-dep"].forEach(function(id){ var e=document.getElementById(id); if(e) sayiBicimle(e); });
     document.getElementById("dz-kaydet").onclick=function(){
