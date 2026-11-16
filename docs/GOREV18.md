@@ -75,7 +75,7 @@ _Hazırlayan: Claude (ürün yöneticisi), 16 Kasım 2026, gece. Zeyd uyuyor; sa
   - Adım 7: `sihirbaz-sayfa` — "A smartphone standing upright showing a simplified villa page: a photo of the white villa with pool on screen, small blank content lines below; a few confetti dots."
   - Son: `sihirbaz-hazir` (var)
   - Hepsi aynı elden çıkmış gibi olmalı; uymayanı yeniden çizdir (en fazla 2 deneme).
-- [ ] **18.13 Uygulama turu (öğretici).** Kurulum bitip villa ekranı ilk açıldığında 4 adımlı tur (koyu yarı saydam perde, vurgulanan öğede delik, altta baloncuk + "İleri", sağ üstte "Turu geç"):
+- [x] **18.13 Uygulama turu (öğretici).** Kurulum bitip villa ekranı ilk açıldığında 4 adımlı tur (koyu yarı saydam perde, vurgulanan öğede delik, altta baloncuk + "İleri", sağ üstte "Turu geç"):
   1. Sıradaki kartı: "Burada her zaman sıradaki iş yazar: kim girecek, ne kadar alınacak."
   2. Takvim: "Misafirin gireceği güne, sonra çıkacağı güne dokunun." (gerçek bir dokunuş bekler, 18.5'teki gibi)
   3. Alt panel: "Rezervasyon, teklif ya da opsiyon seçin."
@@ -111,8 +111,8 @@ _Hazırlayan: Claude (ürün yöneticisi), 16 Kasım 2026, gece. Zeyd uyuyor; sa
 
 ## H. Hesap
 
-- [ ] **18.20 Bakıcı ekle.** Hesap ekranında "Bakıcı olarak villaya katıl"ın hemen altında **"Villama bakıcı ekle"** (`key-round`): dokununca "Hangi villanıza bakıcı eklemek istiyorsunuz?" — villa listesi (kapak fotoğraflı kartlar) → seçince mevcut bakıcı davet ekranı (kod + bağlantı + WhatsApp'ta gönder). Tek villası varsa liste atlanır.
-- [ ] **18.21 Yardım.** Hesap'ta "Yardım" bölümü: "Uygulama turunu tekrar göster", "Sık sorulan sorular" (5–6 madde: rezervasyon nasıl girilir, kapora/depozito nedir, bakıcı nasıl eklenir, fiyat tüm aya nasıl girilir, villa sayfası nasıl paylaşılır, teklif nedir), "Bize ulaşın".
+- [x] **18.20 Bakıcı ekle.** Hesap ekranında "Bakıcı olarak villaya katıl"ın hemen altında **"Villama bakıcı ekle"** (`key-round`): dokununca "Hangi villanıza bakıcı eklemek istiyorsunuz?" — villa listesi (kapak fotoğraflı kartlar) → seçince mevcut bakıcı davet ekranı (kod + bağlantı + WhatsApp'ta gönder). Tek villası varsa liste atlanır.
+- [x] **18.21 Yardım.** Hesap'ta "Yardım" bölümü: "Uygulama turunu tekrar göster", "Sık sorulan sorular" (5–6 madde: rezervasyon nasıl girilir, kapora/depozito nedir, bakıcı nasıl eklenir, fiyat tüm aya nasıl girilir, villa sayfası nasıl paylaşılır, teklif nedir), "Bize ulaşın".
 
 ## I. Kendi bulduğun eksikler
 - [x] **18.22** Yukarıdakileri yaparken ilk kez kullanan biri gözüyle tüm ekranları (Villalarım, villa, rezervasyon formu/detayı, Fiyatlar, Teklifler, Gelir & gider, Fotoğraflar, Villa bilgileri, Takvim, Hesap, misafir sayfası) gez. Taşan, kesilen, üst üste binen, anlaşılmayan, tutarsız yazılan (aynı şeye iki ad), dokunma alanı 48 px'ten küçük olan her şeyi düzelt. Yaptıklarını `docs/qa/gorev18/ek-duzeltmeler.md`'de madde madde listele (önce/sonra görüntüsüyle).
