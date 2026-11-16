@@ -1013,6 +1013,23 @@
   .kSatir > .ikKutu{margin-right:-.25rem}
   .row > .ikKutu{margin-left:0}
   .ajSatir .ajIc{flex:1 1 auto; min-width:0}
+  /* 18.20: villa seçimi (kapak fotoğraflı kartlar) */
+  .villaSec{display:grid; gap:.5rem}
+  .villaSecKart{display:flex; align-items:center; gap:.875rem; width:100%; min-height:4.5rem; padding:.625rem 1rem .625rem .625rem; text-align:left;
+    border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose); background:#fff; transition:transform var(--hiz-bas)}
+  .villaSecKart:active{transform:scale(var(--basili-olcek)); background:var(--basili-zemin)}
+  .vsFoto{flex:none; width:3.5rem; height:3.5rem; border-radius:.75rem; background:center/cover no-repeat}
+  .vsHarf{display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.25rem}
+  .vsAd{flex:1; min-width:0; font-size:1.125rem; overflow-wrap:anywhere}
+  /* 18.21: sık sorulan sorular */
+  .sss{display:grid; gap:.5rem; margin-top:.75rem}
+  .sssMadde{border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose); background:#fff}
+  .sssMadde summary{display:flex; align-items:center; justify-content:space-between; gap:.75rem; min-height:3.5rem; padding:.625rem 1rem;
+    font-size:1.0625rem; list-style:none; cursor:pointer}
+  .sssMadde summary::-webkit-details-marker{display:none}
+  .sssMadde .sssOk{flex:none; transition:transform var(--hiz-ac)}
+  .sssMadde[open] .sssOk{transform:rotate(180deg)}
+  .sssCevap{padding:0 1rem 1rem; font-size:1rem; line-height:1.5; color:#3F4843}
   /* 18.19: Takvim sekmesi */
   .ajOzet{font-size:1.0625rem; color:var(--muted); margin-top:.375rem}
   .ajGunBas{font-family:var(--serif); font-size:1.375rem; letter-spacing:-.01em; color:var(--ink); margin:1.75rem 0 .625rem; line-height:1.3}
@@ -1423,6 +1440,11 @@
       <span><span>Bakıcı olarak villaya katıl</span>
         <span class="satirAlt">Villa sahibinin gönderdiği 6 haneli kod</span></span>
     </button>
+    <!-- 18.20 -->
+    <button class="satirBtn hide" id="bakiciEkleBtn" data-ikk="bakici:anahtar">
+      <span><span>Villama bakıcı ekle</span>
+        <span class="satirAlt">Kod ya da bağlantıyla davet edin</span></span>
+    </button>
     <button class="satirBtn hide" id="silinenBtn" data-ikk="sil:cop">
       <span>Silinen villalar</span>
       <span class="sag" id="silinenSay"></span>
@@ -1451,14 +1473,23 @@
     <div class="seg" id="hs-dil">
       <button data-d="tr">Türkçe</button><button data-d="en">English</button>
     </div>
-    <div class="eyebrow" style="margin:2.25rem 0 .25rem" data-iki="hesap:yardim">Destek</div>
+    <!-- 18.21: Yardım -->
+    <div class="eyebrow" style="margin:2.25rem 0 .25rem" data-iki="hesap:yardim">Yardım</div>
     <div class="grup">
-    <button class="satirBtn hide" id="destekBtn" data-ikk="wa:mesaj">
-      <span>Bize ulaşın</span><span class="sag">WhatsApp</span>
+    <button class="satirBtn" id="turTekrarBtn" data-ikk="hesap:sihirli">
+      <span><span>Uygulama turunu tekrar göster</span><span class="satirAlt">Villa ekranında adım adım</span></span>
+    </button>
+    <button class="satirBtn" id="sssBtn" data-ikk="hesap:bilgi-i">
+      <span>Sık sorulan sorular</span>
+    </button>
+    <button class="satirBtn" id="destekBtn" data-ikk="wa:mesaj">
+      <span>Bize ulaşın</span><span class="sag" id="destekSag">WhatsApp</span>
     </button>
     <a class="satirBtn" id="gizlilikBtn" href="gizlilik.html" target="_blank" rel="noopener" data-ikk="hesap:kilit">
       <span>Gizlilik ve kişisel veriler</span>
     </a>
+    </div>
+    <div class="grup" style="margin-top:1.75rem">
     <button class="satirBtn hide" id="cikisBtn" data-ikk="hesap:cikis"><span>Çıkış yap</span></button>
     </div>
     <div class="grup" style="margin-top:1.75rem">
@@ -5617,13 +5648,67 @@
       });
     }
 
+  // ================= 18.20 / 18.21 HESAP: bakıcı ekle, yardım =================
+  function sahipVillalari(){ return S.villalar.filter(function(v){ return !S.bulut || v.rol==="sahip"; }); }
+  // Hesap'tan bakıcı daveti: önce villa seçilir (tek villada atlanır), sonra villanın bakıcı ekranı açılır
+  document.getElementById("bakiciEkleBtn").onclick=function(){
+    var l=sahipVillalari(); if(!l.length) return;
+    var git=function(v){ S.aktif=v.id; MAP=harita(v.rez); S.salt=false; S.ustDetay=true; bakiciSheet(); };
+    if(l.length===1) return git(l[0]);
+    perde('<div class="head"><h2>'+esc(cev("Villama bakıcı ekle"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 1rem">'+esc(cev("Hangi villanıza bakıcı eklemek istiyorsunuz?"))+"</div>"+
+      '<div class="villaSec" id="bkVilla">'+l.map(function(v){
+        var foto=(v.fotolar&&v.fotolar.length)?kucukResim(v.fotolar[0]):"";
+        return '<button class="villaSecKart" data-vid="'+esc(v.id)+'">'+
+          (foto?'<span class="vsFoto" style="background-image:url(\''+foto+'\')"></span>'
+               :'<span class="vsFoto vsHarf" style="background:'+esc(v.color||"#0B5B57")+'">'+esc(basHarf(v.ad)||"V")+"</span>")+
+          '<span class="vsAd">'+esc(v.ad||cev("Villa"))+"</span>"+ikon("sag",{boy:20})+"</button>";
+      }).join("")+"</div>");
+    document.getElementById("bkVilla").onclick=function(e){
+      var x=e.target.closest("[data-vid]"); if(!x) return;
+      var v=l.filter(function(y){ return y.id===x.dataset.vid; })[0]; if(v) git(v);
+    };
+  };
+  // 18.21: uygulama turunu tekrar göster — ilk villanın ekranında
+  document.getElementById("turTekrarBtn").onclick=function(){
+    if(!S.villalar.length) return bildir(cev("Tur için önce bir villa ekleyin."));
+    var v=S.villalar[0];
+    ac(v.id);
+    setTimeout(function(){ if(aktif()===v) turAna(); },350);
+  };
+  var SSS=[
+    ["Rezervasyon nasıl girilir?","Villayı açın. Takvimde misafirin gireceği güne, sonra çıkacağı güne dokunun. Alttaki panelde \"Rezervasyon\"a dokunun, misafirin adını yazıp kaydedin."],
+    ["Kapora ve depozito nedir?","Kapora, rezervasyonu kesinleştirmek için önceden alınan ödemedir; toplam tutardan düşülür. Hasar depozitosu girişte alınır, çıkışta bir zarar yoksa misafire geri verilir; gelir sayılmaz."],
+    ["Bakıcı nasıl eklenir?","Hesap → \"Villama bakıcı ekle\" → villanızı seçin → \"Yeni bakıcı davet et\". Çıkan 6 haneli kodu ya da bağlantıyı bakıcınıza WhatsApp'tan gönderin."],
+    ["Fiyatı tüm aya nasıl girerim?","Villa → Fiyatlar → ayın satırına dokunun, gecelik fiyatı yazıp \"Tüm aya uygula\"ya dokunun. Hafta sonu farklıysa \"Hafta sonu farklı fiyat\"ı açın. Bütün yıl için \"Tüm yıla fiyat gir\"."],
+    ["Villa sayfası nasıl paylaşılır?","Villa ekranında \"Paylaş\"a dokunun (ya da Villa sayfanız → \"Linki paylaş\"). Bağlantıyı WhatsApp'tan ya da mesajla gönderin. Misafir fotoğrafları, boş günleri ve fiyatları görür."],
+    ["Teklif nedir?","Bir misafire belirli tarihler için özel fiyat göndermektir. Takvimde tarihleri seçip alttaki panelde \"Teklif\"e dokunun, fiyatı yazın. Misafir bağlantıyı açınca o tarihleri ve size özel fiyatı görür."]
+  ];
+  document.getElementById("sssBtn").onclick=function(){
+    perde('<div class="head"><h2>'+esc(cev("Sık sorulan sorular"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sss">'+SSS.map(function(x){
+        return '<details class="sssMadde"><summary><span>'+esc(cev(x[0]))+"</span>"+ikon("asagi",{boy:20,sinif:"sssOk"})+"</summary>"+
+          '<div class="sssCevap">'+esc(cev(x[1]))+"</div></details>";
+      }).join("")+"</div>");
+  };
+  document.getElementById("destekBtn").onclick=function(){
+    var no=String(DESTEK_WHATSAPP||"").replace(/\D/g,"");
+    if(no){ window.open("https://wa.me/"+no+"?text="+encodeURIComponent(cev("Merhaba, Villa Takvim hakkında bir sorum var.")),"_blank"); return; }
+    perde('<div class="head"><h2>'+esc(cev("Bize ulaşın"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Destek hattımız çok yakında burada olacak. O zamana kadar \"Sık sorulan sorular\"a göz atabilirsiniz."))+"</div>"+
+      '<button class="big renkli is-rez" data-ik="bilgi-i" id="dsSss" style="margin-top:1.25rem">'+esc(cev("Sık sorulan sorular"))+"</button>");
+    document.getElementById("dsSss").onclick=function(){ document.getElementById("sssBtn").click(); };
+  };
   // Hesap sekmesi: buluta bağlı satırlar, dil seçici, destek
   function hesapEkranCiz(){
     var bulut=!!(S.bulut && window.VT && VT.girisli && VT.girisli());
     document.getElementById("cikisBtn").classList[bulut?"remove":"add"]("hide");
     document.getElementById("hsBildirimBolum").classList[bulut?"remove":"add"]("hide");
     var no=String(DESTEK_WHATSAPP||"").replace(/\D/g,"");
-    document.getElementById("destekBtn").classList[no?"remove":"add"]("hide");
+    // 18.21: "Bize ulaşın" her zaman görünür; numara girilmemişse açıklama gösterir
+    document.getElementById("destekSag").textContent=no?"WhatsApp":"";
+    // 18.20: sahibi olduğu villa varsa "Villama bakıcı ekle"
+    document.getElementById("bakiciEkleBtn").classList[(bulut && !S.destek && sahipVillalari().length)?"remove":"add"]("hide");
     Array.prototype.forEach.call(document.querySelectorAll("#hs-dil button"),function(b){
       b.classList[((window.DIL&&DIL.dil)||"tr")===b.dataset.d?"add":"remove"]("on"); });
     if(bulut) bildirimAnahtari();
@@ -5662,10 +5747,7 @@
     if(window.DIL && DIL.dil!==b.dataset.d) DIL.ayarla(b.dataset.d);
   });
   document.getElementById("cikisBtn").onclick=function(){ cikisYap(); };
-  document.getElementById("destekBtn").onclick=function(){
-    var no=String(DESTEK_WHATSAPP||"").replace(/\D/g,""); if(!no) return;
-    window.open("https://wa.me/"+no+"?text="+encodeURIComponent("Merhaba, Villa Takvim hakkında yardım istiyorum."),"_blank");
-  };
+  // (18.21: "Bize ulaşın" yukarıda, Yardım bölümünde)
   document.getElementById("gelismisAc").onclick=function(){
     var g=document.getElementById("gelismis"), ac=g.classList.contains("hide");
     g.classList[ac?"remove":"add"]("hide"); this.classList[ac?"add":"remove"]("on");
@@ -9287,6 +9369,9 @@
     }
     if(!acikP && S.ustDetay && !document.getElementById("ana").classList.contains("hide")){
       S.ustDetay=false; S.aktif=null; cizAna();
+    }
+    if(!acikP && S.ustDetay && !document.getElementById("hesapEkran").classList.contains("hide")){
+      S.ustDetay=false; S.aktif=null;
     }
     document.body.classList[document.querySelector(".overlay:not(.kapaniyor)")?"add":"remove"]("panelAcik");
   }).observe(document.body,{childList:true}); }catch(e){}
