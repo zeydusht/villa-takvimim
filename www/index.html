@@ -1160,7 +1160,7 @@
   .adimSerit.secimKart .skBtn{display:flex; gap:.5rem; margin-top:.25rem}
   .adimSerit.secimKart .skBtn .big{flex:1 1 0; width:auto; margin:0; min-height:3rem; padding:.5rem .5rem; font-size:.9375rem; text-decoration:none; color:#fff}
   .adimSerit.secimKart .skBtn .big.renkli{color:var(--ry)}
-  .tkYuzde .big{flex:1 1 0; width:auto; margin:0; min-height:2.75rem; padding:.375rem .5rem; font-size:.875rem}
+  .tkYuzde .big{flex:1 1 0; width:auto; margin:0; min-height:3rem; padding:.375rem .5rem; font-size:.875rem}
   .tkYuzde .big.secili{background:var(--r22); box-shadow:inset 0 0 0 1px var(--r)}
   .tkKarsi{margin-top:.625rem; font-size:1rem; color:var(--lacivert)}
   .tkKarsi s{color:var(--muted)}
@@ -1233,7 +1233,7 @@
   .akisSayfa{width:50%; flex:none; padding:.25rem; box-sizing:border-box}
   .akisIc:not(.ikinci) #ak-s2, .akisIc.ikinci #ak-s1{visibility:hidden; transition:visibility 0s .28s}
   .akisEvet{min-height:3.75rem; font-size:1.0625rem}
-  .akisKucuk{display:block; margin:.75rem auto 0; min-height:2.75rem; padding:0 1rem; background:none; border:0;
+  .akisKucuk{display:block; margin:.75rem auto 0; min-height:3rem; padding:0 1rem; background:none; border:0;
     color:var(--muted); font-size:.9375rem; text-decoration:underline}
   .hazirSec.on{box-shadow:inset 0 0 0 2px var(--lacivert)}
   @media (prefers-reduced-motion: reduce){ .akisIc{transition:none} .akisIc:not(.ikinci) #ak-s2, .akisIc.ikinci #ak-s1{transition:none} }
@@ -1270,28 +1270,13 @@
   .spBtn.ana:active{background:#08443F}
   @media (max-width:370px){ .spBtn{font-size:.875rem} }
   @media (prefers-reduced-motion: reduce){ .secPanel, .secPanel.acik{transition:none} }
-  /* 18.13 / 18.5: uygulama turu — perde, delik, baloncuk */
-  .tur{position:fixed; inset:0; z-index:70; animation:turAc var(--hiz-ac) ease-out}
-  .tur.kapaniyor{opacity:0; transition:opacity var(--hiz-kapa) ease-in}
-  @keyframes turAc{from{opacity:0}to{opacity:1}}
-  .turDelik{position:fixed; left:0; top:0; width:0; height:0; border-radius:16px; pointer-events:none;
-    box-shadow:0 0 0 2px rgba(255,255,255,.9), 0 0 0 9999px rgba(16,22,19,.64); transition:opacity var(--hiz-ac)}
-  .turBalon{position:fixed; left:1rem; right:1rem; top:0; max-width:26rem; margin:0 auto; background:#fff; border-radius:18px;
-    padding:1rem 1rem 1rem; box-shadow:0 10px 30px rgba(0,0,0,.22); will-change:transform}
-  .turBalon.yeni{animation:turBalon 280ms cubic-bezier(.2,.8,.2,1)}
-  @keyframes turBalon{from{opacity:0}to{opacity:1}}
-  .turSay{font-size:.8125rem; color:var(--muted); letter-spacing:.06em}
-  .turSay:empty{display:none}
-  .turMetin{font-size:1.125rem; line-height:1.4; margin-top:.25rem}
-  .turBalon .big{margin-top:.875rem}
-  .turGec{position:fixed; top:calc(.75rem + env(safe-area-inset-top)); right:.75rem; min-height:3rem; padding:0 1rem;
-    border-radius:99px; background:rgba(255,255,255,.95); color:var(--ink); font-size:.9375rem; border:0}
-  .turGec:active{transform:scale(.97)}
+  /* 19.1: rehber görünümü rehber.js içinde; takvimde dokunulacak ilk boş gün nabız gibi atar */
+  body.rhTarih #villaHapKap{display:none}
   .cell.turNabiz{z-index:1; overflow:visible}
   .cell.turNabiz::after{content:""; position:absolute; inset:-2px; border-radius:12px; border:3px solid var(--ok); pointer-events:none;
     animation:turNabiz 1.2s ease-out infinite}
   @keyframes turNabiz{0%{transform:scale(.9); opacity:1}100%{transform:scale(1.35); opacity:0}}
-  @media (prefers-reduced-motion: reduce){ .tur, .turBalon.yeni, .cell.turNabiz::after{animation:none} }
+  @media (prefers-reduced-motion: reduce){ .cell.turNabiz::after{animation:none} }
   /* 11.8 alt menü: seçili sekmede dolu ikon */
   .sekmeler button svg.ik{width:22px; height:22px}
 </style>
@@ -1478,6 +1463,13 @@
     <!-- 18.21: Yardım -->
     <div class="eyebrow" style="margin:2.25rem 0 .25rem" data-iki="hesap:yardim">Yardım</div>
     <div class="grup">
+    <!-- 19.2: Yardımlı mod (varsayılan açık): her işlem adım adım rehberle başlar -->
+    <div class="anahtar" id="yardimSatir" data-ikk="hesap:yardim"><span>Yardımlı mod
+      <span class="satirAlt">Her işlemde ne yapacağınızı adım adım gösterir</span></span>
+      <span class="svic on" id="hs-yardim" role="switch" aria-checked="true" aria-label="Yardımlı mod"><i></i></span></div>
+    <button class="satirBtn hide" id="yardimAcBtn" data-ikk="hesap:yenile">
+      <span><span>Kapatılan yardımları geri aç</span><span class="satirAlt" id="yardimAcAlt"></span></span>
+    </button>
     <button class="satirBtn" id="turTekrarBtn" data-ikk="hesap:sihirli">
       <span><span>Uygulama turunu tekrar göster</span><span class="satirAlt">Villa ekranında adım adım</span></span>
     </button>
@@ -1843,6 +1835,7 @@
 <script src="adlar.js"></script>
 <script src="veri.js"></script>
 <script src="dil.js"></script>
+<script src="rehber.js"></script>
 <script src="native.js"></script>
 <script>
   // Destek WhatsApp numarası (örn. "905320000000"). Boş kalırsa onay ekranındaki WhatsApp butonu gizlenir.
@@ -1948,7 +1941,7 @@
   // Yükleniyor yerine 3 gri iskelet satır
   function iskelet(){ return '<div class="iskelet" aria-label="Yükleniyor"><i style="width:92%"></i><i style="width:74%"></i><i style="width:84%"></i></div>'; }
   // Başarı bildirimi: başında ✓ + başarı titreşimi
-  function tamam(msg){ bildir("✓ "+msg); titret("basari"); }
+  function tamam(msg){ if(window.Rehber && Rehber.basariVar()) return; bildir("✓ "+msg); titret("basari"); }
 
   // Görev 11: ikonlar HTML'e nitelikle yazılır, bu gözlemci yerleştirir (yazısı sonradan değişen buton ikonunu kaybetmez)
   //   data-ik="ikon"         → butonun soluna 20px ikon
@@ -2529,9 +2522,9 @@
   // içerikle birlikte iner, parmağı lastik etkisiyle izler; 36 px daire içinde yeşil ok çekme mesafesiyle dönerek dolar;
   // eşiği geçince titreşim + dönmeye başlar; bırakınca yenilenir, bitince yukarı kayıp kaybolur, "✓ Güncel".
   (function(){
-    var gos=null, ekran=null, basY=0, basX=0, izle=false, cekme=0, ESIK=64, EN=112, TUT=56, esikte=false;
+    var gos=null, ekran=null, basY=0, basX=0, izle=false, cekme=0, ESIK=64, EN=112, TUT=56, OLU=10, esikte=false;
     var ekranUygun=function(){
-      return !!yenilenenEkran() && !document.querySelector(".overlay") && !document.querySelector(".tur") &&
+      return !!yenilenenEkran() && !document.querySelector(".overlay") && !(window.Rehber && Rehber.aktif()) && !SURUKLE.aktif &&
         !document.body.classList.contains("panelAcik") && !document.getElementById("acilis");
     };
     var ustBosluk=function(){ var ab=document.getElementById("appBar"); return (ab && !ab.classList.contains("hide")) ? ab.getBoundingClientRect().bottom : 0; };
@@ -2576,8 +2569,12 @@
     document.addEventListener("touchmove",function(e){
       if(!izle) return;
       var t=e.touches[0], dy=t.clientY-basY, dx=Math.abs(t.clientX-basX);
+      // 19.11: basılı tutup sürükleme başladıysa yenileme bu dokunuşta tamamen kapanır
+      if(SURUKLE.aktif){ izle=false; if(cekme>0){ cekme=0; esikte=false; bitir(); } return; }
       if(dy<=0 || window.scrollY>0 || dx>dy){ if(cekme>0){ cekme=0; esikte=false; bitir(); } return; }
-      cekme=lastik(dy);
+      // ilk 10 px ölü bölge: basılı tutarken parmağın küçük kayması göstergeyi oynatmaz
+      if(dy<=OLU){ if(cekme>0){ cekme=0; esikte=false; ciz(0,false); } return; }
+      cekme=lastik(dy-OLU);
       if(cekme>=ESIK && !esikte){ esikte=true; titret("hafif"); kur().classList.add("donuyor"); }
       else if(cekme<ESIK && esikte){ esikte=false; kur().classList.remove("donuyor"); }
       ciz(cekme,false);
@@ -2585,6 +2582,7 @@
     },{passive:false});
     var birak=function(){
       if(!izle) return; izle=false;
+      if(SURUKLE.aktif || Date.now()-SURUKLE.son<300){ if(cekme>0) bitir(); cekme=0; return; }
       if(cekme<ESIK){ if(cekme>0) bitir(); cekme=0; return; }
       cekme=0;
       kur().classList.add("donuyor"); ciz(TUT,true);
@@ -2740,6 +2738,7 @@
   }
 
   function geriGit(){
+    if(window.Rehber && Rehber.aktif()){ Rehber.kapat(); return true; }
     if(document.querySelector(".overlay:not(.kapaniyor)")){ kapat(); return true; }
     var e=acikEkran();
     if(e==="kasa"){ goster("takvim"); ciz(); return true; }
@@ -3068,87 +3067,132 @@
   });
   // 18.16: villa kartına 400 ms basılı tut (hafif titreşim) → kart kalkar (gölge + 1,03) → sürükle → bırak.
   // Diğer kartlar akıcı yer değiştirir; sıra cihazda saklanır.
+  // 19.11: basılı tutup sürükleyerek sıralama — ortak yardımcı (villalar, fotoğraflar; ileride kurallar, odalar)
+  //  · 400 ms basılı tutunca başlar (hafif titreşim). Süre dolmadan parmak 8 px'ten fazla kayarsa başlamaz: normal kaydırma
+  //  · sürükleme sürerken sayfa kaydırması, aşağı çekip yenileme ve kenardan geri kaydırma kilitli. Yalnız bu sırada
+  //    belgeye passive olmayan bir touchmove dinleyicisi eklenir (preventDefault); bırakınca kaldırılır
+  //  · sürüklenen öğe ekranın üst/alt kenarına yaklaşınca sayfa yumuşakça kendi kayar (kenara yaklaştıkça hızlanır)
+  //  o: {secici, uygun(el), basla(el), hareket(x,y,dx,dy) — dy sayfanın kaymasını da içerir —, birak()}
+  var SURUKLE={aktif:false, son:0};
+  function surukleBagla(kap,o){
+    var sure=o.sure||400, zaman=null, el=null, aktifS=false, x0=0, y0=0, x=0, y=0, sy0=0, raf=0;
+    var engelle=function(e){ if(e.cancelable) e.preventDefault(); };
+    var kenar=function(){
+      var ab=document.getElementById("appBar"), sk=document.getElementById("sekmeler");
+      var ust=(ab && !ab.classList.contains("hide")) ? Math.max(0,ab.getBoundingClientRect().bottom) : 0;
+      var alt=(sk && !sk.classList.contains("hide")) ? sk.getBoundingClientRect().top : innerHeight;
+      return {ust:ust, alt:alt};
+    };
+    var bildirHareket=function(){ o.hareket(x,y,x-x0,y-y0+(window.scrollY-sy0)); };
+    function otoKaydir(){
+      if(!aktifS) return;
+      var k=kenar(), BOLGE=80, hiz=0;
+      if(y<k.ust+BOLGE) hiz=-Math.min(16,Math.ceil(16*(k.ust+BOLGE-y)/BOLGE));
+      else if(y>k.alt-BOLGE) hiz=Math.min(16,Math.ceil(16*(y-(k.alt-BOLGE))/BOLGE));
+      if(hiz){ var once=window.scrollY; window.scrollBy(0,hiz); if(window.scrollY!==once) bildirHareket(); }
+      raf=requestAnimationFrame(otoKaydir);
+    }
+    function kilitle(){
+      SURUKLE.aktif=true; document.body.classList.add("surukluyor");
+      document.addEventListener("touchmove",engelle,{passive:false});
+      raf=requestAnimationFrame(otoKaydir);
+    }
+    function coz(){
+      SURUKLE.aktif=false; SURUKLE.son=Date.now(); document.body.classList.remove("surukluyor");
+      document.removeEventListener("touchmove",engelle,{passive:false});
+      cancelAnimationFrame(raf);
+    }
+    function basla(t,cx,cy){
+      if(o.uygun && !o.uygun(t)) return;
+      el=t; x0=x=cx; y0=y=cy; clearTimeout(zaman);
+      zaman=setTimeout(function(){
+        zaman=null; aktifS=true; sy0=window.scrollY;
+        kilitle(); o.basla(el);
+        titret("hafif"); try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){}
+      },sure);
+    }
+    function hareket(cx,cy){
+      x=cx; y=cy;
+      if(zaman && (Math.abs(cx-x0)>8 || Math.abs(cy-y0)>8)){ clearTimeout(zaman); zaman=null; el=null; return; }
+      if(aktifS) bildirHareket();
+    }
+    function birak(){
+      clearTimeout(zaman); zaman=null;
+      if(!aktifS){ el=null; return false; }
+      aktifS=false; el=null; coz(); o.birak();
+      return true;
+    }
+    kap.addEventListener("touchstart",function(e){
+      var t=e.target.closest(o.secici); if(!t || e.touches.length!==1) return;
+      basla(t,e.touches[0].clientX,e.touches[0].clientY);
+    },{passive:true});
+    kap.addEventListener("touchmove",function(e){ if(el) hareket(e.touches[0].clientX,e.touches[0].clientY); },{passive:true});
+    kap.addEventListener("touchend",function(e){ if(birak() && e.cancelable) e.preventDefault(); });
+    kap.addEventListener("touchcancel",function(){ birak(); });
+    // fare (bilgisayar)
+    kap.addEventListener("mousedown",function(e){
+      var t=e.target.closest(o.secici); if(!t || e.button!==0) return;
+      basla(t,e.clientX,e.clientY);
+      function mm(ev){ hareket(ev.clientX,ev.clientY); if(aktifS) ev.preventDefault(); }
+      function mu(){ document.removeEventListener("mousemove",mm); document.removeEventListener("mouseup",mu); birak(); }
+      document.addEventListener("mousemove",mm); document.addEventListener("mouseup",mu);
+    });
+    kap.addEventListener("contextmenu",function(e){ if(e.target.closest(o.secici)) e.preventDefault(); });
+  }
+
   var VS={son:0};
   (function(){
     var kap=document.getElementById("villalar");
-    var zaman=null, el=null, aktifS=false, y0=0, x0=0, kartlar=[], yuva=[], ilk=0, hedef=0, adim=0;
-    function iptal(){ clearTimeout(zaman); zaman=null; }
-    function basla(t,x,y){
-      if(S.anaSuz || S.villalar.length<2) return;
-      el=t; x0=x; y0=y; iptal();
-      zaman=setTimeout(function(){
-        zaman=null; aktifS=true;
+    var el=null, kartlar=[], yuva=[], ilk=0, hedef=0, adim=0;
+    surukleBagla(kap,{secici:".kart",
+      uygun:function(){ return !S.anaSuz && S.villalar.length>=2; },
+      basla:function(t){
+        el=t;
         kartlar=Array.prototype.slice.call(kap.querySelectorAll(".kart"));
         yuva=kartlar.map(function(k){ return {y:k.offsetTop, h:k.offsetHeight}; });
         ilk=hedef=kartlar.indexOf(el);
         adim=kartlar.length>1 ? (yuva[1].y-yuva[0].y) : el.offsetHeight;
         kap.classList.add("siraliyor"); el.classList.add("suruk");
         el.style.transform="scale(1.03)";
-        titret("hafif"); try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){}
-      },400);
-    }
-    function hareket(x,y){
-      if(zaman && (Math.abs(x-x0)>8 || Math.abs(y-y0)>8)){ iptal(); el=null; return false; }
-      if(!aktifS) return false;
-      var dy=y-y0;
-      el.style.transform="translateY("+dy+"px) scale(1.03)";
-      var merkez=yuva[ilk].y+yuva[ilk].h/2+dy, en=ilk, d0=1e12;
-      yuva.forEach(function(s,i){ var d=Math.abs(s.y+s.h/2-merkez); if(d<d0){ d0=d; en=i; } });
-      if(en!==hedef){
-        hedef=en;
-        kartlar.forEach(function(k,i){
-          if(i===ilk) return;
-          var kay=0;
-          if(ilk<hedef && i>ilk && i<=hedef) kay=-adim;
-          if(ilk>hedef && i<ilk && i>=hedef) kay=adim;
-          k.style.transform=kay?"translateY("+kay+"px)":"";
-        });
-      }
-      if(y<90) window.scrollBy(0,-10); else if(y>window.innerHeight-140) window.scrollBy(0,10);
-      return true;
-    }
-    function birak(){
-      iptal();
-      if(!aktifS){ el=null; return false; }
-      aktifS=false; VS.son=Date.now();
-      var t=el; el=null;
-      // bırakılan kart yeni yuvasına kayar, sonra liste yeni sırayla çizilir
-      t.style.transform="translateY("+(yuva[hedef].y-yuva[ilk].y)+"px) scale(1)";
-      t.style.transition="transform 180ms cubic-bezier(.2,.8,.2,1)";
-      setTimeout(function(){
-        kap.classList.remove("siraliyor");
-        if(hedef!==ilk){
-          var gorunen=kartlar.map(function(k){ return k.dataset.id; });
-          var tasinan=gorunen.splice(ilk,1)[0]; gorunen.splice(hedef,0,tasinan);
-          var harita={}; S.villalar.forEach(function(v){ harita[v.id]=v; });
-          S.villalar=gorunen.map(function(id){ return harita[id]; }).filter(Boolean)
-            .concat(S.villalar.filter(function(v){ return gorunen.indexOf(v.id)<0; }));
-          villaSiraYaz(); kaydet();
-          try{ localStorage.setItem(SIRA_IPUCU,"1"); }catch(e){}
-          titret("basari");
+      },
+      hareket:function(x,y,dx,dy){
+        if(!el) return;
+        el.style.transform="translateY("+dy+"px) scale(1.03)";
+        var merkez=yuva[ilk].y+yuva[ilk].h/2+dy, en=ilk, d0=1e12;
+        yuva.forEach(function(s,i){ var d=Math.abs(s.y+s.h/2-merkez); if(d<d0){ d0=d; en=i; } });
+        if(en!==hedef){
+          hedef=en;
+          kartlar.forEach(function(k,i){
+            if(i===ilk) return;
+            var kay=0;
+            if(ilk<hedef && i>ilk && i<=hedef) kay=-adim;
+            if(ilk>hedef && i<ilk && i>=hedef) kay=adim;
+            k.style.transform=kay?"translateY("+kay+"px)":"";
+          });
         }
-        cizAna();
-      },azHareket()?0:190);
-      return true;
-    }
-    kap.addEventListener("touchstart",function(e){
-      var t=e.target.closest(".kart"); if(!t || e.touches.length!==1) return;
-      basla(t,e.touches[0].clientX,e.touches[0].clientY);
-    },{passive:true});
-    kap.addEventListener("touchmove",function(e){
-      if(!el) return;
-      if(hareket(e.touches[0].clientX,e.touches[0].clientY) && e.cancelable) e.preventDefault();
-    },{passive:false});
-    kap.addEventListener("touchend",function(e){ if(birak() && e.cancelable) e.preventDefault(); });
-    kap.addEventListener("touchcancel",function(){ birak(); });
-    kap.addEventListener("mousedown",function(e){
-      var t=e.target.closest(".kart"); if(!t || e.button!==0) return;
-      basla(t,e.clientX,e.clientY);
-      function mm(ev){ if(hareket(ev.clientX,ev.clientY)) ev.preventDefault(); }
-      function mu(){ document.removeEventListener("mousemove",mm); document.removeEventListener("mouseup",mu); birak(); }
-      document.addEventListener("mousemove",mm); document.addEventListener("mouseup",mu);
+      },
+      birak:function(){
+        VS.son=Date.now();
+        var t=el; el=null; if(!t) return;
+        // bırakılan kart yeni yuvasına kayar, sonra liste yeni sırayla çizilir
+        t.style.transform="translateY("+(yuva[hedef].y-yuva[ilk].y)+"px) scale(1)";
+        t.style.transition="transform 180ms cubic-bezier(.2,.8,.2,1)";
+        setTimeout(function(){
+          kap.classList.remove("siraliyor");
+          if(hedef!==ilk){
+            var gorunen=kartlar.map(function(k){ return k.dataset.id; });
+            var tasinan=gorunen.splice(ilk,1)[0]; gorunen.splice(hedef,0,tasinan);
+            var harita={}; S.villalar.forEach(function(v){ harita[v.id]=v; });
+            S.villalar=gorunen.map(function(id){ return harita[id]; }).filter(Boolean)
+              .concat(S.villalar.filter(function(v){ return gorunen.indexOf(v.id)<0; }));
+            villaSiraYaz(); kaydet();
+            try{ localStorage.setItem(SIRA_IPUCU,"1"); }catch(e){}
+            titret("basari");
+          }
+          cizAna();
+        },azHareket()?0:190);
+      }
     });
-    kap.addEventListener("contextmenu",function(e){ if(e.target.closest(".kart")) e.preventDefault(); });
   })();
 
   var kilitZaman=null;
@@ -3553,7 +3597,6 @@
     // 18.3: seçim işlemleri altta (başparmak bölgesi), alt menünün hemen üstünde kayan panel
     document.getElementById("adimSerit").classList.add("hide");
     secPanelCiz(v);
-    if(TUR) setTimeout(turGuncelle,0);
   }
   function secimCiz(){ var v=aktif(); if(!v) return; MAP=harita(v.rez); takvimCiz(v); }
   function ciz(){
@@ -3728,6 +3771,7 @@
   //  · aralık seçiliyken herhangi bir güne dokunmak seçimi kaldırır (yeni seçim başlamaz)
   function secimBitir(){
     S.secim=null; S.start=null; S.rezNiyet=false; S.rezModu=false; S.uyari=""; secimCiz();
+    rhBildir("secimTemizlendi");
   }
   // 18.3: alttaki seçim paneli. Sadece başlangıç: "Giriş: 24 Kasım · Şimdi çıkış gününe dokunun" + ✕.
   // Aralık: "24 → 27 Kasım · 3 gece · 9.000 ₺" + ✕ ve eşit genişlikte Rezervasyon · Teklif · Opsiyon.
@@ -3784,135 +3828,192 @@
     document.body.classList.remove("secPanelAcik");
   }
 
-  // ================= 18.13 / 18.5 UYGULAMA TURU =================
-  // Koyu yarı saydam perde, vurgulanan öğede delik, altta/üstte baloncuk + "İleri", sağ üstte "Turu geç".
-  // Adım: {hedef:fn→öğe, metin, bekle:"aralik"|"rez"|null, metin2 (başlangıç seçilince), hazirla:fn}
-  // "bekle" adımlarında perdedeki delikten gerçek dokunuş geçer (takvim günleri, alttaki panel).
-  var TUR=null, TUR_ANAHTAR="vt-tur";
-  function turBaslat(adimlar,bitince,sec){
-    turBitir(true);
-    var o=document.createElement("div");
-    o.className="tur"; o.setAttribute("role","dialog"); o.setAttribute("aria-modal","true");
-    o.innerHTML='<div class="turDelik"></div><div class="turBalon"><div class="turSay"></div><div class="turMetin"></div>'+
-      '<button class="big turIleri" type="button"></button></div>'+
-      '<button class="turGec" type="button">'+esc(cev("Turu geç"))+"</button>";
-    document.body.appendChild(o);
-    TUR={o:o, adimlar:adimlar, i:-1, bitince:bitince, raf:0, sayacYok:!!(sec&&sec.sayacYok)};
-    o.addEventListener("click",function(e){
-      if(e.target.closest(".turGec")){ titret("hafif"); turBitir(); return; }
-      if(e.target.closest(".turIleri")){ titret("hafif"); turAdim(TUR.i+1); return; }
-      if(e.target.closest(".turBalon")) return;
-      // delikten geçen dokunuş: bekleyen adımda alttaki öğeye iletilir
-      var a=TUR && TUR.adimlar[TUR.i]; if(!a || !a.bekle) return;
-      var r=TUR.rect; if(!r || e.clientX<r.left || e.clientX>r.right || e.clientY<r.top || e.clientY>r.bottom) return;
-      o.style.pointerEvents="none";
-      var hedef=document.elementFromPoint(e.clientX,e.clientY);
-      o.style.pointerEvents="";
-      // ikon (SVG) üstüne düşse de olay butona kadar kabarcıklanır
-      if(hedef) hedef.dispatchEvent(new MouseEvent("click",{bubbles:true, cancelable:true, clientX:e.clientX, clientY:e.clientY, view:window}));
-      setTimeout(turGuncelle,30);
-    });
-    var izle=function(){ if(!TUR || TUR.o!==o) return; turYerlestir(); TUR.raf=requestAnimationFrame(izle); };
-    turAdim(0);
-    TUR.raf=requestAnimationFrame(izle);
-  }
-  function turBitir(sessiz){
-    if(!TUR) return;
-    var t=TUR; TUR=null;
-    cancelAnimationFrame(t.raf);
-    Array.prototype.forEach.call(document.querySelectorAll(".turNabiz"),function(x){ x.classList.remove("turNabiz"); });
-    t.o.classList.add("kapaniyor");
-    setTimeout(function(){ if(t.o.parentNode) t.o.remove(); },azHareket()?0:180);
-    if(!sessiz && t.bitince) t.bitince();
-  }
-  function turAdim(i){
-    if(!TUR) return;
-    if(i>=TUR.adimlar.length){ turBitir(); return; }
-    TUR.i=i;
-    var a=TUR.adimlar[i];
-    Array.prototype.forEach.call(document.querySelectorAll(".turNabiz"),function(x){ x.classList.remove("turNabiz"); });
-    if(a.hazirla) a.hazirla();
-    TUR.o.classList.toggle("bekliyor",!!a.bekle);
-    var b=TUR.o.querySelector(".turBalon");
-    b.classList.remove("yeni"); void b.offsetWidth; b.classList.add("yeni");
-    turGuncelle();
-  }
-  // bekleyen adımda uygulamanın durumuna göre metin / sonraki adım
-  function turGuncelle(){
-    if(!TUR) return;
-    var a=TUR.adimlar[TUR.i]; if(!a) return;
-    if(a.bekle==="aralik" && S.secim){ turAdim(TUR.i+1); return; }
-    if(a.bekle==="rez" && document.querySelector(".overlay:not(.kapaniyor)")){ turBitir(); return; }
-    var n=TUR.adimlar.length;
-    TUR.o.querySelector(".turSay").textContent=TUR.sayacYok?"":cev((TUR.i+1)+"/"+n);
-    TUR.o.querySelector(".turMetin").textContent=cev((a.bekle==="aralik" && S.start && a.metin2) ? a.metin2 : a.metin);
-    var ileri=TUR.o.querySelector(".turIleri");
-    ileri.textContent=cev(TUR.i===n-1?"Bitir":"İleri");
-    ileri.classList.toggle("hide",!!a.bekle);
-    turYerlestir();
-  }
-  function turYerlestir(){
-    if(!TUR) return;
-    var a=TUR.adimlar[TUR.i], el=a && a.hedef && a.hedef(), d=TUR.o.querySelector(".turDelik"), b=TUR.o.querySelector(".turBalon");
-    var W=window.innerWidth, H=window.innerHeight, pay=8;
-    if(!el || el.offsetParent===null && getComputedStyle(el).position!=="fixed"){ d.style.opacity="0"; TUR.rect=null; }
-    else {
-      var r=el.getBoundingClientRect(), x=Math.max(4,r.left-pay), y=Math.max(4,r.top-pay), w=Math.min(W-4,r.right+pay)-x, h=Math.min(H-4,r.bottom+pay)-y;
-      var anahtar=[x,y,w,h].map(Math.round).join(",");
-      if(anahtar!==TUR.son){
-        TUR.son=anahtar;
-        d.style.opacity="1"; d.style.left=x+"px"; d.style.top=y+"px"; d.style.width=Math.max(0,w)+"px"; d.style.height=Math.max(0,h)+"px";
-      }
-      TUR.rect={left:x, top:y, right:x+w, bottom:y+h};
+  // ================= 19 REHBERLER: her işlemin adım listesi (veri) — motor rehber.js =================
+  // Yardımlı mod açıkken (Hesap → Yardım) işlemler bu rehberlerle başlar; kapalıyken doğrudan açılır.
+  // Metinler tek sözlükte: Rehber.M (rehber.js); aynı tür adım hep aynı cümle.
+  var RM=Rehber.M;
+  Rehber.ayarla({
+    cevir:cev, titret:titret, bildir:function(m){ bildir(m); },
+    ikon:function(ad,o){ return window.ikon ? window.ikon(ad,o) : ""; },
+    // hedef ekrana getirilirken üst çubuğun, alt menünün ya da seçim panelinin altında kalmasın
+    kenar:function(el){
+      var ov=el.closest && el.closest(".overlay");
+      if(ov){ var as=ov.querySelector(".altSabit"); return {ust:0, alt:(as && !as.contains(el)) ? as.offsetHeight : 0}; }
+      var ab=document.getElementById("appBar"), ust=(ab && !ab.classList.contains("hide")) ? Math.max(0,ab.getBoundingClientRect().bottom) : 0;
+      var alt=0, sk=document.getElementById("sekmeler"), sp=document.getElementById("secPanel");
+      if(sk && !sk.classList.contains("hide")) alt=Math.max(0,innerHeight-sk.getBoundingClientRect().top);
+      if(sp && sp.classList.contains("acik")) alt=Math.max(alt,innerHeight-sp.getBoundingClientRect().top);
+      return {ust:ust, alt:alt};
     }
-    // baloncuk: deliğin altında yer varsa altta, yoksa üstte; ikisi de yoksa ekranın üstünde
-    var bh=b.offsetHeight, R=TUR.rect, ust;
-    if(!R) ust=H-bh-16;
-    else if(H-R.bottom>=bh+20) ust=R.bottom+12;
-    else if(R.top>=bh+20) ust=R.top-bh-12;
-    else ust=Math.max(56,(H-bh)/2);
-    b.style.transform="translateY("+Math.round(ust)+"px)";
+  });
+  function rhBildir(olay,veri){ try{ Rehber.bildir(olay,veri); }catch(e){} }
+  // işlem rehberle başlasın mı: Yardımlı mod açık, bu işlemin yardımı kapatılmamış, başka rehber sürmüyor
+  function rehberAc(ad,tanim){
+    if(!window.Rehber || !Rehber.gerekli(ad) || Rehber.aktif()) return false;
+    return Rehber.baslat(tanim());
   }
-  // takvim adımı: takvimi ekrana getirir, ilk boş günü nabız gibi vurgular
-  function turTakvimHazirla(){
+  var panelAcik=function(){ return !!document.querySelector(".overlay:not(.kapaniyor)"); };
+  // açık panellerde en üstten aşağı ara (üstte uyarı açıksa arkadaki paneldeki öğe yine bulunur; rehber bekler)
+  var pq=function(s){
+    var l=document.querySelectorAll(".overlay:not(.kapaniyor)");
+    for(var i=l.length-1;i>=0;i--){ var e=l[i].querySelector(s); if(e) return e; }
+    return null;
+  };
+  var rhAlan=function(s){ return function(){ var e=pq(s); return e ? (e.closest(".field")||e) : null; }; };
+  var rhTek=function(s){ return function(){ return pq(s); }; };
+  var rhCok=function(){ var a=arguments; return function(){ var l=[]; for(var i=0;i<a.length;i++){ var e=pq(a[i]); if(e) l.push(e); } return l; }; };
+
+  // ---- tarih adımları: rezervasyon, teklif, opsiyon ve uygulama turunda birebir aynı (19.10) ----
+  var rhTakvim=function(){ return [document.querySelector("#takvim .monthbar"), document.getElementById("grid")]; };
+  // tarih seçerken ay başlığıyla takvim arasındaki hap sırası gizlenir: takvim küçük ekranda da baloncukla birlikte sığar,
+  // Teklif / Fiyat gir'e yanlışlıkla basılmaz
+  var rhTarihGir=function(){ document.body.classList.add("rhTarih"); rhIlkBosGun(); };
+  var rhTarihCik=function(){ document.body.classList.remove("rhTarih"); rhNabizKaldir(); };
+  function rhNabizKaldir(){ Array.prototype.forEach.call(document.querySelectorAll(".turNabiz"),function(x){ x.classList.remove("turNabiz"); }); }
+  // ilk boş gün nabız gibi atar (nereye dokunulacağı belli olsun)
+  function rhIlkBosGun(){
+    rhNabizKaldir();
     var g=document.getElementById("grid"); if(!g) return;
-    var ab=document.getElementById("appBar"), ust=(ab&&!ab.classList.contains("hide"))?ab.offsetHeight:0;
-    var bas=document.querySelector("#takvim .monthbar");
-    try{ window.scrollTo(0, Math.max(0,(bas||g).getBoundingClientRect().top+window.scrollY-ust-150)); }catch(e){}
     var tk=fmt(today), bos=Array.prototype.filter.call(g.querySelectorAll(".cell"),function(c){
       var o=gun(c.dataset.k); return c.dataset.k>=tk && !o.sabah && !o.aksam; })[0];
     if(bos) bos.classList.add("turNabiz");
   }
-  var turAdimTakvim=function(no){ return {hedef:function(){ return document.getElementById("grid"); }, bekle:"aralik", hazirla:turTakvimHazirla,
-    metin:(no?no+". ":"")+"Misafirin gireceği güne, sonra çıkacağı güne dokunun.",
-    metin2:(no?(no+1)+". ":"")+"Şimdi çıkacağı güne dokunun."}; };
-  // 18.5 "Nasıl yapılır?": 1. giriş günü, 2. çıkış günü, 3. Rezervasyon'a dokunun
+  // niyet: true (rezervasyon) | "teklif" | "ops" | false (sadece seçim) — iki gün seçilince ilgili panel kendiliğinden açılır
+  function rhTarih(niyet){
+    var takvimde=function(){ return !!aktif() && !document.getElementById("takvim").classList.contains("hide"); };
+    return [
+      {id:"tarih1", hedef:rhTakvim, metin:RM.tarihGiris, bekle:"olay", olay:"baslangic",
+       atla_eger:function(){ return !takvimde() || panelAcik() || !!S.start || !!S.secim; },
+       hazirla:function(){ if(niyet && !S.rezModu && !S.rezNiyet){ S.rezModu=niyet; secimCiz(); } rhTarihGir(); }, cikis:rhTarihCik},
+      {id:"tarih2", hedef:rhTakvim, metin:RM.tarihCikis, bekle:"olay", olay:"aralik",
+       donus:{secimTemizlendi:"tarih1"},
+       atla_eger:function(){ return !takvimde() || panelAcik() || !!S.secim; },
+       hazirla:function(){ document.body.classList.add("rhTarih"); }, cikis:rhTarihCik,
+       geri:function(){ S.start=null; S.uyari=""; S.rezModu=S.rezNiyet||niyet||false; S.rezNiyet=false; secimCiz(); }}
+    ];
+  }
+  var rhKaydet=function(id,olay,metin){ return {hedef:rhTek(id), metin:metin||RM.kaydet, bekle:"olay", olay:olay}; };
+
+  var REHBER={
+    // 19.3 Rezervasyon
+    rez:function(){ return {ad:"rez", basari:"Rezervasyon kaydedildi", bitis_olayi:"kaydedildi:rez", bitince:rhNabizKaldir,
+      adimlar:rhTarih(true).concat([
+        {hedef:rhTek("#f-ucret"), metin:RM.ucret, bekle:"ileri", istege:true},
+        {hedef:rhAlan("#f-guest"), deger:"#f-guest", metin:RM.adYaz, bekle:"deger"},
+        {hedef:rhAlan("#f-kisiAz"), metin:RM.kisi, bekle:"ileri"},
+        {hedef:rhAlan("#f-phone"), metin:RM.telefon, bekle:"ileri"},
+        {hedef:function(){ var s=pq("#f-kaporaSw"); return s ? [s.closest(".anahtar"), pq("#f-kaporaAlan")] : null; },
+         metin:RM.kapora, bekle:"ileri", istege:true},
+        rhKaydet("#f-kaydet","kaydedildi:rez",RM.rezKaydet)
+      ])}; },
+    // 19.4 Teklif
+    teklif:function(){ return {ad:"teklif", basari:"Teklif kaydedildi", basariAlt:"Mesaj WhatsApp'ta açıldı.", bitis_olayi:"kaydedildi:teklif", bitince:rhNabizKaldir,
+      adimlar:rhTarih("teklif").concat([
+        {hedef:function(){ var g=pq("#tk-giris"); return g ? g.closest(".ikili") : null; }, metin:RM.tarihSec, bekle:"olay",
+         kosul:function(){ var g=pq("#tk-giris"), c=pq("#tk-cikis"); return !!(g && c && g.value && c.value && c.value>g.value); },
+         atla_eger:function(){ var g=pq("#tk-giris"), c=pq("#tk-cikis"); return !g || !!(g.value && c.value); }},
+        {hedef:function(){ var f=pq("#tk-fiyat"); return [pq(".tkYuzde"), f && f.closest(".buyukSayi"), pq("#tk-karsi")]; },
+         metin:RM.teklifFiyat, bekle:"ileri"},
+        {hedef:rhAlan("#tk-ad"), metin:RM.adIstege, bekle:"ileri"},
+        {hedef:function(){ var g=pq("#tk-gec"); return g ? [g.previousElementSibling, g, pq("#tk-gecTarih")] : null; },
+         metin:RM.teklifGecerlilik, bekle:"ileri"},
+        {hedef:rhAlan("#tk-mesaj"), metin:RM.teklifMesaj, bekle:"ileri"},
+        {hedef:rhCok("#tk-durum","#tk-wa"), metin:RM.teklifGonder, bekle:"olay", olay:"kaydedildi:teklif"}
+      ])}; },
+    // 19.5 Opsiyon
+    ops:function(){ return {ad:"ops", basari:"Opsiyon kondu", basariAlt:"Opsiyon süresi bitince kendiliğinden kalkar.", bitis_olayi:"kaydedildi:ops", bitince:rhNabizKaldir,
+      adimlar:rhTarih("ops").concat([
+        {hedef:rhAlan("#op-ad"), deger:"#op-ad", metin:RM.adYaz, bekle:"deger"},
+        {hedef:rhAlan("#op-tel"), metin:RM.telefon, bekle:"ileri"},
+        {hedef:function(){ var g=pq("#op-gec"); return g ? [g.previousElementSibling, g, pq("#op-gec-tarih")] : null; },
+         metin:RM.opsGecerlilik, bekle:"ileri"},
+        rhKaydet("#op-kaydet","kaydedildi:ops")
+      ])}; },
+    // 19.6 Fiyat gir
+    fiyat:function(){ return {ad:"fiyat", basari:"Fiyatlar kaydedildi", bitis_olayi:"kaydedildi:fiyat",
+      adimlar:[
+        // bu aydan sonraki aylar (geçmiş aylar deliğin dışında kalır)
+        {hedef:function(){ var bu=today.getFullYear()*12+today.getMonth()+1;
+           return Array.prototype.filter.call(document.querySelectorAll("#fyAylar [data-ay]"),function(b){ var x=ayAnahtar(b.dataset.ay); return x.y*12+x.m>=bu; }); },
+         metin:RM.fiyatAy, bekle:"olay", olay:"panel:fiyat", atla_eger:panelAcik},
+        {hedef:function(){ var f=pq("#fp-tutar"); return f ? [pq("#fp-anaLab"), f.closest(".buyukSayi")] : null; },
+         deger:"#fp-tutar", metin:RM.fiyatHaftaici, bekle:"deger"},
+        {hedef:rhCok("#fp-hsAc","#fp-hsKutu"), istege:true, bekle:"ileri",
+         metin:function(){ var k=pq("#fp-hsKutu"); return (k && !k.classList.contains("hide") && !pq("#fp-hsAc")) ? RM.fiyatHaftasonu : RM.fiyatHaftasonuAc; }},
+        {hedef:function(){ var g=pq("#fp-gecmis"); return (g && !g.classList.contains("hide")) ? g : pq("#fp-uygula"); },
+         metin:RM.kaydet, bekle:"olay", olay:"kaydedildi:fiyat"}
+      ]}; },
+    // 19.7 Paylaş
+    paylas:function(){ return {ad:"paylas", basari:"Bağlantı paylaşıldı", bitis_olayi:"kaydedildi:paylas",
+      adimlar:[
+        {hedef:rhTek(".lsLink"), metin:RM.paylasBilgi, bekle:"ileri"},
+        {hedef:rhTek("#ls-paylas"), metin:RM.paylasDokun, bekle:"olay", olay:"kaydedildi:paylas"}
+      ]}; },
+    // 19.8 "Ödemeyi al ve misafiri yerleştir" (sor: giriş günü → sonra "Misafiri yerleştirdiniz mi?")
+    odemeAl:function(sor){ return {ad:"odeme", basari:"Ödeme kaydedildi", bitis_olayi:"kaydedildi:odeme",
+      adimlar:[
+        {hedef:function(){ var t=pq("#ak-tutar"); return [pq("#ak-tamami"), t && t.closest(".field")]; }, metin:RM.odemeTutar, bekle:"ileri"},
+        {hedef:rhCok("#ak-hata","#ak-kaydet"), metin:RM.kaydet, bekle:"olay", olay:"odeme:alindi"},
+        {hedef:rhTek("#ak-s2"), metin:RM.yerlestir, bekle:"olay", olay:"yerlesti", atla_eger:function(){ return !sor; }}
+      ]}; },
+    // 19.8 "Alınan ödemeyi gir"
+    odemeGir:function(){ return {ad:"odeme", basari:"Ödeme kaydedildi", bitis_olayi:"kaydedildi:odeme",
+      adimlar:[
+        {hedef:function(){ var t=pq("#o-tutar"); return [pq(".hazirOdeme"), t && t.closest(".field")]; }, bekle:"ileri",
+         metin:function(){ return pq(".hazirOdeme [data-hz]") ? RM.odemeTutar : RM.odemeTutarYaz; }},
+        rhKaydet("#o-ekle","kaydedildi:odeme")
+      ]}; },
+    // 19.9 Gider ekle
+    gider:function(){ return {ad:"gider", basari:"Gider kaydedildi", bitis_olayi:"kaydedildi:gider",
+      adimlar:[
+        {hedef:rhTek("#h-katlar"), metin:RM.giderTur, bekle:"dokunus", dokun:"[data-kat]"},
+        {hedef:function(){ var t=pq("#h-tutar"); return [rhAlan("#h-ad")(), t && t.closest(".ikili")]; }, deger:"#h-tutar", metin:RM.tutarYaz, bekle:"deger"},
+        {hedef:rhCok("#h-onizleme","#h-foto"), metin:RM.giderFis, bekle:"ileri"},
+        rhKaydet("#h-kaydet","kaydedildi:gider")
+      ]}; },
+    // 19.9 Fotoğraf ekle / Drive'dan al (fotoğraflar yüklenince ✓)
+    foto:function(){ var drive=function(){ return !!pq("#dr-link"); };
+      return {ad:"foto", basari:"Fotoğraflar eklendi", bitis_olayi:"kaydedildi:foto",
+      adimlar:[
+        {hedef:rhCok("#fs-tel","#fs-drive"), metin:RM.fotoKaynak, bekle:"dokunus", dokun:"#fs-tel,#fs-drive", atla_eger:function(){ return !pq("#fs-tel"); }},
+        {hedef:rhTek(".drLink"), deger:"#dr-link", metin:RM.driveLink, bekle:"deger", atla_eger:function(){ return !drive(); }},
+        {hedef:rhCok("#dr-hata","#dr-bul"), metin:RM.driveBul, bekle:"olay", olay:"drive:bulundu", atla_eger:function(){ return !drive(); }},
+        {hedef:rhTek("#dr-sonuc"), metin:RM.driveEkle, bekle:"dokunus", dokun:"#dr-ekle", atla_eger:function(){ return !drive(); }},
+        {gizli:true, bekle:"olay", olay:"kaydedildi:foto"}
+      ]}; },
+    // 19.9 Bakıcı ekle (Hesap → "Villama bakıcı ekle" ya da villa → Bakıcılar)
+    bakici:function(){ return {ad:"bakici", basari:"Davet hazır",
+      adimlar:[
+        {hedef:rhTek("#bkVilla"), metin:RM.bakiciVilla, bekle:"dokunus", dokun:"[data-vid]", atla_eger:function(){ return !pq("#bkVilla"); }},
+        {hedef:rhTek("#bk-uret"), metin:RM.bakiciDavet, bekle:"olay", olay:"davet:hazir"},
+        {hedef:rhTek("#bk-alan"), metin:RM.bakiciGonder, bekle:"dokunus", dokun:"#bk-paylas,#bk-kopya"}
+      ]}; },
+    // 18.13 uygulama turu (kurulum bitince bir kez; Hesap → Yardım'dan tekrar)
+    tur:function(){ return {ad:"tur", sormaz:true,
+      bitince:function(){ rhNabizKaldir(); if(S.secim||S.start||S.rezModu){ S.secim=null; S.start=null; S.rezModu=false; ciz(); } },
+      adimlar:[
+        {hedef:function(){ return document.querySelector("#siradaki .sirKart"); }, metin:RM.turSira, bekle:"ileri", istege:true,
+         hazirla:function(){ try{ window.scrollTo(0,0); }catch(e){} }}
+      ].concat(rhTarih(false)).concat([
+        {hedef:function(){ return document.getElementById("secPanel"); }, metin:RM.turPanel, bekle:"ileri", dokunulmaz:true},
+        {hedef:function(){ return document.getElementById("sekmeler"); }, metin:RM.turSekme, bekle:"ileri", dokunulmaz:true,
+         hazirla:function(){ S.secim=null; S.start=null; ciz(); }}
+      ])}; }
+  };
+  // 18.5 "Nasıl yapılır?" (boş Sıradaki kartı): Yardımlı mod kapalı olsa da rezervasyon rehberi
   function turTakvim(){
     if(!aktif()) return;
-    S.secim=null; S.start=null; S.rezModu=false; S.uyari=""; ciz();
-    turBaslat([
-      {hedef:function(){ return document.getElementById("grid"); }, bekle:"aralik", hazirla:turTakvimHazirla,
-       metin:"1. Misafirin gireceği güne dokunun", metin2:"2. Çıkacağı güne dokunun"},
-      {hedef:function(){ return document.getElementById("secPanel"); }, bekle:"rez", metin:"3. Rezervasyon'a dokunun"}
-    ],null,{sayacYok:true});
+    S.secim=null; S.start=null; S.rezModu=false; S.rezNiyet=false; S.uyari=""; ciz();
+    Rehber.baslat(REHBER.rez());
   }
-  // 18.13: kurulum bitince villa ekranında 4 adımlı tur (bir kez; Hesap → Yardım'dan tekrar)
+  var TUR_ANAHTAR="vt-tur";
   function turGosterildi(){ try{ return !!localStorage.getItem(TUR_ANAHTAR); }catch(e){ return true; } }
   function turAna(){
     if(!aktif()) return;
     try{ localStorage.setItem(TUR_ANAHTAR,"1"); }catch(e){}
-    S.secim=null; S.start=null; S.rezModu=false; S.uyari=""; ciz();
+    S.secim=null; S.start=null; S.rezModu=false; S.rezNiyet=false; S.uyari=""; ciz();
     try{ window.scrollTo(0,0); }catch(e){}
-    turBaslat([
-      {hedef:function(){ return document.querySelector("#siradaki .sirKart"); },
-       hazirla:function(){ try{ window.scrollTo(0,0); }catch(e){} },
-       metin:"Burada her zaman sıradaki iş yazar: kim girecek, ne kadar alınacak."},
-      turAdimTakvim(0),
-      {hedef:function(){ return document.getElementById("secPanel"); }, metin:"Rezervasyon, teklif ya da opsiyon seçin."},
-      {hedef:function(){ return document.getElementById("sekmeler"); },
-       hazirla:function(){ S.secim=null; S.start=null; ciz(); },
-       metin:"Takvim sekmesinde tüm villalarınızın giriş-çıkışları, Hesap'ta ayarlar."}
-    ],function(){ if(S.secim||S.start){ S.secim=null; S.start=null; ciz(); } });
+    Rehber.baslat(REHBER.tur());
   }
   document.getElementById("grid").addEventListener("click",function(ev){
     var b=ev.target.closest(".cell"); if(!b) return;
@@ -3931,7 +4032,7 @@
       if(S.salt){ S.uyari="Villa şu anda başkası tarafından düzenleniyor."; secimCiz(); return; }
       // "+ Rezervasyon" (ya da Teklif / Opsiyon) hapıyla başladıysa aralık seçilince doğrudan ilgili panel açılır
       S.rezNiyet=S.rezModu||false; S.rezModu=false;
-      S.start=k; secimCiz(); return;
+      S.start=k; secimCiz(); rhBildir("baslangic"); return;
     }
     if(k===S.start){ secimBitir(); return; }
     if(k<S.start){
@@ -3946,10 +4047,10 @@
     var tsl={start:S.start, end:k, color:renkSec(aktif().rez,parse(S.start),parse(k))};
     S.start=null;
     var niyet=S.rezNiyet; S.rezNiyet=false;
-    if(niyet==="teklif"){ secimCiz(); ozelTeklifSheet(aktif(),{giris:tsl.start,cikis:tsl.end}); return; }
-    if(niyet==="ops"){ secimCiz(); opsiyonSheet(aktif(),tsl); return; }
-    if(niyet){ S.taslak=tsl; secimCiz(); form(); return; }
-    S.secim=tsl; secimCiz();
+    if(niyet==="teklif"){ secimCiz(); ozelTeklifSheet(aktif(),{giris:tsl.start,cikis:tsl.end}); rhBildir("aralik"); return; }
+    if(niyet==="ops"){ secimCiz(); opsiyonSheet(aktif(),tsl); rhBildir("aralik"); return; }
+    if(niyet){ S.taslak=tsl; secimCiz(); form(); rhBildir("aralik"); return; }
+    S.secim=tsl; secimCiz(); rhBildir("aralik");
   });
 
   document.getElementById("siradaki").addEventListener("click",function(ev){
@@ -3976,8 +4077,18 @@
     var b=e.target.closest("[data-is]"); if(!b || !aktif()) return;
     var is=b.dataset.is;
     if(is==="rez" || is==="teklif" || is==="ops"){
+      // 19.3: tarihler zaten seçiliyse ilgili panel hemen açılır (rehber tarih adımlarını atlar)
+      if(S.secim){
+        var sc0=S.secim; S.secim=null; S.start=null; ciz();
+        if(is==="rez"){ S.taslak=sc0; form(); }
+        else if(is==="teklif") ozelTeklifSheet(aktif(),{giris:sc0.start,cikis:sc0.end});
+        else opsiyonSheet(aktif(),sc0);
+        return;
+      }
       // 16.4: Teklif / Opsiyon da tarih seçtirir; iki gün seçilince doğrudan ilgili panel açılır
       S.secim=null; S.start=null; S.uyari=""; S.rezModu=(is==="rez")?true:is; ciz();
+      // 19.3–19.5: Yardımlı modda rehber takvimi kendisi ekrana getirir
+      if(rehberAc(is,REHBER[is])) return;
       // 18.3: takvim görünsün; ne yapılacağı alttaki panelde yazar
       try{
         var se=document.querySelector("#takvim .monthbar"), ab2=document.getElementById("appBar");
@@ -4182,8 +4293,9 @@
       v.bilgi=v.bilgi||{}; v.bilgi.opsiyonlar=(v.bilgi.opsiyonlar||[]).filter(opsGorunur);
       v.bilgi.opsiyonlar.push({id:uid(), start:ar.start, end:ar.end, ad:ad, tel:document.getElementById("op-tel").value.trim(),
         son:s2, not:document.getElementById("op-not").value.trim(), olusturma:fmt(today)});
-      kaydet(); kapat(); ciz(); tamam(cev("Opsiyon kondu"));
+      kaydet(); kapat(); ciz(); rhBildir("kaydedildi:ops"); tamam(cev("Opsiyon kondu"));
     };
+    rehberAc("ops",REHBER.ops);
   }
   function opsDetay(v,o){
     var gc=Math.round((parse(o.end)-parse(o.start))/86400000), d=opsSonYaz(o);
@@ -4381,6 +4493,7 @@
         if($("tk-wa")){ $("tk-wa").disabled=false; $("tk-kopya").disabled=false; }
         durum(cev("Teklif kaydedildi. Villa yönetimi → Teklifler'den takip edebilirsiniz."),"ok");
         titret("basari");
+        if(tur==="wa") rhBildir("kaydedildi:teklif");
         if(tur==="wa"){
           var u="https://wa.me/?text="+encodeURIComponent(metin);
           var w=window.open(u,"_blank");
@@ -4395,6 +4508,7 @@
     $("tk-kopya").onclick=function(){ gonder("kopya"); };
     if(T.fiyat) fi.value=binlik(T.fiyat);
     hesap(); guncelle();
+    rehberAc("teklif",REHBER.teklif);
   }
 
   // Teklifler listesi (villa yönetimi) ve ayrıntı
@@ -4500,6 +4614,7 @@
     F.imlec=new Date(today.getFullYear(),today.getMonth(),1);
     F.yil=today.getFullYear();
     goster("fiyatEkran"); cizFiyat();
+    rehberAc("fiyat",REHBER.fiyat);
   }
   document.getElementById("fiyatBtn").onclick=function(){ fiyatEkranAc(); };
   document.getElementById("fyGeri").onclick=function(){ goster("takvim"); ciz(); };
@@ -4754,6 +4869,7 @@
     ana.addEventListener("focus",function(){ son=ana; });
     if(hs) hs.addEventListener("focus",function(){ son=hs; });
     try{ ana.focus(); }catch(e){}
+    rhBildir("panel:fiyat");
     Array.prototype.forEach.call(document.querySelectorAll("[data-hf]"),function(b){
       b.onclick=function(){ son.value=binlik(+b.dataset.hf); };
     });
@@ -4765,6 +4881,7 @@
       if(acik) try{ hs.focus(); }catch(e){} else son=ana;
     };
     function bitir(eski,msg){
+      if(!/silindi/.test(msg)) rhBildir("kaydedildi:fiyat");
       kaydet(); kapat();
       F.secMod=false; F.secAy={}; F.secGun={}; F.capa=null; fiyatYenile();
       geriAlBildir("✓ "+cev(msg),function(){ fiyatGeriYukle(v,eski); });
@@ -5002,6 +5119,7 @@
       if(t.opsiyon.not) document.getElementById("f-note").value=t.opsiyon.not;
     }
     if(!para0) isim.focus();
+    rehberAc("rez",REHBER.rez);
     btn.onclick=function(){
       if(!isim.value.trim()){
         isim.parentNode.classList.add("hata"); isimHata.classList.remove("hide"); isim.focus(); titret("uyari"); return; }
@@ -5025,6 +5143,7 @@
         var c=document.querySelector('#grid .cell[data-k="'+fmt(d)+'"]'); if(c){ c.classList.add("yeniParla"); }
       }
       setTimeout(function(){ Array.prototype.forEach.call(document.querySelectorAll(".cell.yeniParla"),function(c){ c.classList.remove("yeniParla"); }); },700);
+      rhBildir("kaydedildi:rez");
       tamam(cev("Rezervasyon kaydedildi"));
       // 15.4: opsiyondan dönüştüyse opsiyon kalkar
       if(t.opsiyon && v.bilgi && Array.isArray(v.bilgi.opsiyonlar)){
@@ -5293,10 +5412,11 @@
       var yazi=btn.textContent; btn.disabled=true; btn.textContent=cev("Kaydediliyor…");
       odemeKaydet(v,r,t).then(function(){
         ciz(); if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
-        if(!sor){ kapat(); tamam(cev(para(t)+" ödeme kaydedildi")); return; }
+        if(!sor){ kapat(); rhBildir("kaydedildi:odeme"); tamam(cev(para(t)+" ödeme kaydedildi")); return; }
         titret("hafif");
         document.getElementById("ak-alindi").innerHTML=ikon("tik",{boy:18,kalinlik:2.5})+"<span>"+esc(cev(para(t)+" alındı"))+"</span>";
         document.getElementById("ak-ic").classList.add("ikinci");
+        rhBildir("odeme:alindi");
         document.getElementById("ak-s1").setAttribute("aria-hidden","true");
         document.getElementById("ak-s2").removeAttribute("aria-hidden");
         try{ inp.blur(); }catch(x){}
@@ -5305,8 +5425,9 @@
         hata.textContent=odemeHata(e); titret("uyari");
       });
     };
-    document.getElementById("ak-evet").onclick=function(){ kapat(); yerlestir(v,r,t); };
-    document.getElementById("ak-henuz").onclick=function(){ kapat(); tamam(cev(para(t)+" alındı")); };
+    document.getElementById("ak-evet").onclick=function(){ kapat(); rhBildir("kaydedildi:odeme",{basari:"Misafir yerleştirildi"}); yerlestir(v,r,t); };
+    document.getElementById("ak-henuz").onclick=function(){ kapat(); rhBildir("kaydedildi:odeme"); tamam(cev(para(t)+" alındı")); };
+    rehberAc("odeme",function(){ return REHBER.odemeAl(sor); });
   }
 
   // 8.5 Çıkışta depozito iadesi: çıkış günü geldiyse ve elde depozito varsa sorulur
@@ -5436,6 +5557,7 @@
 
     var oT=document.getElementById("o-tutar");
     sayiBicimle(oT);
+    if(!secenek.rehbersiz) rehberAc("odeme",REHBER.odemeGir);
     Array.prototype.forEach.call(document.querySelectorAll("[data-hz]"),function(b){
       b.onclick=function(){ oT.value=binlik(+b.dataset.hz); };
     });
@@ -5454,6 +5576,7 @@
       kaydet();
       if(secenek.donus==="detay"){ detay(r); parlat(".overlay:not(.kapaniyor) .alinacakBuyuk, .overlay:not(.kapaniyor) .alindiTamam"); }
       else { kapat(); parlat('#liste .row[data-id="'+r.id+'"], #siradaki [data-id="'+r.id+'"]'); parlat('#tahsilat [data-id="'+r.id+'"]'); }
+      rhBildir("kaydedildi:odeme");
       tamam(cev(para(t)+" ödeme kaydedildi"));
     };
 
@@ -5464,7 +5587,7 @@
       var tazele=function(){
         kaydet(); kapat(); ciz();
         if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
-        odemeSheet(r);
+        odemeSheet(r,{rehbersiz:true});
       };
       perde('<div class="head"><h2>'+esc(cev("Ödeme kaydı"))+"</h2>"+kapatBtn()+"</div>"+
         buyukBas(para(o.tutar),"alindi","Alındı",kisa(o.tarih)+" "+parse(o.tarih).getFullYear()+(o.not?" · "+o.not:""))+
@@ -5475,7 +5598,7 @@
         '<button class="big ghost" id="os-vaz" style="margin-top:.5rem">Vazgeç</button>'+
         '<button class="big tehlike" data-ik="cop" id="os-sil" style="margin-top:2rem">Bu ödemeyi sil</button>');
       sayiBicimle(document.getElementById("os-tutar"));
-      document.getElementById("os-vaz").onclick=function(){ kapat(); odemeSheet(r); };
+      document.getElementById("os-vaz").onclick=function(){ kapat(); odemeSheet(r,{rehbersiz:true}); };
       document.getElementById("os-kaydet").onclick=function(){
         var t2=sayi(document.getElementById("os-tutar").value);
         if(!t2) return uyari("Alınan tutarı girin.");
@@ -5672,6 +5795,7 @@
                :'<span class="vsFoto vsHarf" style="background:'+esc(v.color||"#0B5B57")+'">'+esc(basHarf(v.ad)||"V")+"</span>")+
           '<span class="vsAd">'+esc(v.ad||cev("Villa"))+"</span>"+ikon("sag",{boy:20})+"</button>";
       }).join("")+"</div>");
+    rehberAc("bakici",REHBER.bakici);
     document.getElementById("bkVilla").onclick=function(e){
       var x=e.target.closest("[data-vid]"); if(!x) return;
       var v=l.filter(function(y){ return y.id===x.dataset.vid; })[0]; if(v) git(v);
@@ -5727,7 +5851,23 @@
     var kilitVar=!!(app && bulut && window.VTAcilis && VTAcilis.kilitDestek());
     document.getElementById("hsGuvenlikBolum").classList[kilitVar?"remove":"add"]("hide");
     if(kilitVar) document.getElementById("hs-kilit").className="svic"+(VTAcilis.kilitAcik()?" on":"");
+    yardimCiz();
   }
+  // 19.2: Yardımlı mod aç/kapa; tek tek kapatılan işlem yardımları buradan geri açılır
+  function yardimCiz(){
+    var ac=Rehber.modAcik(), sw=document.getElementById("hs-yardim"), n=Rehber.kapaliSayisi();
+    sw.className="svic"+(ac?" on":""); sw.setAttribute("aria-checked",String(ac));
+    document.getElementById("yardimAcBtn").classList[(ac && n)?"remove":"add"]("hide");
+    document.getElementById("yardimAcAlt").textContent=cev(n+" işlemde kapalı");
+  }
+  document.getElementById("yardimSatir").onclick=function(){
+    titret("hafif");
+    var ac=!Rehber.modAcik(); Rehber.modAyarla(ac); yardimCiz();
+    bildir(cev(ac?"Yardımlı mod açıldı":"Yardımlı mod kapatıldı"));
+  };
+  document.getElementById("yardimAcBtn").onclick=function(){
+    titret("hafif"); Rehber.hepsiniAc(); yardimCiz(); tamam(cev("Tüm yardımlar yeniden açık"));
+  };
   document.getElementById("hs-kilit").onclick=function(){
     var el=this; if(el.dataset.bekle) return;
     var ac=!VTAcilis.kilitAcik();
@@ -6249,6 +6389,7 @@
       '<div id="bk-alan" style="margin-top:1rem"></div>');
 
     listele();
+    rehberAc("bakici",REHBER.bakici);
     function listele(){
       VT.villaErisimleri(v.id).then(function(l){
         var el=document.getElementById("bk-liste"); if(!el) return;
@@ -6307,6 +6448,7 @@
           window.open("https://wa.me/?text="+encodeURIComponent(metin),"_blank");
         };
         document.getElementById("bk-kopya").onclick=function(){ kopyala(metin,"Davet mesajı kopyalandı."); };
+        rhBildir("davet:hazir");
       }).catch(function(e){
         b.disabled=false; b.textContent="Yeni bakıcı davet et";
         document.getElementById("bk-alan").innerHTML='<div class="sm warn">'+esc(e.message)+"</div>";
@@ -7053,6 +7195,7 @@
       });
     }
 
+    if(!gelirMi && !mevcut) rehberAc("gider",REHBER.gider);
     if(!gelirMi){
       var fb=document.getElementById("h-foto"), fin=document.getElementById("fisInput");
       var onz=document.getElementById("h-onizleme");
@@ -7092,6 +7235,7 @@
         uyari("Fiş fotoğrafı kaydedilemedi, hafıza dolu. Kayıt fotoğrafsız eklendi.");
       }
       fisBekleyen=null; kapat();
+      if(!mevcut && !gelirMi) rhBildir("kaydedildi:gider");
       tamam(cev(mevcut?(gelirMi?"Gelir güncellendi":"Gider güncellendi"):(gelirMi?"Gelir kaydedildi":"Gider kaydedildi")));
       if(sonra){ sonra(); return; }
       S.yil=parse(tr).getFullYear(); S.kasaAy=new Date(S.yil,parse(tr).getMonth(),1);
@@ -7329,7 +7473,7 @@
         },function(h){
           if(h){ son(); bildir(h); return; }
           v.fotolar=(v.fotolar||[]).concat(yeni);
-          kaydet(); son(); bildir(cev(yeni.length+" fotoğraf eklendi."));
+          kaydet(); son(); rhBildir("kaydedildi:foto"); bildir(cev(yeni.length+" fotoğraf eklendi."));
         });
         return;
       }
@@ -7338,7 +7482,7 @@
       if(!kaydet()){
         v.fotolar=v.fotolar.slice(0,v.fotolar.length-yeni.length); kaydet();
         uyari("Bu cihazda fotoğraf için yer kalmadı. Giriş yaparsanız fotoğraflar buluta yüklenir ve sınır kalkar.");
-      }
+      } else rhBildir("kaydedildi:foto");
       son();
     });
   };
@@ -7405,6 +7549,7 @@
         '<div class="sm muted" style="margin-top:.5rem">'+esc(cev("Eksik kalan bir şey olursa villa ekranındaki kart size hatırlatır."))+"</div>"+
         '<button class="big" data-ik="takvim" id="shTakvim">'+esc(cev("Takvime git"))+"</button></div>";
     } else {
+      if(Rehber.gerekli("villa")) h+=Rehber.ipucuHTML(RM["villa"+a]);
       h+=cizimImg(SH_CIZIM[a-1]);
       h+='<h1 class="shBaslik">'+esc(cev(SH_BASLIK[a-1]))+"</h1>";
       if(a===1){
@@ -7597,6 +7742,7 @@
     }
     if(SH.adim===4) shFiyatUygula();
     SH.adim++; SH.yon=1; shKaydet(); shCiz();
+    if(SH.adim>SH_ADIM && Rehber.gerekli("villa")) Rehber.tamamla("villa");
   };
   document.getElementById("shGeri").onclick=function(){ if(SH.adim>1){ SH.adim--; SH.yon=-1; shKaydet(); shCiz(); } };
 
@@ -7613,6 +7759,7 @@
       '<button class="big renkli is-foto" data-ik="bulut-indir" id="fs-drive" style="margin-top:.5rem">'+esc(cev("Google Drive'dan al"))+"</button>");
     document.getElementById("fs-tel").onclick=function(){ kapat(); fotoInput.click(); };
     document.getElementById("fs-drive").onclick=function(){ kapat(); driveSheet(); };
+    rehberAc("foto",REHBER.foto);
   }
   function fotoEkranAc(){
     if(!aktif()) return;
@@ -7662,7 +7809,7 @@
     fotoEkranAc();
   });
   document.getElementById("ftGeri").onclick=function(){ goster("takvim"); ciz(); };
-  document.getElementById("ftEkle").onclick=function(){ if(aktif()) fotoInput.click(); };
+  document.getElementById("ftEkle").onclick=function(){ if(aktif()){ rehberAc("foto",REHBER.foto); fotoInput.click(); } };
   document.getElementById("ftSecModu").onclick=function(){ FT.secMod=!FT.secMod; FT.sec={}; cizFotolar(); };
   document.getElementById("ftVazgec").onclick=function(){ FT.secMod=false; FT.sec={}; cizFotolar(); };
   // 14.10: seçili tek fotoğraf kapak olur (listede en başa alınır)
@@ -7691,80 +7838,51 @@
     };
   };
 
-  // Izgara: dokun = tam ekran (seç modunda işaretle); basılı tut (300ms) = sürükleyerek sırala
+  // Izgara: dokun = tam ekran (seç modunda işaretle); basılı tut (400 ms) = sürükleyerek sırala (19.11 ortak kural)
   (function(){
     var izg=document.getElementById("ftIzgara");
-    var zaman=null, bas=null, el=null, aktifS=false, slots=[], kutular=[], hedef=0, ilk=0, sonSurukleme=0;
+    var bas=null, el=null, slots=[], kutular=[], hedef=0, ilk=0, sonSurukleme=0;
     function noktaGrid(x,y){ var r=izg.getBoundingClientRect(); return {x:x-r.left, y:y-r.top}; }
-    function iptal(){ clearTimeout(zaman); zaman=null; }
-    function basla(t,x,y){
-      if(FT.secMod || !fotoYonetir()) return;
-      el=t; bas=noktaGrid(x,y); bas.cx=x; bas.cy=y;
-      iptal();
-      zaman=setTimeout(function(){
-        zaman=null; aktifS=true;
+    surukleBagla(izg,{secici:".fTile",
+      uygun:function(){ return !FT.secMod && fotoYonetir(); },
+      basla:function(t){
+        el=t;
         kutular=Array.prototype.slice.call(izg.children);
         slots=kutular.map(function(k){ return {x:k.offsetLeft, y:k.offsetTop, w:k.offsetWidth, h:k.offsetHeight}; });
         ilk=hedef=kutular.indexOf(el);
+        bas=null;
         izg.classList.add("siraliyor"); el.classList.add("suruk");
-        try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){}
-      },300);
-    }
-    function hareket(x,y){
-      if(zaman && (Math.abs(x-bas.cx)>8 || Math.abs(y-bas.cy)>8)){ iptal(); el=null; return false; }
-      if(!aktifS) return false;
-      var p=noktaGrid(x,y);
-      el.style.transform="translate("+(p.x-bas.x)+"px,"+(p.y-bas.y)+"px) scale(1.08)";
-      // parmağa en yakın yuvayı bul
-      var en=0, d0=1e12;
-      slots.forEach(function(s,i){ var dx=s.x+s.w/2-p.x, dy=s.y+s.h/2-p.y, d=dx*dx+dy*dy; if(d<d0){ d0=d; en=i; } });
-      if(en!==hedef){
-        hedef=en;
-        var sira=kutular.map(function(_,i){ return i; }); sira.splice(ilk,1); sira.splice(hedef,0,ilk);
-        kutular.forEach(function(k,i){
-          if(i===ilk) return;
-          var yeni=sira.indexOf(i);
-          k.style.transform="translate("+(slots[yeni].x-slots[i].x)+"px,"+(slots[yeni].y-slots[i].y)+"px)";
-        });
+      },
+      hareket:function(x,y){
+        if(!el) return;
+        var p=noktaGrid(x,y);
+        if(!bas) bas={x:p.x, y:p.y};
+        el.style.transform="translate("+(p.x-bas.x)+"px,"+(p.y-bas.y)+"px) scale(1.08)";
+        // parmağa en yakın yuva
+        var en=0, d0=1e12;
+        slots.forEach(function(s,i){ var dx=s.x+s.w/2-p.x, dy=s.y+s.h/2-p.y, d=dx*dx+dy*dy; if(d<d0){ d0=d; en=i; } });
+        if(en!==hedef){
+          hedef=en;
+          var sira=kutular.map(function(_,i){ return i; }); sira.splice(ilk,1); sira.splice(hedef,0,ilk);
+          kutular.forEach(function(k,i){
+            if(i===ilk) return;
+            var yeni=sira.indexOf(i);
+            k.style.transform="translate("+(slots[yeni].x-slots[i].x)+"px,"+(slots[yeni].y-slots[i].y)+"px)";
+          });
+        }
+      },
+      birak:function(){
+        sonSurukleme=Date.now();
+        izg.classList.remove("siraliyor");
+        var v=aktif();
+        if(v && hedef!==ilk){
+          var f=v.fotolar.splice(ilk,1)[0]; v.fotolar.splice(hedef,0,f);
+          kaydet();
+          if(hedef===0 || ilk===0) bildir(cev("Kapak fotoğrafı değişti."));
+        }
+        el=null; cizFotolar(); ciz();
       }
-      // kenara yaklaşınca sayfayı kaydır
-      if(y<90) window.scrollBy(0,-12); else if(y>window.innerHeight-130) window.scrollBy(0,12);
-      return true;
-    }
-    function birak(){
-      iptal();
-      if(!aktifS){ el=null; return false; }
-      aktifS=false; sonSurukleme=Date.now();
-      izg.classList.remove("siraliyor");
-      var v=aktif();
-      if(v && hedef!==ilk){
-        var f=v.fotolar.splice(ilk,1)[0]; v.fotolar.splice(hedef,0,f);
-        kaydet();
-        if(hedef===0 || ilk===0) bildir(cev("Kapak fotoğrafı değişti."));
-      }
-      el=null; cizFotolar(); ciz();
-      return true;
-    }
-    // dokunmatik: sürükleme başlayınca sayfa kaymasın
-    izg.addEventListener("touchstart",function(e){
-      var t=e.target.closest(".fTile"); if(!t || e.touches.length!==1) return;
-      basla(t,e.touches[0].clientX,e.touches[0].clientY);
-    },{passive:true});
-    izg.addEventListener("touchmove",function(e){
-      if(!el) return;
-      if(hareket(e.touches[0].clientX,e.touches[0].clientY)) e.preventDefault();
-    },{passive:false});
-    izg.addEventListener("touchend",function(e){ if(birak()) e.preventDefault(); });
-    izg.addEventListener("touchcancel",function(){ birak(); });
-    // fare (bilgisayar)
-    izg.addEventListener("mousedown",function(e){
-      var t=e.target.closest(".fTile"); if(!t || e.button!==0) return;
-      basla(t,e.clientX,e.clientY);
-      function mm(ev){ if(hareket(ev.clientX,ev.clientY)) ev.preventDefault(); }
-      function mu(){ document.removeEventListener("mousemove",mm); document.removeEventListener("mouseup",mu); birak(); }
-      document.addEventListener("mousemove",mm); document.addEventListener("mouseup",mu);
     });
-    izg.addEventListener("contextmenu",function(e){ if(e.target.closest(".fTile")) e.preventDefault(); });
     izg.addEventListener("click",function(e){
       var t=e.target.closest(".fTile"); if(!t || Date.now()-sonSurukleme<400) return;
       var id=t.dataset.fid;
@@ -7811,6 +7929,7 @@
       '<div class="sm warn" id="dr-hata" style="min-height:1.25rem;margin-top:.5rem"></div>'+
       '<button class="big" data-ik="bulut-indir" id="dr-bul" style="margin-top:.5rem">'+esc(cev("Fotoğrafları bul"))+"</button>"+
       '<div id="dr-sonuc" class="hide" style="margin-top:1.5rem"></div>');
+    rehberAc("foto",REHBER.foto);
     var link=document.getElementById("dr-link"), hataEl=document.getElementById("dr-hata");
     var bul=document.getElementById("dr-bul"), sonuc=document.getElementById("dr-sonuc");
     var hataYaz=function(m){ hataEl.textContent=m||""; };
@@ -7841,6 +7960,7 @@
           '<button class="big" data-ik="resim-arti" id="dr-ekle">'+esc(cev("Hepsini ekle"))+"</button>";
         sonuc.classList.remove("hide");
         document.getElementById("dr-ekle").onclick=function(){ driveAktar(v,l,l2,sonuc,[bul,link]); };
+        rhBildir("drive:bulundu");
       }).catch(function(e){
         hataYaz((e && e.message && !/Failed to fetch|NetworkError|Load failed/i.test(e.message)) ? e.message
           : cev("Bağlantı kurulamadı. İnternetinizi kontrol edin."));
@@ -7905,6 +8025,7 @@
       for(var j=eklenecek;j<n;j++) if(sonuclar[j]===undefined) sonuclar[j]=false;
       sirayaEkle();
       kilitle.forEach(function(x){ x.disabled=false; });
+      if(eklenen) rhBildir("kaydedildi:foto",{basari:cev(eklenen+" fotoğraf eklendi")});
       if(!document.body.contains(kutu)){
         bildir(cev(eklenen+" fotoğraf eklendi"+(olmayan?", "+olmayan+" eklenemedi":"")+"."));
         return;
@@ -9263,7 +9384,7 @@
     var link=sayfaLink(v);
     perde('<div class="head"><h2>Villa sayfanız hazır</h2>'+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 1rem">Bu bağlantıyı gönderdiğiniz kişi fotoğrafları, boş günleri ve fiyatları görür; tarih seçip size istek gönderebilir.</div>'+
-      '<div class="sm" style="background:var(--soft);border-radius:.75rem;padding:1rem;word-break:break-all">'+
+      '<div class="sm lsLink" style="background:var(--soft);border-radius:.75rem;padding:1rem;word-break:break-all">'+
         esc(link)+"</div>"+
       '<button class="big" data-ik="paylas" id="ls-paylas">'+esc(cev("Bağlantıyı paylaş"))+"</button>"+
       '<button class="big renkli is-paylas" data-ik="kopyala" id="ls-kopyala" style="margin-top:.5rem">'+esc(cev("Bağlantıyı kopyala"))+"</button>"+
@@ -9275,14 +9396,15 @@
       '<div class="sm muted" style="margin-top:.625rem;line-height:1.45">'+esc(cev("Paylaştığınız bağlantı çalışmaz. Fotoğraflar ve bilgiler silinmez, istediğiniz zaman yeniden yayınlayabilirsiniz."))+"</div>");
 
     document.getElementById("ls-paylas").onclick=function(){
-      if(navigator.share) navigator.share({title:v.ad||"Villa", url:link}).catch(function(){});
-      else kopyala(link,"Bağlantı kopyalandı, mesaja yapıştırın.");
+      if(navigator.share) navigator.share({title:v.ad||"Villa", url:link}).then(function(){ rhBildir("kaydedildi:paylas"); },function(){});
+      else { kopyala(link,"Bağlantı kopyalandı, mesaja yapıştırın."); rhBildir("kaydedildi:paylas",{basari:"Bağlantı kopyalandı"}); }
     };
     document.getElementById("ls-kopyala").onclick=function(){ kopyala(link,"Bağlantı kopyalandı."); };
     document.getElementById("ls-onizle").onclick=function(){ window.open(link,"_blank"); };
     document.getElementById("ls-bos").onclick=function(){ bosGunPaylas(v); };
     document.getElementById("ls-teklif").onclick=function(){ ozelTeklifSheet(v,{}); };
     document.getElementById("ls-kaldir").onclick=function(){ yayindanKaldirSor(v); };
+    rehberAc("paylas",REHBER.paylas);
   }
   // 12.7: yayından kaldırmadan önce onay; fotoğraflar ve bilgiler silinmez
   function yayindanKaldirSor(v){
@@ -9473,6 +9595,7 @@
       var t=e.changedTouches && e.changedTouches[0];
       if(!t) return;
       var yatay=t.clientX-bx, dikey=Math.abs(t.clientY-by);
+      if(SURUKLE.aktif || Date.now()-SURUKLE.son<300 || (window.Rehber && Rehber.aktif())) return;
       if(yatay>70 && dikey<50) geriGit();
     },{passive:true});
   })();

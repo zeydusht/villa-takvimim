@@ -1,6 +1,6 @@
 # Villa Takvim — Proje Durumu
 
-_Son güncelleme: 14 Kasım 2026_
+_Son güncelleme: 16 Kasım 2026_
 
 ## Ne bu?
 Villa Takvim'in (villatakvim.netlify.app) iPhone/Android uygulaması. App adı: **Villa Takvimim**.
@@ -522,6 +522,27 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
          detayda tutar tekrarı ve "Ödeme gir/Ödemeyi al" çift adı, villa başlığındaki "Sıradaki" tekrarı, 48 px dokunma alanları.
       · Kalanlar: "Bize ulaşın" için destek WhatsApp numarası (DESTEK_WHATSAPP) girilmeli; villa sırası şimdilik yalnız cihazda
         (aşağıda veritabanı taslağı); gerçek iPhone'da denenmedi.
+
+- [x] Görev 19 — Yardımlı mod: her işlem rehberle, sürüklerken sayfa yenilenmesi hatası · Claude Code (16 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi (test: https://zeydusht.github.io/villa-takvimim/). Ayrıntı: `docs/GOREV19.md`,
+      QA: `docs/qa/gorev19/` (README: hangi test, sonuç; `rehber/` her adımın 390×844 ve 360×740 görüntüsü, `surukle/`, `tur/`).
+      A) Tek rehber motoru `www/rehber.js`: rehber = adım listesi (veri). Adım: hedef, metin, bekle (dokunus/deger/olay/ileri),
+         atla_eger, hazirla/cikis, donus, istege, dokunulmaz, gizli. %60 perde + yuvarlak delik + nabız halkası; baloncuk sığan
+         tarafta, hedefi gösteren okla; sayaç ●●○○, Geri, "Yardımı kapat". Perde yanlış dokunuşu yutar, baloncuk sallanır.
+         Paneller içinde de çalışır (perde paneli kapsar); üstüne uyarı açılırsa bekler. Klavye açılınca görünen alana göre yerleşir.
+         Delik hedefler arasında 280 ms kayar, baloncuk solarak yer değiştirir; "Hareketi azalt"a uyar. Bitişte büyük ✓ + titreşim.
+         Tüm cümleler tek sözlükte (Rehber.M), İngilizceleri dil.js'te. Eski uygulama turu ve "Nasıl yapılır?" da bu motorla.
+         Hesap → Yardım: "Yardımlı mod" (varsayılan açık). Aynı rehber 3 kez bitince bir kez "Bu işlem için yardımı kapatayım mı?";
+         kapatılanlar Hesap'tan "Kapatılan yardımları geri aç" ile döner. Tercihler cihazda (vt-yardim).
+      B) Rehberler: + Rezervasyon (tarihler → form kendiliğinden açılır → ücret → ad → kişi → telefon → kapora → kaydet), Teklif,
+         Opsiyon, Fiyat gir, Paylaş, Ödemeyi al ve yerleştir, Alınan ödemeyi gir, Gider ekle, Fotoğraf ekle / Drive'dan al,
+         Bakıcı ekle; villa ekleme sihirbazında her adımda üstte küçük ipucu. Tarihler seçiliyken haplar paneli hemen açar.
+         Tarih adımlarında takvimin üstündeki hap sırası gizlenir (küçük ekranda takvim + baloncuk sığsın).
+      C) Villa sıralarken sayfa yenilenmesi düzeldi: ortak sürükleme yardımcısı (villalar + fotoğraflar): 400 ms basılı tut,
+         öncesinde parmak kayarsa normal kaydırma; sürüklerken sayfa kaydırması, aşağı çekip yenileme ve kenardan geri kilitli
+         (yalnız bu sırada passive olmayan touchmove), kenara yaklaşınca liste kendi kayar. Yenilemede ilk 10 px ölü bölge.
+      · Kendi bulduklarım: teklifteki %5/%10/%15 ve ödemedeki "Henüz değil" düğmeleri 44 px idi → 48 px.
+      · Kalanlar: gerçek iPhone'da (klavye, titreşim) denenmedi; "Bize ulaşın" numarası hâlâ boş.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
