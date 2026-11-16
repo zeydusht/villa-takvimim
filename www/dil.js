@@ -769,6 +769,12 @@
     "Yardımlı mod açıldı":"Guided mode is on",
     "Yardımlı mod kapatıldı":"Guided mode is off",
     "Tüm yardımlar yeniden açık":"Help is on again for all tasks",
+    // Görev 22–23
+    "Kapora aldıysanız düğmeyi açın.":"If you took a down payment, turn on the switch.",
+    "Alınan kapora tutarını yazın.":"Enter the down payment you received.",
+    "Bu işlem için yardım":"Help for this task",
+    "Açıkken her işlemde adım adım yardım gösterilir.":"When on, step-by-step help is shown for every task.",
+    "Yardımlı mod kapatıldı. Panellerdeki ? ile yine yardım alabilirsiniz.":"Guided mode is off. You can still get help with the ? on each panel.",
     // Görev 18
     "Ödemeler":"Payments",
     "Villama bakıcı ekle":"Add a caretaker to my villa",

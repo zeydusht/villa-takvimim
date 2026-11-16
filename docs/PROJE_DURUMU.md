@@ -590,6 +590,29 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       seçim paneli ve sekmeler gizli (takvim + baloncuk küçük ekranda sığsın); yalnız "Geri" varsa baloncuğun üst satırında.
       GERÇEK İPHONE'DA TEST EDİLECEK (iOS klavye animasyonuyla eşzamanlılık).
 
+- [x] Görev 22 — Rehberi kapatmak geçici · Claude Code (16 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi. Ayrıntı: `docs/GOREV22.md`, QA: `docs/qa/gorev22/README.md`.
+      Baloncuktaki "Yardımı kapat" yerine sağ üstte "✕ Kapat": yalnız o anki rehber kapanır (200 ms solar, bildirim yok),
+      form/panel açık kalır, Yardımlı mod değişmez; sonraki işlemde rehber yine baştan gelir (20.3 kuralı değişti).
+      Rehberi olan panellerin başlığının yanında "?" (circle-help, 48 px): o işlemin rehberini kalınan adımdan (bilinmiyorsa
+      ilk boş alandan) tek seferlik açar; Yardımlı mod kapalıyken de görünür, rehber açıkken görünmez. Kalıcı kapatma yalnız
+      Hesap → Yardım → Yardımlı mod ("Açıkken her işlemde adım adım yardım gösterilir."). Geçiş: cihazdaki "vt-yardim" kaydı
+      bu sürümde bir kez sıfırlanır (mod açık; eski işlem başına kapatma kayıtları silinir; işaret: s:22).
+
+- [x] Görev 23 — Rehber hataları: telefon alanı klavye altında, kapora adımında "çökme" · Claude Code (16 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi. Ayrıntı: `docs/GOREV23.md`, sebep: `docs/qa/gorev23/sebep.md`,
+      testler: `docs/qa/gorev23/test.md`.
+      Sebep 1: rehber klavyedeki değişimi yalnız tek karede 40 px'ten büyük sıçramada fark ediyordu; kademeli açılan klavye ve
+      sonradan gelen "Otomatik doldur" çubuğu (telefon alanı) kaçıyordu; uygulamada klavye yüksekliği keyboardWillShow'dan
+      saklanıyordu. Artık odak hattı ve panelin alt kenarı her seferinde güncel visualViewport'tan; görünen alanın her
+      değişiminde yeniden hizalama (büyük sıçrama 250 ms, küçük adımlar aynı karede). keyboardDidShow yalnız doğrulama/yedek.
+      Sebep 2 (kapora): klavye açıkken baloncuk düğme satırının üstüne oturuyor, sağ üstteki "Yardımı kapat" tam kapora
+      düğmesinin üstüne geliyordu; düğmeye dokunan rehberi (ve Yardımlı modu) kapatıyordu. Konsolda hata yoktu. Kapora iki adım:
+      (a) düğme satırı, düğme açılınca kendiliğinden (b) tutar alanı (odak, klavye, odak hattı); düğme kapalıysa (b) atlanır.
+      Genel: hedef her karede seçiciyle bulunur, ResizeObserver ile içerik kayınca yeniden hizalama, hedef 300 ms'de yoksa adım
+      atlanır (konsola uyarı), rehberde yakalanmamış hata olursa rehber sessizce kapanır (form kullanılabilir kalır).
+      GERÇEK İPHONE'DA TEST EDİLECEK (iOS'un resize olaylarının gerçek sırası).
+
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
    ```sql

@@ -769,6 +769,12 @@
     text-align:center; background:var(--soft); color:var(--ink)}
   .sheet{position:relative}
   .head{position:relative; padding-right:2.5rem}
+  /* 22.2: rehberi olan panellerde başlığın yanında "?" (rehberi tek seferlik açar; rehber açıkken görünmez) */
+  .head.rhSoruVar{display:flex; align-items:center; gap:.25rem}
+  .head.rhSoruVar > h2{min-width:0}
+  .rhSoru{flex:none; width:3rem; height:3rem; margin:-.75rem 0; display:inline-flex; align-items:center; justify-content:center;
+    border:0; border-radius:99px; background:none; color:#0B5B57; padding:0; cursor:pointer}
+  .rhSoru:active{background:var(--basili-zemin)}
   /* 7.3: yazılar kalın değil; belirginlik çerçeveyle */
   b, strong{font-weight:500}
   button, .big, .satirBtn, .seg button{font-weight:500}
@@ -1496,7 +1502,7 @@
     <div class="grup">
     <!-- 19.2: Yardımlı mod (varsayılan açık): her işlem adım adım rehberle başlar -->
     <div class="anahtar" id="yardimSatir" data-ikk="hesap:yardim"><span>Yardımlı mod
-      <span class="satirAlt">Her işlemde ne yapacağınızı adım adım gösterir</span></span>
+      <span class="satirAlt">Açıkken her işlemde adım adım yardım gösterilir.</span></span>
       <span class="svic on" id="hs-yardim" role="switch" aria-checked="true" aria-label="Yardımlı mod"><i></i></span></div>
     <button class="satirBtn" id="turTekrarBtn" data-ikk="hesap:sihirli">
       <span><span>Uygulama turunu tekrar göster</span><span class="satirAlt">Villa ekranında adım adım</span></span>
@@ -3956,10 +3962,24 @@
     }
   });
   function rhBildir(olay,veri){ try{ Rehber.bildir(olay,veri); }catch(e){} }
-  // işlem rehberle başlasın mı: Yardımlı mod açık, bu işlemin yardımı kapatılmamış, başka rehber sürmüyor
+  // işlem rehberle başlasın mı: Yardımlı mod açık, başka rehber sürmüyor. Panel açıksa başlığına "?" eklenir (22.2).
   function rehberAc(ad,tanim){
+    rhSoru(tanim);
     if(!window.Rehber || !Rehber.gerekli(ad) || Rehber.aktif()) return false;
     return Rehber.baslat(tanim());
+  }
+  // 22.2: panel başlığının yanında "?": o işlemin rehberini kalınan adımdan (bilinmiyorsa ilk boş alandan) tek seferlik açar.
+  // Yardımlı mod kapalıyken de görünür.
+  function rhSoru(tanim){
+    if(!window.Rehber) return;
+    var l=document.querySelectorAll(".overlay:not(.kapaniyor)"), o=l.length?l[l.length-1]:null;
+    if(!o || o.querySelector(".rhSoru")) return;
+    var h=o.querySelector(".sheet .head > h2"); if(!h) return;
+    var b=document.createElement("button");
+    b.type="button"; b.className="rhSoru"; b.setAttribute("aria-label",cev("Bu işlem için yardım"));
+    b.innerHTML=ikon("yardim",{boy:24,kalinlik:1.75});
+    h.insertAdjacentElement("afterend",b); h.parentNode.classList.add("rhSoruVar");
+    b.onclick=function(){ titret("hafif"); Rehber.panelden(o,tanim()); };
   }
   var panelAcik=function(){ return !!document.querySelector(".overlay:not(.kapaniyor)"); };
   // açık panellerde en üstten aşağı ara (üstte uyarı açıksa arkadaki paneldeki öğe yine bulunur; rehber bekler)
@@ -4012,8 +4032,14 @@
         {hedef:rhAlan("#f-guest"), deger:"#f-guest", metin:RM.adYaz, bekle:"deger"},
         {hedef:rhAlan("#f-kisiAz"), metin:RM.kisi, bekle:"ileri"},
         {hedef:rhAlan("#f-phone"), metin:RM.telefon, bekle:"ileri"},
-        {hedef:function(){ var s=pq("#f-kaporaSw"); return s ? [s.closest(".anahtar"), pq("#f-kaporaAlan")] : null; },
-         metin:RM.kapora, bekle:"ileri", istege:true},
+        // 23.2: kapora iki adım: (a) düğme satırı; düğme açılınca kendiliğinden (b) tutar alanı. Düğme kapalı kalırsa (b) atlanır.
+        {id:"kapora1", hedef:function(){ var s=pq("#f-kaporaSw"); return s ? s.closest(".anahtar") : null; },
+         metin:RM.kaporaAc, bekle:"ileri", istege:true, gec_olay:"kapora:acildi"},
+        {id:"kapora2", hedef:function(){ var g=pq("#f-kaporaGir"); return (g && !g.classList.contains("hide")) ? g : pq("#f-kaporaOzet"); },
+         deger:"#f-odenen", metin:RM.kaporaTutar, bekle:"deger", istege:true, gec_olay:"kapora:tamam", donus:{"kapora:kapandi":"kapora1"},
+         atla_eger:function(){ var s=pq("#f-kaporaSw"); return !s || !s.classList.contains("on"); },
+         hazirla:function(){ var o=pq("#f-odenen"), g=pq("#f-kaporaGir");
+           if(o && g && !g.classList.contains("hide") && document.activeElement!==o){ try{ o.focus({preventScroll:true}); }catch(e){ o.focus(); } } }},
         {hedef:rhAlan("#f-note"), metin:RM.not, bekle:"ileri"},
         rhKaydet("#f-kaydet","kaydedildi:rez",RM.rezKaydet)
       ])}; },
@@ -4977,6 +5003,7 @@
     ana.addEventListener("focus",function(){ son=ana; });
     if(hs) hs.addEventListener("focus",function(){ son=hs; });
     try{ ana.focus(); }catch(e){}
+    rhSoru(REHBER.fiyat);
     rhBildir("panel:fiyat");
     Array.prototype.forEach.call(document.querySelectorAll("[data-hf]"),function(b){
       b.onclick=function(){ son.value=binlik(+b.dataset.hf); };
@@ -5212,8 +5239,10 @@
       ksw.onclick=function(){
         kaporaAcik=!kaporaAcik; ksw.className="svic"+(kaporaAcik?" on":"");
         document.getElementById("f-kaporaAlan").classList[kaporaAcik?"remove":"add"]("hide");
-        if(kaporaAcik) document.getElementById("f-odenen").focus();
+        // 23.2: odak sayfayı kaydırmaz (iOS'un kendi kaydırması rehberle çekişmesin); klavye dokunuşun içinde açılır
+        if(kaporaAcik){ var o2=document.getElementById("f-odenen"); try{ o2.focus({preventScroll:true}); }catch(x){ o2.focus(); } }
         kalanYaz();
+        rhBildir(kaporaAcik?"kapora:acildi":"kapora:kapandi");
       };
       var od=document.getElementById("f-odenen");
       sayiBicimle(od);
@@ -5225,6 +5254,7 @@
         if(!sayi(od.value)) return;
         document.getElementById("f-kaporaDeger").textContent=para(sayi(od.value));
         kpGir.classList.add("hide"); kpOzet.classList.remove("hide"); titret("hafif"); kalanYaz();
+        rhBildir("kapora:tamam");
       };
       document.getElementById("f-kaporaTamam").onclick=kaporaTamam;
       od.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); kaporaTamam(); } });
@@ -5974,7 +6004,7 @@
     if(kilitVar) document.getElementById("hs-kilit").className="svic"+(VTAcilis.kilitAcik()?" on":"");
     yardimCiz();
   }
-  // 19.2: Yardımlı mod aç/kapa; tek tek kapatılan işlem yardımları buradan geri açılır
+  // 19.2 / 22.3: Yardımlı mod aç/kapa: rehberi kalıcı kapatmanın tek yolu (baloncuktaki ✕ yalnız o anki rehberi kapatır)
   function yardimCiz(){
     var ac=Rehber.modAcik(), sw=document.getElementById("hs-yardim");
     sw.className="svic"+(ac?" on":""); sw.setAttribute("aria-checked",String(ac));
@@ -5982,7 +6012,7 @@
   document.getElementById("yardimSatir").onclick=function(){
     titret("hafif");
     var ac=!Rehber.modAcik(); Rehber.modAyarla(ac); yardimCiz();
-    bildir(cev(ac?"Yardımlı mod açıldı":"Yardımlı mod kapatıldı"));
+    bildir(cev(ac?"Yardımlı mod açıldı":"Yardımlı mod kapatıldı. Panellerdeki ? ile yine yardım alabilirsiniz."));
   };
 
   document.getElementById("hs-kilit").onclick=function(){
@@ -9561,8 +9591,15 @@
 
   // Klavye: uygulamada (Capacitor Keyboard, resize: none) yükseklik keyboardWillShow'dan gelir (native.js → VTKlavye);
   // web'de visualViewport küçülmesinden hesaplanır. --klavye: panelin alt kenarı bu kadar yukarıda biter.
-  var KLAVYE={h:0, native:false};
-  window.VTKlavye=function(h){ KLAVYE.native=true; klavyeUygula(h); };
+  // 23.1: karar görünen alana (visualViewport) göre; uygulamanın bildirdiği yükseklik (keyboardWillShow / DidShow) yalnız
+  // görünen alan klavyeyi göstermiyorsa kullanılır (önceki klavyenin yüksekliği saklanıp kullanılmaz).
+  var KLAVYE={h:0, native:false, nativeH:0};
+  function klavyeHesapla(){
+    var vv=window.visualViewport, v=vv ? Math.round(window.innerHeight-vv.height-vv.offsetTop) : 0;
+    if(vv && window.innerHeight-vv.height>80) return Math.max(0,v);
+    return KLAVYE.native ? KLAVYE.nativeH : 0;
+  }
+  window.VTKlavye=function(h){ KLAVYE.native=true; KLAVYE.nativeH=Math.max(0,Math.round(h||0)); klavyeUygula(klavyeHesapla()); };
   function klavyeUygula(h){
     h=Math.max(0,Math.round(h||0));
     if(h===KLAVYE.h) return;
@@ -9584,11 +9621,10 @@
   }
   if(window.visualViewport){
     var vvBak=function(){
-      if(KLAVYE.native) return;
-      var vv=window.visualViewport, h=window.innerHeight-vv.height-vv.offsetTop;
-      klavyeUygula(h>80?h:0);
+      var h=klavyeHesapla();
+      klavyeUygula(h);
       // Android gibi görünen alanın kendisi küçüldüyse odaklı alan yine görünür kalsın
-      if(h<=80) alanGoster(document.activeElement);
+      if(!h) alanGoster(document.activeElement);
     };
     window.visualViewport.addEventListener("resize",vvBak);
   }
