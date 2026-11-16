@@ -100,7 +100,7 @@ _Hazırlayan: Claude (ürün yöneticisi), 16 Kasım 2026, gece. Zeyd uyuyor; sa
 
 ## G. Takvim sekmesi (alt menü) — baştan, anlaşılır
 
-- [ ] **18.19 Takvim sekmesi yeniden.** Şu an karışık. Yeni düzen:
+- [x] **18.19 Takvim sekmesi yeniden.** Şu an karışık. Yeni düzen:
   - Başlık "Takvim" + altında tek cümle özet: "Bu hafta 3 giriş · 2 çıkış".
   - Seçici: **Bugün · 7 gün · 30 gün** (kalsın).
   - Gün başlıkları büyük ve net: "**Bugün** · Pazartesi 16 Kasım", "**Yarın** · Salı 17 Kasım", sonra "Perşembe 19 Kasım". Olay olmayan günler gösterilmez.

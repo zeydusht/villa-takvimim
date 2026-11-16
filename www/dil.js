@@ -698,6 +698,7 @@
     "Ödeme kaydedilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Payment could not be saved. Check your internet connection and try again.",
     "Ödeme kaydedilemedi.":"Payment could not be saved.",
     // Görev 18
+    "Depozito iadesi":"Deposit refund",
     "Sırayı değiştirmek için villaya basılı tutup sürükleyin.":"To change the order, press and hold a villa, then drag it.",
     "Villanızın adı":"Your villa's name",
     "Villayı ekle":"Add villa",
@@ -753,6 +754,11 @@
 
   var K = [
     // Görev 18: seçim paneli "24 → 27 Kasım · 3 gece · 9.000 ₺"
+    [/^(\d+) villada misafir var$/, "Guests in $1 villas"],
+    [/^(Bugün|Bu hafta|30 günde) (\d+) giriş · (\d+) çıkış$/, function (_, a, g, c) { return ({"Bugün":"Today","Bu hafta":"This week","30 günde":"Next 30 days"})[a] + ": " + g + " check-ins · " + c + " check-outs"; }],
+    [/^Giriş (\d+:\d+)$/, "Check-in $1"],
+    [/^Çıkış (\d+:\d+)$/, "Check-out $1"],
+    [/^(Yerleşti|Çıktı) (\d+:\d+)$/, function (_, a, t) { return (a === "Çıktı" ? "Checked out " : "Checked in ") + t; }],
     [/^\+(\d+) olay daha · Takvim'de gör$/, "+$1 more · see in Calendar"],
     [/^(.+) ayı için gecelik fiyat$/, "Nightly price for $1"],
     [/^(.+) ayına uygulanır\. Diğer ayları sonra Fiyatlar'dan girebilirsiniz\.$/, "Applies to $1. You can enter other months later under Prices."],

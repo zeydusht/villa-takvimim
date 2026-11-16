@@ -393,7 +393,7 @@
   .kutu .lab{font-size:.75rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted)}
   .kutu .val{font-family:var(--serif); font-size:1.375rem; letter-spacing:-.02em; margin-top:.375rem}
   .seg{display:flex; gap:.5rem}
-  .seg button, #misFiltre button{flex:1; min-height:2.875rem; padding:.625rem .25rem; border-radius:var(--kose);
+  .seg button, #misFiltre button{flex:1; min-height:3rem; padding:.625rem .25rem; border-radius:var(--kose);
     font-size:.9375rem; background:#fff; color:var(--ink); text-align:center;
     border:var(--cerceve-kalinlik) solid var(--cerceve); touch-action:manipulation;
     transition:background-color var(--gecis), border-color var(--gecis), transform var(--gecis)}
@@ -1013,6 +1013,31 @@
   .kSatir > .ikKutu{margin-right:-.25rem}
   .row > .ikKutu{margin-left:0}
   .ajSatir .ajIc{flex:1 1 auto; min-width:0}
+  /* 18.19: Takvim sekmesi */
+  .ajOzet{font-size:1.0625rem; color:var(--muted); margin-top:.375rem}
+  .ajGunBas{font-family:var(--serif); font-size:1.375rem; letter-spacing:-.01em; color:var(--ink); margin:1.75rem 0 .625rem; line-height:1.3}
+  .ajGunVurgu{color:var(--ok)}
+  .ajKart{display:flex; align-items:center; gap:.875rem; width:100%; text-align:left; padding:.875rem 1rem; margin-top:.5rem;
+    background:#fff; border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose); min-height:4.5rem;
+    transition:transform var(--hiz-bas), background-color var(--hiz-bas)}
+  .ajKart:active{transform:scale(var(--basili-olcek)); background:var(--basili-zemin)}
+  .ajKart .vRozet{flex:none; width:3rem; height:3rem; border-radius:.75rem; font-size:1.125rem}
+  .ajKartIc{flex:1; min-width:0; display:flex; flex-direction:column; gap:.3125rem}
+  .ajVilla{font-size:1.1875rem; line-height:1.25; overflow-wrap:anywhere}
+  .ajAlt{display:flex; flex-wrap:wrap; align-items:center; gap:.375rem .5rem}
+  .ajAlt .ajEt{margin:0}
+  .ajAlt .ajEt .ik{display:inline-block; vertical-align:-3px; margin-right:.25rem}
+  .ajMisafir{font-size:.9375rem; color:var(--muted); min-width:0; overflow-wrap:anywhere}
+  .ajDepEt{align-self:flex-start; font-size:.8125rem; padding:.0625rem .5rem; border-radius:99px; background:var(--lacivert-zemin); color:var(--lacivert)}
+  .ajSag{flex:none; text-align:right}
+  .ajTutar{color:#9B2C4A; font-size:.9375rem; white-space:nowrap}
+  .ajOdendi{display:inline-flex; align-items:center; gap:.25rem; color:var(--ok); font-size:.875rem; white-space:nowrap}
+  .ajKonak{display:flex; align-items:center; gap:.75rem; width:100%; min-height:3.5rem; margin-top:1.25rem; padding:.5rem 1rem;
+    border-radius:var(--kose); background:#E3EFEC; color:var(--ok); font-size:1.0625rem; text-align:left}
+  .ajKonak span:nth-child(2){flex:1}
+  .ajKonakIk{display:flex}
+  .ajKonak .ajOk{transition:transform var(--hiz-ac)}
+  .ajKonak.acik .ajOk{transform:rotate(90deg)}
   .ajSatir .ajEt .ik{display:inline-block; vertical-align:-3px; margin-right:.25rem}
   /* 11.5 rezervasyon detayı ikonlu bilgi satırları */
   .bilgiSat{display:flex; align-items:flex-start; gap:.625rem; padding:.375rem 0}
@@ -1368,7 +1393,8 @@
   <!-- TAKVİM SEKMESİ: tüm villaların yaklaşan giriş/çıkışları -->
   <div id="ajanda" class="hide sekmeEkran">
     <h1>Takvim</h1>
-    <div class="sm muted" style="margin-top:.5rem">Tüm villaların giriş ve çıkışları</div>
+    <!-- 18.19: tek cümle özet -->
+    <div class="ajOzet" id="ajOzet"></div>
     <div class="seg" id="ajSeg" style="margin-top:1rem">
       <button data-m="gun">Bugün</button><button data-m="7">7 gün</button><button data-m="30">30 gün</button>
     </div>
@@ -2902,71 +2928,86 @@
   var AJ={mod:"7"};
   var GUN_KISA={tr:["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"], en:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]};
   function gunKisa(d){ return GUN_KISA[(window.DIL&&DIL.ingilizce&&DIL.ingilizce())?"en":"tr"][d.getDay()]; }
+  // 18.19: Takvim sekmesi — başlık altında tek cümle özet, büyük gün başlıkları ("Bugün · Pazartesi 16 Kasım"),
+  // her olay ayrı kart (villa fotoğrafı/harfi, villa adı, "Giriş 16:00"/"Çıkış 10:00" etiketi, misafir, kişi, tutar),
+  // en üstte kapalı-açılır "Şu an konaklayanlar". Olay olmayan günler gösterilmez.
+  var GUN_UZUN={tr:["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"], en:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]};
+  function gunUzun(d){ return GUN_UZUN[(window.DIL&&DIL.ingilizce&&DIL.ingilizce())?"en":"tr"][d.getDay()]; }
   function cizAjanda(){
     goster("ajanda");
     Array.prototype.forEach.call(document.querySelectorAll("#ajSeg button"),function(b){
       b.classList[b.dataset.m===AJ.mod?"add":"remove"]("on"); });
+    var an=trSimdi();
     // bugünden itibaren 7 / 30 gün (hafta sonuna değil)
     var sonD = AJ.mod==="gun" ? today : addDays(today,(AJ.mod==="30"?30:7)-1);
-    var bas=fmt(today), son=fmt(sonD), olaylar=[];
+    var bas=fmt(today), son=fmt(sonD), olaylar=[], gir=0, cik=0;
     S.villalar.forEach(function(v){
       (v.rez||[]).forEach(function(r){
-        if(r.end>=bas && r.end<=son) olaylar.push({k:r.end, sira:0, giris:false, v:v, r:r});
-        if(r.start>=bas && r.start<=son) olaylar.push({k:r.start, sira:1, giris:true, v:v, r:r});
+        if(r.end>=bas && r.end<=son){ olaylar.push({k:r.end, sira:0, giris:false, v:v, r:r}); cik++; }
+        if(r.start>=bas && r.start<=son){ olaylar.push({k:r.start, sira:1, giris:true, v:v, r:r}); gir++; }
       });
     });
     olaylar.sort(function(a,b){ return a.k<b.k?-1:(a.k>b.k?1:a.sira-b.sira); });
+    // tek cümle özet
+    var donem={gun:"Bugün", "7":"Bu hafta", "30":"30 günde"}[AJ.mod];
+    document.getElementById("ajOzet").textContent=cev(donem+" "+gir+" giriş · "+cik+" çıkış");
     var h="", sonGun="";
-    // Şu an konaklayanlar (bugün giriş/çıkış yapanlar aşağıdaki listede)
+    // şu an konaklayanlar (17.2: saate ve onaylara göre), kapalı-açılır
     var kalanlar=[];
-    S.villalar.forEach(function(v){ (v.rez||[]).forEach(function(r){ if(r.start<bas && r.end>=bas) kalanlar.push({v:v,r:r}); }); });
+    S.villalar.forEach(function(v){ (v.rez||[]).forEach(function(r){ if(icerideMi(r,an)) kalanlar.push({v:v,r:r}); }); });
     kalanlar.sort(function(a,b){ return a.r.end<b.r.end?-1:1; });
     if(kalanlar.length){
-      h+='<div class="gunBas">'+esc(cev("Şu an konaklayan"))+'</div><div class="grup">';
-      var an0=trSimdi();
+      var vSay={}; kalanlar.forEach(function(x){ vSay[x.v.id]=1; });
+      var nV=Object.keys(vSay).length;
+      h+='<button class="ajKonak'+(AJ.konakAcik?" acik":"")+'" id="ajKonak" type="button" aria-expanded="'+!!AJ.konakAcik+'">'+
+        '<span class="ajKonakIk">'+ikon("kisiler",{boy:20})+"</span><span>"+esc(cev(nV+" villada misafir var"))+"</span>"+ikon("sag",{boy:20,sinif:"ajOk"})+"</button>";
+      h+='<div class="ajKonakListe'+(AJ.konakAcik?"":" hide")+'" id="ajKonakListe">';
       kalanlar.forEach(function(x,j){
-        var kg=Math.round((parse(x.r.end)-today)/86400000);
-        // 17.2: çıkış saati geçtiyse / "çıktı" onayı verildiyse
-        var et = (kg<=0 && ciktiMi(x.r,an0)) ? '<span class="ajEt gri">'+esc(cev("Çıktı"))+(x.r.cikisOnay?" · "+esc(trSaat(x.r.cikisOnay)):"")+"</span>"
-          : kg<=0 ? '<span class="ajEt kirmizi">'+esc(cev("Bugün çıkış"))+"</span>"
+        var kg=Math.round((parse(x.r.end)-parse(an.k))/86400000);
+        var et = kg<=0 ? '<span class="ajEt kirmizi">'+esc(cev("Bugün çıkış"))+"</span>"
           : (kg===1 ? '<span class="ajEt lacivert">'+esc(cev("Yarın çıkış"))+"</span>"
-          : '<span class="ajEt '+(kg===2?"lacivert":"gri")+'">'+esc(cev(kg+" gün sonra çıkış"))+"</span>");
-        h+='<button class="satirBtn" data-ak="'+j+'">'+harfDaire(x.r)+"<span><span>"+esc(x.v.ad||"Villa")+" · "+esc(x.r.guest)+"</span>"+
-          '<span class="satirAlt">'+et+"</span></span></button>";
+          : '<span class="ajEt gri">'+esc(cev(kg+" gün sonra çıkış"))+"</span>");
+        h+='<button class="ajKart" data-ak="'+j+'">'+villaRozet(x.v)+'<span class="ajKartIc"><span class="ajVilla">'+esc(x.v.ad||cev("Villa"))+"</span>"+
+          '<span class="ajAlt">'+et+'<span class="ajMisafir">'+esc(x.r.guest)+"</span></span></span></button>";
       });
       h+="</div>";
     }
     olaylar.forEach(function(o,i){
       if(o.k!==sonGun){
-        if(sonGun) h+="</div>";
         sonGun=o.k;
-        var d=parse(o.k), fark=Math.round((d-today)/86400000);
-        h+='<div class="gunBas">'+(fark===0?esc(cev("Bugün"))+" · ":(fark===1?esc(cev("Yarın"))+" · ":""))+
-          esc(gunKisa(d))+" "+esc(kisa(o.k))+'</div><div class="grup">';
+        var d=parse(o.k), fark=Math.round((d-parse(an.k))/86400000);
+        h+='<div class="ajGunBas">'+(fark===0?'<span class="ajGunVurgu">'+esc(cev("Bugün"))+"</span> · ":(fark===1?'<span class="ajGunVurgu">'+esc(cev("Yarın"))+"</span> · ":""))+
+          esc(gunUzun(d)+" "+kisa(o.k))+"</div>";
       }
       var kalan=o.giris ? kalanTutar(o.v,o.r) : 0;
       // 17.2: bugünkü giriş saati geçtiyse / yerleştirildiyse "Yerleşti", çıkış olduysa "Çıktı"
-      var anA=trSimdi(), bugunOlay=o.k===anA.k;
-      var olduAd = !bugunOlay ? "" : (o.giris ? (girdiMi(o.r,anA) ? "Yerleşti" : "") : (ciktiMi(o.r,anA) ? "Çıktı" : ""));
+      var bugunOlay=o.k===an.k;
+      var olduAd = !bugunOlay ? "" : (o.giris ? (girdiMi(o.r,an) ? "Yerleşti" : "") : (ciktiMi(o.r,an) ? "Çıktı" : ""));
       var olduSaat = olduAd ? trSaat(o.giris?o.r.girisOnay:o.r.cikisOnay) : "";
-      h+='<button class="satirBtn ajSatir" data-ai="'+i+'">'+harfDaire(o.r)+
-         '<span class="ajIc"><span class="ajEt '+(olduAd?"gri":(o.giris?"giris":"cikis"))+'">'+(olduAd?ikon("tik",{boy:14}):ikon(o.giris?"giris":"cikis",{boy:14}))+
-           esc(cev(olduAd||(o.giris?"Giriş":"Çıkış")))+(olduSaat?" · "+esc(olduSaat):"")+"</span>"+
-           "<span><span>"+esc(o.v.ad||"Villa")+" · "+esc(o.r.guest)+" · "+(o.giris?GIRIS:CIKIS)+"</span>"+
-           '<span class="satirAlt">'+esc(cev(gece(o.r)+" gece"))+(o.r.people?" · "+esc(cev(o.r.people+" kişi")):"")+
-           // çıkışta elde depozito varsa hatırlat
-           ((!o.giris && (!S.bulut || o.v.rol!=="bakici") && !o.r.depIade && kalemler(o.v,o.r).eldeDep>0)
-             ? '<span class="ajDep">'+esc(cev("Depozito iadesi bekliyor"))+"</span>" : "")+
-           "</span></span></span>"+
-         (kalan>0?'<span class="sag">'+kalanEt(kalan)+"</span>":"")+
-         "</button>";
+      var etiket = olduAd
+        ? '<span class="ajEt gri">'+ikon("tik",{boy:14})+esc(cev(olduAd))+(olduSaat?" "+esc(olduSaat):"")+"</span>"
+        : '<span class="ajEt '+(o.giris?"giris":"cikis")+'">'+ikon(o.giris?"giris":"cikis",{boy:14})+esc(cev((o.giris?"Giriş ":"Çıkış ")+(o.giris?GIRIS:CIKIS)))+"</span>";
+      var depBekler=!o.giris && (!S.bulut || o.v.rol!=="bakici") && !o.r.depIade && kalemler(o.v,o.r).eldeDep>0;
+      var sag = kalan>0 ? '<span class="ajTutar">'+esc(para(kalan))+"</span>"
+        : ((o.giris && odemeTam(o.v,o.r)) ? '<span class="ajOdendi">'+ikon("tik",{boy:14,kalinlik:2.5})+esc(cev("Ödendi"))+"</span>" : "");
+      h+='<button class="ajKart" data-ai="'+i+'">'+villaRozet(o.v)+
+        '<span class="ajKartIc"><span class="ajVilla">'+esc(o.v.ad||cev("Villa"))+"</span>"+
+          '<span class="ajAlt">'+etiket+'<span class="ajMisafir">'+esc(o.r.guest)+(o.r.people?" · "+esc(cev(o.r.people+" kişi")):"")+"</span></span>"+
+          (depBekler?'<span class="ajDepEt">'+esc(cev("Depozito iadesi"))+"</span>":"")+
+        "</span>"+(sag?'<span class="ajSag">'+sag+"</span>":"")+"</button>";
     });
-    if(sonGun) h+="</div>";
     if(!olaylar.length) h+='<div style="margin-top:1.5rem">'+cizimImg("bos-takvim")+"</div>"+'<div class="sm muted" style="text-align:center">'+
       esc(cev({gun:"Bugün giriş veya çıkış yok.", "7":"Önümüzdeki 7 günde giriş veya çıkış yok.", "30":"Önümüzdeki 30 günde giriş veya çıkış yok."}[AJ.mod]))+"</div>";
     var el=document.getElementById("ajandaListe");
     el.innerHTML=h;
     el.onclick=function(e){
+      if(e.target.closest("#ajKonak")){
+        AJ.konakAcik=!AJ.konakAcik;
+        document.getElementById("ajKonak").classList.toggle("acik",AJ.konakAcik);
+        document.getElementById("ajKonak").setAttribute("aria-expanded",String(AJ.konakAcik));
+        document.getElementById("ajKonakListe").classList.toggle("hide",!AJ.konakAcik);
+        return;
+      }
       var k=e.target.closest("[data-ak]");
       if(k){ var x=kalanlar[+k.dataset.ak]; if(x) detayUstte(x.v,x.r); return; }
       var b=e.target.closest("[data-ai]"); if(!b) return;
