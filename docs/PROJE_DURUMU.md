@@ -578,6 +578,18 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       D) Klavye: dokununca odak bizde (önce panel içi kaydırma, sonra focus({preventScroll:true})); panel klavyeyle birlikte
          kayar; klavye kapanınca panel yerinde kalır (gerekirse altına boşluk). GERÇEK İPHONE'DA TEST EDİLECEK.
 
+- [x] Görev 21 — Rehber: sabit odak şeridi (pencere sabit, sayfa kayar) · Claude Code (16 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi. Ayrıntı: `docs/GOREV21.md`, ölçümler: `docs/qa/gorev21/olcum.md`.
+      20.1'deki "en üste yapışan şerit" ve hedefi en üste kaydırma kaldırıldı. Yerine ODAK HATTI: hedefin alt kenarı klavye
+      açıkken klavyenin 12 px üstünde, kapalıyken görünen alanın alttan %28'inde (panelde sabit "Kaydet" varsa onun 16 px
+      üstünde). Baloncuk hedefin 8 px üstünde, hedefin genişliğinde. "İleri"de pencere ve baloncuk yerinde kalır, arkadaki
+      içerik 420 ms kayar (--egri-gecis); pencere aynı karede yeni boya geçer; metin 120 ms çapraz geçiş. Uzun hedef (takvim,
+      ücret kartı) hatta sığmazsa ikisinin birlikte görüneceği en düşük konum. Kaydırma yetmezse geçici boşluk (bitince yumuşakça
+      kalkar). Panel açılırken içerik baştan son yerine konur (önce yukarı fırlayıp geri gelme yok). Klavye açılıp kapanınca
+      hat klavyeyle birlikte hareket eder (250 ms). Elle kaydırmada pencere hedefi gecikmesiz izler. Tarih adımlarında alttaki
+      seçim paneli ve sekmeler gizli (takvim + baloncuk küçük ekranda sığsın); yalnız "Geri" varsa baloncuğun üst satırında.
+      GERÇEK İPHONE'DA TEST EDİLECEK (iOS klavye animasyonuyla eşzamanlılık).
+
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
    ```sql

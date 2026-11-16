@@ -689,7 +689,7 @@
     /* 20.9: klavye açılıp kapanırken panel sıçramadan, klavyeyle birlikte kayar */
     transition:bottom 250ms var(--egri-gecis)}
   /* 19B.4: klavye açıkken sayfadaki (panel dışı) alanlar da klavyenin üstüne kaydırılabilsin */
-  body.klavyeAcik{padding-bottom:var(--klavye,0px)}
+  body.klavyeAcik{padding-bottom:var(--klavye,0px); --rhKlavyePb:var(--klavye,0px)}
   /* 20.1: klavye açıkken paneldeki sabit "Kaydet" çubuğu alanın üstüne binmesin: formun sonunda akar */
   body.klavyeAcik .altSabit{position:static}
   .sheet{width:100%; max-width:28rem; background:#fff; border-radius:1rem 1rem 0 0; padding:1.5rem;
@@ -1301,6 +1301,8 @@
   @media (prefers-reduced-motion: reduce){ .secPanel, .secPanel.acik{transition:none} }
   /* 19.1: rehber görünümü rehber.js içinde; takvimde dokunulacak ilk boş gün nabız gibi atar */
   body.rhTarih #villaHapKap{display:none}
+  /* 21.1: tarih adımlarında alttaki seçim paneli ve sekmeler gizli: takvim + baloncuk küçük ekranda da odak hattına sığsın */
+  body.rhTarih #secPanel, body.rhTarih #sekmeler{visibility:hidden}
   .cell.turNabiz{z-index:1; overflow:visible}
   .cell.turNabiz::after{content:""; position:absolute; inset:-2px; border-radius:12px; border:3px solid var(--ok); pointer-events:none;
     animation:none}
@@ -3939,15 +3941,17 @@
     cevir:cev, titret:titret, bildir:function(m,sure){ bildir(m,sure); }, klavye:function(){ return KLAVYE.h; },
     // hedefi ekrana getiren kaydırma da 250 ms, --egri-gecis (klavyeyle aynı hareket)
     kaydir:function(kap,dy){ yumusakKaydir(kap,dy,250); },
+    // 21.3: sayfadaki geçici üst boşluk kalkarken sayfa yerinde kalsın (panel açıkken sayfa kilitli: saklanan konum düzeltilir)
+    sayfaKaydir:function(dy){ if(KILIT.acik){ KILIT.y=Math.max(0,KILIT.y+dy); document.body.style.top=(-KILIT.y)+"px"; } else window.scrollBy(0,dy); },
     ikon:function(ad,o){ return window.ikon ? window.ikon(ad,o) : ""; },
     // hedef ekrana getirilirken üst çubuğun, alt menünün ya da seçim panelinin altında kalmasın
     kenar:function(el){
       var ov=el.closest && el.closest(".overlay");
       if(ov){ var as=ov.querySelector(".altSabit"); return {ust:0, alt:(as && !as.contains(el)) ? as.offsetHeight : 0}; }
       var ab=document.getElementById("appBar"), ust=(ab && !ab.classList.contains("hide")) ? Math.max(0,ab.getBoundingClientRect().bottom) : 0;
-      var alt=0, sk=document.getElementById("sekmeler"), sp=document.getElementById("secPanel");
-      if(sk && !sk.classList.contains("hide")) alt=Math.max(0,innerHeight-sk.getBoundingClientRect().top);
-      if(sp && sp.classList.contains("acik")) alt=Math.max(alt,innerHeight-sp.getBoundingClientRect().top);
+      var alt=0, sk=document.getElementById("sekmeler"), sp=document.getElementById("secPanel"), tarihte=document.body.classList.contains("rhTarih");
+      if(!tarihte && sk && !sk.classList.contains("hide")) alt=Math.max(0,innerHeight-sk.getBoundingClientRect().top);
+      if(!tarihte && sp && sp.classList.contains("acik")) alt=Math.max(alt,innerHeight-sp.getBoundingClientRect().top);
       return {ust:ust, alt:alt};
     }
   });

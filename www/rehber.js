@@ -27,7 +27,11 @@
    Kullanım: Rehber.ayarla({cevir, titret, ikon, bildir, kenar}); Rehber.baslat(tanim); Rehber.bildir("olay");
    Yardımlı mod tercihi cihazda (localStorage "vt-yardim"; okunamazsa varsayılan: açık).
    Görev 20: perde dokunuşu/kaydırmayı yutmaz (pointer-events:none); hedef dışındaki dokunuşlar belge düzeyinde yakalanıp
-   iptal edilir (kaydırma ve sürükleme serbest). Baloncuk hedefle asla çakışmaz: üstte → altta → (yer yoksa) üstte tek satır şerit. */
+   iptal edilir (kaydırma ve sürükleme serbest).
+   Görev 21: sabit ODAK HATTI. Hedefin alt kenarı ekranda sabit bir hatta durur (klavye açıkken klavyenin 12 px üstü,
+   kapalıyken görünen alanın alttan %28'i; panelde sabit "Kaydet" varsa onun 16 px üstü). Baloncuk hedefin hemen üstünde
+   (8 px), hedefin genişliğinde. "İleri"de pencere ve baloncuk yerinde kalır, ARKADAKİ İÇERİK kayar (420 ms, --egri-gecis);
+   pencere yeni hedefin boyuna aynı anda, aynı eğriyle uyar. Kaydırma yetmezse kaba geçici boşluk eklenir. */
 (function () {
   "use strict";
   var R = {};
@@ -127,6 +131,19 @@
     var v = ""; try { v = getComputedStyle(document.documentElement).getPropertyValue("--egri-" + ad).trim(); } catch (e) {}
     return v || (ad === "gecis" ? "cubic-bezier(0.65,0,0.35,1)" : "cubic-bezier(0.22,1,0.36,1)");
   }
+  // --egri-gecis değerini çözen küçük kübik Bezier (kaydırma ve pencere aynı eğriyle, aynı karede)
+  function bezier(x1, y1, x2, y2) {
+    var c = function (t, a, b) { return 3 * a * t * (1 - t) * (1 - t) + 3 * b * t * t * (1 - t) + t * t * t; };
+    return function (x) { if (x <= 0) return 0; if (x >= 1) return 1; var lo = 0, hi = 1, t = x;
+      for (var i = 0; i < 24; i++) { t = (lo + hi) / 2; if (c(t, x1, x2) < x) lo = t; else hi = t; } return c(t, y1, y2); };
+  }
+  var EGRI = null;
+  function egriFn() {
+    if (EGRI) return EGRI;
+    var m = egri("gecis").match(/cubic-bezier\(([^)]+)\)/), v = m ? m[1].split(",").map(parseFloat) : [0.65, 0, 0.35, 1];
+    EGRI = bezier(v[0], v[1], v[2], v[3]);
+    return EGRI;
+  }
   var CSS =
     // 19B: katman hedefin kaydırma kabının içinde (sayfa: belge koordinatı; panel: panelin kaydırma kabı; sabit öğe: ekran)
     // böylece tarayıcının kendi kaydırmasıyla aynı karede hareket eder. Eğriler: --egri-gecis (yer değiştirme), --egri-giris (belirme)
@@ -140,12 +157,10 @@
     ".rhDelik{position:absolute;left:0;top:0;width:0;height:0;border-radius:14px;pointer-events:none;will-change:transform;" +
       "box-shadow:0 0 0 3px #9FE0C9,0 0 0 200vmax rgba(16,22,19,.6);transition:opacity 200ms " + EI + "}" +
     ".rh.yok .rhDelik{box-shadow:0 0 0 200vmax rgba(16,22,19,.6)}" +
-    ".rh.kayar .rhDelik{transition:transform 450ms " + EG + ",width 450ms " + EG + ",height 450ms " + EG + ",opacity 200ms " + EI + "}" +
     // 20.2: perde dokunuşu ve kaydırmayı yutmaz; hedef dışındaki dokunuşu belge düzeyinde yakalayıcı iptal eder
     ".rhSoluk{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;background:rgba(16,22,19,.6);border-radius:12px}" +
-    ".rhBalon{position:absolute;left:16px;right:16px;top:0;margin:0 auto;max-width:26rem;pointer-events:auto;transition:opacity 200ms " + EI + "}" +
-    // baloncuk çerçeveyle aynı eğri ve sürede, aynı anda kayar
-    ".rh.kayar .rhBalon{transition:top 450ms " + EG + ",opacity 200ms " + EI + "}" +
+    // 21: baloncuk hedefin hemen üstünde, hedefin genişliğinde (konum ve genişlik her karede motor tarafından yazılır)
+    ".rhBalon{position:absolute;left:0;top:0;width:300px;pointer-events:auto;transition:opacity 200ms " + EI + "}" +
     ".rh.araniyor .rhBalon,.rh.araniyor .rhDelik{opacity:0;pointer-events:none}" +
     ".rhIc{background:#fff;color:#101613;border-radius:18px;padding:.25rem 1rem 1rem;box-shadow:0 12px 32px rgba(0,0,0,.28);position:relative}" +
     ".rhUst{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-right:-.625rem}" +
@@ -155,13 +170,14 @@
       "white-space:nowrap;border-radius:99px;cursor:pointer}" +
     ".rhKapat:active{background:#F1F5F3}" +
     ".rhKapatX{display:none;font-size:1.375rem;line-height:1}" +
-    // 20.1: yer yokken tek satırlık şerit (görünen alanın en üstünde): "Misafirin adını yazın · Tamam"
-    ".rh.serit .rhIc{display:flex;align-items:center;gap:.5rem;padding:.25rem .25rem .25rem 1rem;border-radius:14px}" +
-    ".rh.serit .rhUst{order:3;margin:0}.rh.serit .rhSay,.rh.serit .rhKapatYazi,.rh.serit .rhGeri{display:none}" +
-    ".rh.serit .rhKapatX{display:inline}.rh.serit .rhKapat{min-width:3rem;padding:0}" +
-    ".rh.serit .rhMetin{flex:1;min-width:0;margin:0;font-size:1rem;line-height:1.3}" +
-    ".rh.serit .rhAlt{margin:0}.rh.serit .rhIleri{flex:none;padding:0 1rem}" +
     ".rhIleri:disabled{opacity:.45}" +
+    // 21.1: klavye açıkken yer dar: baloncuk hedefin hemen üstünde tek satır ("Misafirin adını yazın · Tamam ×")
+    ".rh.dar .rhIc{display:flex;align-items:center;gap:.5rem;padding:.25rem .25rem .25rem 1rem;border-radius:14px}" +
+    ".rh.dar .rhUst{order:3;margin:0}.rh.dar .rhSay,.rh.dar .rhKapatYazi,.rh.dar .rhGeri{display:none}" +
+    ".rh.dar .rhKapatX{display:inline}.rh.dar .rhKapat{min-width:3rem;padding:0}" +
+    ".rh.dar .rhMetin{flex:1;min-width:0;margin:0;font-size:1rem;line-height:1.3}" +
+    ".rh.dar .rhAlt{margin:0}.rh.dar .rhIleri{flex:none;padding:0 1rem}" +
+    ".rhUst .rhGeri{min-height:3rem;padding:0 1rem;border-radius:.75rem;font:inherit;font-size:.9375rem;margin-left:auto;background:#fff;color:#101613;border:2px solid #5F6A64}" +
     ".rhMetin{font-size:1.125rem;line-height:1.4;margin-top:.125rem}" +
     ".rhMetinEski{position:absolute;left:1rem;right:1rem;font-size:1.125rem;line-height:1.4;pointer-events:none}" +
     ".rhVurgu{color:#0B5B57;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}" +
@@ -171,8 +187,7 @@
     ".rhGeri{background:#fff;color:#101613;border:2px solid #5F6A64}" +
     ".rhIleri{flex:1;background:#0B5B57;color:#fff;border:0}" +
     ".rhAlt button:active{transform:scale(.97)}" +
-    ".rhOk{position:absolute;left:50%;width:16px;height:16px;margin-left:-8px;background:#fff;transform:rotate(45deg);border-radius:3px}" +
-    ".rhOk.ust{top:-7px}.rhOk.alt{bottom:-7px}.rhOk.yok{display:none}" +
+    ".rhOk{display:none}" +
     // başarı ve soru kartı
     ".rhSon{position:fixed;inset:0;z-index:76;display:flex;align-items:center;justify-content:center;padding:1.5rem;" +
       "background:rgba(16,22,19,.35)}" +
@@ -187,7 +202,9 @@
     ".rhIpucu{display:flex;gap:.625rem;align-items:flex-start;background:#E3EFEC;color:#0B3E3B;border-radius:14px;" +
       "padding:.75rem .875rem;font-size:1rem;line-height:1.4;margin:0 0 1rem;position:relative}" +
     ".rhIpucu svg{flex:none;margin-top:.0625rem}" +
-    "@media (prefers-reduced-motion: reduce){.rhDelik,.rhBalon,.rh.kayar .rhDelik,.rh.kayar .rhBalon{transition:none}" +
+    // 21.3: kaydırma yetmeyince eklenen geçici boşluk (sayfa ya da panel içinde)
+    ".rhBosluk{display:block;width:100%;pointer-events:none}" +
+    "@media (prefers-reduced-motion: reduce){.rhDelik,.rhBalon{transition:none}" +
       ".rh.kapaniyor,.rhSon.kapaniyor{transition:none}}";
   function cssKur() {
     if (document.getElementById("rhCss")) return;
@@ -256,6 +273,17 @@
     if (!D || !D.a || D.a.gizli || !el) return false;
     return hedefler(D.a).some(function (x) { return x.contains(el); });
   };
+  // panel açılırken (alttan kayma animasyonu) hedefin VARACAĞI yer: panelin transform'u çıkarılır
+  function durgunKayma(el) {
+    var sh = el.closest && el.closest(".sheet"), ov = sh && sh.parentElement;
+    if (!sh || !ov || !ov.classList.contains("overlay")) return 0;
+    return sh.getBoundingClientRect().top - (ov.getBoundingClientRect().top + sh.offsetTop - ov.scrollTop);
+  }
+  function durgunBirlesik(els) {
+    var r = birlesik(els), k = durgunKayma(els[0]);
+    if (k) { r.top -= k; r.bottom -= k; }
+    return r;
+  }
   function birlesik(els) {
     var r = null;
     els.forEach(function (e) {
@@ -301,8 +329,8 @@
     var q = function (s) { return o.querySelector(s); };
     D = {
       t: t, o: o, i: -1, a: null, gecmis: [], raf: 0, anahtar: "", basari: null, basariAlt: null,
-      delik: q(".rhDelik"), balon: q(".rhBalon"), ic: q(".rhIc"), ok: q(".rhOk"), ilk: true,
-      say: q(".rhSay"), metin: q(".rhMetin"), alt: q(".rhAlt"), geri: q(".rhGeri"), ileri: q(".rhIleri"),
+      delik: q(".rhDelik"), balon: q(".rhBalon"), ic: q(".rhIc"), ok: q(".rhOk"), ilk: true, pay: 4,
+      say: q(".rhSay"), metin: q(".rhMetin"), alt: q(".rhAlt"), geri: q(".rhGeri"), ileri: q(".rhIleri"), ust: q(".rhUst"),
       a_gizli: function () { return !!(this.a && this.a.gizli); }
     };
     o.addEventListener("click", function (e) {
@@ -340,12 +368,6 @@
     }
     D.metinBekliyor = true;
     if (a.gizli || !a.hedef) { icerik(false); D.metinBekliyor = false; }
-  }
-  // 19B.2: delik ve baloncuk yeni hedefe 450 ms'de (--egri-gecis) aynı anda, tek harekette kayar
-  function kaydir() {
-    if (azH()) return;
-    D.o.classList.add("kayar"); clearTimeout(D.kayT);
-    D.kayT = setTimeout(function () { if (D) D.o.classList.remove("kayar"); }, 480);
   }
   function ilerle() { if (D) adimaGit(D.i + 1, 1); }
   function geri() {
@@ -396,7 +418,14 @@
     D.ileri.classList.toggle("hide", !(a.bekle === "ileri" || (a.bekle === "deger" && degerVar())));
     D.ileri.disabled = !ileriEtkin();
     D.geri.classList.toggle("hide", !geriGosterilir());
-    D.alt.classList.toggle("hide", D.ileri.classList.contains("hide") && D.geri.classList.contains("hide"));
+    altDuzen();
+  }
+  // 21.1: yalnız "Geri" varsa üst satıra geçer (baloncuk kısa kalır, uzun hedeflerle birlikte sığar)
+  function altDuzen() {
+    var tekGeri = D.ileri.classList.contains("hide") && !D.geri.classList.contains("hide");
+    if (tekGeri && D.geri.parentNode !== D.ust) D.ust.insertBefore(D.geri, D.ust.querySelector(".rhKapat"));
+    if (!tekGeri && D.geri.parentNode !== D.alt) D.alt.insertBefore(D.geri, D.ileri);
+    D.alt.classList.toggle("hide", D.ileri.classList.contains("hide") && (D.geri.classList.contains("hide") || tekGeri));
   }
   function ileriEtkin() { var a = D.a; try { return !a.ileri_eger || !!a.ileri_eger(); } catch (e) { return true; } }
   function sonGorunen() {
@@ -453,19 +482,20 @@
     if (ortu) return;
     if (!D.bulundu) {
       // hedef yerine oturana kadar (panel açılırken kayıyor olabilir) bekle: 3 kare aynı yerde ya da 600 ms
-      var q = birlesik(els), k = [q.left, q.top, q.width, q.height].map(Math.round).join(",");
+      var q = durgunBirlesik(els), k = [q.left, q.top, q.width, q.height].map(Math.round).join(",");
       if (k !== D.sabitK) { D.sabitK = k; D.sabitN = 0; }
-      if (++D.sabitN < 3 && t - D.bas < 600) return;
-      kapYerles(els[0]);
-      D.bulundu = true; D.boy = q.height; gorunurYap(els);
+      if (++D.sabitN < 2 && t - D.bas < 600) return;
+      D.bulundu = true; D.boy = q.height; D.alanAlt = alan().alt;
       if (D.metinBekliyor) { D.metinBekliyor = false; icerik(!D.ilk); }
-      if (!D.ilk) kaydir();
-      D.ilk = false; D.anahtar = "";
+      // 21.2: yeni hedef odak hattına: içerik kayar, pencere yerinde boy değiştirir (420 ms)
+      hizala(els, 420, D.ilk);
+      D.ilk = false;
       D.o.classList.remove("araniyor");
     } else {
-      // hedef büyüdüyse (ör. kapora alanı açıldı) ya da görünen alan değiştiyse (klavye açıldı/kapandı) yeniden ekrana getir
-      var hb = birlesik(els).height, ga = gorunenAlan().alt;
-      if (Math.abs(hb - D.boy) > 40 || (D.alanAlt && Math.abs(ga - D.alanAlt) > 40)) { D.boy = hb; D.alanAlt = ga; gorunurYap(els); }
+      // 21.4: klavye açılıp kapanınca odak hattı klavyeyle birlikte (250 ms); hedef boyu değişince (kapora alanı açıldı) yeniden
+      var hb = birlesik(els).height, ga = alan().alt;
+      if (D.alanAlt && Math.abs(ga - D.alanAlt) > 40) { D.boy = hb; D.alanAlt = ga; hizala(els, 250); }
+      else if (!D.tw && Math.abs(hb - D.boy) > 40) { D.boy = hb; hizala(els, 420); }
       D.alanAlt = ga;
     }
     var ie = ileriEtkin();
@@ -474,11 +504,19 @@
       var dv = degerVar();
       if (dv === D.ileri.classList.contains("hide")) {
         D.ileri.classList.toggle("hide", !dv);
-        D.alt.classList.toggle("hide", !dv && D.geri.classList.contains("hide"));
+        altDuzen();
         D.anahtar = "";
       }
     }
-    if (d === D) yerlestir(els);
+    // geçişten sonra bir kez denetim: kaydırma sınırı / klavye animasyonu yüzünden hat tutmadıysa küçük düzeltme
+    // (kullanıcı bu arada elle kaydırdıysa dokunulmaz)
+    if (!D.tw && D.denetim && t - D.denetim.zaman > 80) {
+      var dn = D.denetim; D.denetim = null;
+      var elle = dn.S && Math.abs(kabY(dn.S) - dn.y) > 2;
+      if (!elle && Math.abs(durgunBirlesik(els).bottom - dn.alt) > 1.5 && !D.duzeltildi) { D.duzeltildi = true; hizala(els, 200); }
+      else D.duzeltildi = false;
+    }
+    if (d === D) { if (D.tw) gecisAdim(); else yerlestir(els); }
   }
   // hedefin kabı: sabit (position:fixed) bir panelin içindeyse o panel (kaydırma kabı), sabit başka bir öğeyse ekran,
   // değilse sayfa (belge). Katman bu kaba yerleşir; kaydırmada tarayıcı katmanı hedefle aynı karede taşır.
@@ -491,21 +529,13 @@
   function kapYerles(el) {
     var k = kapBul(el);
     if (D.o.parentNode === k.el && D.kapTur === k.tur) return;
-    // kap değişti (ör. takvimden panele): delik eski ekran yerinden yeni kaba kayarak geçsin
-    var eski = D.kapTur ? D.delik.getBoundingClientRect() : null;
-    D.o.classList.remove("kayar");
+    // kap değişti (ör. takvimden panele): katman yeni kaba geçer; görsel konum hizala()'da eski yerinden sürdürülür
     k.el.appendChild(D.o);
     D.kapTur = k.tur;
     D.o.classList.toggle("sabit", k.tur === "sabit");
     D.o.classList.toggle("icte", k.tur === "icte");
-    D.anahtar = ""; D.yaz = {};
-    if (eski && eski.width) {
-      var o = D.o.getBoundingClientRect();
-      yaz(D.delik, "transform", "translate(" + Math.round(eski.left - o.left) + "px," + Math.round(eski.top - o.top) + "px)");
-      yaz(D.delik, "width", Math.round(eski.width) + "px"); yaz(D.delik, "height", Math.round(eski.height) + "px");
-      void D.delik.offsetWidth;
-      kaydir();
-    }
+    D.anahtar = "";
+    [D.delik, D.balon].forEach(function (x) { x._rh = {}; });
   }
   // stil yazımı yalnız değer değişince (her karede gereksiz yazım yok; geçiş baştan başlamaz)
   function yaz(el, ozellik, deger) {
@@ -544,124 +574,221 @@
     }
     yaz(D.o, "height", Math.ceil(h) + "px");
   }
-  function yerlestir(els) {
-    var a = D.a, pay = a.pay != null ? a.pay : 8;
-    if (els.length) kapYerles(els[0]);
-    katmanBoyu();
-    var g = gorunenAlan(), W = g.W;
-    var o = D.o.getBoundingClientRect(), ox = o.left, oy = o.top;   // kabın başlangıcı (ekran koordinatı)
-    var r = els.length ? birlesik(els) : null;
-    var bw = D.balon.offsetWidth, bh = D.balon.offsetHeight, bl = D.balon.offsetLeft;
-    // iki boyun ölçüsü saklanır (biçim değiştikçe her karede yeniden ölçülmesin)
-    if (D.serit) D.bhSerit = bh; else D.bhTam = bh;
-    var bhT = D.bhTam || bh, bhS = D.bhSerit || 64, serit = false;
-    var x, y, x2, y2, by, okYon;
-    if (r) {
-      // delik ekrana kırpılmaz (kenarları ekran dışında kalabilir): böylece kaydırmada hedefle birlikte hareket eder
-      x = r.left - pay; x2 = r.right + pay; y = r.top - pay; y2 = r.bottom + pay;
-      var vy = Math.max(g.ust + 6, y), vy2 = Math.min(g.alt - 6, y2);
-      var altBos = g.alt - vy2, ustBos = vy - g.ust;
-      // 20.1 sıra: (1) hedefin üstünde yer varsa üstüne, (2) yoksa altına, (3) ikisinde de yoksa görünen alanın en üstünde
-      // tek satır şerit (hedef şeridin altında kalır), (4) hedef ekrandan büyükse: baloncuk altta, delik üstteki kısım
-      if (ustBos >= bhT + 22) { by = y - 14 - bhT; okYon = "alt"; }
-      else if (altBos >= bhT + 22) { by = y2 + 14; okYon = "ust"; }
-      else if (vy - g.ust >= bhS + 18 || vy2 - vy + bhS + 30 <= g.alt - g.ust) { serit = true; by = g.ust + 6; okYon = "alt"; }
-      // çok dar alan: etiketle birlikte sığmıyorsa en azından yazı kutusunun kendisi şeridin altında açık kalır
-      else if (odakGirdi() && (function () { var q = odakGirdi().getBoundingClientRect();
-        return q.top - pay - g.ust >= bhS + 12 || q.height + 2 * pay + bhS + 24 <= g.alt - g.ust; })()) { serit = true; by = g.ust + 6; okYon = "alt"; }
-      // klavye açık ve hiçbir yerleşim sığmıyor (çok küçük görünen alan): en küçük biçim olan şerit
-      else if (klavyeAcik()) { serit = true; by = g.ust + 6; okYon = "alt"; }
-      else {
-        by = g.alt - bhT - 10; okYon = "ust";
-        if (y2 > by - 14) y2 = Math.max(vy + 24, by - 14);
-      }
-    } else {
-      x = x2 = W / 2; y = y2 = (g.ust + g.alt) / 2; by = Math.round((g.ust + g.alt - bh) / 2); okYon = "yok";
+  // ---------- 21.1 odak hattı ----------
+  // kaydırma kabı: panel (overlay) ya da sayfa; hedef sabit ya da yapışkan (sticky) bir öğedeyse kaydırılmaz
+  function kaydirKabi(el) {
+    for (var p = el; p && p !== document.body; p = p.parentElement) {
+      var ps = getComputedStyle(p).position;
+      if (ps === "sticky") return null;
+      if (ps === "fixed") return p.classList.contains("overlay") ? p : null;
     }
-    D.o.classList.toggle("yok", !r);
-    if (serit !== !!D.serit) {
-      // biçim değişti: yeni boyla bir sonraki karede yeniden yerleşir
-      D.serit = serit; D.o.classList.toggle("serit", serit);
-      if (serit && D.bulundu) seritYer();
-      return;
+    return window;
+  }
+  function kabY(S) { return S === window ? (window.scrollY || 0) : S.scrollTop; }
+  function kabaYaz(S, y) { if (S === window) window.scrollTo(0, y); else S.scrollTop = y; }
+  function kabMax(S) { return S === window ? Math.max(0, document.documentElement.scrollHeight - window.innerHeight) : Math.max(0, S.scrollHeight - S.clientHeight); }
+  // hedefin görünebileceği alan: ekran (klavye hariç) ∩ panel; sayfada üst çubuk ve alt menü/panel hariç
+  function odakAlan(el) {
+    var g = alan(), k = { ust: 0, alt: 0 };
+    try { if (A.kenar) k = A.kenar(el) || k; } catch (e) {}
+    var ov = el.closest && el.closest(".overlay");
+    var ust = g.ust + (ov ? 0 : (k.ust || 0)), alt = g.alt - (ov ? 0 : (k.alt || 0));
+    if (ov) ust = Math.max(ust, ov.getBoundingClientRect().top);
+    return { ust: ust, alt: alt, W: g.W, ov: ov };
+  }
+  // hedefin alt kenarının durduğu hat (ekran koordinatı)
+  function odakHatti(el, g) {
+    if (klavyeAcik()) return g.alt - 12;                              // klavyenin üst kenarının 12 px üstü
+    var y = g.alt - 0.28 * (g.alt - g.ust);                         // başparmak hizası: görünen alanın alttan %28'i
+    if (g.ov) {
+      // panelin sabit "Kaydet" çubuğu varsa onun 16 px üstü
+      var as = g.ov.querySelector(".altSabit");
+      if (as && !as.contains(el) && getComputedStyle(as).position === "sticky") y = Math.min(y, g.alt - as.offsetHeight - 16);
     }
-    var w = x2 - x, h = y2 - y;
-    // delik: kap koordinatı (kaydırmada değişmez → yazılmaz → tarayıcı kaydırmasıyla aynı karede)
-    yaz(D.delik, "transform", "translate(" + Math.round(x - ox) + "px," + Math.round(y - oy) + "px)");
-    yaz(D.delik, "width", Math.max(0, Math.round(w)) + "px"); yaz(D.delik, "height", Math.max(0, Math.round(h)) + "px");
-    var sl = [];
+    return y;
+  }
+  function balonOlcu(hl, hw, W) {
+    var bw = Math.min(Math.max(hw, 260), W - 16);
+    var bl = Math.max(8, Math.min(W - 8 - bw, hl + hw / 2 - bw / 2));
+    if (hw >= 260 && hl >= 8 && hl + hw <= W - 8) { bl = hl; bw = hw; }
+    return { l: bl, w: bw };
+  }
+  // ekran koordinatındaki pencere + baloncuk → kap koordinatı (kaydırmada değişmez → tarayıcı kaydırmasıyla aynı karede)
+  function ciz(d, b) {
+    var o = D.o.getBoundingClientRect(), ox = o.left, oy = o.top, pay = D.pay;
+    yaz(D.delik, "transform", "translate(" + Math.round(d.l - ox) + "px," + Math.round(d.t - oy) + "px)");
+    yaz(D.delik, "width", Math.max(0, Math.round(d.w)) + "px"); yaz(D.delik, "height", Math.max(0, Math.round(d.h)) + "px");
+    yaz(D.balon, "left", Math.round(b.l - ox) + "px"); yaz(D.balon, "width", Math.round(b.w) + "px");
+    var bh = D.balon.offsetHeight;
+    // baloncuğun alt kenarı hedefin üst kenarının 8 px üstünde
+    yaz(D.balon, "top", Math.round(d.t + pay - 8 - bh - oy) + "px");
+    D.delikEkran = d; D.balonEkran = b;
+  }
+  function solukCiz(d) {
+    var a = D.a, sl = [];
     if (a.soluk) { try { sl = (a.soluk() || []).filter(gorunur); } catch (e) { sl = []; } }
     D.soluk = D.soluk || [];
     while (D.soluk.length < sl.length) {
       var yeni = document.createElement("div"); yeni.className = "rhSoluk"; D.o.insertBefore(yeni, D.balon); D.soluk.push(yeni);
     }
+    var o = D.o.getBoundingClientRect();
     D.soluk.forEach(function (el, i) {
       if (i >= sl.length) { el.style.display = "none"; return; }
       var q = sl[i].getBoundingClientRect();
-      var l = Math.max(x, q.left - 4), u = Math.max(y, q.top - 4), rr = Math.min(x2, q.right + 4), aa = Math.min(y2, q.bottom + 4);
-      el.style.display = ""; kutu(el, l - ox, u - oy, rr - l, aa - u);
+      var l = Math.max(d.l, q.left - 4), u = Math.max(d.t, q.top - 4), rr = Math.min(d.l + d.w, q.right + 4), aa = Math.min(d.t + d.h, q.bottom + 4);
+      el.style.display = ""; kutu(el, l - o.left, u - o.top, rr - l, aa - u);
     });
-    // baloncuk: kap koordinatında "top" (transform değil: "hareketi azalt" açıkken basılı öğelerin transform'u sıfırlanıyor)
-    yaz(D.balon, "top", Math.round(by - oy) + "px");
-    D.ok.className = "rhOk " + (serit ? "yok" : okYon);
-    if (r) {
-      var cxo = Math.max(22, Math.min(bw - 22, (x + x2) / 2 - ox - bl));
-      yaz(D.ok, "left", Math.round(cxo) + "px");
+  }
+  // her kare: pencere hedefi izler (kullanıcı elle kaydırırsa gecikmesiz — 19B.3 / 21.5)
+  function yerlestir(els) {
+    katmanBoyu();
+    var g = alan();
+    D.o.classList.toggle("yok", !els.length);
+    if (!els.length) {
+      var bw = Math.min(360, g.W - 32), bh = D.balon.offsetHeight, cy = (g.ust + g.alt) / 2;
+      ciz({ l: g.W / 2, t: cy + bh / 2 + 8 - D.pay, w: 0, h: 0 }, { l: (g.W - bw) / 2, w: bw });
+      return;
+    }
+    var r = birlesik(els), pay = D.pay;
+    var d = { l: r.left - pay, t: r.top - pay, w: r.width + 2 * pay, h: r.height + 2 * pay };
+    ciz(d, balonOlcu(d.l, d.w, g.W));
+    solukCiz(d);
+  }
+  // 21.2: yeni hedefi odak hattına getir. Pencere ve baloncuk eski ekran yerinden yeni boya geçer; içerik kayar.
+  function hizala(els, sure, ilk) {
+    if (!els.length) return;
+    var a = D.a; D.pay = a.pay != null ? a.pay : 4;
+    var pay = D.pay;
+    // eski görsel durum (ekran koordinatı): pencere ve baloncuk buradan başlar
+    var eskiD = null, eskiB = null;
+    if (!ilk) {
+      var dr = D.delik.getBoundingClientRect();
+      if (dr.width > 0) { eskiD = { l: dr.left, t: dr.top, w: dr.width, h: dr.height }; }
+      var br = D.balon.getBoundingClientRect();
+      if (br.width > 0) eskiB = { l: br.left, w: br.width };
+    }
+    kapYerles(els[0]);
+    katmanBoyu();
+    var S = kaydirKabi(els[0]), g = odakAlan(els[0]), r = durgunBirlesik(els);
+    // yapışkan (sticky) hedef (ör. panelin "Kaydet"i): o paneldeki alt boşluk kalkar ki hedef panelin altına otursun
+    if (!S && D.bosluk) {
+      var ov0 = els[0].closest && els[0].closest(".overlay");
+      var kal = D.bosluk.filter(function (b) { return b.S === ov0 && b.yer === "alt"; });
+      if (kal.length) { D.bosluk = D.bosluk.filter(function (b) { return kal.indexOf(b) < 0; }); boslukKaldir(kal); }
+    }
+    var hw = r.width + 2 * pay, hl = r.left - pay, yeniB = balonOlcu(hl, hw, g.W);
+    // baloncuğun son genişlikteki boyu (aynı karede ölçülür, ekrana yansımaz)
+    var ew = D.balon.style.width; D.balon.style.width = yeniB.w + "px";
+    var kl = klavyeAcik();
+    D.o.classList.remove("dar");
+    var bh = D.balon.offsetHeight;
+    // klavye açıkken tam baloncuk hedefin üstüne sığmıyorsa tek satırlık kısa biçim (yine hedefin hemen üstünde)
+    if (kl && g.ust + 12 + bh + r.height > odakHatti(els[0], g)) { D.o.classList.add("dar"); bh = D.balon.offsetHeight; }
+    D.balon.style.width = ew;
+    var dy = 0;
+    if (S) {
+      var Y = odakHatti(els[0], g);
+      // klavye açıkken hedef her zaman klavyenin 12 px üstünde (yazılan görünür kalır);
+      // klavye kapalı ve hedef + baloncuk hatta sığmıyorsa (uzun hedef): ikisinin birlikte görünebileceği en düşük konum
+      var B = kl ? Y : Math.max(Y, g.ust + 12 + bh + r.height);
+      dy = r.bottom - B;
+      var s0 = kabY(S), s1 = s0 + dy;
+      // 21.3: kaydırma alanı yetmezse geçici boşluk
+      if (s1 > kabMax(S) + 0.5) bosluk(S, "alt", s1 - kabMax(S), els[0]);
+      for (var n = 0; n < 4 && s0 + dy < -0.5; n++) { bosluk(S, "ust", -(s0 + dy), els[0]); s0 = kabY(S); }
+      s1 = Math.max(0, Math.min(kabMax(S), s0 + dy));
+      dy = s1 - s0;
+      // panel o an açılıyorsa (alttan kayıyor) içerik hemen son yerine konur: panel hedef odak hattında olacak şekilde gelir
+      if (Math.abs(durgunKayma(els[0])) > 1) { kabaYaz(S, s1); s0 = s1; }
+      D.tw = { t0: simdi(), sure: azH() ? 0 : sure, S: S, s0: s0, s1: s1 };
+    } else D.tw = { t0: simdi(), sure: azH() ? 0 : sure, S: null };
+    r = durgunBirlesik(els);   // boşluk eklenince hedef yeri (ekranda) değişmez; yine de taze ölç
+    var yeniD = { l: hl, t: r.top - dy - pay, w: hw, h: r.height + 2 * pay };
+    D.tw.eskiD = eskiD || yeniD; D.tw.yeniD = yeniD;
+    D.tw.hedefAlt = r.bottom - dy;      // geçiş bitince hedefin alt kenarının olması gereken yer (denetim için)
+    D.tw.els = els;
+    D.tw.eskiB = eskiB || yeniB; D.tw.yeniB = yeniB;
+    gecisAdim();
+  }
+  function ara(a, b, e) { return a + (b - a) * e; }
+  function gecisAdim() {
+    var tw = D.tw, k = tw.sure ? Math.min(1, (simdi() - tw.t0) / tw.sure) : 1, e = egriFn()(k);
+    // içerik kaydırması ve pencere boyu aynı karede, aynı eğriyle
+    if (tw.S) kabaYaz(tw.S, ara(tw.s0, tw.s1, e));
+    katmanBoyu();
+    var d = { l: ara(tw.eskiD.l, tw.yeniD.l, e), t: ara(tw.eskiD.t, tw.yeniD.t, e), w: ara(tw.eskiD.w, tw.yeniD.w, e), h: ara(tw.eskiD.h, tw.yeniD.h, e) };
+    ciz(d, { l: ara(tw.eskiB.l, tw.yeniB.l, e), w: ara(tw.eskiB.w, tw.yeniB.w, e) });
+    if (k >= 1) { D.denetim = { alt: tw.hedefAlt, zaman: simdi(), S: tw.S, y: tw.S ? kabY(tw.S) : 0 }; D.tw = null; }
+  }
+  // ---------- 21.3 geçici boşluk ----------
+  // alt: içerik sonuna boşluk (panelde panelin sonuna, sayfada belgenin sonuna)
+  // üst: içerik başına boşluk; görsel kayma olmasın diye kaydırma konumu aynı anda telafi edilir
+  function bosluk(S, yer, n, ref) {
+    if (!(n > 0.5)) return;
+    D.bosluk = D.bosluk || [];
+    var b = D.bosluk.filter(function (x) { return x.S === S && x.yer === yer; })[0];
+    if (!b) {
+      var el = document.createElement("div"); el.className = "rhBosluk"; el.setAttribute("aria-hidden", "true"); el.style.height = "0px";
+      // sayfada body'nin dolgusu kullanılır (body yatay flex: araya öğe girerse sayfa daralır)
+      if (S === window) el = null;
+      else {
+        var sh = S.querySelector(".sheet") || S.firstElementChild;
+        if (yer === "alt") sh.appendChild(el);
+        else { el = null; }                               // panelde üst boşluk: panelin üst dolgusu
+      }
+      b = { S: S, yer: yer, el: el, n: 0 }; D.bosluk.push(b);
+    }
+    var v0 = ref.getBoundingClientRect().top, y0 = kabY(S);
+    b.n += Math.ceil(n);
+    boslukYaz(b);
+    if (yer === "ust") {
+      var v1 = ref.getBoundingClientRect().top;
+      if (Math.abs(v1 - v0) > 0.5) kabaYaz(S, y0 + (v1 - v0));
     }
   }
-  // şerit modunda hedefin üstü şeridin altına gelsin (hedef hiç kapanmasın)
-  function seritYer() {
-    var els = odakAlani(hedefler(D.a)); if (!els.length) return;
-    var r = birlesik(els), g = gorunenAlan(), bhS = D.bhSerit || 64, ust = g.ust + bhS + 18;
-    // etiketle birlikte sığmıyorsa yazı kutusu esas alınır
-    var oi = odakGirdi();
-    if (oi && r.bottom - r.top + 16 > g.alt - ust) r = oi.getBoundingClientRect();
-    if (r.top - 8 >= ust) return;
-    kaydirIste(els[0], Math.round(r.top - 8 - ust));
+  function boslukYaz(b) {
+    var n = b.n;
+    if (b.el) { b.el.style.height = n + "px"; return; }
+    var hedef = b.S === window ? document.body : b.S;
+    if (b.yer === "ust") hedef.style.paddingTop = n ? n + "px" : "";
+    // sayfanın alt dolgusu: klavye dolgusuyla toplanır (body.klavyeAcik --rhKlavyePb verir)
+    else hedef.style.paddingBottom = n ? "calc(" + n + "px + var(--rhKlavyePb, 0px))" : "";
   }
-  function kaydirIste(el, dy) {
-    var kap = kaydirici(el), dav = azH() ? "auto" : "smooth";
-    if (A.kaydir) { try { A.kaydir(kap || window, dy); return; } catch (e) {} }
-    try {
-      if (kap) kap.scrollBy({ top: dy, behavior: dav });
-      else window.scrollBy({ top: dy, behavior: dav });
-    } catch (e) { if (kap) kap.scrollTop += dy; else window.scrollBy(0, dy); }
+  // rehber bitince boşluklar yumuşakça kalkar (üst boşlukta içerik yerinde kalsın diye kaydırma telafi edilir)
+  function boslukKaldir(list) {
+    if (!list || !list.length) return;
+    var t0 = simdi(), SURE = azH() ? 0 : 300, f = egriFn();
+    var ilk = list.map(function (b) { return b.n; });
+    var adim = function () {
+      var k = SURE ? Math.min(1, (simdi() - t0) / SURE) : 1, e = f(k);
+      list.forEach(function (b, i) {
+        var n = Math.round(ilk[i] * (1 - e));
+        var ref = b.S === window ? null : (b.S.querySelector(".sheet") || b.S.firstElementChild);
+        if (b.yer === "ust" && b.S === window && A.sayfaKaydir) {
+          var eski = b.n; b.n = n; boslukYaz(b);
+          try { A.sayfaKaydir(n - eski); } catch (e2) {}
+          return;
+        }
+        var v0 = ref ? ref.getBoundingClientRect().top : 0, y0 = kabY(b.S);
+        b.n = n; boslukYaz(b);
+        if (b.yer === "ust" && ref) { var v1 = ref.getBoundingClientRect().top; if (Math.abs(v1 - v0) > 0.5) kabaYaz(b.S, y0 + (v1 - v0)); }
+      });
+      if (k < 1) requestAnimationFrame(adim);
+      else list.forEach(function (b) { if (b.el && b.el.parentNode) b.el.remove(); });
+    };
+    adim();
   }
-  // hedef görünmüyorsa (ya da baloncuğa yer yoksa) önce ona kaydır
-  function kaydirici(el) {
-    for (var p = el.parentElement; p && p !== document.body && p !== document.documentElement; p = p.parentElement) {
-      var s = getComputedStyle(p);
-      if (/(auto|scroll)/.test(s.overflowY) && p.scrollHeight > p.clientHeight + 1) return p;
-    }
-    return null;
-  }
-  function gorunurYap(els) {
-    if (D.a.kaydirma === false) return;
-    var r = birlesik(els), g = gorunenAlan(), k = { ust: 0, alt: 0 };
-    try { if (A.kenar) k = A.kenar(els[0]) || k; } catch (e) {}
-    // hedef [ust, alt] içinde görünmeli (üstte sabit çubuk, altta menü/panel); baloncuk perdenin üstünde her yere girebilir
-    var ust = g.ust + (k.ust || 0), alt = g.alt - (k.alt || 0);
-    var bh = D.bhTam || D.balon.offsetHeight || 150, ARA = 24, hedefUst = null, bhS = D.bhSerit || 64;
-    var icinde = function (top) { return top >= ust + 8 && top + r.height <= alt - 8; };
-    var altta = function (top) { return top + r.height + ARA + bh <= g.alt - 8; };
-    var ustte = function (top) { return top - ARA - bh >= g.ust + 8; };
-    if (icinde(r.top) && (altta(r.top) || ustte(r.top))) return;
-    if (r.height <= alt - ust - 16) {
-      // önce: hedef üstte, baloncuk altında; olmazsa baloncuk üstte, hedef altında; o da olmazsa hedef ortada
-      var t1 = ust + 12, t2 = Math.max(ust + 8, g.ust + 8 + bh + ARA);
-      if (altta(t1)) hedefUst = t1;
-      else if (t2 + r.height <= alt - 8) hedefUst = t2;
-      // baloncuk iki yana da sığmıyor: şerit üstte, hedef hemen altında
-      else hedefUst = Math.max(ust + 8, g.ust + bhS + 26);
-    } else {
-      if (r.top >= ust - 4 && r.top <= ust + 40) return;
-      hedefUst = ust + 8;
-    }
-    var dy = Math.round(r.top - hedefUst);
-    if (Math.abs(dy) < 4) return;
-    kaydirIste(els[0], dy);
-  }
-
+  // ölçüm (testler için): hedef, pencere, baloncuk, odak hattı, klavye üstü
+  R.olcum = function () {
+    if (!D || !D.a) return null;
+    var els = odakAlani(hedefler(D.a)); if (!els.length) return null;
+    var r = birlesik(els), d = D.delik.getBoundingClientRect(), b = D.balon.getBoundingClientRect(), g = odakAlan(els[0]), kl = 0;
+    try { kl = A.klavye ? A.klavye() || 0 : 0; } catch (e) {}
+    var vv = window.visualViewport, klavyeUst = klavyeAcik() ? (vv && window.innerHeight - vv.height > 80 ? vv.offsetTop + vv.height : window.innerHeight - kl) : null;
+    return { hedef: { ust: r.top, alt: r.bottom, sol: r.left, sag: r.right }, pencere: { ust: d.top, alt: d.bottom, sol: d.left, sag: d.right },
+      balon: { ust: b.top, alt: b.bottom, sol: b.left, sag: b.right }, hat: odakHatti(els[0], g), alanUst: g.ust, alanAlt: g.alt,
+      klavyeUst: klavyeUst, gecis: !!D.tw, adim: D.i };
+  };
   // 20.2: rehber açıkken hedefin dışındaki dokunuşlar iptal edilir, baloncuk sallanır. Kaydırma ve sürükleme serbest:
   // parmak 10 px'ten fazla kaydıysa dokunuş sayılmaz. touchend iptal edilince ne tıklama ne odak (klavye) oluşur.
   function engelVar() { return !!(D && D.a && !D.a.gizli && !D.ortu && D.bulundu); }
@@ -744,7 +871,8 @@
   function bitir(tamamlandi) {
     if (!D) return;
     var d = D; D = null;
-    cancelAnimationFrame(d.raf); clearTimeout(d.kayT); clearTimeout(d.balT);
+    cancelAnimationFrame(d.raf); clearTimeout(d.balT);
+    boslukKaldir(d.bosluk);
     if (d.a && d.a.cikis) { try { d.a.cikis(); } catch (e) {} }
     var o = d.o;
     if (azH()) o.remove();
