@@ -775,6 +775,12 @@
     "Bu işlem için yardım":"Help for this task",
     "Açıkken her işlemde adım adım yardım gösterilir.":"When on, step-by-step help is shown for every task.",
     "Yardımlı mod kapatıldı. Panellerdeki ? ile yine yardım alabilirsiniz.":"Guided mode is off. You can still get help with the ? on each panel.",
+    // Görev 27
+    "Hangi villam boş?":"Which of my villas is free?",
+    "Tarih seçin, boş villaları fiyatlarıyla görün":"Pick dates and see the free villas with prices",
+    "Tarih seçin, boş villaları görün":"Pick dates and see the free villas",
+    "Giriş gününe dokunun":"Tap the check-in day",
+    "Çıkış gününe dokunun":"Tap the check-out day",
     // Görev 26
     "Görünüm":"Appearance",
     "Yazı boyutu":"Text size",

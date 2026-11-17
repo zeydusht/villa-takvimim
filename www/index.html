@@ -794,6 +794,37 @@
   .sheet{transition:transform var(--hiz-ac) var(--egri-gecis), padding-bottom var(--hiz-klavye) var(--egri-gecis)}
   /* 26.4: ekranın altındaki bölüm, ekrana girene kadar saydam (girince 8 pt aşağıdan solarak gelir) */
   .belirBekle{opacity:0}
+  /* ================= 27 MÜSAİTLİK ARAMA ================= */
+  /* 27.1: Takvim sekmesinde başlığın altında belirgin kart (açık yeşil zemin, yeşil çerçeve); tek villada daha küçük */
+  .maKart{display:flex; align-items:center; gap:.875rem; width:100%; margin:1rem 0 .25rem; padding:.875rem 1rem; text-align:left;
+    background:var(--basili-zemin); border:var(--cerceve-kalinlik) solid var(--ok); border-radius:var(--kose); color:var(--ink);
+    min-height:var(--dokunma-yukseklik); transition:transform var(--hiz-bas) var(--egri-giris)}
+  .maKart:active{transform:scale(var(--basili-olcek))}
+  .maKartIk{flex:none; width:3rem; height:3rem; border-radius:99px; background:var(--ok); color:#fff; display:flex; align-items:center; justify-content:center}
+  .maKartMetin{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:.125rem}
+  .maKartBas{font-family:var(--serif); font-size:1.3125rem; line-height:1.25; color:var(--ok)}
+  .maKartAlt{font-size:.9375rem; line-height:1.35}
+  .maKart > .ik:last-child{flex:none; color:var(--ok)}
+  .maKart.kucuk{padding:.5rem .875rem; gap:.75rem}
+  .maKart.kucuk .maKartIk{width:2.25rem; height:2.25rem}
+  .maKart.kucuk .maKartBas{font-size:1.0625rem}
+  .maKart.kucuk .maKartAlt{font-size:.875rem}
+  /* 27.2: tam ekran panel (alttan kayar; köşesiz, ekranın tamamı) */
+  .overlay.maPerde{align-items:stretch}
+  .sheet.maSheet{max-width:40rem; min-height:100%; margin:0 auto; border-radius:0; display:flex; flex-direction:column;
+    padding:calc(1.25rem + env(safe-area-inset-top)) 1rem calc(.5rem + env(safe-area-inset-bottom) + var(--klavye,0px))}
+  .sheet.maSheet::before{display:none}
+  @media(min-width:640px){ .sheet.maSheet{border-radius:0; margin:0 auto} }
+  .maIc{flex:1 1 auto; display:flex; flex-direction:column}
+  .maTakvim{margin-top:1rem}
+  .maTakvim .dow{margin:.75rem 0 .25rem}
+  .maTakvim .nav button:disabled{opacity:.3}
+  .maTakvim .cell:disabled{cursor:default}
+  .maAlt{margin:auto -1rem 0; padding:.75rem 1rem .5rem; border-top:1px solid var(--line); box-shadow:0 -6px 18px rgba(16,22,19,.08)}
+  .maOzet{min-height:3rem; display:flex; flex-direction:column; justify-content:center}
+  .maOzetBas{font-family:var(--serif); font-size:1.3125rem; line-height:1.3; color:var(--ok)}
+  .maOzetIpucu{font-size:1.0625rem; line-height:1.35}
+  .maOzetAlt{font-size:.875rem; line-height:1.35; color:var(--muted); margin-top:.125rem}
   /* 26.7: yazı boyutu önizlemesi (seçili boyutta, hemen) */
   .yaziOnizle{margin-top:.75rem; padding:.875rem 1rem; border:var(--cerceve-kalinlik) solid var(--line); border-radius:var(--kose);
     line-height:1.4}
@@ -1487,6 +1518,8 @@
   <!-- TAKVİM SEKMESİ: tüm villaların yaklaşan giriş/çıkışları -->
   <div id="ajanda" class="hide sekmeEkran">
     <h1>Takvim</h1>
+    <!-- 27.1: "Hangi villam boş?" (müsaitlik arama) — giriş/çıkış listesinin üstünde -->
+    <div id="maKartYer"></div>
     <!-- 18.19: tek cümle özet -->
     <div class="ajOzet" id="ajOzet"></div>
     <div class="seg" id="ajSeg" style="margin-top:1rem">
@@ -2973,7 +3006,7 @@
   // "Hareketi azalt"ta hiçbiri yok. Yalnız transform / opacity.
   var KADEME={gor:{}};
   // açılan kaplar: içindeki öğeler tek tek kademe olur (ör. Villalarım: başlık → özet etiketleri → villa kartları)
-  var KADEME_EKRAN={ana:["#ana > .anaBas","#villalar"], ajanda:["#ajandaListe"], hesapEkran:["#hesapEkran > div"], takvim:[], kasa:[]};
+  var KADEME_EKRAN={ana:["#ana > .anaBas","#villalar"], ajanda:["#maKartYer","#ajandaListe"], hesapEkran:["#hesapEkran > div"], takvim:[], kasa:[]};
   function kademeOgeleri(ekran,id){
     var l=[], ac=KADEME_EKRAN[id].map(function(s){ return document.querySelector(s); });
     Array.prototype.forEach.call(ekran.children,function(c){
@@ -3163,6 +3196,7 @@
   function gunUzun(d){ return GUN_UZUN[(window.DIL&&DIL.ingilizce&&DIL.ingilizce())?"en":"tr"][d.getDay()]; }
   function cizAjanda(){
     goster("ajanda");
+    maKartCiz();
     Array.prototype.forEach.call(document.querySelectorAll("#ajSeg button"),function(b){
       b.classList[b.dataset.m===AJ.mod?"add":"remove"]("on"); });
     var an=trSimdi();
@@ -3243,6 +3277,119 @@
       detayUstte(o.v,o.r);
     };
   }
+  // ================= 27 MÜSAİTLİK ARAMA: "17–21 arası hangi villam boş?" =================
+  // Takvim sekmesinin üstündeki karttan açılır: tam ekran panel, sade takvim (doluluk gösterilmez), 18.1 seçim kuralı,
+  // 18.2 seçim görünümü. Sonuçta boş / kısmen boş villalar ve toplam fiyat (20.7: konaklamaHesap, tek fonksiyon).
+  var MA={bas:null, bit:null, kisi:0, sira:"benim", adim:"tarih", imlec:null, hap:"", secMod:false, secili:{}, kismenAcik:false, donus:false, liste:[], sonuc:null, yakin:null};
+  var maParaGor=function(v){ return !S.bulut || v.rol!=="bakici"; };   // bakıcı fiyat görmez
+  var maSahip=function(v){ return !S.bulut || v.rol!=="bakici"; };
+  var maEN=function(){ return !!(window.DIL && DIL.ingilizce && DIL.ingilizce()); };
+  function maGece(a,b){ return Math.round((parse(b)-parse(a))/86400000); }
+  function maTarihOk(a,b){ var x=parse(a), z=parse(b);
+    return x.getMonth()===z.getMonth() ? x.getDate()+" → "+z.getDate()+" "+AYLAR[z.getMonth()] : kisa(a)+" → "+kisa(b); }
+  function maKartCiz(){
+    var yer=document.getElementById("maKartYer"); if(!yer) return;
+    if(!S.villalar.length){ yer.innerHTML=""; yer._h=""; return; }
+    var tek=S.villalar.length<2, fiyatli=S.villalar.some(maParaGor);
+    var h='<button class="maKart'+(tek?" kucuk":"")+'" id="maKart" type="button">'+
+      '<span class="maKartIk">'+ikon("arama",{boy:tek?20:24})+"</span>"+
+      '<span class="maKartMetin"><span class="maKartBas">'+esc(cev("Hangi villam boş?"))+"</span>"+
+      '<span class="maKartAlt">'+esc(cev(fiyatli?"Tarih seçin, boş villaları fiyatlarıyla görün":"Tarih seçin, boş villaları görün"))+"</span></span>"+
+      ikon("sag",{boy:20})+"</button>";
+    if(yer._h!==h){ yer.innerHTML=h; yer._h=h; }
+    document.getElementById("maKart").onclick=function(){ titret("hafif"); musaitAc(); };
+  }
+  function musaitAc(){
+    if(!S.villalar.length) return;
+    villaSirala();
+    MA.adim="tarih"; MA.secMod=false; MA.donus=false;
+    if(MA.bas && MA.bas<fmt(today)){ MA.bas=null; MA.bit=null; }
+    var b0=MA.bas?parse(MA.bas):today;
+    MA.imlec=new Date(b0.getFullYear(),b0.getMonth(),1);
+    maPerde();
+  }
+  function maPerde(){
+    var o=perde('<div class="head"><h2>'+esc(cev("Hangi villam boş?"))+"</h2>"+kapatBtn()+'</div><div id="maIc" class="maIc"></div>');
+    o.classList.add("maPerde"); o.querySelector(".sheet").classList.add("maSheet");
+    document.getElementById("maIc").addEventListener("click",maTikla);
+    maCiz();
+    return o;
+  }
+  function maCiz(){ if(MA.adim==="sonuc" && typeof maSonucCiz==="function") maSonucCiz(); else maTarihCiz(); }
+  function maUste(){ var o=document.querySelector(".overlay.maPerde:not(.kapaniyor)"); if(o) o.scrollTop=0; }
+  // ---- 27.2 tarih seçimi ----
+  function maTarihCiz(){
+    var ic=document.getElementById("maIc"); if(!ic) return;
+    var gn=(window.DIL && DIL.KISAGUN && DIL.KISAGUN[DIL.dil]) || ["Pt","Sa","Ça","Pe","Cu","Ct","Pz"];
+    ic.innerHTML=maUstEk()+
+      '<div id="maTakvim" class="maTakvim">'+
+        '<div class="monthbar"><div class="m" id="maAy"></div><div class="nav">'+
+          '<button id="maOnce" type="button" aria-label="'+esc(cev("Önceki ay"))+'">'+ikon("sol",{boy:22})+"</button>"+
+          '<button id="maSonra" type="button" aria-label="'+esc(cev("Sonraki ay"))+'">'+ikon("sag",{boy:22})+"</button></div></div>"+
+        '<div class="dow">'+gn.map(function(x){ return "<div>"+esc(x)+"</div>"; }).join("")+"</div>"+
+        '<div class="grid" id="maGrid"></div></div>'+
+      '<div class="altSabit maAlt" id="maAlt"></div>';
+    maIzgaraCiz(); maAltCiz();
+  }
+  function maUstEk(){ return ""; }
+  // sade takvim: doluluk yok; geçmiş günler soluk ve seçilemez; seçim 18.2 görünümünde (aradaki geceler koyu yeşil,
+  // giriş günü sağ-alt yarı, çıkış günü sol-üst yarı açık yeşil; yalnız giriş seçiliyken yeşil çerçeve)
+  function maIzgaraCiz(){
+    var g=document.getElementById("maGrid"); if(!g) return;
+    var y=MA.imlec.getFullYear(), m=MA.imlec.getMonth(), tk=fmt(today);
+    document.getElementById("maAy").textContent=AYLAR[m]+" "+y;
+    document.getElementById("maOnce").disabled=(y===today.getFullYear() && m===today.getMonth());
+    var adet=new Date(y,m+1,0).getDate(), lead=(new Date(y,m,1).getDay()+6)%7, h="";
+    var a=MA.bas, z=MA.bit, SECA=tint("#0B5B57",.38);
+    for(var d=1; d<=adet; d++){
+      var k=fmt(new Date(y,m,d)), col=(lead+d-1)%7, gec=k<tk;
+      var sb=!!(a&&z&&k===a), ss=!!(a&&z&&k===z), si=!!(a&&z&&k>a&&k<z), tekB=!!(a&&!z&&k===a);
+      var bg="", rl=true, rr=true;
+      if(si) bg="#0B5B57";
+      else if(sb) bg="linear-gradient("+SEAM+",transparent 49.5%,"+SECA+" 50.5%)";
+      else if(ss) bg="linear-gradient("+SEAM+","+SECA+" 49.5%,transparent 50.5%)";
+      if(a&&z&&k>a&&k<=z&&col!==0) rl=false;
+      if(a&&z&&k>=a&&k<z&&col!==6) rr=false;
+      if(sb) rl=true;
+      if(ss) rr=true;
+      var cls="cell"+(si?" full secIc":"")+(sb?" secBas":"")+(ss?" secSon":"")+(tekB?" sel":"")+(k===tk?" today":"")+(gec?" gecmis":"");
+      var st=(d===1&&lead?"grid-column-start:"+(lead+1)+";":"")+(bg?"background:"+bg+";":"")+
+        "border-radius:"+(rl?"10px":"0")+" "+(rr?"10px":"0")+" "+(rr?"10px":"0")+" "+(rl?"10px":"0");
+      h+='<button type="button" class="'+cls+'" data-k="'+k+'" style="'+st+'" aria-label="'+esc(gunAdli(k))+'"'+(gec?" disabled":"")+">"+
+        '<span class="gn">'+d+'</span><span class="fy"></span></button>';
+    }
+    g.innerHTML=h;
+  }
+  function maAltCiz(){
+    var el=document.getElementById("maAlt"); if(!el) return;
+    var a=MA.bas, z=MA.bit, gc=(a&&z)?maGece(a,z):0;
+    el.innerHTML='<div class="maOzet" id="maOzet">'+((a&&z)
+        ? '<span class="maOzetBas">'+esc(maTarihOk(a,z)+" · "+cev(gc+" gece"))+"</span>"
+        : '<span class="maOzetIpucu">'+esc(cev(a?"Çıkış gününe dokunun":"Giriş gününe dokunun"))+"</span>"+
+          (a?'<span class="maOzetAlt">'+esc(cev("Giriş: "+gunAdli(a)+" · "+GIRIS))+"</span>":""))+"</div>"+maAltEk();
+  }
+  function maAltEk(){ return ""; }
+  // 18.1: hiçbir şey seçili değil → giriş; yalnız giriş S → Y > S aralık, Y < S yeni giriş, Y = S seçim kalkar;
+  // aralık seçiliyken dokunmak seçimi kaldırır. Doluluk gösterilmediği için "arada dolu gün" kuralı burada yok.
+  function maGunSec(k){
+    if(k<fmt(today)) return;
+    MA.hap="";
+    if(MA.bas && MA.bit){ MA.bas=null; MA.bit=null; maIzgaraCiz(); maAltCiz(); rhBildir("ma:temiz"); return; }
+    if(!MA.bas){ MA.bas=k; maIzgaraCiz(); maAltCiz(); rhBildir("ma:bas"); return; }
+    if(k===MA.bas){ MA.bas=null; maIzgaraCiz(); maAltCiz(); rhBildir("ma:temiz"); return; }
+    if(k<MA.bas){ MA.bas=k; maIzgaraCiz(); maAltCiz(); return; }
+    MA.bit=k; titret("hafif"); maIzgaraCiz(); maAltCiz(); rhBildir("ma:aralik");
+  }
+  function maTikla(e){
+    var t=e.target.closest("button"); if(!t || t.disabled) return;
+    if(t.id==="maOnce" || t.id==="maSonra"){
+      MA.imlec=new Date(MA.imlec.getFullYear(),MA.imlec.getMonth()+(t.id==="maOnce"?-1:1),1);
+      maIzgaraCiz(); aySolma("maGrid"); return;
+    }
+    if(t.classList.contains("cell") && t.closest("#maGrid")){ maGunSec(t.dataset.k); return; }
+    if(typeof maTiklaEk==="function") maTiklaEk(e,t);
+  }
+
   // Rezervasyon detayı Takvim sekmesinin ÜSTÜNDE açılır; kapatınca Takvim'de kalınır.
   function detayUstte(v,r){
     S.aktif=v.id; MAP=harita(v.rez); S.salt=false; S.ustDetay=true;
