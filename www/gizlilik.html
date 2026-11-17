@@ -13,6 +13,7 @@
   body{display:flex;justify-content:center}
   .w{width:100%;max-width:40rem;padding:2.5rem 1.25rem 4rem;line-height:1.7;font-size:.9375rem}
   h1{font-family:ui-serif,Georgia,serif;font-weight:400;font-size:1.875rem;letter-spacing:-.02em;margin:0 0 .5rem}
+  h3{font-size:1.0625rem;font-weight:600;margin:1.25rem 0 .5rem}
   h2{font-family:ui-serif,Georgia,serif;font-weight:400;font-size:1.25rem;letter-spacing:-.02em;
     margin:2.25rem 0 .75rem;padding-top:1.5rem;border-top:1px solid #E3E9EC}
   .tarih{color:#6B7C85;font-size:.8125rem;margin-bottom:1.5rem}
@@ -30,7 +31,7 @@
 <div class="w">
 
 <h1>Gizlilik ve Kişisel Verilerin Korunması</h1>
-<div class="tarih">Villa Takvim · Son güncelleme: <span id="tarih">—</span></div>
+<div class="tarih">Villa Takvim · Son güncelleme: <span id="tarih">17 Kasım 2026</span></div>
 
 <p>Bu metin, Villa Takvim uygulamasında kişisel verilerin nasıl işlendiğini açıklar. 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında aydınlatma yükümlülüğü gereği hazırlanmıştır.</p>
 
@@ -50,7 +51,17 @@
   <tr><td>Villa bilgileri, fotoğraflar, fiyatlar</td><td>Takvimi ve tanıtım sayfasını oluşturmak</td></tr>
   <tr><td>Misafir adı, telefonu, kişi sayısı, notlar</td><td>Rezervasyon takibi ve iletişim</td></tr>
   <tr><td>Ödemeler, gelir ve gider kayıtları, fiş fotoğrafları</td><td>Villa sahibinin kendi muhasebe takibi</td></tr>
+  <tr><td>Kullanım verileri (aşağıda)</td><td>Uygulamayı geliştirmek ve destek vermek</td></tr>
 </table>
+<h3>Kullanım verileri</h3>
+<ul>
+  <li><b>Ne toplanır:</b> hangi özelliğin kullanıldığı (örneğin "rezervasyon eklendi", "boş villa arandı"), cihaz türü (iPhone, Android ya da web), uygulama sürümü ve bir hata olduğunda yalnızca hatanın türü ve uygulamadaki yeri. Bazı olaylarda yalnızca sayılar gider (örneğin gece sayısı, eklenen fotoğraf adedi).</li>
+  <li><b>Ne toplanmaz:</b> misafir bilgisi, fiyat ya da tutar, isim, telefon, e-posta, adres, tarih, not ve konum. Hata mesajlarının kendisi de gönderilmez.</li>
+  <li><b>Amaç:</b> uygulamayı geliştirmek ve sorun yaşadığınızda destek vermek. Reklam ya da başka şirketlerle paylaşım için kullanılmaz.</li>
+  <li><b>Süre:</b> 13 ay; sonra otomatik olarak silinir.</li>
+  <li><b>Kim görür:</b> yalnızca uygulamanın yöneticileri, özet olarak (toplam sayılar). Bir hesabın kendi kayıtlarına destek amacıyla bakılması ayrıca kayda geçer (6. bölüm).</li>
+  <li><b>Nasıl kapatılır:</b> Hesap → Gizlilik → "Kullanım istatistiklerini paylaş" anahtarını kapatın. Kapalıyken hiçbir kullanım verisi gönderilmez. Tercih cihazınızda saklanır.</li>
+</ul>
 <p>Kimlik numarası, pasaport, kredi kartı veya konum verisi toplanmaz. Uygulamada reklam, izleme çerezi veya üçüncü taraf analitik yazılımı bulunmaz.</p>
 
 <h2>3. Veriler nerede saklanıyor?</h2>
@@ -72,6 +83,7 @@
 <h2>6. Destek erişimi</h2>
 <p>Villa sahibi yardım istediğinde, uygulamayı yöneten kişi ilgili villaya <b>destek modunda</b> girebilir. Destek istediğinizde yöneticimiz sorunu çözmek için villa kayıtlarınızı görüntüleyip düzenleyebilir. Bu kapsamda takvim, rezervasyonlar, ödemeler, fiyatlar, gelir ve giderler, fotoğraflar ve tanıtım sayfası görülebilir ve villa sahibinin isteğiyle değiştirilebilir. Destek modundan villa silinemez.</p>
 <p>Her destek girişi tarih ve villa bilgisiyle birlikte kayıt altına alınır. Villa sahibi kendi villasına yapılan destek girişlerinin kaydını talep edebilir.</p>
+<p>Yöneticinin bir hesabın kullanım etkinliğine (hangi özelliklerin ne zaman kullanıldığı) bakması da tarih, yönetici ve hesap bilgisiyle kayda geçer.</p>
 
 <h2>7. Veriler ne kadar süre saklanıyor?</h2>
 <ul>
@@ -79,6 +91,7 @@
   <li>Sildiğiniz rezervasyon, gider ve fotoğraflar sunucudan da silinir.</li>
   <li>Hesabınızı sildiğinizde, sahibi olduğunuz villalara ait tüm kayıtlar kalıcı olarak silinir.</li>
   <li>Çıkış yaptığınızda cihazınızdaki geçici kopya temizlenir.</li>
+  <li>Kullanım verileri 13 ay saklanır, sonra otomatik olarak silinir.</li>
 </ul>
 
 <h2>8. Haklarınız</h2>
@@ -113,9 +126,5 @@ E-posta: <b>[e-posta adresi]</b></p>
 </div>
 
 </div>
-<script>
-document.getElementById("tarih").textContent =
-  new Date().toLocaleDateString("tr-TR",{day:"numeric",month:"long",year:"numeric"});
-</script>
 </body>
 </html>
