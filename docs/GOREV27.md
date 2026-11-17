@@ -19,7 +19,7 @@ _Hazırlayan: Claude (ürün yöneticisi), 17 Kasım 2026. Zeyd: "5 villası ola
   - **Kısmen boş** (ayrı bölüm, kapalı-açılır): seçili aralığın bir kısmı boş olan villalar: "17–19 boş, 19'dan itibaren dolu" gibi; dokununca o villanın takvimi açılır.
   - **Fiyatı girilmemiş geceler** varsa: "2 gecenin fiyatı girilmemiş" uyarısı, toplam yerine "Fiyat eksik" + "Fiyat gir" bağlantısı.
   - Hiç boş villa yoksa: çizimli boş durum + "Bu tarihlerde boş villa yok" + en yakın boşluk önerisi: "En yakın boşluk: Villa Salta · 22–26 Kasım" (dokununca o tarihlerle aramayı yeniler).
-- [ ] **27.4 Müşteriye tek mesajla gönder.** Sonuç listesinde üstte **"Seç ve gönder"**: villalar onay kutusuyla seçilir → **"WhatsApp'ta gönder"** / "Kopyala". Mesaj (düzenlenebilir önizleme):
+- [x] **27.4 Müşteriye tek mesajla gönder.** Sonuç listesinde üstte **"Seç ve gönder"**: villalar onay kutusuyla seçilir → **"WhatsApp'ta gönder"** / "Kopyala". Mesaj (düzenlenebilir önizleme):
   ```
   Merhaba, 17–21 Kasım (4 gece) için müsait villalarımız:
   • Villa Salta (8 kişi) – 18.400 ₺ – <villa sayfası bağlantısı>

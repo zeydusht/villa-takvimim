@@ -873,6 +873,23 @@
   .maBosYok .big{margin-top:1rem}
   .maKismenBtn{margin-top:1.5rem}
   .msSil.enAzSil{width:3rem; height:3rem; min-width:3rem}
+  /* 27.4: seç ve gönder — kartta onay kutusu, seçili kart açık yeşil; altta mesaj ve sabit WhatsApp / Kopyala */
+  #maSecAc{margin-top:1rem}
+  .maSecBilgi{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem .75rem; margin-top:1rem;
+    font-size:.9375rem; line-height:1.4}
+  .maSecBilgi .linkBtn{flex:none}
+  button.maVillaUst{min-height:3rem; cursor:pointer}
+  .maKutu{flex:none; align-self:center; width:1.75rem; height:1.75rem; border-radius:.5rem; border:var(--cerceve-kalinlik) solid var(--cerceve);
+    background:#fff; color:#fff; display:flex; align-items:center; justify-content:center}
+  .maKutu .ik{opacity:0}
+  .maKutu.on{background:var(--ok); border-color:var(--ok)}
+  .maKutu.on .ik{opacity:1}
+  .maVilla.secili{border-color:var(--ok); background:var(--basili-zemin)}
+  .maMesajAlan{margin-top:1.25rem}
+  .maMesajAlan textarea{width:100%; min-height:11rem; font-size:.9375rem; line-height:1.45; resize:none; overflow:hidden}
+  .maSayfaNot{margin:-.5rem 0 .5rem}
+  .maSeciliSay{font-size:.9375rem; line-height:1.35; min-height:1.5rem}
+  .maGonderAlt .big + .big{margin-top:.5rem}
   .maKismenSatir .ajAlt{display:block; font-size:.9375rem; color:var(--ink)}
   .maKismenSatir > .ik:last-child{flex:none; color:var(--muted)}
   /* 27.6: rehber tarih adımlarında haplar ve kişi satırı gizli (takvim baloncukla birlikte küçük ekrana da sığsın) */
@@ -3553,7 +3570,7 @@
   }
   var maTeklifOlur=function(v){ return !!(S.bulut && kurulu() && maSahip(v) && maParaGor(v) && window.VT && VT.teklifKaydet); };
   function maKartHTML(x,i){
-    var v=x.v, sec=MA.secMod, on=!!MA.secili[v.id];
+    var v=x.v, sec=MA.secMod && x.para, on=!!MA.secili[v.id];
     var foto=(v.fotolar&&v.fotolar.length)?kucukResim(v.fotolar[0]):"";
     var harf=esc(((v.ad||"?").trim().replace(/^villa\s+/i,"")||v.ad||"?").charAt(0).toLocaleUpperCase("tr")||"?");
     var kapak=foto ? '<span class="maKapak" style="background-image:url(\''+foto+'\')"></span>'
@@ -3576,7 +3593,7 @@
     var ust=sec ? '<button type="button" class="maVillaUst" data-sv="'+i+'" aria-pressed="'+on+'">'+ic+"</button>" : '<div class="maVillaUst">'+ic+"</div>";
     var kural=x.engel ? '<div class="maKural">'+ikon("uyari-ucgen",{boy:16})+"<span>"+esc(cev((x.enAz.donem?"Bu dönemde en az ":"En az ")+x.enAz.gece+" gece"))+"</span></div>" : "";
     var btn=[];
-    if(!sec){
+    if(!MA.secMod){
       btn.push('<button type="button" class="big renkli is-rez" data-mi="'+i+'" data-is="rez">'+esc(cev("Rezervasyon"))+"</button>");
       if(maTeklifOlur(v)) btn.push('<button type="button" class="big renkli is-para" data-mi="'+i+'" data-is="teklif">'+esc(cev("Teklif"))+"</button>");
       if(maSahip(v)) btn.push('<button type="button" class="big renkli is-ops" data-mi="'+i+'" data-is="ops">'+esc(cev("Opsiyon"))+"</button>");
@@ -3618,14 +3635,87 @@
     ic.innerHTML=h;
     maSonucSonra();
   }
-  function maSecUst(){ return ""; }
+  // ---- 27.4 müşteriye tek mesajla gönder ----
+  function maSecUst(fiyatli,n){
+    if(!n || !fiyatli) return "";
+    if(!MA.secMod) return '<button type="button" class="big renkli is-paylas" id="maSecAc">'+ikon("gonder",{boy:20})+"<span>"+esc(cev("Seç ve gönder"))+"</span></button>";
+    return '<div class="maSecBilgi"><span>'+esc(cev("Göndermek istediğiniz villaları işaretleyin"))+"</span>"+
+      '<button type="button" class="linkBtn" id="maSecKapat">'+esc(cev("Vazgeç"))+"</button></div>";
+  }
+  function maSecAlt(){
+    if(!MA.secMod) return "";
+    return '<div class="field maMesajAlan"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Mesaj (düzenleyebilirsiniz)"))+"</div>"+
+        '<textarea id="maMesaj" rows="8"></textarea></div>'+
+      '<div class="sm muted maSayfaNot hide" id="maSayfaNot">'+esc(cev("Villa sayfası yayında olmayan villada bağlantı yerine “(sayfa yok)” yazar."))+"</div>"+
+      '<div class="altSabit maAlt maGonderAlt"><div class="maSeciliSay" id="maSeciliSay"></div>'+
+        '<button type="button" class="big" id="maWa">'+ikon("mesaj",{boy:20})+"<span>"+esc(cev("WhatsApp'ta gönder"))+"</span></button>"+
+        '<button type="button" class="big renkli is-paylas" id="maKopyala">'+ikon("kopyala",{boy:20})+"<span>"+esc(cev("Kopyala"))+"</span></button></div>";
+  }
+  // mesaj kutusu içeriğe göre uzar (bağlantılar kutunun içinde kaybolmasın)
+  function maMesajBoy(ta){ ta.style.height="auto"; ta.style.height=(ta.scrollHeight+4)+"px"; }
+  document.addEventListener("input",function(e){ if(e.target && e.target.id==="maMesaj") maMesajBoy(e.target); });
+  function maSecililer(){ return MA.liste.filter(function(x){ return x.para && MA.secili[x.v.id]; }); }
+  // villa sayfası bağlantısı o tarihleri seçili açar: ?giris=…&cikis=… (g.html okur)
+  function maSayfaLink(v){
+    if(!(v.paylasim && v.paylasim.yayin)) return "";
+    var l=sayfaLink(v); if(!l) return "";
+    return l+(l.indexOf("?")>=0?"&":"?")+"giris="+MA.bas+"&cikis="+MA.bit;
+  }
+  // Merhaba, 17–21 Kasım (4 gece) için müsait villalarımız:
+  // • Villa Salta (8 kişi) – 18.400 ₺ – <bağlantı>
+  // Fiyatlara konaklama dahildir; girişte iade edilen hasar depozitosu alınır.
+  function maMesaj(){
+    var EN=maEN(), sec=maSecililer(), gc=maGece(MA.bas,MA.bit), ar=aralikYazi({b:MA.bas,s:MA.bit});
+    var t=EN ? "Hello, our available "+(sec.length===1?"villa":"villas")+" for "+ar+" ("+gc+" "+(gc===1?"night":"nights")+"):\n"
+             : "Merhaba, "+ar+" ("+gc+" gece) için müsait "+(sec.length===1?"villamız":"villalarımız")+":\n";
+    sec.forEach(function(x){
+      var v=x.v, s1="• "+(v.ad||"Villa");
+      if(x.kap) s1+=" ("+x.kap+(EN?" guests":" kişi")+")";
+      if(x.k && !x.k.eksik && x.k.toplam>0) s1+=" – "+para(x.k.toplam);
+      var l=maSayfaLink(v);
+      s1+=" – "+(l || (EN?"(no page)":"(sayfa yok)"));
+      t+=s1+"\n";
+    });
+    var dep=sec.some(function(x){ return x.dep>0; });
+    t+=EN ? (dep?"Prices include accommodation; a damage deposit, refunded at check-out, is taken at check-in.":"Prices include accommodation.")
+          : (dep?"Fiyatlara konaklama dahildir; girişte iade edilen hasar depozitosu alınır.":"Fiyatlara konaklama dahildir.");
+    return t;
+  }
+  function maSecGuncelle(){
+    var ta=document.getElementById("maMesaj"); if(!ta) return;
+    var sec=maSecililer();
+    ta.value=maMesaj(); maMesajBoy(ta);
+    document.getElementById("maSeciliSay").textContent=cev(sec.length ? sec.length+" villa seçildi" : "Villa seçilmedi");
+    document.getElementById("maWa").disabled=!sec.length; document.getElementById("maKopyala").disabled=!sec.length;
+    document.getElementById("maSayfaNot").classList[sec.some(function(x){ return !maSayfaLink(x.v); })?"remove":"add"]("hide");
+  }
+  function maTiklaEk2(e,t){
+    if(t.id==="maSecAc"){
+      MA.secMod=true; MA.secili={};
+      MA.liste.forEach(function(x){ if(x.para && !x.engel) MA.secili[x.v.id]=true; });   // kural engeli olanlar başta seçili değil
+      titret("hafif"); maSonucCiz();
+      var b=document.querySelector(".maSecBilgi"); if(b) try{ b.scrollIntoView({block:"start", behavior:azHareket()?"auto":"smooth"}); }catch(x){}
+      return;
+    }
+    if(t.id==="maSecKapat"){ MA.secMod=false; titret("hafif"); maSonucCiz(); return; }
+    if(t.dataset.sv){
+      var x=MA.liste[+t.dataset.sv]; if(!x) return;
+      var on=!MA.secili[x.v.id]; MA.secili[x.v.id]=on; titret("hafif");
+      t.setAttribute("aria-pressed",String(on));
+      t.closest(".maVilla").classList.toggle("secili",on);
+      var k=t.querySelector(".maKutu"); if(k) k.classList.toggle("on",on);
+      maSecGuncelle(); return;
+    }
+    if(t.id==="maWa"){ var m=document.getElementById("maMesaj").value; titret("basari"); window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank"); rhBildir("musait:gonderildi"); return; }
+    if(t.id==="maKopyala"){ kopyala(document.getElementById("maMesaj").value,cev("Mesaj kopyalandı.")); rhBildir("musait:gonderildi"); return; }
+  }
+
   // "1 Haziran – 30 Eylül · en az 5 gece" (başka yılsa yıl da yazılır)
   function enAzYazi(d){
     var y=parse(d.bit).getFullYear();
     return aralikYazi({b:d.bas,s:d.bit})+(y!==today.getFullYear()?" "+y:"")+" · "+cev("en az "+sayi(d.gece)+" gece");
   }
-  function maSecAlt(){ return ""; }
-  function maSonucSonra(){}
+  function maSonucSonra(){ if(MA.secMod) maSecGuncelle(); }
   // sonuçtaki işlemler: form o villa ve tarihlerle doğrudan açılır (Yardımlı modda rehberli; tarih adımları atlanır).
   // Form kapanınca sonuç listesine dönülür.
   function maIslem(x,is){

@@ -776,6 +776,10 @@
     "Açıkken her işlemde adım adım yardım gösterilir.":"When on, step-by-step help is shown for every task.",
     "Yardımlı mod kapatıldı. Panellerdeki ? ile yine yardım alabilirsiniz.":"Guided mode is off. You can still get help with the ? on each panel.",
     // Görev 27
+    "Seç ve gönder":"Select and send",
+    "Göndermek istediğiniz villaları işaretleyin":"Tick the villas you want to send",
+    "Villa seçilmedi":"No villa selected",
+    "Villa sayfası yayında olmayan villada bağlantı yerine “(sayfa yok)” yazar.":"For a villa without a published page, “(no page)” is written instead of a link.",
     "Tarihleri değiştir":"Change dates",
     "Boş villa yok":"No free villas",
     "Sırala":"Sort",
@@ -1098,6 +1102,7 @@
       "$1 deposit is refunded at check-out (if there is no damage)."],
     // Görev 27
     [/^1 villa boş$/, "1 villa free"],
+    [/^(\d+) villa seçildi$/, "$1 selected"],
     [/^(\d+) villa boş$/, "$1 villas free"],
     [/^(\d+) kişi için$/, "for $1 guests"],
     [/^kapasitesi yetmeyen (\d+) villa gösterilmedi$/, "$1 too small, not shown"],

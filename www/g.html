@@ -685,7 +685,7 @@
     if(D.fotolar.length) kaydirmaTakip();
     takvimCiz(); altCiz();
     belirKur();
-    if(teklifKod) teklifGetir();
+    if(teklifKod) teklifGetir(); else tarihParam();
     if(D.harita && document.getElementById("haritaMini")) haritaKur();
   }
 
@@ -757,6 +757,19 @@
         o.querySelector(".hKapat").onclick=function(){ m.remove(); o.remove(); document.body.style.overflow=""; };
       };
     }).catch(function(){ if(kutu) kutu.style.display="none"; var n=kutu&&kutu.nextElementSibling; if(n&&n.classList.contains("hNot")) n.style.display="none"; });
+  }
+
+  // ---- 27.4 ?giris=YYYY-AA-GG&cikis=YYYY-AA-GG: uygulamadaki "Hangi villam boş?" mesajının bağlantısı ----
+  // Tarihler hâlâ boşsa takvimde seçili açılır (fiyat altta görünür); doluysa teklifteki gibi gri şerit.
+  function tarihParam(){
+    var al=function(ad){ var m=location.search.match(new RegExp("[?&]"+ad+"=(\\d{4}-\\d{2}-\\d{2})(?:&|$)")); return m?m[1]:""; };
+    var g=al("giris"), c=al("cikis");
+    if(!g || !c || c<=g) return;
+    if(g<fmt(bugun) || !girisUygun(g) || !cikisUygun(c) || !araBos(g,c)){
+      serit("gri",esc(CEV("Bu tarihler artık dolu, lütfen başka tarih seçin."))); return; }
+    sec={bas:g, bit:c}; uyariMetin="";
+    imlec=new Date(+g.slice(0,4), +g.slice(5,7)-1, 1);
+    takvimCiz(); altCiz(); secimKutusu();
   }
 
   // ---- 13.7 özel teklif ----
