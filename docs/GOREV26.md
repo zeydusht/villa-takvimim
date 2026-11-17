@@ -51,8 +51,8 @@ _Hazırlayan: Claude (ürün yöneticisi), 17 Kasım 2026. Zeyd: "Uygulama az ç
   9. **Değerli ama gizli özellikler:** kullanıcının bulamayacağı özellikleri listele (ör. teklifler, opsiyon, boş günleri paylaş, PDF form, yedek) ve her biri için keşfedilebilirlik önerisi (ipucu kartı, rehber, daha görünür yer).
   10. **Tutarsız hareket:** Görev 9/19B standart süre ve eğrilerini kullanmayan animasyonlar.
 - [x] **26.6 Ö1 ve Ö2'leri uygula.** Denetimdeki tüm Ö1 ve Ö2 maddelerini düzelt, DENETIM.md'de her maddeyi "✓ yapıldı" diye işaretle (önce/sonra görüntüsüyle). Ö3'leri sadece listele (Zeyd ve Claude seçecek).
-- [ ] **26.7 Yazı boyutu ayarı (yaşlı kullanıcılar için).** Hesap → Görünüm: **"Yazı boyutu: Normal · Büyük · Çok büyük"** (önizlemeli). Tüm uygulama yazıları bir kök değişkenle ölçeklensin (rem); "Çok büyük"te de hiçbir ekranda taşma olmasın (3 boyutta test). Varsayılan Normal; iPhone'un sistem yazı boyutu büyükse ilk açılışta "Büyük" önerilsin.
-- [ ] **26.8 Stil rehberi dosyası.** `docs/STIL.md`: renkler (adlarıyla), yazı boyutları, buton türleri, ikon kuralları, boşluklar, köşe yarıçapları, hareket süreleri/eğrileri, terimler sözlüğü. Bundan sonraki tüm işler buna uysun; kodda bu değerler tek yerde (CSS değişkenleri) dursun.
+- [x] **26.7 Yazı boyutu ayarı (yaşlı kullanıcılar için).** Hesap → Görünüm: **"Yazı boyutu: Normal · Büyük · Çok büyük"** (önizlemeli). Tüm uygulama yazıları bir kök değişkenle ölçeklensin (rem); "Çok büyük"te de hiçbir ekranda taşma olmasın (3 boyutta test). Varsayılan Normal; iPhone'un sistem yazı boyutu büyükse ilk açılışta "Büyük" önerilsin.
+- [x] **26.8 Stil rehberi dosyası.** `docs/STIL.md`: renkler (adlarıyla), yazı boyutları, buton türleri, ikon kuralları, boşluklar, köşe yarıçapları, hareket süreleri/eğrileri, terimler sözlüğü. Bundan sonraki tüm işler buna uysun; kodda bu değerler tek yerde (CSS değişkenleri) dursun.
 
 ---
 

@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <style id="vtIlkZemin">html:root,html:root body{background:#10180D!important}</style>
+<!-- 26.7: yazı boyutu (Hesap → Görünüm) ilk kareden önce: bütün uygulama yazıları rem, kök ölçekle büyür -->
+<script>try{var vtY={buyuk:"112.5%",cokbuyuk:"125%"}[localStorage.getItem("vt-yazi")];if(vtY)document.documentElement.style.fontSize=vtY;}catch(e){}</script>
 <meta name="theme-color" content="#10180D" data-normal="#0B5B57">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Villa Takvim</title>
@@ -51,7 +53,14 @@
     --hiz-bas:100ms;              /* basma / renk tepkisi */
     --hiz-ac:220ms;               /* panel, bildirim açılışı */
     --hiz-kapa:180ms;             /* panel, bildirim kapanışı */
-    --hiz-ekran:200ms;            /* sihirbaz adımı, ilerleme çubuğu */
+    --hiz-ekran:200ms;
+    /* 26.8: geri kalan bütün süreler de burada (STIL.md) */
+    --hiz-ay:150ms;               /* ay değişince kısa solma */
+    --hiz-cubuk:280ms;            /* ilerleme çubuğu, ödeme akışı kayması */
+    --hiz-klavye:300ms;           /* klavye payı, klavyeye hizalama (24.1) */
+    --hiz-secpanel:320ms;         /* seçim paneli açılışı */
+    --hiz-kaydir:400ms;           /* takvim konumlama (25) */
+    --hiz-parla:600ms;            /* değişen rakam / yeni satır parlaması */            /* sihirbaz adımı, ilerleme çubuğu */
     --egri-gecis:cubic-bezier(0.65, 0, 0.35, 1);   /* yer değiştirme: yavaş başla, hızlan, yavaşlayarak dur */
     --egri-giris:cubic-bezier(0.22, 1, 0.36, 1);   /* belirme / giriş: hızlı gelir, yumuşakça oturur */
     --gecis:var(--hiz-bas);
@@ -60,7 +69,7 @@
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
   html,body{margin:0; background:#fff !important; color:#101613; font-family:var(--sans);
-    -webkit-font-smoothing:antialiased; font-size:16px; color-scheme:light only}
+    -webkit-font-smoothing:antialiased; font-size:1rem; color-scheme:light only}
   body{display:flex; justify-content:center; min-height:100vh}
   @media (prefers-color-scheme: dark){ html,body{background:#fff !important; color:#101613} }
   .kilitBar{background:#FDECEC; border:1px solid #F3C9C9; border-radius:.75rem;
@@ -83,7 +92,7 @@
   .hide{display:none !important}
   .muted{color:var(--muted)}
   .sm{font-size:.875rem}
-  .eyebrow{font-size:.75rem; text-transform:uppercase; letter-spacing:.14em; color:var(--muted)}
+  .eyebrow{font-size:.8125rem; text-transform:uppercase; letter-spacing:.14em; color:var(--muted)}
   button{font:inherit; color:inherit; background:none; border:0; cursor:pointer; text-align:left;
     -webkit-appearance:none; appearance:none; background-clip:padding-box; border-radius:0;
     -webkit-tap-highlight-color:transparent}
@@ -162,11 +171,11 @@
   .grup > .satirBtn.satirTehlike.emin{background:var(--tehlike-basili-zemin)}
   .ayOzet{display:grid; gap:.5rem; margin-top:.875rem}
   .okutu{background:var(--soft); border-radius:var(--kose); padding:.625rem .75rem; min-width:0}
-  .okutu .lab{font-size:.6875rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+  .okutu .lab{font-size:.8125rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
     line-height:1.3; min-height:1.8em}
   .okutu .val{font-size:1.0625rem; margin-top:.25rem; white-space:nowrap; overflow:hidden;
     text-overflow:ellipsis; font-variant-numeric:tabular-nums}
-  .okutu .alt{font-size:.75rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .okutu .alt{font-size:.8125rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
   .lejant{display:flex; gap:.5rem 1rem; flex-wrap:wrap; font-size:.8125rem; color:var(--muted); margin-top:.75rem}
   .lejant span{display:flex; align-items:center; gap:.375rem}
   .lejant i{width:.875rem; height:.875rem; border-radius:.25rem; display:inline-block}
@@ -188,27 +197,27 @@
   :root{--menu-h:calc(3.5rem + 1px + env(safe-area-inset-bottom))}
   body.sekmeli .secBar, body.sekmeli .ftAlt{bottom:var(--menu-h); padding-bottom:.75rem}
   body.panelAcik .sekmeler{display:none}
-  .gunBas{font-size:.75rem; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin:1.5rem 0 .25rem}
+  .gunBas{font-size:.8125rem; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin:1.5rem 0 .25rem}
 
   /* ana ekran */
   .mark{display:block; width:2.75rem; height:2.75rem; margin:0 auto .875rem; color:#163300}
   .barLogo{color:#9FE870; flex:none}
   .sekmeEkran h1{font-size:1.875rem}
   .hatirlat{margin-top:1.5rem; border:1px solid var(--line); border-radius:.875rem; overflow:hidden}
-  .hatirlat .hBas{background:var(--soft); padding:.75rem 1rem; font-size:.75rem;
+  .hatirlat .hBas{background:var(--soft); padding:.75rem 1rem; font-size:.8125rem;
     text-transform:uppercase; letter-spacing:.14em; color:var(--muted)}
   .hSatir{display:flex; align-items:flex-start; gap:.625rem; padding:.75rem 1rem;
     border-top:1px solid var(--line); font-size:.875rem; line-height:1.45; width:100%; text-align:left}
   .hNokta{width:.5rem; height:.5rem; border-radius:99px; margin-top:.375rem; flex:none}
   .hSatir b{font-weight:500}
-  .hSatir .hVilla{color:var(--muted); font-size:.75rem}
+  .hSatir .hVilla{color:var(--muted); font-size:.8125rem}
   .kurKart{display:flex; align-items:center; gap:.75rem; background:var(--soft);
     border-radius:.875rem; padding:.875rem 2.75rem .875rem 1rem; margin-top:1.5rem; position:relative}
   .kurIkon{width:2.5rem; height:2.5rem; flex:none}
   .kurIkon img{width:100%; height:100%; border-radius:22.5%; display:block}
   .kurMetin{flex:1; min-width:0; padding-right:1rem}
   .kurBas{font-size:.9375rem; font-weight:500}
-  .kurAlt{font-size:.75rem; color:var(--muted); margin-top:.125rem}
+  .kurAlt{font-size:.8125rem; color:var(--muted); margin-top:.125rem}
   .kurBtn{flex:none; background:var(--ok); color:#fff; padding:.5rem 1rem; border-radius:.625rem;
     font-size:.875rem}
   /* Görev 16.8: aşağı çekip yenile göstergesi */
@@ -250,7 +259,7 @@
     border-radius:.625rem; display:flex; align-items:center; justify-content:center;
     font-family:var(--serif); font-size:1.5rem; color:#fff; line-height:1}
   .rozet{position:absolute; top:.625rem; right:.625rem; background:rgba(255,255,255,.95);
-    border-radius:99px; padding:.25rem .625rem .3rem; font-size:.75rem; display:flex;
+    border-radius:99px; padding:.25rem .625rem .3rem; font-size:.8125rem; display:flex;
     align-items:center; gap:.375rem; color:var(--ink); box-shadow:0 1px 3px rgba(16,22,19,.12)}
   .kartAlt{flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; padding:.75rem 1rem}
   .kdurum{display:flex; align-items:center; gap:.375rem; font-size:.875rem; margin-top:.25rem; min-width:0}
@@ -298,7 +307,7 @@
     transition:opacity var(--hiz-bas); line-height:1}
   .cell:active{opacity:.7}
   .cell .gn{line-height:1.625rem}
-  .cell .fy{line-height:.875rem; font-size:.6875rem; letter-spacing:-.02em;
+  .cell .fy{line-height:.875rem; font-size:clamp(11px, .6875rem, 3.1vw); letter-spacing:-.02em;
     opacity:.7; font-variant-numeric:tabular-nums; white-space:nowrap}
   .cell .fy.bh{opacity:.95; letter-spacing:.04em}
   .cell.gecmis{opacity:.38}
@@ -408,7 +417,7 @@
   .szCubuk i{display:block; height:100%; background:var(--ok)}
   .kutular{display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-top:1.25rem}
   .kutu{background:var(--soft); border-radius:.875rem; padding:1rem}
-  .kutu .lab{font-size:.75rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted)}
+  .kutu .lab{font-size:.8125rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted)}
   .kutu .val{font-family:var(--serif); font-size:1.375rem; letter-spacing:-.02em; margin-top:.375rem}
   .seg{display:flex; gap:.5rem}
   .seg button, #misFiltre button{flex:1; min-height:3rem; padding:.625rem .25rem; border-radius:var(--kose);
@@ -425,7 +434,7 @@
   .shUst{display:flex; align-items:center; gap:.75rem; margin:.25rem 0 1.25rem}
   .shUst .ilerleme{flex:1; margin:0}
   /* 18.14: sihirbaz çubuğu genişlik yerine transform ile kayarak dolar */
-  #shCubuk{width:100% !important; transform-origin:0 50%; transform:scaleX(0); transition:transform 280ms var(--egri-gecis)}
+  #shCubuk{width:100% !important; transform-origin:0 50%; transform:scaleX(0); transition:transform var(--hiz-cubuk) var(--egri-gecis)}
   #sihirbaz{position:relative}
   .shEski{position:absolute; left:0; right:0; overflow:hidden; pointer-events:none}
   .shAciklama{margin:-.25rem 0 1rem}
@@ -464,7 +473,7 @@
   /* fotoğraf şeridi: çerçeveli kutular */
   .fotoMini{border:var(--cerceve-kalinlik) solid var(--cerceve)}
   .fotoMini.bos{background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.25rem;
-    font-size:.75rem; color:var(--ink); text-align:center; padding:.25rem; line-height:1.2}
+    font-size:.8125rem; color:var(--ink); text-align:center; padding:.25rem; line-height:1.2}
   .fotoMini.bos b{font-size:1.25rem; font-weight:400; line-height:1}
   /* villa sayfası kartı */
   .sayfaKart{background:#EEF6F3; border-radius:var(--kose); padding:1rem; margin-bottom:.75rem; display:flex; gap:.75rem; align-items:flex-start}
@@ -495,8 +504,10 @@
   .adimci{display:flex; align-items:center; gap:1rem}
   .adimci .big{width:3.25rem; margin:0; padding:0; font-size:1.375rem; flex:none}
   .adimci span{min-width:2rem; text-align:center; font-size:1.25rem}
-  .ucSatir{display:flex; align-items:center; gap:.5rem; padding:.375rem 0; font-size:1rem}
-  .ucSatir .ucAd{flex:1; min-width:0}
+  .ucSatir{display:flex; align-items:center; gap:.5rem; padding:.375rem 0; font-size:1rem; flex-wrap:wrap}
+  /* 26.7: büyük yazıda ad sığmazsa tutar ve "Değiştir" alt satıra geçer (üst üste binmez); sığıyorsa tek satır */
+  .ucSatir .ucAd{flex:1 1 0; min-width:min-content}
+  .ucSatir .ucAd + .ucDeger{margin-left:auto}
   .ucSatir .ucDeger{white-space:nowrap; font-variant-numeric:tabular-nums}
   .ucSatir .ucDegis.big{width:auto; margin:0; min-height:2.5rem; padding:.25rem .75rem; font-size:.875rem; flex:none}
   .ucToplam{font-size:1.0625rem}
@@ -562,7 +573,7 @@
   .fyAy .tikli{gap:.625rem}
   .fyAy .fyEksik{display:block; font-size:.8125rem; color:var(--muted); margin-top:.125rem}
   .fyAy .sag.yok{color:var(--muted)}
-  .satirBtn.fyAy .sag{flex:none; max-width:none; white-space:nowrap; overflow:visible}
+  .satirBtn.fyAy .sag{flex:none; max-width:38%; white-space:normal; text-align:right; overflow:visible}
   /* 18.9: yıl seçici, geçmiş aylar, geçen yılın fiyatı */
   .fyYil{display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-top:1rem;
     background:var(--soft); border-radius:var(--kose); padding:.25rem}
@@ -573,7 +584,7 @@
   .fyYilAd{font-family:var(--serif); font-size:1.5rem; letter-spacing:-.01em}
   .grup > .satirBtn.fyAy.gecmisAy{background:#F7F9F8}
   .fyAy.gecmisAy .tikli > span:last-child, .fyAy.gecmisAy .sag{color:var(--muted)}
-  .fyGecmisEt{display:inline-block; margin-left:.5rem; font-size:.8125rem; padding:0 .4375rem; border-radius:99px;
+  .fyGecmisEt{display:inline-block; margin-left:.5rem; font-size:.8125rem; padding:0 .4375rem; border-radius:99px; white-space:nowrap;
     background:#E7EBE9; color:var(--muted); vertical-align:2px}
   .fyAy .fyGecenYil{display:block; font-size:.8125rem; color:var(--muted); margin-top:.125rem}
   .fpGecmis{margin-top:1rem; padding:1rem; border-radius:var(--kose); background:var(--lacivert-zemin); color:var(--lacivert); font-size:1rem}
@@ -613,7 +624,7 @@
   .buyukSayi span{color:var(--muted); white-space:nowrap}
   .buyukSayi.kucuk input{font-size:1.625rem}
   .field .buyukSayi input{border:0; padding:0; background:none; height:auto; min-height:0; box-shadow:none; border-radius:0}
-  .fyLab{font-size:.75rem; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin:1rem 0 .25rem}
+  .fyLab{font-size:.8125rem; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); margin:1rem 0 .25rem}
   .hsAc::after{transform:rotate(135deg) !important}
   .hsAc.on::after{transform:rotate(-45deg) !important}
   .secBar{position:fixed; left:0; right:0; bottom:0; background:rgba(255,255,255,.97);
@@ -744,14 +755,14 @@
   @keyframes bildirGel{from{opacity:0; transform:translate(-50%,8px)}}
   @keyframes bildirGit{to{opacity:0}}
   /* 9.3 değişen önemli rakam / 9.6 yeni satır: bir kez açık yeşil */
-  .parla{animation:parla 600ms var(--egri-giris)}
+  .parla{animation:parla var(--hiz-parla) var(--egri-giris)}
   @keyframes parla{0%,40%{background-color:#D5EBE4}100%{background-color:transparent}}
   .yeniSatir{animation:satirGel var(--hiz-ac) var(--egri-giris)}
   @keyframes satirGel{from{opacity:0; transform:translateY(-8px)}}
-  .cell.yeniParla{animation:halka 600ms var(--egri-giris)}
+  .cell.yeniParla{animation:halka var(--hiz-parla) var(--egri-giris)}
   @keyframes halka{0%{box-shadow:inset 0 0 0 0 #9FD4C4}35%{box-shadow:inset 0 0 0 4px #9FD4C4}100%{box-shadow:inset 0 0 0 0 rgba(159,212,196,0)}}
   /* 9.8 ay değişince kısa solma */
-  .aySolma{animation:aySolma 150ms var(--egri-giris)}
+  .aySolma{animation:aySolma var(--hiz-ay) var(--egri-giris)}
   @keyframes aySolma{from{opacity:.35}}
   /* 9.7 sihirbaz adımları */
   .kayIleri{animation:kayIleri var(--hiz-ekran) var(--egri-giris)}
@@ -780,9 +791,13 @@
     :active, .basili, .x.basildi{transform:none !important}
   }
   /* 24.1: klavye payı (alt dolgu) 300 ms'de, --egri-gecis ile; klOlc = son yerleşimi ölçerken geçiş kapalı */
-  .sheet{transition:transform var(--hiz-ac) var(--egri-gecis), padding-bottom 300ms var(--egri-gecis)}
+  .sheet{transition:transform var(--hiz-ac) var(--egri-gecis), padding-bottom var(--hiz-klavye) var(--egri-gecis)}
   /* 26.4: ekranın altındaki bölüm, ekrana girene kadar saydam (girince 8 pt aşağıdan solarak gelir) */
   .belirBekle{opacity:0}
+  /* 26.7: yazı boyutu önizlemesi (seçili boyutta, hemen) */
+  .yaziOnizle{margin-top:.75rem; padding:.875rem 1rem; border:var(--cerceve-kalinlik) solid var(--line); border-radius:var(--kose);
+    line-height:1.4}
+  .yaziOnizle .yoBas{font-family:var(--serif); font-size:1.25rem; margin-bottom:.25rem}
   /* 26.6: çevrimdışı şeridi — üst çubuğun hemen altında, sakin (koyu gri), dokunuşu engellemez */
   .cevrimSerit{position:fixed; left:0; right:0; z-index:46; display:flex; align-items:center; justify-content:center; gap:.5rem;
     padding:.5rem 1rem; background:#2E3833; color:#fff; font-size:.875rem; line-height:1.35; text-align:center; pointer-events:none;
@@ -945,6 +960,13 @@
   .rezKart .rkMetin{flex:1; min-width:0}
   .rezKart .rkAd{display:block; overflow-wrap:anywhere}
   .rezKart .rkAlt{display:block; font-size:.875rem; color:var(--muted); margin-top:.125rem}
+  /* 26.7: büyük yazıda tarih satırı kırılır, sağdaki rozetin altına taşmaz. Kart dar kalırsa (büyük yazı + dar ekran) rozet ve
+     tutar ad sütununu ezmesin diye alt satıra iner (kartın kendi genişliğine göre; normal boyutta kart geniş, değişmez) */
+  .rezKart .tarihIk{white-space:normal; flex-wrap:wrap}
+  .rezKart{flex-wrap:wrap; container-type:inline-size}
+  @container (max-width: 17rem){
+    .rezKart .rkSag{order:3; flex:1 1 100%; flex-direction:row; align-items:center; gap:.5rem; padding-left:3rem}
+  }
   .yakinEt{flex:none; font-size:.8125rem; border-radius:99px; padding:.1875rem .5625rem .25rem; white-space:nowrap;
     background:var(--lacivert-zemin); color:var(--lacivert); border:1.5px solid var(--lacivert-cerceve)}
   .tumuBtn{margin-top:.75rem}
@@ -974,7 +996,7 @@
   .anaBas .ozetEt .durumEt{min-height:3rem}
   /* 18.16: villayı basılı tutup sürükleyerek sırala */
   .kartlar .kart{-webkit-touch-callout:none; -webkit-user-select:none; user-select:none}
-  .kartlar.siraliyor .kart{transition:transform 200ms var(--egri-gecis)}
+  .kartlar.siraliyor .kart{transition:transform var(--hiz-ekran) var(--egri-gecis)}
   .kartlar .kart.suruk{position:relative; z-index:5; transition:none !important; box-shadow:0 14px 34px rgba(16,22,19,.22);
     background:#fff}
   .siraIpucu{display:flex; align-items:center; gap:.5rem; margin-top:1rem; padding:.25rem .25rem .25rem .875rem; border-radius:var(--kose);
@@ -1149,7 +1171,7 @@
   .msAlan input{width:100%; min-height:2.5rem; padding:.375rem .625rem; font-size:1rem; border:1.5px solid var(--line); border-radius:.625rem; background:#fff}
   .msAlt{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:.375rem}
   .msAlt input{min-width:0}
-  .msYak{grid-column:1 / -1; font-size:.75rem; color:var(--muted); margin-top:-.125rem}
+  .msYak{grid-column:1 / -1; font-size:.8125rem; color:var(--muted); margin-top:-.125rem}
   .msSil{flex:none; width:2.75rem; height:2.75rem; display:flex; align-items:center; justify-content:center; color:#9B2C4A; border-radius:.625rem}
   .msSil:active{background:var(--basili-zemin)}
   /* 15.5 iptal şablonları, 15.6 öneriler */
@@ -1218,11 +1240,11 @@
   .tkDurum.alindi{background:#E2EBEB; color:var(--ok)}
   /* Görev 16.9: büyük rakamlı detay başlığı — ortada tutar, altında durum, altında tarih */
   .buyukBas{display:flex; flex-direction:column; align-items:center; text-align:center; gap:.5rem; margin:.75rem 0 1.5rem}
-  .buyukTutar{font-size:36px; line-height:1.15; font-weight:400; color:var(--ink); letter-spacing:-.01em; font-variant-numeric:tabular-nums}
+  .buyukTutar{font-size:2.25rem; line-height:1.15; font-weight:400; color:var(--ink); letter-spacing:-.01em; font-variant-numeric:tabular-nums}
   .buyukTarih{font-size:.875rem; color:var(--muted)}
   /* rezervasyon detayında "… alınacak" satırı ortalı ve 30px */
   .detayPara .alinacakBuyuk, .detayPara .alindiTamam{justify-content:center; text-align:center; margin-bottom:1rem}
-  .detayPara .alinacakBuyuk{font-size:30px; line-height:1.2}
+  .detayPara .alinacakBuyuk{font-size:1.875rem; line-height:1.2}
   /* 14.8 fiyatlar: aynı boyutta yan yana iki buton; yıl seçimi */
   .fyUstBtn{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; margin-top:1rem}
   .fyUstBtn .big{margin:0; width:auto; min-height:3.25rem; padding:.5rem .5rem; font-size:.9375rem; line-height:1.2}
@@ -1281,10 +1303,10 @@
   .akisDurum .linkBtn{color:var(--ok); text-decoration:underline; min-height:2.75rem; padding:0 .25rem}
   .akisAyrac{color:var(--ok)}
   .akisKayar{overflow:hidden; margin:0 -.25rem}
-  .akisIc{display:flex; width:200%; transition:transform .28s var(--egri-gecis)}
+  .akisIc{display:flex; width:200%; transition:transform var(--hiz-cubuk) var(--egri-gecis)}
   .akisIc.ikinci{transform:translateX(-50%)}
   .akisSayfa{width:50%; flex:none; padding:.25rem; box-sizing:border-box}
-  .akisIc:not(.ikinci) #ak-s2, .akisIc.ikinci #ak-s1{visibility:hidden; transition:visibility 0s .28s}
+  .akisIc:not(.ikinci) #ak-s2, .akisIc.ikinci #ak-s1{visibility:hidden; transition:visibility 0s var(--hiz-cubuk)}
   .akisEvet{min-height:3.75rem; font-size:1.0625rem}
   .akisKucuk{display:block; margin:.75rem auto 0; min-height:3rem; padding:0 1rem; background:none; border:0;
     color:var(--muted); font-size:.9375rem; text-decoration:underline}
@@ -1300,7 +1322,7 @@
     padding:1rem 1rem 1.125rem; max-width:40rem; margin:0 auto;
     transform:translateY(calc(100% + var(--menu-h))); visibility:hidden;
     transition:transform var(--hiz-kapa) var(--egri-gecis), visibility 0s linear var(--hiz-kapa)}
-  .secPanel.acik{transform:none; visibility:visible; transition:transform 320ms var(--egri-giris), visibility 0s}
+  .secPanel.acik{transform:none; visibility:visible; transition:transform var(--hiz-secpanel) var(--egri-giris), visibility 0s}
   body.panelAcik .secPanel{visibility:hidden}
   /* 26.1: panel boyu yalnız .wrap'e yazılır ve kalıtılmaz (kökte değişince sayfadaki her öğenin stili yeniden hesaplanıyordu) */
   @property --secPanelH{syntax:"<length>"; inherits:false; initial-value:9rem}
@@ -1315,7 +1337,7 @@
   .spToplam{flex:none; font-size:1.625rem; font-weight:600; line-height:1.1; color:var(--ink); font-variant-numeric:tabular-nums}
   /* 20.6: aralık seçiliyken takvim ve panel dışı %35 kararır (dokunuşu yutmaz; kaydırma serbest) */
   .takvimOdak{position:absolute; left:0; top:0; width:0; height:0; z-index:48; pointer-events:none; border-radius:16px;
-    box-shadow:0 0 0 200vmax rgba(16,22,19,.35); opacity:0; transition:opacity 200ms var(--egri-giris)}
+    box-shadow:0 0 0 200vmax rgba(16,22,19,.35); opacity:0; transition:opacity var(--hiz-ekran) var(--egri-giris)}
   .takvimOdak.acik{opacity:1}
   .takvimOdak.gidiyor{opacity:0; transition:opacity var(--hiz-kapa) var(--egri-gecis)}
   body.panelAcik .takvimOdak{opacity:0}
@@ -1523,6 +1545,17 @@
       <div class="grup"><div class="anahtar" data-ikk="hesap:kilit"><span>Uygulamayı Face ID / parmak izi ile kilitle
         <div class="sm muted" style="margin-top:.125rem">Açılışta ve 5 dakikadan uzun ara verince sorulur</div></span>
         <span class="svic" id="hs-kilit" role="switch"><i></i></span></div></div>
+    </div>
+    <!-- 26.7: Görünüm → yazı boyutu (önizlemeli; seçince hemen uygulanır) -->
+    <div class="eyebrow" style="margin:2.25rem 0 .75rem" data-iki="hesap:metin">Görünüm</div>
+    <div class="sm" style="margin-bottom:.5rem">Yazı boyutu</div>
+    <div class="seg" id="hs-yazi">
+      <button data-y="normal">Normal</button><button data-y="buyuk">Büyük</button><button data-y="cokbuyuk">Çok büyük</button>
+    </div>
+    <div class="yaziOnizle" id="hs-yaziOnizle" aria-hidden="true">
+      <div class="yoBas">Pazartesi 23 Kasım</div>
+      <div>16:00 · Hasan Demir girecek</div>
+      <div class="sm muted">29.000 ₺ alınacak</div>
     </div>
     <div class="eyebrow" style="margin:2.25rem 0 .75rem" data-iki="hesap:dil">Dil / Language</div>
     <div class="seg" id="hs-dil">
@@ -6341,6 +6374,40 @@
     this.className="svic"+(acik?"":" on");
     if(!acik) titret("basari");
   };
+  // ================= 26.7 YAZI BOYUTU =================
+  // Normal 100 % · Büyük 112,5 % · Çok büyük 125 %: kök yazı boyutu; uygulamanın yazıları ve boşlukları rem olduğu için hepsi
+  // birlikte büyür. Seçim cihazda ("vt-yazi"); <head>'deki küçük betik ilk kareden önce uygular.
+  var YAZI={normal:"", buyuk:"112.5%", cokbuyuk:"125%"};
+  function yaziAl(){ var y=store.get("vt-yazi"); return YAZI.hasOwnProperty(y) ? y : "normal"; }
+  function yaziUygula(y,kaydet2){
+    if(!YAZI.hasOwnProperty(y)) y="normal";
+    document.documentElement.style.fontSize=YAZI[y];
+    if(kaydet2) store.set("vt-yazi",y);
+    Array.prototype.forEach.call(document.querySelectorAll("#hs-yazi [data-y]"),function(b){
+      b.classList[b.dataset.y===y?"add":"remove"]("on"); b.setAttribute("aria-pressed",String(b.dataset.y===y)); });
+    try{ kabarcikYerle(); }catch(e){}
+  }
+  yaziUygula(yaziAl(),false);
+  document.getElementById("hs-yazi").addEventListener("click",function(e){
+    var b=e.target.closest("[data-y]"); if(!b) return;
+    titret("hafif"); yaziUygula(b.dataset.y,true);
+  });
+  // iPhone'un sistem yazı boyutu büyükse (Ayarlar → Ekran → Metin Boyutu) ilk açılışta bir kez "Büyük" önerilir
+  function yaziOner(){
+    if(store.get("vt-yazi") || store.get("vt-yazi-soruldu")) return;
+    var s2=document.createElement("span"); s2.className="sistemYazi"; s2.style.cssText="position:absolute;visibility:hidden;font:-apple-system-body";
+    document.body.appendChild(s2); var px=parseFloat(getComputedStyle(s2).fontSize)||0; s2.remove();
+    if(!(px>17.5)) return;                         // iOS varsayılanı 17 px; başka tarayıcılarda bu yazı tipi yok
+    if(document.querySelector(".overlay:not(.kapaniyor)") || document.getElementById("acilis") || (window.Rehber && Rehber.aktif())){ setTimeout(yaziOner,1500); return; }
+    store.set("vt-yazi-soruldu","1");
+    perde('<div class="head"><h2>'+esc(cev("Yazılar büyüsün mü?"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 1.25rem">'+esc(cev("Telefonunuzda büyük yazı açık. Uygulamada da yazıları büyütebiliriz. Sonra Hesap → Görünüm'den değiştirebilirsiniz."))+"</div>"+
+      '<button class="big" data-ik="tik" id="yo-evet">'+esc(cev("Büyük yazı kullan"))+"</button>"+
+      '<button class="big ghost" id="yo-hayir" style="margin-top:.5rem">'+esc(cev("Normal kalsın"))+"</button>");
+    document.getElementById("yo-evet").onclick=function(){ yaziUygula("buyuk",true); kapat(); };
+    document.getElementById("yo-hayir").onclick=function(){ store.set("vt-yazi","normal"); kapat(); };
+  }
+  setTimeout(yaziOner,2500);
   document.getElementById("hs-dil").addEventListener("click",function(e){
     var b=e.target.closest("[data-d]"); if(!b) return;
     if(window.DIL && DIL.dil!==b.dataset.d) DIL.ayarla(b.dataset.d);
@@ -6532,7 +6599,7 @@
           yoneticiKontrol(); return; }
         el.innerHTML=l.map(function(u){
           return '<div class="row"><span class="name">'+esc(u.ad||u.eposta||"—")+
-            '<span class="muted" style="font-size:.75rem"><br>'+
+            '<span class="muted" style="font-size:.8125rem"><br>'+
             (u.ad?esc(u.eposta||"")+"<br>":"")+
             (u.telefon?esc(u.telefon)+" · ":"")+kisa(String(u.kayit).slice(0,10))+"</span></span>"+
             '<button class="cip on" data-onay="'+u.id+'">Onayla</button></div>';
@@ -6615,12 +6682,12 @@
           return '<div class="row" style="align-items:flex-start;gap:.5rem">'+
             '<span class="name"><span style="font-size:.9375rem">'+
               esc(u.ad || u.eposta || "—")+"</span>"+
-            '<span class="muted" style="font-size:.75rem"><br>'+
+            '<span class="muted" style="font-size:.8125rem"><br>'+
               (u.ad?esc(u.eposta||"")+"<br>":"")+
               (u.telefon?esc(u.telefon)+"<br>":"")+
               '<span data-rol="'+u.id+'">'+u.villa_sayisi+" villa</span> · "+
               kisa(String(u.kayit).slice(0,10))+"</span>"+
-            '<span style="font-size:.75rem;color:'+durum[1]+'"><br>'+durum[0]+"</span></span>"+
+            '<span style="font-size:.8125rem;color:'+durum[1]+'"><br>'+durum[0]+"</span></span>"+
             '<span style="display:flex;gap:.375rem;flex:none;flex-wrap:wrap;justify-content:flex-end">'+
               '<button class="cip" data-detay="'+u.id+'">Villalar</button>'+
               (benMi?"":
@@ -6700,7 +6767,7 @@
           el.innerHTML=vl.map(function(v){
             return '<div class="row"><button class="name" style="text-align:left" data-villa="'+v.villa_id+'">'+
               esc(v.villa_ad)+
-              '<span class="muted" style="font-size:.75rem"><br>'+
+              '<span class="muted" style="font-size:.8125rem"><br>'+
               (v.rol==="sahip"?"villa sahibi":"bakıcı")+" · görüntüle</span></button>"+
               (v.rol==="sahip"?'<span class="sm muted" style="flex:none">kaldırılamaz</span>'
                 :'<button class="cip" data-kaldir="'+v.villa_id+'">Kaldır</button>')+"</div>";
@@ -6849,12 +6916,12 @@
         var h="";
         sahipler.forEach(function(u){
           h+='<div class="row"><span class="name">'+esc(u.eposta||"—")+
-             '<span class="muted" style="font-size:.75rem"><br>Villa sahibi</span></span></div>';
+             '<span class="muted" style="font-size:.8125rem"><br>Villa sahibi</span></span></div>';
         });
         if(!bakicilar.length) h+='<div class="sm muted" style="padding:.75rem 0">Henüz bakıcı yok.</div>';
         else bakicilar.forEach(function(u){
           h+='<div class="row"><span class="name">'+esc(u.eposta||"—")+
-             '<span class="muted" style="font-size:.75rem"><br>'+
+             '<span class="muted" style="font-size:.8125rem"><br>'+
              (u.ad?esc(u.ad)+" · ":"")+"bakıcı"+
              (u.telefon?" · "+esc(u.telefon):"")+" · "+kisa(String(u.olusturma).slice(0,10))+"</span></span>"+
              '<button class="cip" data-cikar="'+u.kullanici+'">Erişimi kaldır</button></div>';

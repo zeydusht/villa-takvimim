@@ -646,6 +646,18 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       dokunuşu/kaydırması animasyonu bırakır. Seçim kalkınca sayfa yerinde kalır (panel payı gerekmeyene kadar kalır: secPay).
       Rehberli seçimde konumu rehber verir (alt panel gizli, baloncuk takvimin üstünde).
       GERÇEK İPHONE'DA TEST EDİLECEK.
+- [x] Görev 26 — Akıcılık, bugün işareti, kademeli girişler, tam denetim, yazı boyutu, stil rehberi · Claude Code (17 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi. Ayrıntı: `docs/GOREV26.md`, testler: `docs/qa/gorev26/README.md`.
+      Denetim raporu: `docs/DENETIM.md` (Ö1/Ö2 bulguları düzeltildi; Ö3 listesi Zeyd'in seçimini bekliyor).
+      Stil rehberi: `docs/STIL.md` (renkler, yazı boyutları, düğmeler, ikonlar, boşluklar, hareket süreleri, terimler).
+      Bundan sonraki işler STIL.md'ye uyacak; değerler index.html'de CSS değişkenlerinde.
+      26.1: gün seçiminde ve panel açmada gereksiz yeniden hesaplamalar kaldırıldı (ızgara yalnız değişen hücreleri yazar,
+      odak karartması yalnız yerleşim değişince konumlanır). Ölçüm Chrome iziyle; kare düşmesi gerçek iPhone'da görülmeli.
+      26.2: bugün her zeminde kırmızı çerçeve (--bugun), lejantta da. 26.3–26.4: ekranlarda kartlar sırayla gelir;
+      misafir sayfasında aşağı kaydırınca bölümler belirir. 26.6: silmelerde "Geri al", çevrimdışı şeridi,
+      küçük düğme/yazı düzeltmeleri, yeni rehberler ve "?" düğmeleri. 26.7: Hesap → Görünüm → Yazı boyutu
+      (Normal/Büyük/Çok büyük; iPhone'da büyük yazı açıksa bir kez önerilir). 26.8: STIL.md.
+      Veritabanına dokunulmadı. GERÇEK İPHONE'DA TEST EDİLECEK (akıcılık, sistem yazı boyutu, çevrimdışı).
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.

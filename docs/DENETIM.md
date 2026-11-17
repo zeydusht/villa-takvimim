@@ -54,6 +54,7 @@ _Claude Code, 17 Kasım 2026. Stil kuralları: `docs/STIL.md`._
 | 18 | Kurallar (SSS / şablon) | "Kalan tutar"; her yerde "Kalan ödeme". | "Kalan ödeme". | Ö2 | — | ✓ yapıldı |
 | 19 | Misafirler (hiç misafir yokken) | "Bu filtreye uyan misafir yok." yazıyor: yanlış ve kafa karıştırıcı. Üstünde işe yaramayan "Birden fazla seç", arama ve süzgeçler. | Çizimli boş durum + "Henüz misafiriniz yok…" + "Rezervasyon ekle" (villa ekranına dönüp rezervasyonu başlatır). Seçim, arama ve süzgeç gizli. | Ö2 | `denetim-once/390/41-bos-misafirler.png` → `duzeltme/bos/misafirler-390.png` | ✓ yapıldı |
 | 20 | Rehber kapsamı | Yardımlı modda rehberi olmayan işlemler: aşağıdaki "Rehber kapsamı" tablosu. | 9 yeni rehber. | Ö2 | `duzeltme/rehber/` | ✓ yapıldı |
+| 21 | Kodun tamamı | Gezilen ekranlarda görünmeyen 17 kuralda daha 12 px yazı vardı (rozet, hatırlatma satırı, kurulum alt yazısı, kutu etiketleri, yönetici / bakıcı listeleri); iki büyük tutar piksel olduğu için yazı boyutu ayarıyla büyümüyordu. | Hepsi 13 px; tutarlar rem. | Ö2 | — | ✓ yapıldı |
 
 **Bilerek istisna tutulanlar (STIL.md'ye yazıldı):**
 - Takvim hücrelerinin içindeki fiyat ve baş harfler 11 px. Hücre 46–60 pt genişliğinde; "10.000₺" 13 px'te sığmıyor.
@@ -107,7 +108,7 @@ Ayrıntı ve ekranlarda gezinme panellerinde rehber her açılışta kendiliğin
 9. **Gizli özellikler:** aşağıdaki Ö3 listesinde öneriler.
 10. **Hareket:**
     - Animasyonların hepsi `--egri-gecis` / `--egri-giris` eğrilerini kullanıyor.
-    - Birkaçında sabit süre var (280, 150, 600 ms) (Ö3).
+    - Birkaçında sabit süre vardı (280, 150, 600 ms); 26.8'de değişkenlere taşındı.
 
 ## Ö3: güzel olur (Zeyd ve Claude seçecek)
 
@@ -121,7 +122,7 @@ Ayrıntı ve ekranlarda gezinme panellerinde rehber her açılışta kendiliğin
 | 6 | Teklifler ve Bakıcılar boş hâli | Çizimli boş durum ("Henüz teklif göndermediniz" + ne işe yarar). | Ne olduğu anlaşılmıyor. |
 | 7 | Teklif ve opsiyonun ilk kullanımda tanıtımı | Seçim panelinde "Teklif" ve "Opsiyon" ilk görüldüğünde tek satırlık açıklama ("Misafire özel indirimli fiyat gönderir"). | İki özellik de adından anlaşılmıyor. |
 | 8 | Takvim sekmesi boşken | Çizimin altına "Rezervasyon ekle" düğmesi. | Boş ekranda ne yapılacağı yazmıyor. |
-| 9 | Sabit animasyon süreleri | 280 ms (ödeme kaydırması), 150 ms (ay solması), 600 ms (parlama) değişkenlere taşınsın. | STIL.md ile tek kaynak. |
+| 9 | ~~Sabit animasyon süreleri~~ | ✓ 26.8'de yapıldı: bütün CSS süreleri `:root` değişkenlerinde. | — |
 | 10 | Bakıcı erişimini kaldırmada Geri al | Onay yerine 5 sn Geri al (erişim 5 sn sonra kaldırılır). | Tutarlılık. |
 | 11 | Fiyat takvimi hücreleri 360'ta 47 pt | Hücre yüksekliği aynı, yatay boşluk azaltılarak 48'e. | Dokunma. |
 | 12 | Giriş ekranındaki satır içi "Gizlilik metnini" bağlantısı | Ayrı satıra alınsın. | Dokunma alanı 19 pt. |
