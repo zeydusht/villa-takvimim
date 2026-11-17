@@ -775,6 +775,10 @@
     "Bu işlem için yardım":"Help for this task",
     "Açıkken her işlemde adım adım yardım gösterilir.":"When on, step-by-step help is shown for every task.",
     "Yardımlı mod kapatıldı. Panellerdeki ? ile yine yardım alabilirsiniz.":"Guided mode is off. You can still get help with the ? on each panel.",
+    // Görev 29
+    "Gizlilik":"Privacy",
+    "Kullanım istatistiklerini paylaş":"Share usage statistics",
+    "Hangi özelliklerin kullanıldığını sayar. Misafir, fiyat ve kişisel bilgi gönderilmez.":"Counts which features are used. No guest, price or personal information is sent.",
     // Görev 27
     "Müşterinin istediği *giriş* gününe dokunun.":"Tap the *check-in* day the customer wants.",
     "Şimdi *çıkış* gününe dokunun.":"Now tap the *check-out* day.",

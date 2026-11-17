@@ -53,6 +53,7 @@
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var cev = function (s) { try { return A.cevir(s); } catch (e) { return s; } };
   var titret = function (t) { try { A.titret(t); } catch (e) {} };
+  var olcum = function (ad, v) { try { if (A.olay) A.olay(ad, v); } catch (e) {} };
   var simdi = function () { return (window.performance && performance.now) ? performance.now() : Date.now(); };
 
   // ================= 19.10 SÖZLÜK: aynı tür adım hep aynı cümle =================
@@ -372,6 +373,7 @@
         '<div class="rhAlt"><button type="button" class="rhGeri">' + esc(cev("Geri")) + '</button><button type="button" class="rhIleri"></button></div>' +
       '</div><span class="rhOk ust"></span></div>';
     document.body.appendChild(o);
+    olcum("rehber_basla", { konu: t.ad });
     var q = function (s) { return o.querySelector(s); };
     D = {
       t: t, o: o, i: -1, a: null, gecmis: [], raf: 0, anahtar: "", basari: null, basariAlt: null,
@@ -1014,6 +1016,8 @@
   function bitir(tamamlandi, elle) {
     if (!D) return;
     var d = D; D = null;
+    // 29.1 ölçüm: yalnız rehberin adı ve kalınan adımın sırası
+    if (tamamlandi) olcum("rehber_bitir", { konu: d.t.ad }); else olcum("rehber_kapat", { konu: d.t.ad, adim: Math.max(0, d.i) + 1 });
     document.documentElement.classList.remove("rhAcik");
     if (elle && d.a) {
       try {

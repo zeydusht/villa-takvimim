@@ -1671,6 +1671,11 @@
     <div class="seg" id="hs-dil">
       <button data-d="tr">Türkçe</button><button data-d="en">English</button>
     </div>
+    <!-- 29.1: kullanım ölçümü tercihi (cihazda; kapalıysa hiçbir olay gönderilmez) -->
+    <div class="eyebrow" style="margin:2.25rem 0 .25rem" data-iki="hesap:kalkan">Gizlilik</div>
+    <div class="grup"><div class="anahtar" id="olcumSatir" data-ikk="hesap:kalkan"><span>Kullanım istatistiklerini paylaş
+      <span class="satirAlt">Hangi özelliklerin kullanıldığını sayar. Misafir, fiyat ve kişisel bilgi gönderilmez.</span></span>
+      <span class="svic on" id="hs-olcum" role="switch" aria-checked="true" aria-label="Kullanım istatistiklerini paylaş"><i></i></span></div></div>
     <!-- 18.21: Yardım -->
     <div class="eyebrow" style="margin:2.25rem 0 .25rem" data-iki="hesap:yardim">Yardım</div>
     <div class="grup">
@@ -2042,6 +2047,7 @@
 <script src="ozellik.js"></script>
 <script src="adlar.js"></script>
 <script src="veri.js"></script>
+<script src="olcum.js"></script>
 <script src="dil.js"></script>
 <script src="rehber.js"></script>
 <script src="fiyat.js"></script>
@@ -2207,6 +2213,7 @@
     var k=store.get(DAVET_BEKLEYEN); if(!k || !window.VT || !VT.girisli || !VT.girisli()) return;
     store.set(DAVET_BEKLEYEN,"");
     VT.davetiKullan(k).then(function(r){
+      olc("bakici_katildi");
       var ad=(r&&r[0]&&r[0].villa_ad)||"Villa";
       bildir(cev(ekE(ad)+" bakıcı olarak katıldınız ✓"));
       bulutYukle();
@@ -3018,7 +3025,9 @@
   var EKRANLAR=["giris","sifre","onay","ana","ajanda","hesapEkran","takvim","kasa","misafirler","fiyatEkran","fotoEkran","sihirbaz"];
   var SEVIYE={giris:0,sifre:0,onay:0,ana:0,ajanda:0,hesapEkran:0,takvim:1,kasa:2,misafirler:2,fiyatEkran:2,fotoEkran:2,sihirbaz:2};
   var KAYDIR={};
+  var OLC_SON_EKRAN="";
   function goster(id,geriDon){
+    if(id!==OLC_SON_EKRAN && OLC_EKRAN && OLC_EKRAN[id]){ OLC_SON_EKRAN=id; setTimeout(function(){ olc("ekran_gor"); },0); }
     var onceki=null;
     document.body.classList.remove("secPay");
     if(id==="giris" && window.girisEkraniModu){ var acik=document.getElementById("giris"); if(acik && acik.classList.contains("hide")) girisEkraniModu(); }
@@ -3513,11 +3522,11 @@
     if(t.id==="maGoster"){
       if(!(MA.bas && MA.bit) || typeof maSonucCiz!=="function") return;
       titret("hafif"); MA.son={bas:MA.bas, bit:MA.bit, kisi:MA.kisi};
-      MA.adim="sonuc"; MA.secMod=false; maSonucCiz(); maUste(); rhBildir("ma:sonuc"); return;
+      MA.adim="sonuc"; MA.secMod=false; maSonucCiz(); maUste(); maOlc(); rhBildir("ma:sonuc"); return;
     }
     if(t.id==="maSonArama" && MA.son){
       titret("hafif"); MA.bas=MA.son.bas; MA.bit=MA.son.bit; MA.kisi=MA.son.kisi||0; MA.hap="";
-      MA.adim="sonuc"; MA.secMod=false; maSonucCiz(); maUste(); rhBildir("ma:sonuc"); return;
+      MA.adim="sonuc"; MA.secMod=false; maSonucCiz(); maUste(); maOlc(); rhBildir("ma:sonuc"); return;
     }
     if(typeof maTiklaEk==="function") maTiklaEk(e,t);
   }
@@ -3678,6 +3687,8 @@
   // mesaj kutusu içeriğe göre uzar (bağlantılar kutunun içinde kaybolmasın)
   function maMesajBoy(ta){ ta.style.height="auto"; ta.style.height=(ta.scrollHeight+4)+"px"; }
   document.addEventListener("input",function(e){ if(e.target && e.target.id==="maMesaj") maMesajBoy(e.target); });
+  // 29.1: kaç villada arandı, kaç boş çıktı (tarih ve kişi sayısı gönderilmez)
+  function maOlc(){ olc("musaitlik_ara",{villa_sayisi:S.villalar.length, sonuc:(MA.liste||[]).length}); }
   function maSecililer(){ return MA.liste.filter(function(x){ return x.para && MA.secili[x.v.id]; }); }
   // villa sayfası bağlantısı o tarihleri seçili açar: ?giris=…&cikis=… (g.html okur)
   function maSayfaLink(v){
@@ -3730,8 +3741,8 @@
       var k=t.querySelector(".maKutu"); if(k) k.classList.toggle("on",on);
       maSecGuncelle(); return;
     }
-    if(t.id==="maWa"){ var m=document.getElementById("maMesaj").value; titret("basari"); window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank"); rhBildir("musait:gonderildi"); return; }
-    if(t.id==="maKopyala"){ kopyala(document.getElementById("maMesaj").value,cev("Mesaj kopyalandı.")); rhBildir("musait:gonderildi"); return; }
+    if(t.id==="maWa"){ olc("secip_gonder",{adet:maSecililer().length}); var m=document.getElementById("maMesaj").value; titret("basari"); window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank"); rhBildir("musait:gonderildi"); return; }
+    if(t.id==="maKopyala"){ olc("secip_gonder",{adet:maSecililer().length}); kopyala(document.getElementById("maMesaj").value,cev("Mesaj kopyalandı.")); rhBildir("musait:gonderildi"); return; }
   }
 
   // "1 Haziran – 30 Eylül · en az 5 gece" (başka yılsa yıl da yazılır)
@@ -4014,7 +4025,7 @@
       if(!i.value.trim()){ i.parentNode.classList.add("hata"); adHata.classList.remove("hide"); i.focus(); titret("uyari"); return; }
       var v={id:uid(), ad:i.value.trim(), color:PALET[S.villalar.length%PALET.length], rez:[], fotolar:[]};
       duzelt(v);
-      S.villalar.push(v);
+      S.villalar.push(v); olc("villa_ekle");
       kaydet();
       if(S.bulut){
         v.id=VT.yeniId();
@@ -4071,6 +4082,7 @@
   }
 
   function villaSil(v){
+    olc("villa_sil");
     var simdi=new Date().toISOString();
     S.villalar=S.villalar.filter(function(x){ return x.id!==v.id; });
     if(S.aktif===v.id){ kilitBitir(); S.aktif=null; }
@@ -4746,6 +4758,7 @@
   var RM=Rehber.M;
   Rehber.ayarla({
     cevir:cev, titret:titret, bildir:function(m,sure){ bildir(m,sure); },
+    olay:function(ad,v){ olc(ad,v); },   // 29.1: rehber_basla / rehber_bitir / rehber_kapat
     // 24.1: klavyenin OTURMUŞ hâli (açılırken ara karelerde değişmez); hareketliyken rehber yeni adımı yerleştirmeyi bekler
     klavye:function(){ return KLAVYE.h; }, klavyeUst:function(){ return KLAVYE.ust; }, klavyeHareketli:klavyeHareketli, klavyeKalan:klavyeKalan,
     // 21.3: sayfadaki geçici üst boşluk kalkarken sayfa yerinde kalsın (panel açıkken sayfa kilitli: saklanan konum düzeltilir)
@@ -4762,7 +4775,22 @@
       return {ust:ust, alt:alt};
     }
   });
-  function rhBildir(olay,veri){ try{ Rehber.bildir(olay,veri); }catch(e){} }
+  function rhBildir(olay,veri){ try{ Rehber.bildir(olay,veri); }catch(e){} olcKayit(olay); }
+  // ================= 29.1 ÖLÇÜM (olcum.js) =================
+  // Yalnız izinli olay adları ve sayı / evet-hayır / listeden değer; isim, tutar, tarih, not ASLA gönderilmez.
+  function olc(ad,veri){ try{ if(window.VT && VT.olay) VT.olay(ad,veri); }catch(e){} }
+  // kaydetme noktaları zaten rehbere "kaydedildi:…" bildiriyor: ölçüm aynı yerden
+  var OLC_KAYIT={"kaydedildi:ops":"opsiyon_ekle", "kaydedildi:odeme":"odeme_ekle", "kaydedildi:gider":"gider_ekle", "kaydedildi:paylas":"paylasim_linki"};
+  function olcKayit(olay){ if(OLC_KAYIT && OLC_KAYIT[olay]) olc(OLC_KAYIT[olay]); }
+  // o anki ekran (kısa ad): ölçümün "ekran" alanı
+  var OLC_EKRAN={ana:"villalarim", ajanda:"takvim", hesapEkran:"hesap", takvim:"villa_takvim", kasa:"gelir_gider", misafirler:"misafirler",
+    fiyatEkran:"fiyat", fotoEkran:"fotograflar", sihirbaz:"sihirbaz", giris:"giris", sifre:"sifre", onay:"onay"};
+  if(window.VT) VT.olcumEkran=function(){
+    if(document.querySelector(".overlay.maPerde:not(.kapaniyor)")) return "musaitlik";
+    for(var k in OLC_EKRAN){ var e=document.getElementById(k); if(e && !e.classList.contains("hide")) return OLC_EKRAN[k]; }
+    return "";
+  };
+  olc("uygulama_ac");
   // işlem rehberle başlasın mı: Yardımlı mod açık, başka rehber sürmüyor. Panel açıksa başlığına "?" eklenir (22.2).
   function rehberAc(ad,tanim,soruTanim){
     rhSoru(soruTanim||tanim);   // 26.6: "?" isterse daha geniş yardım açar
@@ -5525,6 +5553,7 @@
         if($("tk-wa")){ $("tk-wa").disabled=false; $("tk-kopya").disabled=false; }
         durum(cev("Teklif kaydedildi. Villa yönetimi → Teklifler'den takip edebilirsiniz."),"ok");
         titret("basari");
+        olc("teklif_olustur"); olc("teklif_paylas");
         if(tur==="wa") rhBildir("kaydedildi:teklif");
         if(tur==="wa"){
           var u="https://wa.me/?text="+encodeURIComponent(metin);
@@ -6189,6 +6218,7 @@
       var ilk=(para0 && kaporaAcik)?sayi(document.getElementById("f-odenen").value):0;
       if(ilk){ yeni.odemeler=[{id:uid(), tarih:fmt(today), tutar:ilk, not:"kapora"}]; yeni.odenen=ilk; }
       S.taslak=null; yeniIsaretle(yeni.id); kapat(); ciz(); kaydet();
+      olc("rez_ekle",{gece:Math.round((parse(yeni.end)-parse(yeni.start))/86400000), kisi:sayi(yeni.people)});
       // takvimde yeni rezervasyonun günleri bir kez parlasın
       for(var d=parse(yeni.start); d<parse(yeni.end); d=addDays(d,1)){
         var c=document.querySelector('#grid .cell[data-k="'+fmt(d)+'"]'); if(c){ c.classList.add("yeniParla"); }
@@ -6301,7 +6331,7 @@
       titret("sil");
       var v=aktif(), yer=v.rez.indexOf(r);
       v.rez=v.rez.filter(function(x){return x.id!==r.id});
-      kaydet(); kapat(); ciz();
+      kaydet(); kapat(); ciz(); olc("rez_sil");
       geriAlBildir("Rezervasyon iptal edildi.",function(){
         if(v.rez.some(function(x){return x.id===r.id})) return;
         v.rez.splice(Math.max(0,Math.min(yer,v.rez.length)),0,r);
@@ -6570,7 +6600,7 @@
         if(yeniGece!==eskiGece && !document.getElementById("dz-ek").value) r.ekUcret=ekUcretHesap(v,yeniGece);
         r.depozito={tutar:sayi(document.getElementById("dz-dep").value)};
       }
-      kapat(); ciz(); kaydet(); tamam(cev("Rezervasyon güncellendi"));
+      kapat(); ciz(); kaydet(); olc("rez_duzenle"); tamam(cev("Rezervasyon güncellendi"));
     };
   }
 
@@ -6817,9 +6847,11 @@
         }
         sw.className="svic on"; not.textContent="İzin isteniyor…";
         VT.bildirimAc().then(function(){
+          olc("bildirim_izni",{verildi:true});
           acik=true; durum="granted"; store.set("villa-takvim-bildirim","acik");
           notYaz(); bildir("Bildirimler açıldı.");
         }).catch(function(e){
+          olc("bildirim_izni",{verildi:false});
           acik=false; durum=VT.bildirimDurumu();
           sw.className="svic"; not.textContent=e.message||"Bildirim açılamadı.";
         });
@@ -6908,6 +6940,7 @@
     var app=document.documentElement.classList.contains("native");
     document.getElementById("hsTitresimBolum").classList[app?"remove":"add"]("hide");
     document.getElementById("hs-titresim").className="svic"+(store.get(TITRESIM)==="kapali"?"":" on");
+    olcumCiz();
     // 16.3 kilit: yalnız uygulamada, girişli kullanıcıda ve eklenti varsa
     var kilitVar=!!(app && bulut && window.VTAcilis && VTAcilis.kilitDestek());
     document.getElementById("hsGuvenlikBolum").classList[kilitVar?"remove":"add"]("hide");
@@ -6941,6 +6974,15 @@
       uyari((e && e.message && !/^[a-z]+$/i.test(e.message)) ? e.message : cev("Kilit açılamadı. Face ID veya parmak izi ayarlarınızı kontrol edin."));
     });
   };
+  // 29.1: Kullanım istatistiklerini paylaş (varsayılan açık)
+  function olcumCiz(){
+    var a=!(window.VT && VT.olcumAcik) || VT.olcumAcik(), sw=document.getElementById("hs-olcum");
+    sw.className="svic"+(a?" on":""); sw.setAttribute("aria-checked",String(a));
+  }
+  document.getElementById("olcumSatir").onclick=function(){
+    if(!(window.VT && VT.olcumAyarla)) return;
+    VT.olcumAyarla(!VT.olcumAcik()); titret("hafif"); olcumCiz();
+  };
   document.getElementById("hs-titresim").onclick=function(){
     var acik=store.get(TITRESIM)!=="kapali";
     store.set(TITRESIM,acik?"kapali":"acik");
@@ -6963,7 +7005,7 @@
   yaziUygula(yaziAl(),false);
   document.getElementById("hs-yazi").addEventListener("click",function(e){
     var b=e.target.closest("[data-y]"); if(!b) return;
-    titret("hafif"); yaziUygula(b.dataset.y,true);
+    titret("hafif"); yaziUygula(b.dataset.y,true); olc("yazi_boyutu",{deger:b.dataset.y});
   });
   // iPhone'un sistem yazı boyutu büyükse (Ayarlar → Ekran → Metin Boyutu) ilk açılışta bir kez "Büyük" önerilir
   function yaziOner(){
@@ -6983,7 +7025,7 @@
   setTimeout(yaziOner,2500);
   document.getElementById("hs-dil").addEventListener("click",function(e){
     var b=e.target.closest("[data-d]"); if(!b) return;
-    if(window.DIL && DIL.dil!==b.dataset.d) DIL.ayarla(b.dataset.d);
+    if(window.DIL && DIL.dil!==b.dataset.d){ olc("dil",{deger:b.dataset.d}); DIL.ayarla(b.dataset.d); }
   });
   document.getElementById("cikisBtn").onclick=function(){ cikisYap(); };
   // (18.21: "Bize ulaşın" yukarıda, Yardım bölümünde)
@@ -7057,6 +7099,7 @@
       if(k.length<4) return;
       var b=this; b.disabled=true; b.textContent="Kontrol ediliyor…";
       VT.davetiKullan(k).then(function(r){
+        olc("bakici_katildi");
         kapat(); bildir((r&&r[0]&&r[0].villa_ad?r[0].villa_ad:"Villa")+" hesabınıza eklendi.");
         bulutYukle();
       }).catch(function(e){
@@ -7524,6 +7567,7 @@
     document.getElementById("bk-uret").onclick=function(){
       var b=this; b.disabled=true; b.textContent="Oluşturuluyor…";
       VT.davetOlustur(v.id).then(function(kod){
+        olc("bakici_davet");
         b.style.display="none";
         var link=UYGULAMA_ADRESI+"?davet="+encodeURIComponent(kod);
         var metin=ekE(v.ad||"Villa")+" bakıcı olarak katılmak için bu bağlantıya dokunun: "+link+" (Kod: "+kod+")";
@@ -7954,6 +7998,7 @@
   document.getElementById("kGelirEkle").onclick=function(){ if(aktif()) hareketSheet("gelir"); };
   document.getElementById("kasaPdf").onclick=function(){
     var v=aktif(); if(!v) return;
+    olc("pdf_indir");
     var don=document.getElementById("donAd").textContent||"Tüm zamanlar";
     var b=this; b.disabled=true; b.textContent="Hazırlanıyor…";
     setTimeout(function(){
@@ -8586,7 +8631,7 @@
         },function(h){
           if(h){ son(); bildir(h); return; }
           v.fotolar=(v.fotolar||[]).concat(yeni);
-          kaydet(); son(); rhBildir("kaydedildi:foto"); bildir(cev(yeni.length+" fotoğraf eklendi."));
+          kaydet(); son(); olc("foto_yukle",{adet:yeni.length}); rhBildir("kaydedildi:foto"); bildir(cev(yeni.length+" fotoğraf eklendi."));
         });
         return;
       }
@@ -9140,7 +9185,7 @@
       for(var j=eklenecek;j<n;j++) if(sonuclar[j]===undefined) sonuclar[j]=false;
       sirayaEkle();
       kilitle.forEach(function(x){ x.disabled=false; });
-      if(eklenen) rhBildir("kaydedildi:foto",{basari:cev(eklenen+" fotoğraf eklendi")});
+      if(eklenen){ olc("foto_yukle",{adet:eklenen}); rhBildir("kaydedildi:foto",{basari:cev(eklenen+" fotoğraf eklendi")}); }
       if(!document.body.contains(kutu)){
         bildir(cev(eklenen+" fotoğraf eklendi"+(olmayan?", "+olmayan+" eklenemedi":"")+"."));
         return;
@@ -9604,6 +9649,7 @@
       bildir("PDF indirildi.");
     };
     document.getElementById("fm-paylas").onclick=function(){
+      olc("pdf_indir");
       var d=document.getElementById("fm-durum");
       if(dosyaVer(hazirla(),ad)) return;
       try{
@@ -10955,7 +11001,7 @@
     });
     gd.addEventListener("click",function(e){
       var b=e.target.closest("[data-d]"); if(!b) return;
-      if(window.DIL && DIL.dil!==b.dataset.d) DIL.ayarla(b.dataset.d);
+      if(window.DIL && DIL.dil!==b.dataset.d){ olc("dil",{deger:b.dataset.d}); DIL.ayarla(b.dataset.d); }
     });
   })();
 
