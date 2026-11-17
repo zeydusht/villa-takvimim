@@ -107,6 +107,25 @@
     bakiciVilla: "Bakıcı eklemek istediğiniz villaya dokunun.",
     bakiciDavet: "Yeni bakıcı davet etmek için dokunun.",
     bakiciGonder: "Bu kodu ya da bağlantıyı bakıcınıza WhatsApp'tan gönderin.",
+    // 26.6 (denetim): rehberi olmayan işlemler
+    gelirAd: "Gelirin ne olduğunu yazın (örn. ek hizmet).",
+    misafirSec: "Birden fazla misafire teklif göndermek için ‘Birden fazla seç’e dokunun.",
+    misafirIsaretle: "Teklif göndereceğiniz misafirlere dokunun.",
+    misafirTeklif: "Sonra ‘Teklif hazırla’ya dokunun.",
+    fotoSira: "Sırayı değiştirmek için fotoğrafa basılı tutun ve sürükleyin.",
+    fotoSec: "Kapak yapmak ya da silmek için ‘Birden fazla seç’e dokunun; fotoğrafı seçip ‘Kapak yap’a ya da ‘Sil’e dokunun.",
+    bilgiOda: "Odaları buradan ekleyin: türü, katı ve yatakları.",
+    bilgiKural: "Ev kurallarınızı buradan ekleyin; misafirler villa sayfasında görür.",
+    bilgiKonum: "Haritadaki konum bağlantısını kopyalayıp buraya yapıştırın.",
+    opsCevir: "Misafir kesinleşince ‘Rezervasyona çevir’e dokunun; bilgiler forma kendiliğinden gelir.",
+    opsUzat: "Misafir biraz daha düşünecekse süreyi buradan uzatın.",
+    teklifCevir: "Misafir kabul edince ‘Rezervasyona çevir’e dokunun; teklif fiyatı forma gelir.",
+    teklifTekrar: "Misafire yeniden göndermek için ‘Teklifi tekrar gönder’e dokunun.",
+    rezOdeme: "Misafirden ödeme alınca buradan kaydedin.",
+    rezDepozito: "Depozitoyu iade ettiyseniz buradan işaretleyin.",
+    rezPdf: "Rezervasyon formunu (PDF) misafire göndermek için dokunun.",
+    pdfGonder: "Formu misafire göndermek için dokunun.",
+    sayfaKaldir: "Sayfayı kapatmak isterseniz en alttaki ‘Villa sayfasını yayından kaldır’a dokunun.",
     // uygulama turu
     turSira: "Burada her zaman sıradaki iş yazar: kim girecek, ne kadar alınacak.",
     turPanel: "Rezervasyon, teklif ya da opsiyon buradan seçilir.",
@@ -1042,7 +1061,8 @@
   // 22.2: panelin "?" düğmesi: o işlemin rehberi tek seferlik, kalınan adımdan (bilinmiyorsa ilk boş alandan)
   R.panelden = function (ov, tanim) {
     if (!tanim) return false;
-    var k = ov && ov._rhKaldi, bas = (k && k.ad === tanim.ad) ? k.i : "bos";
+    // 26.6: bilgi veren rehberler (tanim.bastan) kalınan adım bilinmiyorsa ilk boş alandan değil baştan başlar
+    var k = ov && ov._rhKaldi, bas = (k && k.ad === tanim.ad) ? k.i : (tanim.bastan ? 0 : "bos");
     if (D) bitir(false);
     return R.baslat(tanim, { bas: bas });
   };
