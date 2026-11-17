@@ -3386,6 +3386,7 @@
     var b0=MA.bas?parse(MA.bas):today;
     MA.imlec=new Date(b0.getFullYear(),b0.getMonth(),1);
     maPerde();
+    rehberAc("musait",REHBER.musait);   // 27.6: Yardımlı modda rehberle; her durumda başlıkta "?"
   }
   function maPerde(){
     var o=perde('<div class="head"><h2>'+esc(cev("Hangi villam boş?"))+"</h2>"+kapatBtn()+'</div><div id="maIc" class="maIc"></div>');
@@ -4927,8 +4928,24 @@
         {hedef:rhTek("#bk-uret"), metin:RM.bakiciDavet, bekle:"olay", olay:"davet:hazir"},
         {hedef:rhTek("#bk-alan"), metin:RM.bakiciGonder, bekle:"dokunus", dokun:"#bk-paylas,#bk-kopya"}
       ]}; },
-    // 27.6 Müsaitlik arama (27.6'da)
-    musait:function(){ return {ad:"musait", bastan:true, adimlar:[]}; },
+    // 27.6 Müsaitlik arama ("Hangi villam boş?"): Yardımlı modda kendiliğinden; panel başlığındaki "?" ile de açılır.
+    // Tarih adımlarında haplar ve kişi satırı gizli (takvim baloncukla birlikte küçük ekrana sığsın).
+    musait:function(){
+      var tarihte=function(){ return MA.adim==="tarih" && !!pq("#maGrid"); };
+      var dar=function(ac2){ var sh=pq(".maSheet"); if(sh) sh.classList[ac2?"add":"remove"]("maRhTarih"); };
+      return {ad:"musait", bastan:true,
+      adimlar:[
+        {id:"ma1", hedef:rhTek("#maTakvim"), metin:RM.musaitGiris, bekle:"olay", olay:"ma:bas", gec_olay:"ma:aralik",
+         atla_eger:function(){ return !tarihte() || !!MA.bas; }, hazirla:function(){ dar(true); }, cikis:function(){ dar(false); }},
+        {id:"ma2", hedef:rhTek("#maTakvim"), metin:RM.musaitCikis, bekle:"olay", olay:"ma:aralik", donus:{"ma:temiz":"ma1"},
+         atla_eger:function(){ return !tarihte() || !!MA.bit; }, hazirla:function(){ dar(true); }, cikis:function(){ dar(false); },
+         geri:function(){ MA.bas=null; MA.bit=null; MA.hap=""; maIzgaraCiz(); maAltCiz(); }},
+        {id:"ma3", hedef:rhTek("#maGoster"), metin:RM.musaitGoster, bekle:"olay", olay:"ma:sonuc", donus:{"ma:temiz":"ma1"},
+         atla_eger:function(){ return MA.adim==="sonuc" || !(MA.bas && MA.bit); }},
+        {hedef:function(){ var l=[pq("#maBaslik"), pq("#maSecAc"), pq("#maBosListe .maVilla") || pq("#maBosYok")].filter(Boolean); return l.length?l:null; },
+         metin:function(){ return pq("#maSecAc") ? RM.musaitSonuc : RM.musaitSonucSade; }, bekle:"ileri", dokunulmaz:true,
+         atla_eger:function(){ return MA.adim!=="sonuc"; }}
+      ]}; },
     // ---- 26.6 (denetim): rehberi olmayan işlemler ----
     // Villa sayfası: paneldeki "?" ile açılan yardım = paylaşma + yayından kaldırma (kendiliğinden başlayan paylaş rehberi aynı kaldı)
     paylasYardim:function(){ var t=REHBER.paylas(); t.adimlar.splice(1,0,

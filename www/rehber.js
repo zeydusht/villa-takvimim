@@ -126,6 +126,12 @@
     rezPdf: "Rezervasyon formunu (PDF) misafire göndermek için dokunun.",
     pdfGonder: "Formu misafire göndermek için dokunun.",
     sayfaKaldir: "Sayfayı kapatmak isterseniz en alttaki ‘Villa sayfasını yayından kaldır’a dokunun.",
+    // 27.6 müsaitlik arama ("Hangi villam boş?")
+    musaitGiris: "Müşterinin istediği *giriş* gününe dokunun.",
+    musaitCikis: "Şimdi *çıkış* gününe dokunun.",
+    musaitGoster: "‘Boş villaları göster’e dokunun.",
+    musaitSonuc: "Boş villalar ve toplam fiyatları burada. Göndermek için ‘Seç ve gönder’.",
+    musaitSonucSade: "Bu tarihlerde boş olan villalar burada.",
     // uygulama turu
     turSira: "Burada her zaman sıradaki iş yazar: kim girecek, ne kadar alınacak.",
     turPanel: "Rezervasyon, teklif ya da opsiyon buradan seçilir.",
