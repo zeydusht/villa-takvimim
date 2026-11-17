@@ -1,0 +1,4 @@
+/* Görev 29.5: izin metinleri (en) */
+"NSCameraUsageDescription" = "The camera is needed to take photos of villas and receipts.";
+"NSPhotoLibraryUsageDescription" = "Access to your photo library is needed to add villa photos.";
+"NSFaceIDUsageDescription" = "To open Villa Takvimim with Face ID.";

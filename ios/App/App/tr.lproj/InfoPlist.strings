@@ -1,0 +1,4 @@
+/* Görev 29.5: izin metinleri (tr) */
+"NSCameraUsageDescription" = "Villa ve fiş fotoğrafı çekmek için kamera gerekir.";
+"NSPhotoLibraryUsageDescription" = "Villa fotoğraflarını eklemek için galerinize erişim gerekir.";
+"NSFaceIDUsageDescription" = "Villa Takvimim'i Face ID ile açmak için.";

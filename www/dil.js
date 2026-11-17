@@ -776,6 +776,7 @@
     "Açıkken her işlemde adım adım yardım gösterilir.":"When on, step-by-step help is shown for every task.",
     "Yardımlı mod kapatıldı. Panellerdeki ? ile yine yardım alabilirsiniz.":"Guided mode is off. You can still get help with the ? on each panel.",
     // Görev 29
+    "Bilgileriniz, şifre, hesabı silme":"Your details, password, delete account",
     "Özet ve istatistikler":"Summary and statistics",
     "Son görülme":"Last seen",
     "Villa sayısı":"Number of villas",

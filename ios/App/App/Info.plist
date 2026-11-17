@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Villa ve fiş fotoğrafı çekebilmeniz için kameraya erişim gerekiyor.</string>
+	<string>Villa ve fiş fotoğrafı çekmek için kamera gerekir.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Villa fotoğraflarınızı seçebilmeniz için fotoğraflarınıza erişim gerekiyor.</string>
+	<string>Villa fotoğraflarını eklemek için galerinize erişim gerekir.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Villa Takvimim'i Face ID ile açmak için.</string>
   <key>CAPACITOR_DEBUG</key>
