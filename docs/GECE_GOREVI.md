@@ -12,8 +12,8 @@ Zeyd uyuyor. **Hiçbir şey sorma, durma.** Bir karar gerekirse en mantıklı ol
 
 ## Sıra
 
-### 1) Görev 29'un tamamı
-`docs/GOREV29.md` içindeki 29.1–29.7 adımlarının hepsini yap.
+### 1) Görev 29 kontrolü
+Görev 29 zaten yapıldı. `git pull` yap, eksik kalan bir şey varsa tamamla.
 
 ### 2) Görev 30 — abonelik, istemci tarafı (şimdilik kapalı)
 Veritabanı adları `docs/VERITABANI_GOREV30.sql` dosyasında:
