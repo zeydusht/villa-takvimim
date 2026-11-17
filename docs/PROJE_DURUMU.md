@@ -678,6 +678,17 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       · tekrar ara" bağlantısı var); rehber seçim durumuna göre başlar ve kendini ayarlar; rehber motoruna `serbest` (deliğin
       dışında dokunulabilen yerler) eklendi; villa her açılışta seçim temiz (eski aralık ve alt panel geri gelmiyordu).
       GERÇEK İPHONE'DA TEST EDİLECEK.
+- [x] Görev 29 — Ölçüm, yönetim paneli, App Store hazırlığı · Claude Code (17 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi (29.1–29.7 ayrı commit). Ayrıntı: `docs/GOREV29.md`, testler: `docs/qa/gorev29/README.md`.
+      ÖNCE: `docs/VERITABANI_GOREV29.sql` Supabase'e uygulanmalı (ürün yöneticisi). Uygulanana kadar: ölçüm istekleri sunucuda
+      reddedilir (uygulama etkilenmez, sessizce atılır); yönetim istatistikleri "sunucu güncellemesi bekleniyor" der.
+      29.1 olcum.js: VT.olay, izinli olay listesi, yalnız sayı / evet-hayır / listeden değer; Hesap → Gizlilik → "Kullanım
+      istatistiklerini paylaş". Sürüm config.js'te (surum: 1.0.0). 29.2 hata türü + dosya:satır (mesaj yok), oturumda en çok 5.
+      29.3 Yönetim bölümü yalnız yöneticiye DOM'a eklenir: özet ve istatistikler, son görülme, sıralama, "Etkinliği gör" (onaylı).
+      29.4 gizlilik metni. 29.5 iOS: PrivacyInfo.xcprivacy (projeye bağlı), InfoPlist.strings tr/en, MARKETING_VERSION 1.0.0.
+      App Store Connect "App Privacy" yanıtları PrivacyInfo.xcprivacy ile aynı olmalı.
+      29.6 yönetici iki adımlı doğrulama (TOTP) hazır; veritabanında aal2 kuralı AÇILMADI (Zeyd ve Berat kurduktan sonra açılacak).
+      GERÇEK İPHONE'DA TEST EDİLECEK (TestFlight derlemesi, izin metinleri, QR okutma).
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.

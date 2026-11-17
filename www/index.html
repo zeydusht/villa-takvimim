@@ -816,6 +816,10 @@
   .ksSira{display:flex; align-items:center; flex-wrap:wrap; gap:.5rem .75rem; margin:0 0 1rem}
   .ksSira .seg{flex:1 1 16rem; margin:0}
   .ksAbone{color:var(--muted)}
+  /* alt yazılı satırlarda sağdaki değer (e-posta, Açık / Kapalı) kesilmesin: sol sütun alt satıra kayar */
+  #hesapBtn > span:first-child, #mfaBtn > span:first-child{flex:1 1 9rem}
+  #mfaBtn .sag{flex:none; max-width:none}
+  #yoneticiBtn .sag{white-space:normal; overflow:visible; text-overflow:clip; text-align:right; max-width:45%}
   /* 29.6: iki adımlı doğrulama */
   .mfaAdim{margin:0 0 1rem; padding-left:1.25rem; line-height:1.5}
   .mfaAdim li{margin-bottom:.375rem}
