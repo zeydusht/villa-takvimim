@@ -30,11 +30,11 @@ _Hazırlayan: Claude (ürün yöneticisi), 17 Kasım 2026. Zeyd: "Uygulama az ç
 
 ## C. Kademeli girişler ve kaydırınca belirme
 
-- [ ] **26.3 Kademeli giriş (stagger).** Bir ekran ilk açıldığında içerik yukarıdan aşağı sırayla belirsin: her öğe 10 pt aşağıdan + opaklık 0→1, 260 ms, `--egri-giris`, öğeler arası 35 ms (en fazla ilk 8 öğe kademeli; sonrakiler 8. ile aynı anda).
+- [x] **26.3 Kademeli giriş (stagger).** Bir ekran ilk açıldığında içerik yukarıdan aşağı sırayla belirsin: her öğe 10 pt aşağıdan + opaklık 0→1, 260 ms, `--egri-giris`, öğeler arası 35 ms (en fazla ilk 8 öğe kademeli; sonrakiler 8. ile aynı anda).
   - Uygulanacak yerler: Villalarım (başlık → özet etiketleri → villa kartları), villa ekranı (başlık kartı → Sıradaki → haplar → takvim → bölümler), Takvim sekmesi (gün grupları), Gelir & gider (net kazanç → 3 kutu → listeler), Hesap.
   - Sadece ekranın ilk açılışında (geri gelince, sekme değiştirip dönünce, veri yenilenince TEKRAR OYNAMAZ). "Hareketi azalt"ta yok.
   - Açılış animasyonundan sonra ana ekran ilk geldiğinde de kademeli gelsin (açılışın son adımıyla uyumlu).
-- [ ] **26.4 Kaydırınca belirme (scroll reveal) — misafir sayfası.** g.html'de bölümler (Ev hakkında, Odalar, Özellikler, Konum, Kurallar, Takvim…) ekrana girerken 16 pt aşağıdan + solarak belirsin (IntersectionObserver, 320 ms, her bölüm bir kez). Fotoğraf şeridindeki fotoğraflar yüklenince 200 ms solarak gelsin. Uygulama içi uzun ekranlarda (villa ekranının alt bölümleri) aynı, ama daha hafif (8 pt).
+- [x] **26.4 Kaydırınca belirme (scroll reveal) — misafir sayfası.** g.html'de bölümler (Ev hakkında, Odalar, Özellikler, Konum, Kurallar, Takvim…) ekrana girerken 16 pt aşağıdan + solarak belirsin (IntersectionObserver, 320 ms, her bölüm bir kez). Fotoğraf şeridindeki fotoğraflar yüklenince 200 ms solarak gelsin. Uygulama içi uzun ekranlarda (villa ekranının alt bölümleri) aynı, ama daha hafif (8 pt).
   - Performans: sadece transform/opacity; IntersectionObserver bir kez tetiklenince gözlemi bırak.
 
 ## D. Tam denetim (en önemli kısım)

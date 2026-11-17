@@ -781,6 +781,8 @@
   }
   /* 24.1: klavye payı (alt dolgu) 300 ms'de, --egri-gecis ile; klOlc = son yerleşimi ölçerken geçiş kapalı */
   .sheet{transition:transform var(--hiz-ac) var(--egri-gecis), padding-bottom 300ms var(--egri-gecis)}
+  /* 26.4: ekranın altındaki bölüm, ekrana girene kadar saydam (girince 8 pt aşağıdan solarak gelir) */
+  .belirBekle{opacity:0}
   html.klOlc .sheet{transition:none!important}
   @media (prefers-reduced-motion: reduce){ .sheet{transition:none} }
   .kapatAlt{width:100%; margin-top:.5rem; padding:.875rem 0; border-radius:.75rem; font-size:1rem;
@@ -2890,6 +2892,67 @@
     sayfayaKaydir(hedef);
     // ekranı çağıran kod içeriği hemen ardından çizer; çizimden sonra konumu bir kez daha uygula
     if(hedef) requestAnimationFrame(function(){ if(!document.getElementById(id).classList.contains("hide")) sayfayaKaydir(hedef); });
+    kademeli(id);
+  }
+
+  // ================= 26.3 KADEMELİ GİRİŞ / 26.4 KAYDIRINCA BELİRME =================
+  // Ekran (bu oturumda) ilk açıldığında görünen içerik yukarıdan aşağı sırayla gelir: her öğe 10 pt aşağıdan + saydamdan,
+  // 260 ms, --egri-giris, öğeler arası 35 ms; en fazla 8 kademe (sonrakiler 8. ile birlikte). Geri gelince, sekme değiştirip
+  // dönünce, veri yenilenince tekrar oynamaz. Açılış animasyonundan sonra ana ekran: açılışın ana ekranı soldurmaya başladığı
+  // anda. Ekranın altında kalan bölümler (villa ekranı) ekrana girince 8 pt aşağıdan solarak gelir (bir kez).
+  // "Hareketi azalt"ta hiçbiri yok. Yalnız transform / opacity.
+  var KADEME={gor:{}};
+  // açılan kaplar: içindeki öğeler tek tek kademe olur (ör. Villalarım: başlık → özet etiketleri → villa kartları)
+  var KADEME_EKRAN={ana:["#ana > .anaBas","#villalar"], ajanda:["#ajandaListe"], hesapEkran:["#hesapEkran > div"], takvim:[], kasa:[]};
+  function kademeOgeleri(ekran,id){
+    var l=[], ac=KADEME_EKRAN[id].map(function(s){ return document.querySelector(s); });
+    Array.prototype.forEach.call(ekran.children,function(c){
+      if(ac.indexOf(c)>=0){ Array.prototype.forEach.call(c.children,function(x){ l.push(x); }); return; }
+      l.push(c);
+    });
+    return l.filter(function(x){ return x.offsetHeight>0 && !x.classList.contains("hide") && !/^(SCRIPT|STYLE)$/.test(x.tagName); });
+  }
+  function kademeli(id){
+    if(!(id in KADEME_EKRAN) || KADEME.gor[id]) return;
+    KADEME.gor[id]=true;
+    var ekran=document.getElementById(id);
+    if(azHareket() || !ekran || !ekran.animate) return;
+    var deneme=0;
+    var oynat=function(){
+      if(ekran.classList.contains("hide")) return;
+      // açılış perdesi varsa: perdenin ana ekranı soldurmaya başladığı an (acilis.js ana ekranı aynı anda getiriyor).
+      // Perde var ama solma henüz kurulmadıysa her karede yeniden bakılır (perde kalkınca hemen oynar).
+      var bekle=0, bulundu=false, perde=!!document.getElementById("acilis");
+      var kab=ekran.closest(".wrap")||ekran;   // acilis.js .wrap'i soldurur
+      if(perde && kab.getAnimations){
+        kab.getAnimations().forEach(function(a){
+          try{ var k=a.effect.getKeyframes(), t=a.effect.getComputedTiming();
+            if(k.length>=3 && t.duration && a.startTime!=null){ bulundu=true;
+              bekle=Math.max(bekle, a.startTime+k[1].computedOffset*t.duration-document.timeline.currentTime); } }catch(e){}
+        });
+      }
+      if(perde && !bulundu && ++deneme<600){ requestAnimationFrame(oynat); return; }
+      var H=window.innerHeight, l=kademeOgeleri(ekran,id), gorunen=[], asagi=[];
+      l.forEach(function(x){ var r=x.getBoundingClientRect(); (r.top<H ? gorunen : asagi).push(x); });
+      gorunen.forEach(function(x,i){
+        try{ x.animate([{opacity:0,transform:"translateY(10px)"},{opacity:1,transform:"translateY(0)"}],
+          {duration:260, delay:bekle+35*Math.min(i,7), easing:egriAl("giris"), fill:"backwards"}); }catch(e){}
+      });
+      if(id==="takvim") belirIzle(asagi.filter(function(x){ return x.classList.contains("section"); }),8);
+    };
+    requestAnimationFrame(oynat);
+  }
+  var BELIR=null;
+  function belirIzle(els,y){
+    if(azHareket() || !window.IntersectionObserver) return;
+    if(!BELIR) BELIR=new IntersectionObserver(function(l){
+      l.forEach(function(g){
+        if(!g.isIntersecting) return;
+        var el=g.target; BELIR.unobserve(el); el.classList.remove("belirBekle");
+        try{ el.animate([{opacity:0,transform:"translateY("+(el._belirY||8)+"px)"},{opacity:1,transform:"translateY(0)"}],{duration:320, easing:egriAl("giris")}); }catch(e){}
+      });
+    },{rootMargin:"0px 0px -6% 0px"});
+    els.forEach(function(el){ if(el._belir) return; el._belir=1; el._belirY=y; el.classList.add("belirBekle"); BELIR.observe(el); });
   }
 
   // 10.12: dolu / boş etiketine dokununca liste süzülür, tekrar dokununca hepsi

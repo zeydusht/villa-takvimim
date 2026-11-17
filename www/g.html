@@ -30,6 +30,8 @@
   h1{font-family:var(--serif);font-weight:400;font-size:2rem;letter-spacing:-.02em;margin:.375rem 0 0}
   h2{font-family:var(--serif);font-weight:400;font-size:1.375rem;letter-spacing:-.02em;margin:0 0 1rem}
   .bolum{border-top:1px solid var(--line);margin-top:2rem;padding-top:2rem}
+  /* 26.4: bölüm ekrana girene kadar saydam; girince 16 pt aşağıdan solarak (bir kez) */
+  .belirBekle{opacity:0}
   .son{height:.5rem}
 
   /* galeri: tam genişlik, köşesiz */
@@ -682,8 +684,37 @@
     };
     if(D.fotolar.length) kaydirmaTakip();
     takvimCiz(); altCiz();
+    belirKur();
     if(teklifKod) teklifGetir();
     if(D.harita && document.getElementById("haritaMini")) haritaKur();
+  }
+
+  // ---- 26.4 kaydırınca belirme ----
+  // Bölümler ekrana girerken 16 pt aşağıdan + solarak (320 ms, bir kez; IntersectionObserver gözlemi bırakır). Fotoğraf
+  // şeridindeki fotoğraflar yüklenince 200 ms solarak. "Hareketi azalt"ta yok. Yalnız transform / opacity.
+  function belirKur(){
+    var az=false; try{ az=matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){}
+    if(az) return;
+    Array.prototype.forEach.call(document.querySelectorAll("#kaydir img"),function(im){
+      if(im.complete || !im.animate) return;
+      im.style.opacity="0";
+      var bit=function(ok){ im.style.opacity=""; if(ok) try{ im.animate([{opacity:0},{opacity:1}],{duration:200,easing:"cubic-bezier(0.22, 1, 0.36, 1)"}); }catch(e){} };
+      im.addEventListener("load",function(){ bit(true); },{once:true});
+      im.addEventListener("error",function(){ bit(false); },{once:true});
+    });
+    if(!window.IntersectionObserver) return;
+    var H=window.innerHeight;
+    var io=new IntersectionObserver(function(l){
+      l.forEach(function(g){
+        if(!g.isIntersecting) return;
+        var el=g.target; io.unobserve(el); el.classList.remove("belirBekle");
+        try{ el.animate([{opacity:0,transform:"translateY(16px)"},{opacity:1,transform:"translateY(0)"}],{duration:320,easing:"cubic-bezier(0.22, 1, 0.36, 1)"}); }catch(e){}
+      });
+    },{rootMargin:"0px 0px -6% 0px"});
+    Array.prototype.forEach.call(document.querySelectorAll(".bolum"),function(el){
+      if(el.getBoundingClientRect().top<H) return;          // ilk ekranda görünen bölüm beklemez
+      el.classList.add("belirBekle"); io.observe(el);
+    });
   }
 
   // ---- 15.1 harita ----
