@@ -776,6 +776,9 @@
     "Açıkken her işlemde adım adım yardım gösterilir.":"When on, step-by-step help is shown for every task.",
     "Yardımlı mod kapatıldı. Panellerdeki ? ile yine yardım alabilirsiniz.":"Guided mode is off. You can still get help with the ? on each panel.",
     // Görev 27
+    "Bu hafta sonu":"This weekend",
+    "Gelecek hafta sonu":"Next weekend",
+    "Boş villaları göster":"Show free villas",
     "Hangi villam boş?":"Which of my villas is free?",
     "Tarih seçin, boş villaları fiyatlarıyla görün":"Pick dates and see the free villas with prices",
     "Tarih seçin, boş villaları görün":"Pick dates and see the free villas",
