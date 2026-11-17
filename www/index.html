@@ -33,6 +33,7 @@
 <style>
   :root{
     color-scheme: light only;
+    --bugun:#E5484D;              /* 26.2: yalnız "bugün" işareti (para / ödenmedi rengi #9B2C4A'dan ayrı) */
     --ink:#101613; --muted:#5F6A64; --line:#D9DFDB; --cizgi:#C9D1CC; --soft:#F1F5F3; --uyari:#9B2C4A; --ok:#0B5B57;
     /* Tıklanabilir öğeler: tek ortak stil (buradan değiştirin) */
     --cerceve:#5F6A64;            /* kart, satır ve ikincil buton çerçevesi */
@@ -302,8 +303,10 @@
   .cell .fy.bh{opacity:.95; letter-spacing:.04em}
   .cell.gecmis{opacity:.38}
   .cell.full .fy{opacity:.85}
-  .cell.today .gn{display:flex; align-items:center; justify-content:center; width:1.625rem; height:1.625rem;
-    border-radius:99px; background:var(--ok); color:#fff; line-height:1}
+  /* 26.2: bugün — yalnız bu iş için mercan kırmızısı (#E5484D), içi boş yuvarlak köşeli çerçeve 2,5 pt; dışında 1 pt beyaz
+     kontur (rezervasyon bloğu, seçili aralık, yarım gün: her zeminde ayrışsın). Gün numarası olduğu gibi kalır. */
+  .cell.today::after, .fyGun.bugunG::after{content:""; position:absolute; inset:3px; border-radius:8px; pointer-events:none;
+    box-shadow:inset 0 0 0 2.5px var(--bugun), inset 0 0 0 3.5px #fff, 0 0 0 1px #fff}
   .cell.today.sel{box-shadow:inset 0 0 0 2.5px var(--ok), inset 0 0 0 4px #fff}
   .cell.sel{box-shadow:inset 0 0 0 2.5px var(--ok); background-color:#E3EFEC}
   .cell.full{color:#fff}
@@ -539,7 +542,7 @@
   a.satirBtn{text-decoration:none; color:inherit}
   .lejant .lj-gecmis{opacity:.38}
   .lejant .lj-harf{font-size:.6875rem; letter-spacing:.04em; background:var(--ok); color:#fff; border-radius:3px; padding:0 .25rem; margin-right:.375rem}
-  .lejant .lj-bugun{background:var(--ok)!important; border-radius:99px!important}
+  .lejant .lj-bugun{background:#fff!important; box-shadow:inset 0 0 0 2.5px var(--bugun); border-radius:.25rem}
 
   /* Drive'dan al */
   .drYon{list-style:none; padding:0; margin:1rem 0 1.25rem; display:grid; gap:.625rem}
@@ -588,7 +591,6 @@
   .fyGun .bh{position:absolute; top:.1875rem; right:.25rem; font-size:.5625rem; letter-spacing:.04em; opacity:.5}
   .fyGun.hs{background:#F2F6F4}
   .fyGun.dolu{background:#E3EFEC}
-  .fyGun.bugunG .gn{color:var(--ok); text-decoration:underline; text-underline-offset:3px}
   .fyGun.gecmis{opacity:.35; pointer-events:none}
   .fyGun.sec{border-color:var(--lacivert); background:var(--lacivert-zemin)}
   /* 12.6 fiyatlarda seçili ay: açık lacivert zemin + lacivert çerçeve */

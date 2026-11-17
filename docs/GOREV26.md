@@ -22,7 +22,7 @@ _Hazırlayan: Claude (ürün yöneticisi), 17 Kasım 2026. Zeyd: "Uygulama az ç
 
 ## B. Bugün işareti
 
-- [ ] **26.2 "Bugün" her zeminde belli olsun.** Şu an bugün = koyu yeşil daire; koyu mavi/yeşil rezervasyon bloğunun üstünde kayboluyor.
+- [x] **26.2 "Bugün" her zeminde belli olsun.** Şu an bugün = koyu yeşil daire; koyu mavi/yeşil rezervasyon bloğunun üstünde kayboluyor.
   - Yeni: hücrenin içinde **yuvarlak köşeli çerçeve, içi boş**, 2,5 pt kalınlık, renk **mercan kırmızısı `#E5484D`** (para/ödenmedi için kullanılan şarap kırmızısı `#9B2C4A`'dan ayrı; bu renk SADECE "bugün" için). Gün numarası olduğu gibi (rengi zemine göre beyaz/koyu kalır).
   - Rezervasyon bloğunun üstündeyken çerçeve dışına 1 pt beyaz kontur (her zeminde ayrışsın).
   - Takvim açıklamasındaki "Bugün" örneği de güncellensin. Misafir sayfası (g.html) ve uygulamadaki tüm takvimlerde aynı.

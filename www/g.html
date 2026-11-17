@@ -13,7 +13,7 @@
 <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
 <title>Villa</title>
 <style>
-  :root{--ink:#12232B;--muted:#6B7C85;--line:#E3E9EC;--soft:#F4F7F8;--dolu:#DDE4E7;--dip:#A3B0B6;
+  :root{--bugun:#E5484D;--ink:#12232B;--muted:#6B7C85;--line:#E3E9EC;--soft:#F4F7F8;--dolu:#DDE4E7;--dip:#A3B0B6;
     --yes:#0B5B57;--yesKoyu:#084842;
     --serif:ui-serif,Georgia,"Times New Roman",serif;
     --egri-gecis:cubic-bezier(0.65, 0, 0.35, 1); --egri-giris:cubic-bezier(0.22, 1, 0.36, 1);
@@ -260,6 +260,12 @@
   .g.sec .f{color:rgba(255,255,255,.85);visibility:visible}
   .g.ara{background:#DDEAE7 !important;border-radius:0}
   .g.secilebilir{cursor:pointer}
+  /* 26.2: bugün — yalnız bu iş için mercan kırmızısı (#E5484D), içi boş yuvarlak köşeli çerçeve 2,5 pt; dışında 1 pt beyaz
+     kontur (rezervasyon bloğu, seçili aralık, yarım gün: her zeminde ayrışsın). Gün numarası olduğu gibi kalır. */
+  .g.bugun{position:relative}
+  .g.bugun::after{content:"";position:absolute;inset:3px;border-radius:8px;pointer-events:none;
+    box-shadow:inset 0 0 0 2.5px var(--bugun),inset 0 0 0 3.5px #fff,0 0 0 1px #fff}
+  .ornek.bugunOrnek{background:#fff;box-shadow:inset 0 0 0 2.5px var(--bugun)}
   .uyari{font-size:.8125rem;color:#9B2C4A;margin-top:.75rem;min-height:1.25rem}
   .aciklik{display:flex;gap:1rem;margin-top:1rem;font-size:.8125rem;color:var(--muted);
     align-items:center;flex-wrap:wrap}
@@ -353,7 +359,7 @@
     "Bu teklif artık geçerli değil. Güncel fiyatlar aşağıda.":"This offer is no longer valid. Current prices are below.",
     "Bu teklifin süresi doldu. Güncel fiyatlar aşağıda.":"This offer has expired. Current prices are below.",
     "Bu tarihler artık dolu, lütfen başka tarih seçin.":"These dates are no longer available, please choose other dates.","Yakınlarda ne var?":"What's nearby?","Haritada göster":"Show on map","Haritada aç":"Open in maps",
-    "Uygun":"Available","Dolu":"Booked","Temizle":"Clear","Kapat":"Close",
+    "Uygun":"Available","Dolu":"Booked","Temizle":"Clear","Kapat":"Close","Bugün":"Today",
     "Rezervasyon isteği oluştur":"Send a booking request","Tarih seçin":"Select dates",
     "Giriş gününü seçin":"Select check-in day","Çıkış gününü seçin":"Select check-out day",
     "Kaç kişi geliyorsunuz?":"How many guests?","Yetişkin":"Adults","Çocuk":"Children",
@@ -551,6 +557,7 @@
        '<div class="aciklik">'+
        '<span><i class="ornek" style="background:#fff;box-shadow:inset 0 0 0 1px var(--line)"></i>Uygun</span>'+
        '<span><i class="ornek" style="background:var(--dolu)"></i>Dolu</span>'+
+       '<span><i class="ornek bugunOrnek"></i>'+esc(CEV("Bugün"))+"</span>"+
        ((D.opsiyon||[]).length?'<span><i class="ornek opsOrnek"></i>Opsiyonlu</span>':"")+
        '<span style="color:var(--muted)">Giriş 16:00 · Çıkış 10:00</span></div>'+
        '<div id="secimAlan"></div>',"takvim",CEV("Giriş ve çıkış gününe dokunun"));
@@ -999,6 +1006,7 @@
       else if(ys) st="background:linear-gradient(110deg,var(--dolu) 49.5%,transparent 50.5%)";
       else if(ya) st="background:linear-gradient(110deg,transparent 49.5%,var(--dolu) 50.5%)";
       if(!gecmis) cls+=" secilebilir";
+      if(k===bugunK) cls+=" bugun";
       h+='<div class="'+cls+'" data-k="'+k+'" style="'+st+'"><span>'+g+"</span>"+
          '<span class="f">'+((!gecmis && !tam && f)?kisaFiyat(f):"")+"</span></div>";
     }
