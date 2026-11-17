@@ -282,6 +282,65 @@
   };
   VT.kullaniciOnayla = function (id) { return VT.rpc("kullanici_onayla", { p_id: id }); };
   VT.kullaniciReddet = function (id) { return VT.rpc("kullanici_reddet", { p_id: id }); };
+  // ---------------- Görev 29.6: iki adımlı doğrulama (Supabase Auth TOTP) ----------------
+  // Yalnız yöneticiler için. Oturum seviyesi jetondaki "aal" alanında: aal1 = şifre, aal2 = şifre + kod.
+  function jetonAlan(ad) {
+    try { var t = VT.oturum && VT.oturum.access_token; return JSON.parse(atob(t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")))[ad]; }
+    catch (e) { return undefined; }
+  }
+  VT.aal = function () { return jetonAlan("aal") || "aal1"; };
+  function authYetkili(yol, yontem, govde) {
+    if (!VT.girisli()) return Promise.reject(new Error("Oturum bulunamadı."));
+    return fetch(URL_ + "/auth/v1/" + yol, {
+      method: yontem || "GET",
+      headers: { "Content-Type": "application/json", apikey: KEY, Authorization: "Bearer " + VT.oturum.access_token },
+      body: govde ? JSON.stringify(govde) : undefined
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (!r.ok) {
+          var m = String((d && (d.msg || d.message || d.error_description || d.error)) || "");
+          if (/invalid.*code|code.*invalid|invalid totp|verification failed/i.test(m)) throw new Error("Kod hatalı ya da süresi geçti. Uygulamadaki yeni kodu yazın.");
+          if (/aal2/i.test(m)) throw new Error("Bu işlem için önce 6 haneli kodla giriş yapın.");
+          throw new Error(hataMetni(d, "İşlem yapılamadı."));
+        }
+        return d;
+      });
+    });
+  }
+  // kayıtlı TOTP faktörleri ({id, factor_type, status: "verified" | "unverified"})
+  VT.mfaFaktorler = function () {
+    return authYetkili("user").then(function (u) {
+      return ((u && u.factors) || []).filter(function (f) { return f.factor_type === "totp"; });
+    });
+  };
+  // kayıt başlat: yarım kalmış (doğrulanmamış) eski kayıtlar önce silinir; QR kodu (SVG data adresi), gizli anahtar
+  VT.mfaKayitBaslat = function () {
+    return VT.mfaFaktorler().then(function (l) {
+      return Promise.all(l.filter(function (f) { return f.status !== "verified"; })
+        .map(function (f) { return authYetkili("factors/" + f.id, "DELETE").catch(function () {}); }));
+    }).then(function () {
+      return authYetkili("factors", "POST", { factor_type: "totp", friendly_name: "Villa Takvimim " + Date.now().toString(36), issuer: "Villa Takvimim" });
+    }).then(function (d) {
+      return { id: d.id, qr: (d.totp && d.totp.qr_code) || "", gizli: (d.totp && d.totp.secret) || "", uri: (d.totp && d.totp.uri) || "" };
+    });
+  };
+  // challenge + verify: başarılıysa oturum aal2'ye yükselir (yeni jetonlar kaydedilir)
+  VT.mfaDogrula = function (faktorId, kod) {
+    kod = String(kod || "").replace(/\D/g, "");
+    if (kod.length !== 6) return Promise.reject(new Error("6 haneli kodu yazın."));
+    return authYetkili("factors/" + faktorId + "/challenge", "POST", {}).then(function (c) {
+      return authYetkili("factors/" + faktorId + "/verify", "POST", { challenge_id: c.id, code: kod });
+    }).then(function (d) { if (d && d.access_token) oturumYaz(d); return d; });
+  };
+  VT.mfaKaldir = function (faktorId) { return authYetkili("factors/" + faktorId, "DELETE"); };
+  // girişte kod sorulmalı mı: yönetici, doğrulanmış faktörü var ve oturum henüz aal1
+  VT.mfaGerekli = function () {
+    if (!VT.yonetici() || VT.aal() === "aal2") return Promise.resolve(null);
+    return VT.mfaFaktorler().then(function (l) {
+      return l.filter(function (f) { return f.status === "verified"; })[0] || null;
+    });
+  };
+
   // Görev 29.3 (sunucu: VERITABANI_GOREV29.sql). Yönetici değilse sunucu "Yetkiniz yok" der.
   VT.istatistikOzet = function () { return VT.rpc("istatistik_ozet"); };
   VT.sonGorulmeler = function () { return VT.rpc("son_gorulmeler"); };

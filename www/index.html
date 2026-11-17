@@ -816,6 +816,16 @@
   .ksSira{display:flex; align-items:center; flex-wrap:wrap; gap:.5rem .75rem; margin:0 0 1rem}
   .ksSira .seg{flex:1 1 16rem; margin:0}
   .ksAbone{color:var(--muted)}
+  /* 29.6: iki adımlı doğrulama */
+  .mfaAdim{margin:0 0 1rem; padding-left:1.25rem; line-height:1.5}
+  .mfaAdim li{margin-bottom:.375rem}
+  .mfaQr{display:flex; justify-content:center; padding:.75rem; border:var(--cerceve-kalinlik) solid var(--line); border-radius:var(--kose); background:#fff}
+  .mfaQr img{width:12.5rem; height:12.5rem; image-rendering:pixelated}
+  .mfaGizli{display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem}
+  .mfaGizli code{flex:1 1 12rem; min-width:0; overflow-wrap:anywhere; font-size:.9375rem; background:var(--soft); padding:.625rem .75rem; border-radius:.5rem; letter-spacing:.04em}
+  .mfaKod{font-size:1.5rem !important; letter-spacing:.3em; text-align:center; font-variant-numeric:tabular-nums}
+  .mfaDurumKutu{display:flex; gap:.625rem; align-items:flex-start; padding:.875rem 1rem; border-radius:var(--kose); background:var(--basili-zemin); color:var(--ink); line-height:1.45}
+  .mfaDurumKutu .ik{flex:none; color:var(--ok); margin-top:.1rem}
   /* yönetim listelerindeki küçük düğmeler 48 pt (STIL: dokunma alanı) */
   #ks-liste .cip, #kd-liste .cip, #oc-liste .cip{min-height:3rem; min-width:3rem}
   #kd-liste button.name{min-height:3rem}
@@ -7226,12 +7236,17 @@
         '<div class="eyebrow" style="margin-bottom:.75rem" data-iki="hesap:ayarlar">'+esc(cev("Yönetim"))+"</div><div class=\"grup\">"+
         (yon?'<button class="satirBtn" id="istatistikBtn" data-ikk="hesap:grafik"><span>'+esc(cev("Özet ve istatistikler"))+"</span></button>":"")+
         '<button class="satirBtn" id="yoneticiBtn" data-ikk="hesap:kisiler"><span id="yoneticiAd"></span><span class="sag" id="yoneticiSayi"></span></button>'+
-        "</div></div>";
+        "</div></div>"+
+        // 29.6: yalnız yöneticiye: iki adımlı doğrulama
+        (yon?'<div id="mfaBolum" style="margin-bottom:1.75rem"><div class="eyebrow" style="margin-bottom:.75rem" data-iki="hesap:kalkan">'+esc(cev("Yönetici güvenliği"))+"</div>"+
+          '<div class="grup"><button class="satirBtn" id="mfaBtn" data-ikk="hesap:kilit"><span><span>'+esc(cev("İki adımlı doğrulama"))+"</span>"+
+          '<span class="satirAlt">'+esc(cev("Girişte şifreden sonra 6 haneli kod"))+'</span></span><span class="sag" id="mfaDurum"></span></button></div></div>':"");
       document.getElementById("yoneticiBtn").onclick=function(){
         if(!VT.yonetici()){ onayciSheet(); return; }
         KS.filtre="tum"; kullanicilarSheet();
       };
       var ib=document.getElementById("istatistikBtn"); if(ib) ib.onclick=function(){ istatistikSheet(); };
+      var mb=document.getElementById("mfaBtn"); if(mb){ mb.onclick=function(){ mfaSheet(); }; mfaDurumYaz(); }
     }
     return yer;
   }
@@ -7482,6 +7497,96 @@
           .catch(function(x){ bildir(x.message); dolu(); });
       });
     });
+  }
+
+  // ================= 29.6 İKİ ADIMLI DOĞRULAMA (yalnız yönetici; Supabase Auth TOTP) =================
+  // Kurulum: QR kodu Google Authenticator / Apple Şifreler ile okutulur, 6 haneli kodla doğrulanır.
+  // Girişte: doğrulanmış faktör varsa şifreden sonra kod sorulur, oturum aal2'ye yükselir.
+  // Not: "yönetici yetkisi yalnız aal2 oturumda" kuralını veritabanında ürün yöneticisi açacak (burada açılmaz).
+  function mfaDurumYaz(){
+    var el=document.getElementById("mfaDurum"); if(!el || !VT.mfaFaktorler) return;
+    VT.mfaFaktorler().then(function(l){
+      var acik=l.some(function(f){ return f.status==="verified"; });
+      el.textContent=cev(acik?"Açık":"Kapalı");
+    }).catch(function(){ el.textContent=""; });
+  }
+  function kodAlani(id){
+    return '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("6 haneli kod"))+"</div>"+
+      '<input id="'+id+'" class="mfaKod" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000"></div>';
+  }
+  function mfaSheet(){
+    perde('<div class="head"><h2>'+esc(cev("İki adımlı doğrulama"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div id="mfa-ic" style="margin-top:.75rem">'+iskelet()+"</div>");
+    VT.mfaFaktorler().then(function(l){
+      var ic=document.getElementById("mfa-ic"); if(!ic) return;
+      var f=l.filter(function(x){ return x.status==="verified"; })[0];
+      if(f){
+        ic.innerHTML='<div class="mfaDurumKutu">'+ikon("tik-daire",{boy:22})+"<span>"+esc(cev("İki adımlı doğrulama açık. Girişte şifreden sonra doğrulama uygulamanızdaki 6 haneli kod sorulur."))+"</span></div>"+
+          '<div class="sm muted" style="margin-top:.75rem">'+esc(cev(VT.aal()==="aal2"?"Bu oturum kodla doğrulandı.":"Bu oturum henüz kodla doğrulanmadı."))+"</div>"+
+          '<button class="big tehlike" data-ik="cop" id="mfa-kaldir" style="margin-top:2rem">'+esc(cev("İki adımlı doğrulamayı kapat"))+"</button>"+
+          '<div class="sm warn hide" id="mfa-hata" style="margin-top:.75rem"></div>';
+        document.getElementById("mfa-kaldir").onclick=function(){
+          var b=this, h=document.getElementById("mfa-hata"); b.disabled=true;
+          VT.mfaKaldir(f.id).then(function(){ kapat(); mfaDurumYaz(); tamam(cev("İki adımlı doğrulama kapatıldı")); })
+            .catch(function(e){ b.disabled=false; h.textContent=e.message; h.classList.remove("hide"); });
+        };
+        return;
+      }
+      ic.innerHTML='<div class="sm" style="line-height:1.5">'+esc(cev("Yönetici hesabı bütün kullanıcıların verilerini görebilir. İki adımlı doğrulama açıkken girişte şifrenin yanında telefonunuzdaki doğrulama uygulamasının 6 haneli kodu da istenir."))+"</div>"+
+        '<button class="big" data-ik="kalkan" id="mfa-basla">'+esc(cev("Kurmaya başla"))+"</button>"+
+        '<div class="sm warn hide" id="mfa-hata" style="margin-top:.75rem"></div>';
+      document.getElementById("mfa-basla").onclick=function(){
+        var b=this, h=document.getElementById("mfa-hata"); b.disabled=true; h.classList.add("hide");
+        VT.mfaKayitBaslat().then(function(k){ mfaKurulum(k); })
+          .catch(function(e){ b.disabled=false; h.textContent=e.message; h.classList.remove("hide"); });
+      };
+    }).catch(function(e){
+      var ic=document.getElementById("mfa-ic"); if(ic) ic.innerHTML='<div class="sm warn">'+esc(e.message)+"</div>";
+    });
+  }
+  function mfaKurulum(k){
+    var ic=document.getElementById("mfa-ic"); if(!ic) return;
+    ic.innerHTML='<ol class="mfaAdim"><li>'+esc(cev("Google Authenticator ya da Apple Şifreler uygulamasını açın ve bu QR kodu okutun."))+"</li>"+
+        "<li>"+esc(cev("Uygulamanın gösterdiği 6 haneli kodu aşağıya yazın."))+"</li></ol>"+
+      '<div class="mfaQr"><img id="mfa-qr" alt="'+esc(cev("Doğrulama uygulaması için QR kod"))+'" width="200" height="200"></div>'+
+      '<div class="sm muted" style="margin:.5rem 0 .25rem">'+esc(cev("QR kodu okutamıyorsanız bu anahtarı elle girin:"))+"</div>"+
+      '<div class="mfaGizli"><code id="mfa-gizli"></code><button class="linkBtn" id="mfa-kopya" type="button">'+esc(cev("Kopyala"))+"</button></div>"+
+      kodAlani("mfa-kod")+
+      '<div class="sm warn hide" id="mfa-hata" style="margin:-.5rem 0 .75rem"></div>'+
+      '<button class="big" data-ik="tik" id="mfa-dogrula">'+esc(cev("Doğrula ve aç"))+"</button>";
+    // QR yalnız SVG/PNG data adresiyse gösterilir (sunucudan gelen değer sayfaya HTML olarak yazılmaz)
+    if(/^data:image\/(svg\+xml|png)/.test(k.qr)) document.getElementById("mfa-qr").src=k.qr; else document.getElementById("mfa-qr").parentNode.classList.add("hide");
+    document.getElementById("mfa-gizli").textContent=k.gizli;
+    document.getElementById("mfa-kopya").onclick=function(){ kopyala(k.gizli,cev("Anahtar kopyalandı.")); };
+    document.getElementById("mfa-dogrula").onclick=function(){
+      var b=this, h=document.getElementById("mfa-hata"); b.disabled=true; h.classList.add("hide");
+      VT.mfaDogrula(k.id, document.getElementById("mfa-kod").value).then(function(){
+        kapat(); mfaDurumYaz(); tamam(cev("İki adımlı doğrulama açıldı"));
+      }).catch(function(e){ b.disabled=false; h.textContent=e.message; h.classList.remove("hide"); titret("uyari"); });
+    };
+  }
+  // girişte / açılışta: yöneticinin doğrulanmış faktörü varsa ve oturum aal1 ise kod sorulur. Vazgeçen çıkış yapar.
+  var MFA_SORULUYOR=false;
+  function mfaKontrol(){
+    if(MFA_SORULUYOR || !(window.VT && VT.mfaGerekli && VT.girisli())) return;
+    VT.mfaGerekli().then(function(f){ if(f) mfaKodSor(f); }).catch(function(){});
+  }
+  function mfaKodSor(f){
+    MFA_SORULUYOR=true;
+    var o=perde('<div class="head"><h2>'+esc(cev("Doğrulama kodu"))+"</h2></div>"+
+      '<div class="sm" style="margin:.5rem 0 1rem;line-height:1.5">'+esc(cev("Yönetici hesabı için doğrulama uygulamanızdaki 6 haneli kodu yazın."))+"</div>"+
+      kodAlani("mk-kod")+
+      '<div class="sm warn hide" id="mk-hata" style="margin:-.5rem 0 .75rem"></div>'+
+      '<button class="big" data-ik="tik" id="mk-dogrula">'+esc(cev("Doğrula"))+"</button>"+
+      '<button class="big ghost" id="mk-cikis" style="margin-top:.5rem">'+esc(cev("Vazgeç ve çıkış yap"))+"</button>", false);
+    o.classList.add("mfaZorunlu");
+    document.getElementById("mk-dogrula").onclick=function(){
+      var b=this, h=document.getElementById("mk-hata"); b.disabled=true; h.classList.add("hide");
+      VT.mfaDogrula(f.id, document.getElementById("mk-kod").value).then(function(){
+        MFA_SORULUYOR=false; kapat(); tamam(cev("Doğrulandı"));
+      }).catch(function(e){ b.disabled=false; h.textContent=e.message; h.classList.remove("hide"); titret("uyari"); });
+    };
+    document.getElementById("mk-cikis").onclick=function(){ MFA_SORULUYOR=false; kapat(true); cikisYap(); };
   }
 
   // ================= 29.3 YÖNETİM: ÖZET VE İSTATİSTİKLER (yalnız yönetici; sunucu: istatistik_ozet) =================
@@ -11054,7 +11159,7 @@
     // Tek kapatma yolu: sağ üstteki X. Başlığında X olmayan panellere de eklenir.
     if(altKapat!==false && !sh.querySelector(".x")) sh.insertAdjacentHTML("afterbegin",kapatBtn());
     o.addEventListener("click",function(e){ if(e.target.closest("[data-kapat]")) kapat(); });
-    o.addEventListener("click",function(e){ if(e.target===o) kapat(); });
+    o.addEventListener("click",function(e){ if(e.target===o && !o.classList.contains("mfaZorunlu")) kapat(); });   // 29.6: zorunlu panel dışa dokununca kapanmaz
     document.body.appendChild(o);
     kilitDenetle();
     var x=o.querySelector(".x");
@@ -11066,7 +11171,7 @@
   function asagiCekKapat(o,sh){
     var y0=null, dy=0;
     sh.addEventListener("touchstart",function(e){
-      if(o.scrollTop>0 || e.touches.length!==1) return;
+      if(o.classList.contains("mfaZorunlu") || o.scrollTop>0 || e.touches.length!==1) return;   // 29.6: zorunlu panel aşağı çekilip kapanmaz
       var ust=sh.getBoundingClientRect().top;
       if(e.touches[0].clientY-ust>72 || e.target.closest("input,textarea,select")) return;
       y0=e.touches[0].clientY; dy=0; sh.classList.add("cekiliyor");
@@ -11357,7 +11462,7 @@
       cizAna();
       acilisHazir();
       // Yan işler: biri hata verse bile yükleme bozulmasın ("Bağlantı kurulamadı" çıkmasın)
-      [tasimaSor, yoneticiKontrol, fotoTasi, silinenGuncelle, davetBekleyenKullan].forEach(function(is){
+      [tasimaSor, yoneticiKontrol, mfaKontrol, fotoTasi, silinenGuncelle, davetBekleyenKullan].forEach(function(is){
         try{ is(); }catch(e){ try{ console.error("yan iş hatası:", is.name, e); }catch(x){} }
       });
       // destek modundan çıkılınca, girilen yere (Hesap → Kullanıcılar) geri dön
