@@ -781,7 +781,6 @@
     "‘Boş villaları göster’e dokunun.":"Tap ‘Show free villas’.",
     "Boş villalar ve toplam fiyatları burada. Göndermek için ‘Seç ve gönder’.":"Free villas and their total prices are here. To send, tap ‘Select and send’.",
     "Bu tarihlerde boş olan villalar burada.":"The villas free on these dates are here.",
-    "Boş villa ara":"Find a free villa",
     "Seç ve gönder":"Select and send",
     "Göndermek istediğiniz villaları işaretleyin":"Tick the villas you want to send",
     "Villa seçilmedi":"No villa selected",
