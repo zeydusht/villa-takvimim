@@ -809,6 +809,11 @@
   .maKart.kucuk .maKartIk{width:2.25rem; height:2.25rem}
   .maKart.kucuk .maKartBas{font-size:1.0625rem}
   .maKart.kucuk .maKartAlt{font-size:.875rem}
+  /* 27.5: Villalarım başlığında küçük büyüteç ("Boş villa ara") */
+  .maAraBtn{flex:none; width:3rem; height:3rem; padding:0; border-radius:99px; border:var(--cerceve-kalinlik) solid var(--cerceve);
+    background:#fff; color:var(--ink); display:inline-flex; align-items:center; justify-content:center;
+    transition:transform var(--hiz-bas) var(--egri-giris), border-color var(--hiz-bas), background-color var(--hiz-bas)}
+  .maAraBtn:active{transform:scale(.92); border-color:var(--basili-cerceve); background:var(--basili-zemin)}
   /* 27.2: tam ekran panel (alttan kayar; köşesiz, ekranın tamamı) */
   .overlay.maPerde{align-items:flex-start}
   .sheet.maSheet{max-width:40rem; min-height:100%; height:auto; margin:0 auto; border-radius:0; display:flex; flex-direction:column;
@@ -1559,7 +1564,10 @@
   <!-- ANA EKRAN -->
   <div id="ana" class="sekmeEkran">
     <!-- 18.15: başlığın sağında dolu / boş etiketleri (dar ekranda alta iner); altında yalnız "+ Villa ekle" -->
-    <div class="anaBas"><h1>Villalarım</h1><div class="sm muted" id="ozet"></div></div>
+    <div class="anaBas"><h1>Villalarım</h1>
+      <!-- 27.5: "Boş villa ara" (müsaitlik arama) -->
+      <button class="maAraBtn hide" id="maAraBtn" type="button" aria-label="Boş villa ara" data-ik="arama" data-ik-boy="22"></button>
+      <div class="sm muted" id="ozet"></div></div>
     <div class="hapSira hide" id="anaHap" role="toolbar"></div>
     <div class="siraIpucu hide" id="siraIpucu"></div>
     <div class="ipucu hide" id="ipucu"></div>
@@ -2696,6 +2704,7 @@
     var anaHap=document.getElementById("anaHap");
     anaHap.innerHTML=ah.join("");
     anaHap.classList[S.villalar.length?"remove":"add"]("hide");
+    document.getElementById("maAraBtn").classList[S.villalar.length?"remove":"add"]("hide");   // 27.5
     document.getElementById("villaEkle").classList.add("hide");
     var ke=document.getElementById("karsilamaEkle"); if(ke) ke.onclick=function(){ document.getElementById("villaEkle").click(); };
     var kd=document.getElementById("karsilamaDavet"); if(kd) kd.onclick=function(){ davetGirSheet(); };
@@ -3368,6 +3377,7 @@
     if(yer._h!==h){ yer.innerHTML=h; yer._h=h; }
     document.getElementById("maKart").onclick=function(){ titret("hafif"); musaitAc(); };
   }
+  document.getElementById("maAraBtn").onclick=function(){ titret("hafif"); musaitAc(); };   // 27.5
   function musaitAc(){
     if(!S.villalar.length) return;
     villaSirala();

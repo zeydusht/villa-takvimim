@@ -776,6 +776,7 @@
     "Açıkken her işlemde adım adım yardım gösterilir.":"When on, step-by-step help is shown for every task.",
     "Yardımlı mod kapatıldı. Panellerdeki ? ile yine yardım alabilirsiniz.":"Guided mode is off. You can still get help with the ? on each panel.",
     // Görev 27
+    "Boş villa ara":"Find a free villa",
     "Seç ve gönder":"Select and send",
     "Göndermek istediğiniz villaları işaretleyin":"Tick the villas you want to send",
     "Villa seçilmedi":"No villa selected",

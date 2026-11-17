@@ -27,7 +27,7 @@ _Hazırlayan: Claude (ürün yöneticisi), 17 Kasım 2026. Zeyd: "5 villası ola
   Fiyatlara konaklama dahildir; girişte iade edilen hasar depozitosu alınır.
   ```
   Bağlantılar o tarihleri seçili açar (`?giris=…&cikis=…`; g.html bu parametreleri okuyup takvimde seçsin). Villa sayfası yayında olmayan villada bağlantı yerine "(sayfa yok)".
-- [ ] **27.5 Kısayollar.** Villalarım ekranında başlık satırına küçük `search` butonu ("Boş villa ara") → 27.2. Bakıcı hesabında bu özellik fiyatsız çalışsın (bakıcı fiyat görmez): sadece boş/dolu listesi.
+- [x] **27.5 Kısayollar.** Villalarım ekranında başlık satırına küçük `search` butonu ("Boş villa ara") → 27.2. Bakıcı hesabında bu özellik fiyatsız çalışsın (bakıcı fiyat görmez): sadece boş/dolu listesi.
 - [ ] **27.6 Rehber.** Yardımlı modda: "Müşterinin istediği giriş gününe dokunun" → "çıkış gününe" → "Boş villaları göster'e dokunun" → sonuç listesi vurgulu: "Boş villalar ve toplam fiyatları burada. Müşteriye göndermek için 'Seç ve gönder'."
 - [ ] **27.7 Test:** 5 villalı sahte veriyle (farklı doluluk, fiyat, kapasite, dönem kuralı, eksik fiyat): 17–21 Kasım için boş/kısmen boş/eksik fiyat/kural engeli sınıflandırması doğru; toplamlar Görev 20.7 fonksiyonuyla birebir; kişi sayısı filtresi doğru; WhatsApp mesaj metni doğru; g.html `?giris&cikis` ile tarihleri seçili açıyor. Ekran görüntüleri 360/390/430.
 
