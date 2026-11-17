@@ -113,19 +113,25 @@
   window.addEventListener("pagehide", function () { gonder(true); });
 
   // ---- 29.2 hata yakalama: yalnız hata adı ve dosya:satır (mesaj gönderilmez; içinde kişisel veri olabilir) ----
-  var hataSay = 0;
+  var hataSay = 0, hataGoruldu = {};
   function dosyaSatir(dosya, satir) {
     var d = String(dosya || "").split(/[?#]/)[0].split("/").pop() || "satir_ici";
     return d + ":" + (parseInt(satir, 10) || 0);
   }
   function hataGonder(tur, yer) {
-    if (hataSay >= HATA_SINIRI) return;
+    if (hataSay >= HATA_SINIRI) return;                  // oturum başına en çok 5
+    var anahtar = tur + "@" + yer;
+    if (hataGoruldu[anahtar]) return;                    // aynı hata bir kez sayılır (döngüdeki hata 5 hakkı yemesin)
+    hataGoruldu[anahtar] = true;
     hataSay++;
     olay("hata", { tur: tur, yer: yer });
   }
   window.addEventListener("error", function (e) {
     try {
       if (!e || (e.target && e.target !== window)) return;   // yüklenemeyen resim vb. değil, yalnız betik hataları
+      // yalnız uygulamanın kendi dosyaları: tarayıcı eklentileri ve başka sitelerden gelen ("Script error.") hatalar sayılmaz
+      if (!e.error && !e.filename) return;                // başka kaynaktan gelen içi boş "Script error."
+      if (e.filename && /^(https?:)?\/\//.test(e.filename) && e.filename.indexOf(location.origin) !== 0) return;
       var tur = (e.error && e.error.name) || "Error";
       hataGonder(tur, dosyaSatir(e.filename, e.lineno));
     } catch (x) {}
