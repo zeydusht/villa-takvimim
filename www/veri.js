@@ -282,6 +282,10 @@
   };
   VT.kullaniciOnayla = function (id) { return VT.rpc("kullanici_onayla", { p_id: id }); };
   VT.kullaniciReddet = function (id) { return VT.rpc("kullanici_reddet", { p_id: id }); };
+  // Görev 29.3 (sunucu: VERITABANI_GOREV29.sql). Yönetici değilse sunucu "Yetkiniz yok" der.
+  VT.istatistikOzet = function () { return VT.rpc("istatistik_ozet"); };
+  VT.sonGorulmeler = function () { return VT.rpc("son_gorulmeler"); };
+  VT.kullaniciEtkinlik = function (id) { return VT.rpc("kullanici_etkinlik_gor", { p_id: id }); };   // bakış destek_kayitlari'na yazılır
 
   // ---------------- villaları yükle ----------------
   function say(x) { var n = parseInt(x, 10); return isNaN(n) ? 0 : n; }

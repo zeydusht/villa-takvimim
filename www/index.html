@@ -794,6 +794,35 @@
   .sheet{transition:transform var(--hiz-ac) var(--egri-gecis), padding-bottom var(--hiz-klavye) var(--egri-gecis)}
   /* 26.4: ekranın altındaki bölüm, ekrana girene kadar saydam (girince 8 pt aşağıdan solarak gelir) */
   .belirBekle{opacity:0}
+  /* ================= 29.3 YÖNETİM: özet kartları, çubuklar, etkinlik ================= */
+  .isBas{font-family:var(--serif); font-size:1.1875rem; margin:1.75rem 0 .625rem}
+  .isBas:first-child{margin-top:.25rem}
+  .isKartlar{display:grid; grid-template-columns:repeat(auto-fill,minmax(8.5rem,1fr)); gap:.5rem}
+  .isKart{display:flex; flex-direction:column; gap:.125rem; border:var(--cerceve-kalinlik) solid var(--line); border-radius:var(--kose); padding:.75rem .875rem}
+  .isSayi{font-family:var(--serif); font-size:1.75rem; line-height:1.15; font-variant-numeric:tabular-nums}
+  .isAd{font-size:.875rem; line-height:1.3; color:var(--muted)}
+  .isCubuklar{display:flex; flex-direction:column; gap:.375rem}
+  .isCubuk{display:grid; grid-template-columns:minmax(6rem,40%) 1fr auto; align-items:center; gap:.625rem; font-size:.9375rem; line-height:1.3}
+  .isCAd{overflow-wrap:break-word}
+  .isCYol{height:.75rem; border-radius:99px; background:var(--soft); overflow:hidden}
+  .isCYol i{display:block; height:100%; border-radius:99px; background:var(--ok)}
+  .isCSay{font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap}
+  .isSutunlar{display:flex; align-items:flex-end; gap:.25rem; height:9rem}
+  .isSutun{flex:1 1 0; min-width:0; height:100%; display:flex; flex-direction:column; align-items:center; gap:.25rem}
+  .isSSay{font-size:.8125rem; font-variant-numeric:tabular-nums}
+  .isSYol{flex:1 1 auto; width:100%; display:flex; align-items:flex-end; background:var(--soft); border-radius:.375rem; overflow:hidden}
+  .isSYol i{display:block; width:100%; background:var(--ok); border-radius:.375rem .375rem 0 0}
+  .isSAd{font-size:.8125rem; color:var(--muted); white-space:nowrap; min-height:1.1em}
+  .ksSira{display:flex; align-items:center; flex-wrap:wrap; gap:.5rem .75rem; margin:0 0 1rem}
+  .ksSira .seg{flex:1 1 16rem; margin:0}
+  .ksAbone{color:var(--muted)}
+  /* yönetim listelerindeki küçük düğmeler 48 pt (STIL: dokunma alanı) */
+  #ks-liste .cip, #kd-liste .cip, #oc-liste .cip{min-height:3rem; min-width:3rem}
+  #kd-liste button.name{min-height:3rem}
+  .etSatir{display:grid; grid-template-columns:auto 1fr; gap:.125rem .75rem; padding:.625rem 0; border-bottom:1px solid var(--line); font-size:.9375rem; line-height:1.35}
+  .etZaman{color:var(--muted); font-size:.8125rem; font-variant-numeric:tabular-nums; white-space:nowrap; padding-top:.1rem}
+  .etAlt{grid-column:2; color:var(--muted); font-size:.8125rem; overflow-wrap:anywhere}
+  .etSatir.hata .etAd{color:var(--uyari)}
   /* ================= 27 MÜSAİTLİK ARAMA ================= */
   /* 27.1: Takvim sekmesinde başlığın altında belirgin kart (açık yeşil zemin, yeşil çerçeve); tek villada daha küçük */
   .maKart{display:flex; align-items:center; gap:.875rem; width:100%; margin:1rem 0 .25rem; padding:.875rem 1rem; text-align:left;
@@ -1609,15 +1638,8 @@
   <div id="hesapEkran" class="hide sekmeEkran">
     <h1>Hesap</h1>
     <div style="margin-top:1.25rem">
-    <div class="hide" id="yonetimBolum" style="margin-bottom:1.75rem">
-      <div class="eyebrow" style="margin-bottom:.75rem" data-iki="hesap:ayarlar">Yönetim</div>
-      <div class="grup">
-      <button class="satirBtn hide" id="yoneticiBtn" data-ikk="hesap:kisiler">
-        <span id="yoneticiAd">Kullanıcılar</span>
-        <span class="sag" id="yoneticiSayi"></span>
-      </button>
-      </div>
-    </div>
+    <!-- 29.3: Yönetim bölümü yalnız yöneticiye / onaycıya JavaScript ile eklenir (diğer kullanıcılarda DOM'da hiç yok) -->
+    <div id="yonetimYer"></div>
     <div class="grup">
     <button class="satirBtn hide" id="hesapBtn" data-ikk="hesap:hesap">
       <span>Hesabım</span>
@@ -6863,8 +6885,7 @@
         S.villalar=[]; S.aktif=null; S.bulut=false; S.mod="rez"; S.start=null;
         document.getElementById("hesapBtn").classList.add("hide");
         document.getElementById("davetBtn").classList.add("hide");
-        document.getElementById("yoneticiBtn").classList.add("hide");
-        document.getElementById("yonetimBolum").classList.add("hide");
+        yonetimKaldir();
         document.getElementById("villalar").innerHTML="";
         document.getElementById("g-eposta").value="";
         document.getElementById("g-sifre").value="";
@@ -7176,11 +7197,45 @@
   }
 
   // ---------- yönetici: kullanıcılar ----------
-  var KS={filtre:"tum", ara:""};
+  var KS={filtre:"tum", ara:"", sira:"son"};
+  var PLATFORM_AD={ios:"iPhone", android:"Android", web:"Web"};
+  // "az önce" · "12 dakika önce" · "3 saat önce" · "dün" · "5 gün önce" · "3 Kas 2026"
+  function oncesi(iso){
+    if(!iso) return "";
+    var t=new Date(iso).getTime(), fark=(Date.now()-t)/60000;
+    if(!isFinite(fark)) return "";
+    if(fark<2) return cev("az önce");
+    if(fark<60) return cev(Math.round(fark)+" dakika önce");
+    if(fark<24*60) return cev(Math.round(fark/60)+" saat önce");
+    var g=Math.floor(fark/1440);
+    if(g<=1) return cev("dün");
+    if(g<30) return cev(g+" gün önce");
+    var d=new Date(t); return d.getDate()+" "+AYLAR[d.getMonth()].slice(0,3)+" "+d.getFullYear();
+  }
+  // 29.3: yönetim bölümü DOM'a yalnız yetkiliye eklenir. Yönetici: "Özet ve istatistikler" + "Kullanıcılar";
+  // onaycı: "Onay bekleyenler". Diğer kullanıcılarda bölüm hiç oluşturulmaz (gizlemek yetmez; güvenlik yine sunucuda).
+  function yonetimKaldir(){ var y=document.getElementById("yonetimYer"); if(y){ y.innerHTML=""; y.dataset.kur=""; } }
+  function yonetimKur(){
+    var yer=document.getElementById("yonetimYer"); if(!yer) return null;
+    if(!(window.VT && VT.onayci && VT.onayci())){ yonetimKaldir(); return null; }
+    var yon=VT.yonetici(), tur=yon?"yonetici":"onayci";
+    if(yer.dataset.kur!==tur){
+      yer.dataset.kur=tur;
+      yer.innerHTML='<div id="yonetimBolum" style="margin-bottom:1.75rem">'+
+        '<div class="eyebrow" style="margin-bottom:.75rem" data-iki="hesap:ayarlar">'+esc(cev("Yönetim"))+"</div><div class=\"grup\">"+
+        (yon?'<button class="satirBtn" id="istatistikBtn" data-ikk="hesap:grafik"><span>'+esc(cev("Özet ve istatistikler"))+"</span></button>":"")+
+        '<button class="satirBtn" id="yoneticiBtn" data-ikk="hesap:kisiler"><span id="yoneticiAd"></span><span class="sag" id="yoneticiSayi"></span></button>'+
+        "</div></div>";
+      document.getElementById("yoneticiBtn").onclick=function(){
+        if(!VT.yonetici()){ onayciSheet(); return; }
+        KS.filtre="tum"; kullanicilarSheet();
+      };
+      var ib=document.getElementById("istatistikBtn"); if(ib) ib.onclick=function(){ istatistikSheet(); };
+    }
+    return yer;
+  }
   function yoneticiKontrol(){
-    var b=document.getElementById("yoneticiBtn");
-    if(!VT.onayci()){ b.classList.add("hide"); document.getElementById("yonetimBolum").classList.add("hide"); return; }
-    b.classList.remove("hide"); document.getElementById("yonetimBolum").classList.remove("hide");
+    if(!yonetimKur()) return;
     var ad=document.getElementById("yoneticiAd");
     if(ad) ad.textContent = VT.yonetici() ? "Kullanıcılar" : "Onay bekleyenler";
     if(VT.yonetici()){
@@ -7197,10 +7252,6 @@
     }
   }
 
-  document.getElementById("yoneticiBtn").onclick=function(){
-    if(!VT.yonetici()){ onayciSheet(); return; }
-    KS.filtre="tum"; kullanicilarSheet();
-  };
 
   // Onaycı: yalnızca bekleyen kayıtları görür ve onaylar
   function onayciSheet(){
@@ -7238,15 +7289,21 @@
   function kullanicilarSheet(){
     perde('<div class="head"><h2>Kullanıcılar</h2>'+kapatBtn()+"</div>"+
       '<div class="field" style="margin-top:1rem"><input id="ks-ara" placeholder="İsim veya e-posta ara" autocomplete="off"></div>'+
-      '<div class="seg" id="ks-filtre" style="margin:0 0 1rem">'+
+      '<div class="seg" id="ks-filtre" style="margin:0 0 .75rem">'+
         '<button data-k="tum">Tümü</button>'+
         '<button data-k="bekleyen">Bekleyen</button>'+
         '<button data-k="askida">Askıda</button></div>'+
+      // 29.3: sıralama
+      '<div class="ksSira"><span class="sm muted">'+esc(cev("Sırala"))+'</span><div class="seg" id="ks-sira">'+
+        '<button data-s="son">'+esc(cev("Son görülme"))+'</button><button data-s="villa">'+esc(cev("Villa sayısı"))+'</button>'+
+        '<button data-s="kayit">'+esc(cev("Kayıt tarihi"))+"</button></div></div>"+
       '<div id="ks-liste"><div class="sm muted">Yükleniyor…</div></div>');
     var kutu=document.querySelector(".overlay:not(.kapaniyor) .sheet");
     kutu.addEventListener("click",function(e){
       var fb=e.target.closest("#ks-filtre button");
       if(fb){ KS.filtre=fb.dataset.k; yenile(); return; }
+      var sb=e.target.closest("#ks-sira button");
+      if(sb){ KS.sira=sb.dataset.s; yenile(); return; }
       var det=e.target.closest("[data-detay]");
       if(det){ kullaniciDetay(det.dataset.detay); return; }
       var o=e.target.closest("[data-onay]"), d=e.target.closest("[data-dur]"), r=e.target.closest("[data-red]");
@@ -7272,13 +7329,18 @@
     document.getElementById("ks-ara").addEventListener("input",function(){
       KS.ara=this.value.toLocaleLowerCase("tr"); yenile();
     });
+    // 29.3: son görülme / platform / sürüm (sunucu güncellemesi yoksa liste yine çalışır)
+    var SG=null;
+    var sgYukle=VT.sonGorulmeler ? VT.sonGorulmeler().then(function(l){ SG={}; (l||[]).forEach(function(x){ SG[x.kullanici]=x; }); },function(){ SG=null; }) : Promise.resolve();
     yenile();
 
     function yenile(){
       var el=document.getElementById("ks-liste"); if(!el) return;
       Array.prototype.forEach.call(document.getElementById("ks-filtre").children,function(b){
         b.className=(b.dataset.k===KS.filtre)?"on":""; });
-      VT.tumKullanicilar().then(function(l){
+      Array.prototype.forEach.call(document.getElementById("ks-sira").children,function(b){
+        b.className=(b.dataset.s===KS.sira)?"on":""; b.setAttribute("aria-pressed",String(b.dataset.s===KS.sira)); });
+      Promise.all([VT.tumKullanicilar(), sgYukle]).then(function(x){ return x[0]; }).then(function(l){
         el=document.getElementById("ks-liste"); if(!el) return;
         var ben=(VT.kullanici()||{}).id;
         var liste=(l||[]).filter(function(u){
@@ -7290,6 +7352,12 @@
           return ((u.ad||"")+" "+(u.eposta||"")).toLocaleLowerCase("tr").indexOf(KS.ara)>=0;
         });
         if(!liste.length){ el.innerHTML='<div class="sm muted">Bu listede kimse yok.</div>'; yoneticiKontrol(); return; }
+        var sonZ=function(u){ var g=SG&&SG[u.id]; return g&&g.son ? new Date(g.son).getTime() : 0; };
+        liste.sort(function(a,b){
+          if(KS.sira==="villa") return (b.villa_sayisi||0)-(a.villa_sayisi||0) || sonZ(b)-sonZ(a);
+          if(KS.sira==="kayit") return String(b.kayit||"")<String(a.kayit||"")?-1:(String(b.kayit||"")>String(a.kayit||"")?1:0);
+          return sonZ(b)-sonZ(a) || String(b.kayit||"").localeCompare(String(a.kayit||""));
+        });
         el.innerHTML=liste.map(function(u){
           var durum = u.yonetici ? ["Yönetici","#0B5B57"]
                     : u.askida ? ["Askıda","#9B2C4A"]
@@ -7302,7 +7370,15 @@
               (u.ad?esc(u.eposta||"")+"<br>":"")+
               (u.telefon?esc(u.telefon)+"<br>":"")+
               '<span data-rol="'+u.id+'">'+u.villa_sayisi+" villa</span> · "+
-              kisa(String(u.kayit).slice(0,10))+"</span>"+
+              kisa(String(u.kayit).slice(0,10))+
+              // 29.3: son görülme, platform, sürüm
+              (function(){ var g=SG&&SG[u.id];
+                if(!SG) return "";
+                if(!g) return "<br>"+esc(cev("Son görülme: bilinmiyor"));
+                return "<br>"+esc(cev("Son görülme: "+oncesi(g.son)))+(g.platform?" · "+esc(PLATFORM_AD[g.platform]||g.platform):"")+(g.surum?" · "+esc(g.surum):""); })()+
+              // Görev 30: abonelik burada gösterilecek
+              '<br><span class="ksAbone" data-abonelik="'+u.id+'">'+esc(cev("Abonelik"))+": —</span>"+
+              "</span>"+
             '<span style="font-size:.8125rem;color:'+durum[1]+'"><br>'+durum[0]+"</span></span>"+
             '<span style="display:flex;gap:.375rem;flex:none;flex-wrap:wrap;justify-content:flex-end">'+
               '<button class="cip" data-detay="'+u.id+'">Villalar</button>'+
@@ -7372,7 +7448,9 @@
               t+'">WhatsApp</a>':"")+"</div>";
         })()+
         '<div class="eyebrow" style="margin-bottom:.625rem">Erişebildiği villalar</div>'+
-        '<div id="kd-liste"><div class="sm muted">Yükleniyor…</div></div>');
+        '<div id="kd-liste"><div class="sm muted">Yükleniyor…</div></div>'+
+        // 29.3: kullanıcının son 200 olayı (bakış destek kaydına geçer; önce onay)
+        '<button class="big renkli is-gri" data-ik="liste-tik" id="kd-etkinlik">'+esc(cev("Etkinliği gör"))+"</button>");
       dolu();
       function dolu(){
         VT.kullaniciVillalari(id).then(function(vl){
@@ -7394,6 +7472,7 @@
         });
       }
       document.querySelector(".overlay:not(.kapaniyor) .sheet").addEventListener("click",function(e){
+        if(e.target.closest("#kd-etkinlik")){ etkinlikOnay(u); return; }
         var vb=e.target.closest("[data-villa]");
         if(vb){ villaDetaySheet(vb.dataset.villa, id); return; }
         var k=e.target.closest("[data-kaldir]"); if(!k) return;
@@ -7401,6 +7480,105 @@
         VT.erisimKaldir(k.dataset.kaldir,id).then(function(){ dolu(); bildir("Erişim kaldırıldı."); })
           .catch(function(x){ bildir(x.message); dolu(); });
       });
+    });
+  }
+
+  // ================= 29.3 YÖNETİM: ÖZET VE İSTATİSTİKLER (yalnız yönetici; sunucu: istatistik_ozet) =================
+  var OLAY_ETIKET={uygulama_ac:"Uygulamayı açtı", ekran_gor:"Ekran açtı", villa_ekle:"Villa ekledi", villa_sil:"Villa sildi",
+    rez_ekle:"Rezervasyon ekledi", rez_duzenle:"Rezervasyon düzenledi", rez_sil:"Rezervasyon sildi", opsiyon_ekle:"Opsiyon koydu",
+    teklif_olustur:"Teklif oluşturdu", teklif_paylas:"Teklif gönderdi", paylasim_linki:"Villa sayfasını paylaştı", foto_yukle:"Fotoğraf yükledi",
+    bakici_davet:"Bakıcı davet etti", bakici_katildi:"Bakıcı olarak katıldı", musaitlik_ara:"Boş villa aradı", secip_gonder:"Boş villaları gönderdi",
+    odeme_ekle:"Ödeme ekledi", gider_ekle:"Gider ekledi", pdf_indir:"PDF indirdi", rehber_basla:"Rehber başladı", rehber_bitir:"Rehber bitti",
+    rehber_kapat:"Rehberi kapattı", yazi_boyutu:"Yazı boyutu değişti", dil:"Dil değişti", bildirim_izni:"Bildirim izni", hata:"Hata"};
+  var olayAd=function(a){ return cev(OLAY_ETIKET[a]||a); };
+  function yonHata(e){
+    var m=String((e&&e.message)||"");
+    if(/yetkiniz yok/i.test(m)) return cev("Yetkiniz yok.");
+    if(/could not find|does not exist|404|schema cache/i.test(m)) return cev("İstatistikler henüz hazır değil: sunucu güncellemesi bekleniyor.");
+    if(/fetch|network|ulaşılamadı/i.test(m)) return cev("Bağlantı kurulamadı. İnternetinizi kontrol edip tekrar deneyin.");
+    return cev("İstatistikler yüklenemedi.");
+  }
+  // yatay çubuklar: [{ad, n}] — en büyük değer tam genişlik; sayı her zaman yazılı (renge bağlı kalmasın)
+  function cubuklar(l,top){
+    var mx=Math.max.apply(null,[1].concat(l.map(function(x){ return x.n||0; })));
+    return '<div class="isCubuklar">'+l.map(function(x){
+      var y=top ? Math.round((x.n||0)*100/top) : null;
+      return '<div class="isCubuk"><span class="isCAd">'+esc(x.ad)+'</span><span class="isCYol"><i style="width:'+Math.max(x.n?2:0,Math.round((x.n||0)*100/mx))+'%"></i></span>'+
+        '<span class="isCSay">'+(x.n||0)+(y!==null?' <span class="muted">%'+y+"</span>":"")+"</span></div>"; }).join("")+"</div>";
+  }
+  function istatistikSheet(){
+    perde('<div class="head"><h2>'+esc(cev("Özet ve istatistikler"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.375rem 0 1rem">'+esc(cev("Kişisel bilgi içermez; sayılar tüm kullanıcıların toplamıdır."))+"</div>"+
+      '<div id="is-icerik">'+iskelet()+"</div>");
+    VT.istatistikOzet().then(function(o){
+      var el=document.getElementById("is-icerik"); if(!el) return;
+      o=o||{};
+      var kart=function(ad,n,alt){ return '<div class="isKart"><span class="isSayi">'+(n==null?"—":esc(n))+'</span><span class="isAd">'+esc(cev(ad))+"</span>"+(alt?'<span class="isAlt">'+esc(alt)+"</span>":"")+"</div>"; };
+      var h='<div class="isBas">'+esc(cev("Aktif kullanıcı"))+'</div><div class="isKartlar">'+
+          kart("Bugün",o.aktif_1g)+kart("7 gün",o.aktif_7g)+kart("30 gün",o.aktif_30g)+"</div>"+
+        '<div class="isBas">'+esc(cev("Kullanıcılar"))+'</div><div class="isKartlar">'+
+          kart("Toplam",o.kullanici_toplam)+kart("Onaylı",o.kullanici_onayli)+kart("Onay bekleyen",o.onay_bekleyen)+"</div>"+
+        '<div class="isBas">'+esc(cev("Villa ve rezervasyon"))+'</div><div class="isKartlar">'+
+          kart("Toplam villa",o.villa_toplam)+kart("Toplam rezervasyon",o.rez_toplam)+kart("Son 30 günde rezervasyon",o.rez_30g)+
+          (o.teklif_toplam!=null?kart("Toplam teklif",o.teklif_toplam):"")+"</div>";
+      // kullanıcı başına villa dağılımı
+      var vd=o.villa_dagilim||{};
+      h+='<div class="isBas">'+esc(cev("Kullanıcı başına villa"))+"</div>"+cubuklar(["0","1","2","3","4+"].map(function(k){ return {ad:cev(k+" villa"), n:+vd[k]||0}; }));
+      // son 12 hafta kayıt (hafta pazartesiden başlar)
+      var hk={}; (o.haftalik_kayit||[]).forEach(function(x){ hk[x.hafta]=+x.n||0; });
+      var pzt=new Date(today); pzt.setDate(pzt.getDate()-((pzt.getDay()+6)%7));
+      var hf=[]; for(var i=11;i>=0;i--){ var d=addDays(pzt,-7*i); hf.push({k:fmt(d), d:d, n:hk[fmt(d)]||0}); }
+      var hm=Math.max.apply(null,[1].concat(hf.map(function(x){ return x.n; })));
+      h+='<div class="isBas">'+esc(cev("Son 12 hafta yeni kayıt"))+'</div><div class="isSutunlar" role="img" aria-label="'+esc(cev("Son 12 hafta yeni kayıt"))+'">'+
+        hf.map(function(x,j){ return '<div class="isSutun"><span class="isSSay">'+x.n+'</span><span class="isSYol"><i style="height:'+Math.max(x.n?4:0,Math.round(x.n*100/hm))+'%"></i></span>'+
+          '<span class="isSAd">'+(j%3===2||j===11?x.d.getDate()+" "+AYLAR[x.d.getMonth()].slice(0,3):"")+"</span></div>"; }).join("")+"</div>";
+      // huni
+      var hu=o.huni||{}, kt=+hu.kayit||0;
+      h+='<div class="isBas">'+esc(cev("Huni"))+'</div><div class="sm muted" style="margin:-.25rem 0 .5rem">'+esc(cev("Yüzde: kayıt olanlara göre"))+"</div>"+
+        cubuklar([{ad:cev("Kayıt"),n:+hu.kayit||0},{ad:cev("Onay"),n:+hu.onay||0},{ad:cev("İlk villa"),n:+hu.ilk_villa||0},{ad:cev("İlk rezervasyon"),n:+hu.ilk_rez||0}],kt||null);
+      // en çok kullanılan özellikler
+      var oz=(o.en_cok_olay_30g||[]).slice(0,15);
+      h+='<div class="isBas">'+esc(cev("En çok kullanılan 15 özellik (30 gün)"))+"</div>"+
+        (oz.length ? cubuklar(oz.map(function(x){ return {ad:olayAd(x.ad), n:+x.n||0}; })) : '<div class="sm muted">'+esc(cev("Henüz ölçüm yok."))+"</div>");
+      // platform
+      var pf=o.platform_30g||{};
+      h+='<div class="isBas">'+esc(cev("Platform (30 gün, kullanıcı)"))+"</div>"+
+        cubuklar(["ios","android","web"].map(function(k){ return {ad:PLATFORM_AD[k], n:+pf[k]||0}; }));
+      el.innerHTML=h;
+    }).catch(function(e){
+      var el=document.getElementById("is-icerik");
+      if(el) el.innerHTML='<div class="sm warn">'+esc(yonHata(e))+"</div>";
+    });
+  }
+  // 29.3: Etkinliği gör (önce onay; bakış kayda geçer)
+  function etkinlikOnay(u){
+    perde('<div class="head"><h2>'+esc(cev("Etkinliği gör"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm" style="margin:.5rem 0 1.25rem;line-height:1.5">'+esc(cev("Bu bakış kayda geçer. Devam edilsin mi?"))+"</div>"+
+      '<button class="big" data-ik="tik" id="et-evet">'+esc(cev("Evet, göster"))+"</button>"+
+      '<button class="big ghost" id="et-hayir" style="margin-top:.5rem">'+esc(cev("Vazgeç"))+"</button>");
+    document.getElementById("et-hayir").onclick=function(){ kapat(); kullaniciDetay(u.id); };
+    document.getElementById("et-evet").onclick=function(){ etkinlikSheet(u); };
+  }
+  function etkinlikSheet(u){
+    perde('<div class="head"><h2>'+esc(cev("Etkinlik"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.375rem 0 1rem">'+esc(u.eposta||"")+" · "+esc(cev("son 200 olay, en yeni üstte"))+"</div>"+
+      '<div id="et-liste">'+iskelet()+"</div>"+
+      '<button class="big ghost" id="et-geri" style="margin-top:1.25rem">'+esc(cev("Kullanıcıya dön"))+"</button>");
+    document.getElementById("et-geri").onclick=function(){ kapat(); kullaniciDetay(u.id); };
+    VT.kullaniciEtkinlik(u.id).then(function(l){
+      var el=document.getElementById("et-liste"); if(!el) return;
+      l=(l||[]).slice().sort(function(a,b){ return a.zaman<b.zaman?1:(a.zaman>b.zaman?-1:0); });
+      if(!l.length){ el.innerHTML='<div class="sm muted">'+esc(cev("Bu kullanıcının kayıtlı etkinliği yok."))+"</div>"; return; }
+      el.innerHTML=l.map(function(x){
+        var d=new Date(x.zaman), z=d.getDate()+" "+AYLAR[d.getMonth()].slice(0,3)+" "+pad(d.getHours())+":"+pad(d.getMinutes());
+        var v=x.veri||{}, ay=Object.keys(v).map(function(k){ return k+": "+(typeof v[k]==="boolean"?(v[k]?cev("evet"):cev("hayır")):v[k]); });
+        var alt=[]; if(x.ekran) alt.push(x.ekran); if(ay.length) alt.push(ay.join(", ")); if(x.platform) alt.push(PLATFORM_AD[x.platform]||x.platform); if(x.surum) alt.push(x.surum);
+        return '<div class="etSatir'+(x.ad==="hata"?" hata":"")+'"><span class="etZaman">'+esc(z)+'</span><span class="etAd">'+esc(olayAd(x.ad))+"</span>"+
+          (alt.length?'<span class="etAlt">'+esc(alt.join(" · "))+"</span>":"")+"</div>";
+      }).join("");
+    }).catch(function(e){
+      var el=document.getElementById("et-liste");
+      if(el) el.innerHTML='<div class="sm warn">'+esc(yonHata(e))+"</div>";
     });
   }
 
