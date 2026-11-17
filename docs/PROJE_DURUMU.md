@@ -670,6 +670,14 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Yeni ayar: Villa bilgileri → "En az konaklama (gece)" + dönem kuralları (GOREV27'deki "Görev 15.9 dönem kuralı" uygulamada
       yoktu). villalar.bilgi içinde (enAz, enAzDonem); veritabanı yapısı değişmedi. Bakıcıda arama fiyatsız.
       GERÇEK İPHONE'DA TEST EDİLECEK (tam ekran panel, WhatsApp'ın açılması).
+- [x] Görev 28 — Müsaitlik arama düzeltmeleri · Claude Code (17 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi. Ayrıntı: `docs/GOREV28.md`, sebep: `docs/qa/gorev28/sebep.md`, testler: `docs/qa/gorev28/README.md`.
+      28.1: Villalarım başlığındaki büyüteç kaldırıldı (başlık satırı 18.15'teki hâlinde); arama yalnız Takvim sekmesinin üstünde.
+      28.2 sebep: arama paneli önceki tarihleri saklıyordu; rehber tarih adımlarını atlayıp yalnız "Boş villaları göster" düğmesini
+      açık bırakıyor, takvime dokunuşları yutuyordu (kullanıcı kilitleniyordu). Düzeltme: panel her açılışta temiz ("Son arama: …
+      · tekrar ara" bağlantısı var); rehber seçim durumuna göre başlar ve kendini ayarlar; rehber motoruna `serbest` (deliğin
+      dışında dokunulabilen yerler) eklendi; villa her açılışta seçim temiz (eski aralık ve alt panel geri gelmiyordu).
+      GERÇEK İPHONE'DA TEST EDİLECEK.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.

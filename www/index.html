@@ -836,6 +836,8 @@
   .maHap:active{transform:scale(var(--basili-olcek)); border-color:var(--basili-cerceve); background:var(--basili-zemin)}
   .maHap.on{border-color:var(--ok); background:var(--basili-zemin); color:var(--ok)}
   .maAlt .maKisi{padding:.25rem 0; border-bottom:0; margin:0}
+  /* 28.2: "Son arama: 17–21 Kasım · tekrar ara" (takvimin altında, sade bağlantı düğmesi) */
+  .maSonArama{align-self:flex-start; display:inline-flex; gap:.375rem; margin:1rem 0 .25rem; padding:.25rem .875rem; text-align:left}
   .maKisiYer .maKisi{margin:1rem 0 .5rem; padding:.5rem 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
   .maKisiAlt{display:block; font-size:.8125rem; line-height:1.3; color:var(--muted)}
   .maAlt .big{margin-top:.5rem}
@@ -3374,13 +3376,15 @@
     if(yer._h!==h){ yer.innerHTML=h; yer._h=h; }
     document.getElementById("maKart").onclick=function(){ titret("hafif"); musaitAc(); };
   }
+  // 28.2: panel her açılışta temiz başlar (seçim yok, kişi sayısı boş, sıralama "Benim sıram"). Önceki arama MA.son'da
+  // saklanır; altta "Son arama: … · tekrar ara" ile geri getirilir (rehber bu bağlantıyı vurgulamaz).
   function musaitAc(){
     if(!S.villalar.length) return;
     villaSirala();
-    MA.adim="tarih"; MA.secMod=false; MA.donus=false;
-    if(MA.bas && MA.bas<fmt(today)){ MA.bas=null; MA.bit=null; }
-    var b0=MA.bas?parse(MA.bas):today;
-    MA.imlec=new Date(b0.getFullYear(),b0.getMonth(),1);
+    MA.adim="tarih"; MA.secMod=false; MA.donus=false; MA.secili={};
+    MA.bas=null; MA.bit=null; MA.kisi=0; MA.hap=""; MA.sira="benim"; MA.kismenAcik=false;
+    if(MA.son && MA.son.bas<fmt(today)) MA.son=null;
+    MA.imlec=new Date(today.getFullYear(),today.getMonth(),1);
     maPerde();
     rehberAc("musait",REHBER.musait);   // 27.6: Yardımlı modda rehberle; her durumda başlıkta "?"
   }
@@ -3405,6 +3409,8 @@
         '<div class="dow">'+gn.map(function(x){ return "<div>"+esc(x)+"</div>"; }).join("")+"</div>"+
         '<div class="grid" id="maGrid"></div></div>'+
       '<div class="maKisiYer" id="maKisiYer"></div>'+
+      (MA.son ? '<button type="button" class="linkBtn maSonArama" id="maSonArama">'+ikon("takvim-aralik",{boy:18})+"<span>"+
+        esc(cev("Son arama: "+aralikYazi({b:MA.son.bas,s:MA.son.bit})+(MA.son.kisi?" · "+cev(MA.son.kisi+" kişi"):"")+" · tekrar ara"))+"</span></button>" : "")+
       '<div class="altSabit maAlt" id="maAlt"></div>';
     maIzgaraCiz(); maAltCiz();
   }
@@ -3491,7 +3497,7 @@
     if(MA.bas && MA.bit){ MA.bas=null; MA.bit=null; maIzgaraCiz(); maAltCiz(); rhBildir("ma:temiz"); return; }
     if(!MA.bas){ MA.bas=k; maIzgaraCiz(); maAltCiz(); rhBildir("ma:bas"); return; }
     if(k===MA.bas){ MA.bas=null; maIzgaraCiz(); maAltCiz(); rhBildir("ma:temiz"); return; }
-    if(k<MA.bas){ MA.bas=k; maIzgaraCiz(); maAltCiz(); return; }
+    if(k<MA.bas){ MA.bas=k; maIzgaraCiz(); maAltCiz(); rhBildir("ma:bas"); return; }
     MA.bit=k; titret("hafif"); maIzgaraCiz(); maAltCiz(); rhBildir("ma:aralik");
   }
   function maTikla(e){
@@ -3506,7 +3512,12 @@
     if(t.id==="maKisiCok"){ if(MA.kisi<40){ MA.kisi++; titret("hafif"); maAltCiz(); } return; }
     if(t.id==="maGoster"){
       if(!(MA.bas && MA.bit) || typeof maSonucCiz!=="function") return;
-      titret("hafif"); MA.adim="sonuc"; MA.secMod=false; maSonucCiz(); maUste(); rhBildir("ma:sonuc"); return;
+      titret("hafif"); MA.son={bas:MA.bas, bit:MA.bit, kisi:MA.kisi};
+      MA.adim="sonuc"; MA.secMod=false; maSonucCiz(); maUste(); rhBildir("ma:sonuc"); return;
+    }
+    if(t.id==="maSonArama" && MA.son){
+      titret("hafif"); MA.bas=MA.son.bas; MA.bit=MA.son.bit; MA.kisi=MA.son.kisi||0; MA.hap="";
+      MA.adim="sonuc"; MA.secMod=false; maSonucCiz(); maUste(); rhBildir("ma:sonuc"); return;
     }
     if(typeof maTiklaEk==="function") maTiklaEk(e,t);
   }
@@ -3771,7 +3782,7 @@
       document.getElementById("maKismen").classList.toggle("hide",!MA.kismenAcik); return;
     }
     if(t.id==="maYakin" && MA.yakin){
-      MA.bas=MA.yakin.bas; MA.bit=MA.yakin.bit; MA.hap=""; titret("hafif"); maSonucCiz(); maUste(); return;
+      MA.bas=MA.yakin.bas; MA.bit=MA.yakin.bit; MA.hap=""; MA.son={bas:MA.bas, bit:MA.bit, kisi:MA.kisi}; titret("hafif"); maSonucCiz(); maUste(); return;
     }
     if(typeof maTiklaEk2==="function") maTiklaEk2(e,t);
   }
@@ -3951,7 +3962,8 @@
 
   function ac(id){
     if(S.yigin) S.yigin.ana=null;
-    S.aktif=id; S.start=null; S.uyari=""; S.mod="rez"; S.salt=false; S.rezModu=false; S.kurAcik=false; S.tumAcik={};
+    // 28.2: önceki ziyaretin aralığı (S.secim) da temizlenir; eski seçim ve alttaki panel geri gelmez
+    S.aktif=id; S.start=null; S.secim=null; S.rezNiyet=false; S.uyari=""; S.mod="rez"; S.salt=false; S.rezModu=false; S.kurAcik=false; S.tumAcik={};
     document.getElementById("kilitBar").classList.add("hide");
     S.cursor=new Date(today.getFullYear(),today.getMonth(),1);
     goster("takvim");
@@ -4935,14 +4947,24 @@
     musait:function(){
       var tarihte=function(){ return MA.adim==="tarih" && !!pq("#maGrid"); };
       var dar=function(ac2){ var sh=pq(".maSheet"); if(sh) sh.classList[ac2?"add":"remove"]("maRhTarih"); };
+      // 28.2: seçim değişebilecek her adımda takvim, hızlı seçimler ve kişi sayısı dokunulabilir: rehber kullanıcıyı kilitlemez
+      var serbest=function(){ return [pq("#maTakvim"), pq("#maHaplar"), pq("#maKisiYer"), pq("#maAlt .maKisi")].filter(Boolean); };
       return {ad:"musait", bastan:true,
       adimlar:[
-        {id:"ma1", hedef:rhTek("#maTakvim"), metin:RM.musaitGiris, bekle:"olay", olay:"ma:bas", gec_olay:"ma:aralik",
+        // seçim yok → giriş; yalnız giriş → çıkış (metinde giriş günü); aralık → "Boş villaları göster". Seçim kalkınca 1. adıma.
+        {id:"ma1", hedef:rhTek("#maTakvim"), metin:RM.musaitGiris, bekle:"olay", olay:"ma:bas", gec_olay:"ma:aralik", serbest:serbest,
          atla_eger:function(){ return !tarihte() || !!MA.bas; }, hazirla:function(){ dar(true); }, cikis:function(){ dar(false); }},
-        {id:"ma2", hedef:rhTek("#maTakvim"), metin:RM.musaitCikis, bekle:"olay", olay:"ma:aralik", donus:{"ma:temiz":"ma1"},
-         atla_eger:function(){ return !tarihte() || !!MA.bit; }, hazirla:function(){ dar(true); }, cikis:function(){ dar(false); },
+        {id:"ma2", hedef:rhTek("#maTakvim"), bekle:"olay", olay:"ma:aralik", donus:{"ma:temiz":"ma1"}, serbest:serbest,
+         metin:function(){ return MA.bas ? RM.musaitCikisGiris.replace("{g}",kisa(MA.bas)) : RM.musaitCikis; },
+         atla_eger:function(){ return !tarihte() || !MA.bas || !!MA.bit; }, hazirla:function(){ dar(true); }, cikis:function(){ dar(false); },
          geri:function(){ MA.bas=null; MA.bit=null; MA.hap=""; maIzgaraCiz(); maAltCiz(); }},
-        {id:"ma3", hedef:rhTek("#maGoster"), metin:RM.musaitGoster, bekle:"olay", olay:"ma:sonuc", donus:{"ma:temiz":"ma1"},
+        // seçili aralığın son satırı alttaki sabit satırın ve baloncuğun üstünde görünsün (değiştirmek isteyen görsün, dokunabilsin)
+        {id:"ma3", hedef:rhTek("#maGoster"), metin:RM.musaitGoster, bekle:"olay", olay:"ma:sonuc", donus:{"ma:temiz":"ma1"}, serbest:serbest,
+         hazirla:function(){ requestAnimationFrame(function(){
+           var o=document.querySelector(".overlay.maPerde:not(.kapaniyor)"), c=pq("#maGrid .secSon")||pq("#maGrid .secIc"), al=pq("#maAlt");
+           if(!o || !c || !al) return;
+           var dy=c.getBoundingClientRect().bottom-(al.getBoundingClientRect().top-8.5*parseFloat(getComputedStyle(document.documentElement).fontSize));
+           if(Math.abs(dy)>4) o.scrollTop=Math.max(0,o.scrollTop+dy); }); },
          atla_eger:function(){ return MA.adim==="sonuc" || !(MA.bas && MA.bit); }},
         {hedef:function(){ var l=[pq("#maBaslik"), pq("#maSecAc"), pq("#maBosListe .maVilla") || pq("#maBosYok")].filter(Boolean); return l.length?l:null; },
          metin:function(){ return pq("#maSecAc") ? RM.musaitSonuc : RM.musaitSonucSade; }, bekle:"ileri", dokunulmaz:true,

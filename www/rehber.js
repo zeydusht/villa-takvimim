@@ -24,6 +24,8 @@
      soluk     : fn → [öğe]                       deliğin içinde kalan ama bu adımla ilgisi olmayan öğeler (karartılır, dokunulmaz)
      gizli     : true                             perde ve baloncuk yok; yalnız olayı bekler (ör. fotoğraflar yüklenince ✓)
      gec_olay  : "olay" | [..]                    (23.2) bekleme türü ne olursa olsun bu olay gelince sıradaki adıma geçilir
+     serbest   : fn → [öğe]                       (28.2) deliğin dışında kalan ama dokunulabilen yerler (vurgulanmaz). Seçim
+                                                  değiştirebilen yerler buraya yazılır: rehber kullanıcıyı kilitlemez
    }
    Kullanım: Rehber.ayarla({cevir, titret, ikon, bildir, kenar}); Rehber.baslat(tanim); Rehber.bildir("olay");
    Yardımlı mod tercihi cihazda (localStorage "vt-yardim"; okunamazsa varsayılan: açık).
@@ -129,6 +131,7 @@
     // 27.6 müsaitlik arama ("Hangi villam boş?")
     musaitGiris: "Müşterinin istediği *giriş* gününe dokunun.",
     musaitCikis: "Şimdi *çıkış* gününe dokunun.",
+    musaitCikisGiris: "Giriş: {g} · şimdi *çıkış* gününe dokunun.",
     musaitGoster: "‘Boş villaları göster’e dokunun.",
     musaitSonuc: "Boş villalar ve toplam fiyatları burada. Göndermek için ‘Seç ve gönder’.",
     musaitSonucSade: "Bu tarihlerde boş olan villalar burada.",
@@ -918,6 +921,7 @@
     if (!t || !t.closest) return true;
     if (D.o.contains(t) || t.closest(".rhSon")) return true;
     var a = D.a;
+    if (a.serbest) { try { if ((a.serbest() || []).some(function (x) { return x && x.contains(t); })) return true; } catch (e) {} }
     if (a.dokunulmaz) return false;
     if (a.soluk) { try { if ((a.soluk() || []).some(function (x) { return x && x.contains(t); })) return false; } catch (e) {} }
     return hedefler(a).some(function (x) { return x.contains(t); });

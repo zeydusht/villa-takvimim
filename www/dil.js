@@ -1011,6 +1011,8 @@
     [/^(\d+) \/ (\d+) ekleniyor$/, "Adding $1 / $2"],
     [/^(\d+) fotoğraf eklendi, (\d+) eklenemedi\.$/, "$1 photos added, $2 couldn't be added."],
     [/^· kalan ödeme (.+)$/, "· balance due $1"],
+    // 28.2: genel "Giriş: …" kalıbından önce
+    [/^Giriş: (.+) · şimdi \*çıkış\* gününe dokunun\.$/, "Check-in: $1 · now tap the *check-out* day."],
     [/^Giriş: (.+)$/, "Check-in: $1"],
     [/^(\d+) gecenin fiyatı girilmemiş, tutarı yazın$/, "$1 nights have no rate, enter the amount"],
     [/^Toplam (.+) · Alınan (.+) · Kalan (.+)$/, "Total $1 · Received $2 · Balance $3"],
@@ -1107,6 +1109,7 @@
       "$1 deposit is refunded at check-out (if there is no damage)."],
     // Görev 27
     [/^1 villa boş$/, "1 villa free"],
+    [/^Son arama: (.+) · tekrar ara$/, "Last search: $1 · search again"],
     [/^(\d+) villa seçildi$/, "$1 selected"],
     [/^(\d+) villa boş$/, "$1 villas free"],
     [/^(\d+) kişi için$/, "for $1 guests"],

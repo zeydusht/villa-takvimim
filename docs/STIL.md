@@ -193,6 +193,11 @@ Dört tür (`.big`):
 
 - **Her işlem paneli** Yardımlı modda rehberle başlar (`rehberAc`).
 - **Ayrıntı panelleri ve ekranlar:** başlığın yanında "?" var (`rhSoru`, `ekranSoru`); rehber isteyince açılır.
+- **Rehber kilitlemez** (Görev 28): seçimi değiştirebilecek yerler (takvim, hızlı seçimler, kişi sayısı) her adımda dokunulabilir
+  (`serbest`). Adımlar seçim durumuna göre başlar; seçim değişince rehber kendini ayarlar (temizlenince ilk adıma döner, yalnız
+  giriş varsa "Giriş: 17 Kasım · şimdi çıkış gününe dokunun").
+- **Seçim taşınmaz:** bir panel ya da villa her açılışta temiz seçimle başlar; önceki arama gerekiyorsa "Son arama: … · tekrar ara"
+  bağlantısıyla geri getirilir.
 - **Metinler** `Rehber.M` sözlüğünde. Aynı tür adım hep aynı cümle:
   - "…e dokunun";
   - "… yazın";
