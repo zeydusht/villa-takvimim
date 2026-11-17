@@ -1289,6 +1289,8 @@
     transition:transform var(--hiz-kapa) var(--egri-gecis), visibility 0s linear var(--hiz-kapa)}
   .secPanel.acik{transform:none; visibility:visible; transition:transform 320ms var(--egri-giris), visibility 0s}
   body.panelAcik .secPanel{visibility:hidden}
+  /* 26.1: panel boyu yalnız .wrap'e yazılır ve kalıtılmaz (kökte değişince sayfadaki her öğenin stili yeniden hesaplanıyordu) */
+  @property --secPanelH{syntax:"<length>"; inherits:false; initial-value:9rem}
   body.secPanelAcik .wrap, body.secPay .wrap{padding-bottom:calc(7rem + env(safe-area-inset-bottom) + var(--secPanelH, 9rem))}
   .spUst{display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-height:3rem}
   .spMetin{display:flex; flex-direction:column; min-width:0}
@@ -1972,8 +1974,10 @@
   }
   // ---- Görev 9: his ve hız ----
   // 19B.5: standart eğriler (WAAPI için :root'taki değişkenden okunur)
-  var egriAl=function(ad){ var v=""; try{ v=getComputedStyle(document.documentElement).getPropertyValue("--egri-"+ad).trim(); }catch(e){}
-    return v || (ad==="gecis" ? "cubic-bezier(0.65, 0, 0.35, 1)" : "cubic-bezier(0.22, 1, 0.36, 1)"); };
+  // 26.1: değer bir kez okunur ve saklanır (her okuma getComputedStyle ile tüm sayfanın stilini yeniden hesaplatıyordu)
+  var EGRILER={};
+  var egriAl=function(ad){ if(EGRILER[ad]) return EGRILER[ad]; var v=""; try{ v=getComputedStyle(document.documentElement).getPropertyValue("--egri-"+ad).trim(); }catch(e){}
+    return (EGRILER[ad]=v || (ad==="gecis" ? "cubic-bezier(0.65, 0, 0.35, 1)" : "cubic-bezier(0.22, 1, 0.36, 1)")); };
   var azHareket=function(){ try{ return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } };
   // Gerçek titreşim (yalnız uygulama içinde; web'de hiçbir şey yapmaz). Hesap → Titreşim ile kapatılabilir.
   var TITRESIM="villa-takvim-titresim";
@@ -3598,7 +3602,7 @@
     var adet=new Date(y,m+1,0).getDate();
     var lead=(new Date(y,m,1).getDay()+6)%7;
     var tk=fmt(today);
-    var h="";
+    var h="", hucreler=[];
     for(var j=0;j<lead;j++) h+="<div></div>";
     for(var d=1; d<=adet; d++){
       var date=new Date(y,m,d), k=fmt(date), o2=gun(k);
@@ -3638,18 +3642,34 @@
       var etiket = ak ? '<span class="fy bh">'+esc(basHarf(ak.guest))+"</span>"
                       : '<span class="fy">'+(fi?kisaFiyat(fi):"")+"</span>";
       h+='<button class="'+cls+'" data-k="'+k+'" style="'+st+'"><span class="gn">'+d+"</span>"+etiket+"</button>";
+      hucreler.push({k:k, cls:cls, st:st, ic:'<span class="gn">'+d+"</span>"+etiket});
     }
-    document.getElementById("grid").innerHTML=h;
+    izgaraYaz(h,hucreler,lead);
 
     var hint=document.getElementById("hint");
-    if(S.uyari && !(S.start||S.secim||S.rezModu)) hint.innerHTML='<span class="warn">'+esc(S.uyari)+"</span>";
-    else hint.innerHTML="<span>Boş güne dokunup tarih seçin. Dolu güne dokununca rezervasyon açılır. Giriş "+GIRIS+", çıkış "+CIKIS+".</span>";
+    // 26.1: ipucu yalnız değişince yazılır (aynı yazıyı her dokunuşta yeniden yazmak sayfanın yerleşimini bozuyordu)
+    var hintH=(S.uyari && !(S.start||S.secim||S.rezModu)) ? '<span class="warn">'+esc(S.uyari)+"</span>"
+      : "<span>Boş güne dokunup tarih seçin. Dolu güne dokununca rezervasyon açılır. Giriş "+GIRIS+", çıkış "+CIKIS+".</span>";
+    if(hint._h!==hintH){ hint.innerHTML=hintH; hint._h=hintH; }
     var vz=document.getElementById("vazgec");
     if(vz) vz.onclick=function(){ S.start=null; S.rezModu=false; ciz(); };
     hint.classList.remove("vurgu");
     // 18.3: seçim işlemleri altta (başparmak bölgesi), alt menünün hemen üstünde kayan panel
     document.getElementById("adimSerit").classList.add("hide");
     secPanelCiz(v);
+  }
+  // 26.1: gün seçiminde ızgara baştan kurulmaz; aynı ay çiziliyse yalnız sınıfı / zemini / içeriği değişen hücreler
+  // güncellenir (eskiden her dokunuşta 30+ düğme silinip yeniden oluşturuluyor, sonra yerleşim zorla hesaplanıyordu)
+  function izgaraYaz(h,hucreler,lead){
+    var g=document.getElementById("grid"), c=g.children, ayni=c.length===lead+hucreler.length;
+    for(var i=0; ayni && i<hucreler.length; i++) if(c[lead+i].getAttribute("data-k")!==hucreler[i].k) ayni=false;
+    if(!ayni){ g.innerHTML=h; return; }
+    hucreler.forEach(function(x,i){
+      var b=c[lead+i];
+      if(b.className!==x.cls) b.className=x.cls;
+      if(b.getAttribute("style")!==x.st) b.setAttribute("style",x.st);
+      if(b._ic!==x.ic){ if(b._ic!==undefined || b.innerHTML!==x.ic) b.innerHTML=x.ic; b._ic=x.ic; }
+    });
   }
   function secimCiz(){ var v=aktif(); if(!v) return; MAP=harita(v.rez); takvimCiz(v); }
   function ciz(){
@@ -3867,8 +3887,12 @@
     p.innerHTML=h;
     p.classList.add("acik");
     document.body.classList.add("secPanelAcik"); document.body.classList.remove("secPay");
-    var ph=p.offsetHeight+"px";
-    if(S.secPanelH!==ph){ S.secPanelH=ph; document.documentElement.style.setProperty("--secPanelH",ph); }
+    // 26.1: panel boyu bir sonraki karenin başında ölçülür (dokunuş anında yerleşimi zorlamasın)
+    requestAnimationFrame(function(){
+      if(!p.classList.contains("acik")) return;
+      var ph=p.offsetHeight+"px";
+      if(S.secPanelH!==ph){ S.secPanelH=ph; var w=document.querySelector(".wrap"); if(w) w.style.setProperty("--secPanelH",ph); }
+    });
     document.getElementById("spKapat").onclick=function(){ titret("hafif"); secimBitir(); };
     var al=function(){ var sc=S.secim; S.secim=null; S.start=null; ciz(); return sc; };
     var r1=document.getElementById("spRez"), r2=document.getElementById("spTeklif"), r3=document.getElementById("spOps");
@@ -3908,7 +3932,7 @@
   // seçim kalktıktan sonra kalan pay: kullanıcı yukarı kaydırıp pay gereksiz olunca kalkar (sayfa zıplamaz)
   window.addEventListener("scroll",function(){
     if(!document.body.classList.contains("secPay")) return;
-    var ek=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--secPanelH"))||0, d=document.documentElement;
+    var ek=parseFloat(S.secPanelH)||144, d=document.documentElement;
     if(d.scrollTop+window.innerHeight<=d.scrollHeight-ek-1) document.body.classList.remove("secPay");
   },{passive:true});
   function takvimKonumla(asama){
@@ -3934,13 +3958,17 @@
       };
       TK.raf=requestAnimationFrame(adim);
     };
-    // panelin kayma (320 ms) ve içerik (sırayla belirme) animasyonları bitsin: panelin yeri ve boyu son hâlinde ölçülür
+    // panelin kayma (320 ms) ve içerik (sırayla belirme) animasyonları bitsin: panelin yeri ve boyu son hâlinde ölçülür.
+    // 26.1: animasyon listesi bir sonraki karede okunur (dokunuş anında okumak stili zorla yeniden hesaplatıyordu)
     var bitti=false, son=function(){ if(bitti) return; bitti=true; requestAnimationFrame(basla); };
-    var anim=[]; try{ anim=p.getAnimations({subtree:true}); }catch(e){}
-    if(anim.length && !azHareket()){
-      Promise.all(anim.map(function(a){ return a.finished.catch(function(){}); })).then(son);
-      setTimeout(son,900);
-    } else son();
+    requestAnimationFrame(function(){
+      if(no!==TK.no) return;
+      var anim=[]; try{ anim=p.getAnimations({subtree:true}); }catch(e){}
+      if(anim.length && !azHareket()){
+        Promise.all(anim.map(function(a){ return a.finished.catch(function(){}); })).then(son);
+        setTimeout(son,900);
+      } else son();
+    });
   }
   // gereken kaydırma (px; + aşağı) — null: takvim görünmüyor
   function takvimHedef(asama){
@@ -3982,27 +4010,35 @@
   }
   function odakCiz(){
     if(!odakAcikMi()){
-      if(ODAK.el){ var o=ODAK.el; ODAK.el=null; cancelAnimationFrame(ODAK.raf); o.classList.remove("acik"); o.classList.add("gidiyor");
+      if(ODAK.el){ var o=ODAK.el; ODAK.el=null; clearTimeout(ODAK.raf); if(ODAK.ro) ODAK.ro.disconnect(); o.classList.remove("acik"); o.classList.add("gidiyor");
         setTimeout(function(){ if(o.parentNode) o.remove(); },azHareket()?0:200); }
       return;
     }
     if(ODAK.el) return;
     var el=document.createElement("div"); el.className="takvimOdak"; el.setAttribute("aria-hidden","true");
     document.body.appendChild(el); ODAK.el=el; ODAK.k="";
-    var izle=function(){
-      if(ODAK.el!==el) return;
-      if(!odakAcikMi()){ odakCiz(); return; }
-      var k=takvimKutu();
-      if(k){
-        var pay=8, x=k.left-pay, y=k.top-pay-document.documentElement.getBoundingClientRect().top, w=k.right-k.left+2*pay, h=k.bottom-k.top+2*pay;
-        var a=[x,y,w,h].map(Math.round).join(",");
-        if(a!==ODAK.k){ ODAK.k=a; el.style.transform="translate("+Math.round(x)+"px,"+Math.round(y)+"px)"; el.style.width=Math.round(w)+"px"; el.style.height=Math.round(h)+"px"; }
-      }
-      ODAK.raf=requestAnimationFrame(izle);
-    };
-    izle();
-    void el.offsetWidth; el.classList.add("acik");
+    // 26.1: katman belge koordinatında durur, sayfa kayınca kendiliğinden takvimle birlikte kayar; konumu yalnız yerleşim
+    // değişince (ızgara / sayfa boyu, ekran boyutu) yeniden hesaplanır. Eskiden her karede takvimi ölçüyordu.
+    requestAnimationFrame(odakYerlestir);   // ölçüm bir sonraki karenin başında (dokunuştaki zorunlu yerleşim tek kalsın)
+    if(window.ResizeObserver){
+      if(!ODAK.ro) ODAK.ro=new ResizeObserver(function(){ odakYerlestir(); });
+      ["grid","takvim"].forEach(function(id){ var x=document.getElementById(id); if(x) ODAK.ro.observe(x); });
+      var w=document.getElementById("grid"); w=w&&w.closest(".wrap"); if(w) ODAK.ro.observe(w);
+    }
+    // koşul değişirse (rehber başladı, takvim gizlendi, seçim kalktı) katman kalkar: her karede yalnız ucuz koşul denetimi, ölçüm yok
+    var denetle=function(){ if(ODAK.el!==el) return; if(!odakAcikMi()){ odakCiz(); return; } ODAK.raf=setTimeout(denetle,250); };
+    ODAK.raf=setTimeout(denetle,250);
+    // solarak belirme: sınıf iki kare sonra eklenir (offsetWidth okuyup yerleşimi zorlamadan geçiş başlar)
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(ODAK.el===el) el.classList.add("acik"); }); });
   }
+  function odakYerlestir(){
+    var el=ODAK.el; if(!el) return;
+    var k=takvimKutu(); if(!k) return;
+    var pay=8, x=k.left-pay, y=k.top-pay-document.documentElement.getBoundingClientRect().top, w=k.right-k.left+2*pay, h=k.bottom-k.top+2*pay;
+    var a=[x,y,w,h].map(Math.round).join(",");
+    if(a!==ODAK.k){ ODAK.k=a; el.style.transform="translate("+Math.round(x)+"px,"+Math.round(y)+"px)"; el.style.width=Math.round(w)+"px"; el.style.height=Math.round(h)+"px"; }
+  }
+  window.addEventListener("resize",function(){ if(ODAK.el) odakYerlestir(); });
   document.addEventListener("click",function(e){
     if(!ODAK.el || !e.isTrusted || !odakAcikMi()) return;
     var t=e.target, p=document.getElementById("secPanel");

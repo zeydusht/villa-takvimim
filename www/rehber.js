@@ -503,13 +503,14 @@
   function dongu() {
     if (!D) return;
     D.raf = requestAnimationFrame(dongu);
+    D.kare = (D.kare || 0) + 1;
     try { donguIc(); } catch (e) { cokme(e); }
   }
   function donguIc() {
     var d = D;
     var a = D.a; if (!a) return;
     // katman kabının içeriğiyle aynı boyda kalır (beklerken de): eski boyu panelin kaydırma alanını uzatmasın
-    if (D.o.parentNode && D.o.parentNode !== document.body) katmanBoyu();
+    if (D.o.parentNode) katmanBoyu();
     // görünmez bekleme (ör. fotoğraflar yükleniyor): 10 dakikada olay gelmezse sessizce biter
     if (a.gizli) { if (simdi() - D.bas > 600000) bitir(false); return; }
     if (a.bekle === "olay" && a.kosul) {
@@ -644,7 +645,10 @@
     return g;
   }
   // katmanın boyu = kabın içeriği (katman hariç); sabit kapta ekran
-  function katmanBoyu() {
+  // 26.1: bir karede bir kez (döngü, yerleştirme ve geçiş aynı karede çağırıyordu); zorla: kap değişti / hizalama
+  function katmanBoyu(zorla) {
+    if (!zorla && D.kbKare === D.kare) return;
+    D.kbKare = D.kare;
     var kap = D.o.parentNode, h = window.innerHeight, c;
     if (!kap) return;
     if (D.kapTur === "icte") {
@@ -761,7 +765,7 @@
       if (br.width > 0) eskiB = { l: br.left, w: br.width };
     }
     kapYerles(els[0]);
-    katmanBoyu();
+    katmanBoyu(true);
     // 24.1: odaktaki yazı alanı bu hedefteyse kaydırma klavyeyeHizala'nın: pencere yalnız hedefe uyar
     if (odakGirdi()) { darAyarla(els, odakAlan(els[0])); takip(sure); return; }
     var S = kaydirKabi(els[0]), g = odakAlan(els[0]), r = durgunBirlesik(els);
