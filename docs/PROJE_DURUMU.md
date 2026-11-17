@@ -659,6 +659,18 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       (Normal/Büyük/Çok büyük; iPhone'da büyük yazı açıksa bir kez önerilir). 26.8: STIL.md.
       Veritabanına dokunulmadı. GERÇEK İPHONE'DA TEST EDİLECEK (akıcılık, sistem yazı boyutu, çevrimdışı).
 
+- [x] Görev 27 — Müsaitlik arama: "17–21 arası hangi villam boş?" · Claude Code (17 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi (her madde ayrı commit). Ayrıntı: `docs/GOREV27.md`, testler: `docs/qa/gorev27/README.md`.
+      Takvim sekmesinin üstünde "Hangi villam boş?" kartı (Villalarım başlığında büyüteç de var) → tam ekran panel: sade takvim
+      (18.1 kuralı, 18.2 görünüm), hızlı seçim (bu / gelecek hafta sonu, 7 gece), isteğe bağlı kişi sayısı → sonuç: boş villalar
+      toplam fiyatla (20.7 konaklamaHesap), eksik fiyat, kural engeli, kısmen boş, hiç yoksa en yakın boşluk; kartta Rezervasyon ·
+      Teklif · Opsiyon (form kapanınca sonuca dönülür); "Seç ve gönder" → düzenlenebilir WhatsApp mesajı.
+      Villa sayfası bağlantıları ?giris=…&cikis=… ile o tarihleri seçili açar (g.html). DİKKAT: villa sayfaları Netlify'da;
+      g.html'deki bu değişiklik Netlify'a yüklenene kadar bağlantılar tarihleri seçili açmaz (sayfa yine açılır).
+      Yeni ayar: Villa bilgileri → "En az konaklama (gece)" + dönem kuralları (GOREV27'deki "Görev 15.9 dönem kuralı" uygulamada
+      yoktu). villalar.bilgi içinde (enAz, enAzDonem); veritabanı yapısı değişmedi. Bakıcıda arama fiyatsız.
+      GERÇEK İPHONE'DA TEST EDİLECEK (tam ekran panel, WhatsApp'ın açılması).
+
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
    ```sql

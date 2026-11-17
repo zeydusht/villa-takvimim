@@ -183,6 +183,12 @@ Dört tür (`.big`):
   - kısa bildirim ("… kaydedildi");
   - rehberde ✓ kartı.
 
+- **Tam ekran panel** (Görev 27, `.maSheet`): ekranın tamamını kaplayan, köşesiz panel; alttan kayarak açılır. Alttaki
+  sabit satır (`.altSabit`) özeti ve tek ana düğmeyi taşır. Çok adımlı işlerde (tarih seç → sonuç) ekran değişmez, panelin içi
+  değişir; "‹ Tarihleri değiştir" ile geri dönülür.
+- **Kural uyarısı olan kart** (ör. en az gece sağlanmıyor): kart soluk zeminli ve kesik çerçeveli, üstünde şarap kırmızısı
+  etiket; işlem yine yapılabilir (karar sahibin). Metin soluklaştırılmaz (kontrast korunur).
+
 ## 8. Rehber (Yardımlı mod)
 
 - **Her işlem paneli** Yardımlı modda rehberle başlar (`rehberAc`).
@@ -213,6 +219,8 @@ Hitap her yerde **"siz"** ("Giriş yapın", "Hesabınız"). Düğme etiketleri k
 | Villa sayfası | misafir sayfası, paylaşım sayfası | Misafirlere gönderilen sayfa |
 | Yardımlı mod / rehber | eğitim, tur (tur yalnız "uygulama turu") | Adım adım yardım |
 | Giriş / Çıkış (16:00 / 10:00) | check-in / check-out | Misafirin geliş / gidiş günü |
+| En az konaklama | minimum gece, min. stay | Bir dönemde kabul edilen en az gece (giriş gününün dönemi geçerli) |
+| Boş / Kısmen boş | müsait değil, yarı dolu | Seçilen gecelerin hepsi / bir kısmı boş ("Hangi villam boş?") |
 
 **Yeni metin kuralları:**
 - Her yeni Türkçe metin `www/dil.js`'e İngilizcesiyle eklenir.

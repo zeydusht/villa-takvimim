@@ -816,7 +816,8 @@
   .maAraBtn:active{transform:scale(.92); border-color:var(--basili-cerceve); background:var(--basili-zemin)}
   /* 27.2: tam ekran panel (alttan kayar; köşesiz, ekranın tamamı) */
   .overlay.maPerde{align-items:flex-start}
-  .sheet.maSheet{max-width:40rem; min-height:100%; height:auto; margin:0 auto; border-radius:0; display:flex; flex-direction:column;
+  /* yükseklik ekrana bağlı (100dvh): rehberin geçici üst boşluğu paneli kısaltmasın */
+  .sheet.maSheet{max-width:40rem; min-height:100vh; min-height:100dvh; height:auto; margin:0 auto; border-radius:0; display:flex; flex-direction:column;
     padding:calc(1.25rem + env(safe-area-inset-top)) 1rem calc(.5rem + env(safe-area-inset-bottom) + var(--klavye,0px))}
   .sheet.maSheet::before{display:none}
   @media(min-width:640px){ .sheet.maSheet{border-radius:0; margin:0 auto} }
@@ -825,6 +826,9 @@
   .maTakvim .dow{margin:.75rem 0 .25rem}
   .maTakvim .nav button:disabled{opacity:.3}
   .maTakvim .cell:disabled{cursor:default}
+  /* arama takviminde fiyat satırı yok: hücre 3rem (48 pt), takvim büyük yazıda da ekrana sığar */
+  .maTakvim .grid{grid-auto-rows:3rem}
+  .maTakvim .cell{height:3rem; min-height:3rem; max-height:3rem; grid-template-rows:auto}
   .maAlt{margin:auto -1rem 0; padding:.75rem 1rem .5rem; border-top:1px solid var(--line); box-shadow:0 -6px 18px rgba(16,22,19,.08)}
   .maOzet{min-height:3rem; display:flex; flex-direction:column; justify-content:center}
   .maOzetBas{font-family:var(--serif); font-size:1.3125rem; line-height:1.3; color:var(--ok)}
@@ -837,6 +841,7 @@
   .maHap:active{transform:scale(var(--basili-olcek)); border-color:var(--basili-cerceve); background:var(--basili-zemin)}
   .maHap.on{border-color:var(--ok); background:var(--basili-zemin); color:var(--ok)}
   .maAlt .maKisi{padding:.25rem 0; border-bottom:0; margin:0}
+  .maKisiYer .maKisi{margin:1rem 0 .5rem; padding:.5rem 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
   .maKisiAlt{display:block; font-size:.8125rem; line-height:1.3; color:var(--muted)}
   .maAlt .big{margin-top:.5rem}
   .maAlt .big:disabled{opacity:.45}
@@ -898,7 +903,7 @@
   .maKismenSatir .ajAlt{display:block; font-size:.9375rem; color:var(--ink)}
   .maKismenSatir > .ik:last-child{flex:none; color:var(--muted)}
   /* 27.6: rehber tarih adımlarında haplar ve kişi satırı gizli (takvim baloncukla birlikte küçük ekrana da sığsın) */
-  .sheet.maRhTarih .maHaplar, .sheet.maRhTarih .maKisi{display:none}
+  .sheet.maRhTarih .maHaplar, .sheet.maRhTarih .maKisi, .sheet.maRhTarih .maAlt{display:none}
   /* 26.7: yazı boyutu önizlemesi (seçili boyutta, hemen) */
   .yaziOnizle{margin-top:.75rem; padding:.875rem 1rem; border:var(--cerceve-kalinlik) solid var(--line); border-radius:var(--kose);
     line-height:1.4}
@@ -3408,6 +3413,7 @@
           '<button id="maSonra" type="button" aria-label="'+esc(cev("Sonraki ay"))+'">'+ikon("sag",{boy:22})+"</button></div></div>"+
         '<div class="dow">'+gn.map(function(x){ return "<div>"+esc(x)+"</div>"; }).join("")+"</div>"+
         '<div class="grid" id="maGrid"></div></div>'+
+      '<div class="maKisiYer" id="maKisiYer"></div>'+
       '<div class="altSabit maAlt" id="maAlt"></div>';
     maIzgaraCiz(); maAltCiz();
   }
@@ -3459,27 +3465,32 @@
       var st=(d===1&&lead?"grid-column-start:"+(lead+1)+";":"")+(bg?"background:"+bg+";":"")+
         "border-radius:"+(rl?"10px":"0")+" "+(rr?"10px":"0")+" "+(rr?"10px":"0")+" "+(rl?"10px":"0");
       h+='<button type="button" class="'+cls+'" data-k="'+k+'" style="'+st+'" aria-label="'+esc(gunAdli(k))+'"'+(gec?" disabled":"")+">"+
-        '<span class="gn">'+d+'</span><span class="fy"></span></button>';
+        '<span class="gn">'+d+"</span></button>";
     }
     g.innerHTML=h;
     maHapCiz();
   }
   function maAltCiz(){
     var el=document.getElementById("maAlt"); if(!el) return;
-    var a=MA.bas, z=MA.bit, gc=(a&&z)?maGece(a,z):0;
+    var a=MA.bas, z=MA.bit, gc=(a&&z)?maGece(a,z):0, kisa=maKisaMi();
     el.innerHTML='<div class="maOzet" id="maOzet">'+((a&&z)
         ? '<span class="maOzetBas">'+esc(maTarihOk(a,z)+" · "+cev(gc+" gece"))+"</span>"
         : '<span class="maOzetIpucu">'+esc(cev(a?"Çıkış gününe dokunun":"Giriş gününe dokunun"))+"</span>"+
-          (a?'<span class="maOzetAlt">'+esc(cev("Giriş: "+gunAdli(a)+" · "+GIRIS))+"</span>":""))+"</div>"+maAltEk();
+          (a?'<span class="maOzetAlt">'+esc(cev("Giriş: "+gunAdli(a)+" · "+GIRIS))+"</span>":""))+"</div>"+
+      (kisa?"":maKisiHTML())+
+      '<button type="button" class="big" id="maGoster"'+((a&&z)?"":" disabled")+">"+ikon("arama",{boy:20})+"<span>"+esc(cev("Boş villaları göster"))+"</span></button>";
+    var ky=document.getElementById("maKisiYer"); if(ky) ky.innerHTML=kisa?maKisiHTML():"";
   }
-  function maAltEk(){
-    var hazir=!!(MA.bas && MA.bit);
+  // kısa ekranda (ekran yüksekliği 44 satır yazıdan az: küçük telefon ya da büyük yazı) kişi sayısı sabit satırdan çıkar,
+  // takvimin altında akar; sabit satırda yalnız tarih özeti ve "Boş villaları göster" kalır (takvim görünür kalsın)
+  function maKisaMi(){ var px=parseFloat(getComputedStyle(document.documentElement).fontSize)||16; return innerHeight/px<44; }
+  window.addEventListener("resize",function(){ if(MA.adim==="tarih" && document.getElementById("maAlt")) maAltCiz(); });
+  function maKisiHTML(){
     return '<div class="sayacSatir maKisi"><span class="ikKutu is-rez">'+ikon("kisiler",{boy:20})+"</span>"+
         '<span class="sayacAd">'+esc(cev("Kişi sayısı"))+(MA.kisi?"":'<span class="maKisiAlt">'+esc(cev("İsteğe bağlı"))+"</span>")+"</span>"+
         '<div class="adimci"><button type="button" class="big renkli is-rez" id="maKisiAz" aria-label="'+esc(cev("Azalt"))+'"'+(MA.kisi?"":" disabled")+">"+ikon("eksi",{boy:20})+"</button>"+
         '<span class="bgGece" id="maKisiSay" aria-live="polite">'+(MA.kisi||"–")+"</span>"+
-        '<button type="button" class="big renkli is-rez" id="maKisiCok" aria-label="'+esc(cev("Artır"))+'">'+ikon("arti",{boy:20})+"</button></div></div>"+
-      '<button type="button" class="big" id="maGoster"'+(hazir?"":" disabled")+">"+ikon("arama",{boy:20})+"<span>"+esc(cev("Boş villaları göster"))+"</span></button>";
+        '<button type="button" class="big renkli is-rez" id="maKisiCok" aria-label="'+esc(cev("Artır"))+'">'+ikon("arti",{boy:20})+"</button></div></div>";
   }
   // 18.1: hiçbir şey seçili değil → giriş; yalnız giriş S → Y > S aralık, Y < S yeni giriş, Y = S seçim kalkar;
   // aralık seçiliyken dokunmak seçimi kaldırır. Doluluk gösterilmediği için "arada dolu gün" kuralı burada yok.
