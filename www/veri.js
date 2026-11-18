@@ -439,6 +439,7 @@
               id: r.id, start: r.baslangic, end: r.bitis, guest: r.misafir,
               phone: r.telefon || "", people: r.kisi ? String(r.kisi) : "",
               note: r.aciklama || "", color: r.renk || "#0B5B57", kod: r.kod || undefined,
+              disKontrol: (r.dis_kontrol === "bekliyor" || r.dis_kontrol === "cakisma") ? r.dis_kontrol : undefined,
               tutar: say(mm.tutar), ekUcret: say(mm.ek_ucret),
               // depozito_tutar: bu rezervasyonun depozito tutarı (0 da geçerli); tarihli eski kayıtlar uygulamada taşınır
               depozito: (mm.depozito_tutar !== null && mm.depozito_tutar !== undefined) ? { tutar: say(mm.depozito_tutar), tarih: mm.depozito_tarih || undefined } : undefined,
@@ -619,6 +620,7 @@
           id: r.id, start: r.baslangic, end: r.bitis, guest: r.misafir,
           phone: r.telefon || "", people: r.kisi ? String(r.kisi) : "",
           note: r.aciklama || "", color: r.renk || "#0B5B57", kod: r.kod || undefined,
+              disKontrol: (r.dis_kontrol === "bekliyor" || r.dis_kontrol === "cakisma") ? r.dis_kontrol : undefined,
           tutar: say((maliHar[r.id] || {}).tutar), ekUcret: say((maliHar[r.id] || {}).ek_ucret),
           depozito: (maliHar[r.id] && maliHar[r.id].depozito_tutar !== null && maliHar[r.id].depozito_tutar !== undefined)
             ? { tutar: say(maliHar[r.id].depozito_tutar), tarih: maliHar[r.id].depozito_tarih || undefined } : undefined,

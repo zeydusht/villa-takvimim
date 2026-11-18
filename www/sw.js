@@ -3,7 +3,7 @@
 
 // Sürüm: her yayında artırılır. Dosya değişince telefonlar yeni servisi kurar;
 // açılışta eski sürümlerden kalan önbellekler silinir, böylece eski ekran kalmaz.
-var SURUM = "vt-2026-11-18-gorev32e";
+var SURUM = "vt-2026-11-18-gorev32f";
 
 self.addEventListener("install", function (e) {
   self.skipWaiting();
@@ -51,7 +51,11 @@ self.addEventListener("notificationclick", function (e) {
   e.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (liste) {
       for (var i = 0; i < liste.length; i++) {
-        if ("focus" in liste[i]) return liste[i].focus();
+        if ("focus" in liste[i]) {
+          // Görev 32: açık uygulama bildirimin yoluna gider (?villa=…&gun=… / ?cakisma=…)
+          try { liste[i].postMessage({ tur: "git", yol: yol }); } catch (x) {}
+          return liste[i].focus();
+        }
       }
       if (self.clients.openWindow) return self.clients.openWindow(yol);
     })
