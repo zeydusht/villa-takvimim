@@ -87,10 +87,14 @@ Dört tür (`.big`):
   - ana ve satır düğmeleri `--dokunma-yukseklik` (3.25rem = 52 pt);
   - yakın düğmeler arasında en az .5rem.
   - İstisna: takvim ızgarası hücreleri.
-- **Basınca:**
-  - çerçeve `--basili-cerceve`, zemin `--basili-zemin`;
-  - %97'ye küçülme (`--basili-olcek`);
-  - süre `--hiz-bas`.
+- **Basınca (Görev 31.3):**
+  - çerçeve `--basili-cerceve`, zemin `--basili-zemin` (süre `--hiz-bas`, 100 ms);
+  - bütün dokunulabilir öğeler %97'ye küçülür (`--basili-olcek`): basış 120 ms (`--hiz-basis`), bırakış 200 ms (`--hiz-birak`),
+    `--egri-giris`. Geçişte `transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)` yazılır; basılıyken `--bas-sure` 120 ms olur;
+  - takvim günü sık basılır: küçülmez, yalnız 100 ms renk;
+  - grup içindeki satırlar (`.grup > .satirBtn`) küçülmez, yalnız zemin değişir (satırlar birbirine yapışık);
+  - menüde seçilen satır menü kapanmadan önce 120 ms (`--hiz-secildi`) ana renkte görünür (`secimParla`);
+  - hover kullanılmaz. Gerekirse yalnız `@media (hover:hover) and (pointer:fine)` içinde (telefonda "yapışık hover" kalmasın).
 - **Silme ve iptal:**
   - Önemliyse onay sorulur.
   - Her durumda 5 saniyelik **"Geri al"** bildirimi (`geriAlBildir`) gösterilir.
@@ -140,7 +144,10 @@ Dört tür (`.big`):
 
 | Süre | Değişken | Değer | Ne için |
 |---|---|---|---|
-| Basma | `--hiz-bas` | 100 ms | Basma ve renk tepkisi |
+| Basma | `--hiz-bas` | 100 ms | Renk ve çerçeve tepkisi; takvim günü |
+| Basış | `--hiz-basis` | 120 ms | Basınca %97'ye küçülme |
+| Seçildi | `--hiz-secildi` | 120 ms | Menüde seçilen satırın parlaması |
+| Bırakış | `--hiz-birak` | 200 ms | Bırakınca eski boyuna dönüş |
 | Ay solması | `--hiz-ay` | 150 ms | Ay değişince |
 | Ekran | `--hiz-ekran` | 200 ms | Ekran geçişi solması, sihirbaz adımı |
 | Kararma kapanışı | `--hiz-karar-kapa` | 200 ms | Panelin arka planı açılırken (yalnız saydamlık) |

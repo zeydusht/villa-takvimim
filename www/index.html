@@ -50,7 +50,10 @@
     --tehlike-cerceve:#C4718A;    /* kırmızı butonların çerçevesi */
     --tehlike-basili-zemin:#FBF1F4;
     /* Hareket süreleri (Görev 9). Eğriler (19B.5): yer değiştirme ve kapanış --egri-gecis, belirme / giriş --egri-giris. */
-    --hiz-bas:100ms;              /* basma / renk tepkisi */
+    --hiz-bas:100ms;              /* basma / renk tepkisi; takvim günü yalnız renk ve çerçeve (31.3) */
+    --hiz-basis:120ms;            /* 31.3: basınca %97'ye küçülme (--egri-giris) */
+    --hiz-birak:200ms;            /* 31.3: bırakınca eski boyuna dönüş */
+    --hiz-secildi:120ms;          /* 31.3: menüde seçilen satır, menü kapanmadan önce ana renkte parlar */
     --hiz-ac:340ms;               /* 31.1: alttan açılan panel (--egri-cekmece ile) */
     --hiz-kapa:220ms;             /* 31.1: panel kapanışı (--egri-gecis ile) */
     --hiz-oge:220ms;              /* 31.1: küçük öğe (yeni satır, çevrimdışı şeridi, açılır ok, yenile göstergesi) */
@@ -121,7 +124,7 @@
   /* ---- tıklanabilir öğeler: ortak çerçeve ve basılı hal ---- */
   .kart, .ekleKart, .fotoEkle, .satirBtn, .big.ghost, .ghost{
     background:#fff; border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose);
-    transition:transform var(--gecis), background-color var(--gecis), border-color var(--gecis);
+    transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), background-color var(--gecis), border-color var(--gecis);
     touch-action:manipulation}
   .kart:active, .ekleKart:active, .fotoEkle:active, .satirBtn:active, .big.ghost:active, .ghost:active,
   .kart.basili, .ekleKart.basili, .fotoEkle.basili, .satirBtn.basili, .big.ghost.basili{
@@ -179,8 +182,8 @@
   .eylem{flex:1 1 0; display:flex; flex-direction:column; align-items:center; gap:.4375rem; min-width:0; max-width:5.5rem;
     text-decoration:none; color:var(--ry,var(--ink)); background:none; border:0; padding:0}
   .eDaire{width:56px; height:56px; border-radius:50%; background:var(--r12); color:var(--r);
-    display:flex; align-items:center; justify-content:center; transition:background var(--hiz-bas), transform var(--hiz-bas)}
-  .eylem:active .eDaire{background:var(--r22); transform:scale(.96)}
+    display:flex; align-items:center; justify-content:center; transition:background var(--hiz-bas), transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
+  .eylem:active .eDaire{background:var(--r22); transform:scale(var(--basili-olcek))}
   .eYazi{font-size:.8125rem; font-weight:500; line-height:1.25; text-align:center}
   /* liste satırı olarak tehlikeli işlem (her zaman en altta) */
   .grup > .satirBtn.satirTehlike{color:var(--uyari)}
@@ -206,7 +209,7 @@
   .sekmeler button{flex:1; min-height:3.5rem; display:flex; flex-direction:column; align-items:center;
     justify-content:center; gap:.1875rem; font-size:.8125rem; color:var(--muted); text-align:center;
     border-radius:var(--kose); touch-action:manipulation;
-    transition:color var(--gecis), background-color var(--gecis), transform var(--gecis)}
+    transition:color var(--gecis), background-color var(--gecis), transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
   .sekmeler button.on{color:var(--ok)}
   .sekmeler button:active, .sekmeler button.basili{background:var(--basili-zemin)}
   body.sekmeli .wrap{padding-bottom:calc(7rem + env(safe-area-inset-bottom))}
@@ -439,7 +442,7 @@
   .seg button, #misFiltre button{flex:1; min-height:3rem; padding:.625rem .25rem; border-radius:var(--kose);
     font-size:.9375rem; background:#fff; color:var(--ink); text-align:center;
     border:var(--cerceve-kalinlik) solid var(--cerceve); touch-action:manipulation;
-    transition:background-color var(--gecis), border-color var(--gecis), transform var(--gecis)}
+    transition:background-color var(--gecis), border-color var(--gecis), transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
   .seg button:active, #misFiltre button:active{background:var(--basili-zemin); border-color:var(--basili-cerceve)}
   .seg button.on, #misFiltre button.on{background:var(--ok); border-color:var(--ok); color:#fff}
   #misFiltre{display:flex; gap:.5rem; margin-top:.25rem}
@@ -597,8 +600,8 @@
   .fyYil{display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-top:1rem;
     background:var(--soft); border-radius:var(--kose); padding:.25rem}
   .fyYil button{width:3rem; height:3rem; border-radius:99px; display:flex; align-items:center; justify-content:center;
-    background:#fff; border:var(--cerceve-kalinlik) solid var(--cerceve); color:var(--ink); transition:transform var(--hiz-bas)}
-  .fyYil button:active{transform:scale(.97)}
+    background:#fff; border:var(--cerceve-kalinlik) solid var(--cerceve); color:var(--ink); transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
+  .fyYil button:active{transform:scale(var(--basili-olcek))}
   .fyYil button:disabled{opacity:.35}
   .fyYilAd{font-family:var(--serif); font-size:1.5rem; letter-spacing:-.01em}
   .grup > .satirBtn.fyAy.gecmisAy{background:#F7F9F8}
@@ -653,7 +656,7 @@
     font-size:.9375rem}
   .misSatir{display:flex; align-items:center; gap:.75rem; width:100%; padding:.75rem 1rem; margin-top:.5rem;
     background:#fff; border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose);
-    transition:transform var(--gecis), background-color var(--gecis), border-color var(--gecis)}
+    transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), background-color var(--gecis), border-color var(--gecis)}
   .misSatir:active{border-color:var(--basili-cerceve); background-color:var(--basili-zemin); transform:scale(var(--basili-olcek))}
   .kutucuk{width:1.375rem; height:1.375rem; border-radius:.375rem; border:1.5px solid var(--line);
     flex:none; display:flex; align-items:center; justify-content:center}
@@ -673,7 +676,7 @@
   /* 14.9 gelir & gider: 3 renkli kutu, tek cümle, listeler, kapalı istatistik */
   .kutu3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.5rem; margin-top:.75rem}
   .kKutu{display:flex; flex-direction:column; align-items:flex-start; gap:.25rem; padding:.75rem .625rem .75rem .75rem; border-radius:.875rem;
-    text-align:left; min-height:6.5rem; border:1.5px solid transparent; touch-action:manipulation; transition:transform var(--gecis)}
+    text-align:left; min-height:6.5rem; border:1.5px solid transparent; touch-action:manipulation; transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
   .kKutu:active{transform:scale(var(--basili-olcek))}
   .kKutu .kkIk{display:flex; margin-bottom:.125rem}
   .kKutu .kkSayi{font-size:clamp(.9375rem,4.4vw,1.25rem); line-height:1.2; font-variant-numeric:tabular-nums; overflow-wrap:anywhere}
@@ -745,12 +748,12 @@
   .x{position:absolute; top:-.625rem; right:-.75rem; width:3rem; height:3rem; line-height:0;
     color:var(--ink); display:flex; align-items:center; justify-content:center; border-radius:99px;
     border:var(--cerceve-kalinlik) solid var(--cerceve); background:#fff; overflow:hidden; isolation:isolate;
-    transition:transform var(--hiz-bas) var(--egri-giris), border-color var(--hiz-bas)}
+    transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), border-color var(--hiz-bas)}
   .x svg{position:relative; z-index:1}
   /* basınca daire merkezden açık yeşille dolar ve hafif küçülür */
   .x::before{content:""; position:absolute; inset:0; border-radius:inherit; background:var(--basili-zemin);
-    transform:scale(.6); opacity:0; transition:transform var(--hiz-bas) var(--egri-giris), opacity var(--hiz-bas) var(--egri-giris)}
-  .x:active, .x.basildi{transform:scale(.92); border-color:var(--basili-cerceve)}
+    transform:scale(.6); opacity:0; transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), opacity var(--hiz-bas) var(--egri-giris)}
+  .x:active, .x.basildi{transform:scale(var(--basili-olcek)); border-color:var(--basili-cerceve)}
   .x:active::before, .x.basildi::before{transform:scale(1); opacity:1}
   .sheet > .x{top:.75rem; right:.75rem}
   .sheet > .x ~ h2{padding-right:2.5rem}
@@ -819,6 +822,22 @@
     .bildirim{translate:none !important}
     :active, .basili, .x.basildi{transform:none !important}
   }
+  /* 31.3 basma hissi: bütün dokunulabilir öğeler basınca %97 (120 ms, --egri-giris), bırakınca 200 ms'de döner; renk ve
+     çerçeve tepkisi --hiz-bas. Takvim günü sık basılır: küçülmez, yalnız 100 ms renk. Hover yok (telefonda yapışık kalır);
+     gerekirse yalnız @media (hover:hover) and (pointer:fine) içinde yazılır. */
+  :active, .basili, .x.basildi{--bas-sure:var(--hiz-basis)}
+  .kurulum .kGizle, .linkBtn, .bakiciLink, .foot button, #g-unuttum, .kilitBar button, #fotoBas .tumu, .hap, .hSatir, .rhSoru,
+  .msSil, .hDaha, .tumuLink, button.kSatir, .fyGun, .ipBtn, .ucTamam, .seg button, #misFiltre button, .sekmeler button{
+    transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), background-color var(--hiz-bas), border-color var(--hiz-bas),
+      color var(--hiz-bas), opacity var(--hiz-bas)}
+  .kurulum .kGizle:active, .linkBtn:active, .bakiciLink:active, .foot button:active, #g-unuttum:active, .kilitBar button:active,
+  #fotoBas .tumu:active, .hap:active, .hSatir:active, .rhSoru:active, .msSil:active, .hDaha:active, .tumuLink:active,
+  button.kSatir:active, .fyGun:active, .ipBtn:active, .seg button:active, #misFiltre button:active, .sekmeler button:active,
+  .sekmeler button.basili{transform:scale(var(--basili-olcek))}
+  .cell, .cell:active{transform:none}
+  /* menüde seçilen satır: kapanmadan önce 120 ms ana renkte */
+  .secildi, .secildi:active{background:var(--ok) !important; border-color:var(--ok) !important; color:#fff !important; transition:none !important}
+  .secildi .vsAd, .secildi svg{color:#fff}
   /* 24.1: klavye payı (alt dolgu) 300 ms'de, --egri-gecis ile; klOlc = son yerleşimi ölçerken geçiş kapalı */
   .sheet{transition:transform var(--hiz-ac) var(--egri-gecis), padding-bottom var(--hiz-klavye) var(--egri-gecis)}
   /* 26.4: ekranın altındaki bölüm, ekrana girene kadar saydam (girince 8 pt aşağıdan solarak gelir) */
@@ -902,7 +921,7 @@
   /* 27.1: Takvim sekmesinde başlığın altında belirgin kart (açık yeşil zemin, yeşil çerçeve); tek villada daha küçük */
   .maKart{display:flex; align-items:center; gap:.875rem; width:100%; margin:1rem 0 .25rem; padding:.875rem 1rem; text-align:left;
     background:var(--basili-zemin); border:var(--cerceve-kalinlik) solid var(--ok); border-radius:var(--kose); color:var(--ink);
-    min-height:var(--dokunma-yukseklik); transition:transform var(--hiz-bas) var(--egri-giris)}
+    min-height:var(--dokunma-yukseklik); transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
   .maKart:active{transform:scale(var(--basili-olcek))}
   .maKartIk{flex:none; width:3rem; height:3rem; border-radius:99px; background:var(--ok); color:#fff; display:flex; align-items:center; justify-content:center}
   .maKartMetin{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:.125rem}
@@ -936,7 +955,7 @@
   /* 27.2: hızlı seçim hapları; alttaki sabit satırda kişi sayısı (isteğe bağlı) ve büyük "Boş villaları göster" */
   .maHaplar{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1rem}
   .maHap{min-height:3rem; padding:.375rem 1rem; border-radius:99px; border:var(--cerceve-kalinlik) solid var(--cerceve); background:#fff;
-    color:var(--ink); font-size:.9375rem; transition:transform var(--hiz-bas) var(--egri-giris)}
+    color:var(--ink); font-size:.9375rem; transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
   .maHap:active{transform:scale(var(--basili-olcek)); border-color:var(--basili-cerceve); background:var(--basili-zemin)}
   .maHap.on{border-color:var(--ok); background:var(--basili-zemin); color:var(--ok)}
   .maAlt .maKisi{padding:.25rem 0; border-bottom:0; margin:0}
@@ -1064,7 +1083,7 @@
     border-radius:var(--kose); font-size:1rem; font-weight:500; color:#fff; text-align:center;
     background:var(--ok); border:var(--cerceve-kalinlik) solid transparent;
     box-shadow:0 1px 2px rgba(16,22,19,.12); touch-action:manipulation;
-    transition:transform var(--gecis), background-color var(--gecis), border-color var(--gecis), filter var(--gecis)}
+    transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), background-color var(--gecis), border-color var(--gecis), filter var(--gecis)}
   .big:active, .big.basili{background-color:var(--ana-basili); transform:scale(var(--basili-olcek))}
   .big[style*="background"]:active, .big[style*="background"].basili{filter:brightness(.82)}
   .big:disabled{opacity:.35}
@@ -1107,17 +1126,17 @@
   @media (max-width:360px){ .okutu{padding:.5rem .5625rem} .okutu .lab{letter-spacing:.02em; min-height:2.6em} }
   /* 10.2 / 10.6 yuvarlak çerçeveli ok butonları; basınca merkezden dolar */
   .barGeri, .nav button{position:relative; overflow:hidden; isolation:isolate; border-radius:99px;
-    width:3rem; height:3rem; transition:transform var(--hiz-bas) var(--egri-giris), border-color var(--hiz-bas), color var(--hiz-bas)}
+    width:3rem; height:3rem; transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), border-color var(--hiz-bas), color var(--hiz-bas)}
   .barGeri svg, .nav button svg{position:relative; z-index:1}
   .barGeri::before, .nav button::before{content:""; position:absolute; inset:0; border-radius:inherit;
-    transform:scale(.6); opacity:0; transition:transform var(--hiz-bas) var(--egri-giris), opacity var(--hiz-bas) var(--egri-giris)}
+    transform:scale(.6); opacity:0; transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), opacity var(--hiz-bas) var(--egri-giris)}
   .barGeri{border:2px solid rgba(255,255,255,.8); background:rgba(255,255,255,.14); margin:-.5rem .25rem -.5rem -.125rem}
   .barGeri::before{background:#fff}
-  .barGeri:active{opacity:1; transform:scale(.92); color:var(--ok)}
+  .barGeri:active{opacity:1; transform:scale(var(--basili-olcek)); color:var(--ok)}
   .nav{gap:.5rem; flex:none}
   .nav button{border:var(--cerceve-kalinlik) solid var(--cerceve); background:#fff; margin-right:0}
   .nav button::before{background:var(--basili-zemin)}
-  .nav button:active{background:#fff; transform:scale(.92); border-color:var(--basili-cerceve)}
+  .nav button:active{background:#fff; transform:scale(var(--basili-olcek)); border-color:var(--basili-cerceve)}
   .barGeri:active::before, .nav button:active::before{transform:scale(1); opacity:1}
   .monthbar{gap:.75rem}
   .monthbar > div:first-child{min-width:0}
@@ -1164,7 +1183,7 @@
   .rezKart{display:flex; align-items:center; gap:.75rem; width:100%; margin-top:.5rem; min-height:var(--dokunma-yukseklik);
     padding:.75rem .875rem .75rem 1rem; background:#fff; border:var(--cerceve-kalinlik) solid var(--cerceve);
     border-radius:var(--kose); text-align:left; touch-action:manipulation;
-    transition:transform var(--gecis), background-color var(--gecis), border-color var(--gecis)}
+    transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), background-color var(--gecis), border-color var(--gecis)}
   .rezKart:active{border-color:var(--basili-cerceve); background-color:var(--basili-zemin); transform:scale(var(--basili-olcek))}
   .rezKart::after{content:""; flex:none; width:.4375rem; height:.4375rem; margin:0 .25rem 0 -.125rem;
     border-top:2px solid var(--ok-isareti); border-right:2px solid var(--ok-isareti); transform:rotate(45deg)}
@@ -1221,12 +1240,12 @@
     border-top:1px solid var(--line); color:var(--ok); font-size:.9375rem; text-align:left}
   .hDaha:active{background:var(--basili-zemin)}
   .ozetEt .durumEt{min-height:2.75rem; padding:.375rem 1rem; touch-action:manipulation;
-    transition:opacity var(--hiz-bas), box-shadow var(--hiz-bas), transform var(--hiz-bas)}
+    transition:opacity var(--hiz-bas), box-shadow var(--hiz-bas), transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
   .ozetEt .durumEt.dolu{border-color:var(--ok)}
   .ozetEt .durumEt.sifir{opacity:.5}
   .ozetEt .durumEt.soluk{opacity:.45}
   .ozetEt .durumEt.secili{box-shadow:0 0 0 2px #fff, 0 0 0 4px var(--ink)}
-  .ozetEt .durumEt:active{transform:scale(.96)}
+  .ozetEt .durumEt:active{transform:scale(var(--basili-olcek))}
   .suzNot{font-size:.875rem; color:var(--muted); margin-top:.625rem}
   /* 10.14 alt menü: seçili sekmenin arkasında kayan açık yeşil kabarcık */
   .sekmeIc{position:relative}
@@ -1296,7 +1315,7 @@
   /* 18.20: villa seçimi (kapak fotoğraflı kartlar) */
   .villaSec{display:grid; gap:.5rem}
   .villaSecKart{display:flex; align-items:center; gap:.875rem; width:100%; min-height:4.5rem; padding:.625rem 1rem .625rem .625rem; text-align:left;
-    border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose); background:#fff; transition:transform var(--hiz-bas)}
+    border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose); background:#fff; transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
   .villaSecKart:active{transform:scale(var(--basili-olcek)); background:var(--basili-zemin)}
   .vsFoto{flex:none; width:3.5rem; height:3.5rem; border-radius:.75rem; background:center/cover no-repeat}
   .vsHarf{display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.25rem}
@@ -1316,7 +1335,7 @@
   .ajGunVurgu{color:var(--ok)}
   .ajKart{display:flex; align-items:center; gap:.875rem; width:100%; text-align:left; padding:.875rem 1rem; margin-top:.5rem;
     background:#fff; border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose); min-height:4.5rem;
-    transition:transform var(--hiz-bas), background-color var(--hiz-bas)}
+    transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), background-color var(--hiz-bas)}
   .ajKart:active{transform:scale(var(--basili-olcek)); background:var(--basili-zemin)}
   .ajKart .vRozet{flex:none; width:3rem; height:3rem; border-radius:.75rem; font-size:1.125rem}
   .ajKartIc{flex:1; min-width:0; display:flex; flex-direction:column; gap:.3125rem}
@@ -1472,7 +1491,7 @@
   /* 12.4 "Sıradaki" kartı: en yakın giriş/çıkış, büyük ve açık yeşil */
   .sirKart{display:block; width:100%; text-align:left; padding:1rem 1.125rem 1.0625rem; background:#E3EFEC;
     border:2px solid var(--ok); border-radius:var(--kose); color:var(--ink); touch-action:manipulation;
-    transition:transform var(--gecis), background-color var(--gecis)}
+    transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), background-color var(--gecis)}
   .sirKart:active{background:#CFE3DD; transform:scale(var(--basili-olcek))}
   /* 17.1: "SIRADAKİ" ve hemen yanında zaman etiketi; tarih satırı yok */
   .sirUst{display:flex; align-items:center; justify-content:flex-start; gap:.5rem}
@@ -1495,7 +1514,7 @@
     padding:.5rem .75rem; font-size:1.0625rem; background:#fff}
   .ucTamam{flex:none; display:inline-flex; align-items:center; gap:.375rem; min-height:3rem; padding:0 1rem; border-radius:var(--kose);
     background:var(--ok); color:#fff; border:0; font-size:1rem}
-  .ucTamam:active{transform:scale(.97); background:#08443F}
+  .ucTamam:active{transform:scale(var(--basili-olcek)); background:#08443F}
   .ucAlan{margin:.25rem 0 .75rem}
   .sirKart.sirBos:active{transform:none; background:#fff}
   .sirBosYazi{font-size:.9375rem; color:var(--muted)}
@@ -1555,19 +1574,19 @@
   .takvimOdak.gidiyor{opacity:0; transition:opacity var(--hiz-kapa) var(--egri-gecis)}
   body.panelAcik .takvimOdak{opacity:0}
   .spKapat{flex:none; width:3rem; height:3rem; border-radius:99px; display:flex; align-items:center; justify-content:center;
-    background:var(--soft); color:var(--ink); border:0; transition:transform var(--hiz-bas), background-color var(--hiz-bas)}
-  .spKapat:active{transform:scale(.97); background:var(--line)}
+    background:var(--soft); color:var(--ink); border:0; transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), background-color var(--hiz-bas)}
+  .spKapat:active{transform:scale(var(--basili-olcek)); background:var(--line)}
   .spUyari{display:flex; align-items:center; gap:.375rem; color:var(--uyari); font-size:.9375rem; margin-top:.375rem}
   .spBtnler{display:grid; gap:.5rem; margin-top:.625rem}
   .spBtn{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.25rem; min-width:0;
     min-height:4rem; padding:.5rem .25rem; border-radius:var(--kose); font-size:.9375rem; line-height:1.15;
     background:var(--r12,#ECEDEC); color:var(--ry,#3F4843); border:1.5px solid var(--r22,#DCDEDD);
-    transition:transform var(--hiz-bas), background-color var(--hiz-bas)}
+    transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), background-color var(--hiz-bas)}
   .spBtn span{white-space:nowrap}
   .spBtn svg.ik{color:var(--r,#5F6A64)}
   .spBtn.ana{background:var(--ok); border-color:var(--ok); color:#fff}
   .spBtn.ana svg.ik{color:#fff}
-  .spBtn:active{transform:scale(.97); background:var(--r22,#DCDEDD)}
+  .spBtn:active{transform:scale(var(--basili-olcek)); background:var(--r22,#DCDEDD)}
   .spBtn.ana:active{background:#08443F}
   @media (max-width:370px){ .spBtn{font-size:.875rem} }
   @media (prefers-reduced-motion: reduce){ .secPanel, .secPanel.acik{transition:none} }
@@ -2309,6 +2328,12 @@
   function titret(tur){
     if(store.get(TITRESIM)==="kapali") return;
     try{ if(window.VTNative && VTNative.titret) VTNative.titret(tur); }catch(e){}
+  }
+  // 31.3: menüde seçilen satır menü kapanmadan önce kısa süre ana renkte görünür; sonra iş yapılır
+  function secimParla(el,sonra){
+    if(!el){ sonra(); return; }
+    el.classList.add("secildi");
+    setTimeout(function(){ el.classList.remove("secildi"); sonra(); },hiz("secildi"));
   }
   // Bir öğeyi bir kez açık yeşil vurgula (600ms)
   function parlat(el){
@@ -4177,7 +4202,7 @@
       document.getElementById("tvSec").onclick=function(ev){
         var x=ev.target.closest("[data-vid]"); if(!x) return;
         var v=l.filter(function(y){ return y.id===x.dataset.vid; })[0]; if(!v) return;
-        kapat(); git(v);
+        secimParla(x,function(){ kapat(); git(v); });
       };
     }
   });
@@ -7096,7 +7121,7 @@
     rehberAc("bakici",REHBER.bakici);
     document.getElementById("bkVilla").onclick=function(e){
       var x=e.target.closest("[data-vid]"); if(!x) return;
-      var v=l.filter(function(y){ return y.id===x.dataset.vid; })[0]; if(v) git(v);
+      var v=l.filter(function(y){ return y.id===x.dataset.vid; })[0]; if(v) secimParla(x,function(){ git(v); });
     };
   };
   // 18.21: uygulama turunu tekrar göster — ilk villanın ekranında
