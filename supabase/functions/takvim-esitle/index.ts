@@ -40,6 +40,13 @@ if (D && D.serve) D.serve(async (req: Request) => {
   try {
     if (GIZLI && yetkiBasligi === "Bearer " + GIZLI) return await zamanlayicidan(db, String(g.mod || "tam"));
     const jeton = yetkiBasligi.replace(/^Bearer\s+/i, "");
+    // Zamanlayıcı parolası kasada (vault: takvim_esitle_gizli) da tutulabilir: 64 haneli onaltılık metin.
+    // Karşılaştırma veritabanında yapılır (esitle_gizli_dogru, yalnız service_role çağırabilir); parola fonksiyona hiç gelmez.
+    if (/^[0-9a-f]{64}$/.test(jeton)) {
+      const { data: dogru } = await db.rpc("esitle_gizli_dogru", { p: jeton });
+      if (dogru === true) return await zamanlayicidan(db, String(g.mod || "tam"));
+      return json({ hata: "Yetkisiz" }, 401);
+    }
     const { data: u } = await db.auth.getUser(jeton);
     if (!u || !u.user) return json({ hata: "Oturum bulunamadı, tekrar giriş yapın." }, 401);
     return await uygulamadan(db, u.user.id, g);
