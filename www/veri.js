@@ -674,6 +674,14 @@
     return o;
   }
 
+  // rezervasyonlar tablosu satırı (senkron ve 32.6 tek POST aynı biçimi kullanır)
+  function rezSatiri(v, r) {
+    return { id: r.id, villa_id: v.id, baslangic: r.start, bitis: r.end, misafir: r.guest,
+             telefon: r.phone || null, kisi: parseInt(r.people, 10) || null,
+             aciklama: r.note || null, renk: r.color, kod: r.kod || null,
+             guncelleme: new Date().toISOString() };
+  }
+
   function fark(eski, yeni) {
     var ekle = [], sil = [];
     Object.keys(yeni).forEach(function (k) { if (eski[k] !== yeni[k]) ekle.push(k); });
@@ -721,14 +729,22 @@
 
     var rz = fark(e.rez, y.rez);
     if (rz.ekle.length) {
-      isler.push(api("rezervasyonlar", { method: "POST", donus: "resolution=merge-duplicates",
-        body: rz.ekle.map(function (id) {
-          var r = v.rez.filter(function (x) { return x.id === id; })[0];
-          return { id: r.id, villa_id: v.id, baslangic: r.start, bitis: r.end, misafir: r.guest,
-                   telefon: r.phone || null, kisi: parseInt(r.people, 10) || null,
-                   aciklama: r.note || null, renk: r.color, kod: r.kod || null,
-                   guncelleme: new Date().toISOString() };
-        }) }));
+      var rzSatir = rz.ekle.map(function (id) { return rezSatiri(v, v.rez.filter(function (x) { return x.id === id; })[0]); });
+      // 32.6: sunucu kilidi (gerçek bir dış satışın ya da başkasının 10 dk'lık ayırmasının üstüne yazma) toplu gönderimi
+      // düşürürse gönderim takılı kalmaz: satırlar tek tek gönderilir, çakışan kullanıcıya bildirilir ("vt-dis-cakisma"),
+      // diğerleri kaydolur. Çakışan satır kaydedilmiş sayılmaz (anlık görüntüden çıkarılır).
+      isler.push(api("rezervasyonlar", { method: "POST", donus: "resolution=merge-duplicates", body: rzSatir }).catch(function (er) {
+        if (!VT.dt.kilitHatasi(er)) throw er;
+        var cakisan = [];
+        return Promise.all(rzSatir.map(function (s) {
+          return api("rezervasyonlar", { method: "POST", donus: "resolution=merge-duplicates", body: [s] }).catch(function (e2) {
+            var k = VT.dt.kilitHatasi(e2); if (!k) throw e2;
+            cakisan.push({ id: s.id, villa: v.id, kilit: k }); delete y.rez[s.id];
+          });
+        })).then(function () {
+          if (cakisan.length) try { window.dispatchEvent(new CustomEvent("vt-dis-cakisma", { detail: cakisan })); } catch (x) {}
+        });
+      }));
     }
     rz.sil.forEach(function (id) { isler.push(api("rezervasyonlar?id=eq." + id, { method: "DELETE" })); });
 
@@ -909,6 +925,75 @@
       });
     });
     return sira.then(function () { return yerelVillalar; });
+  };
+
+  // ---------------- Görev 32: dış takvimler (Airbnb, Booking, …) ----------------
+  // Sunucu tarafı (VERITABANI_GOREV32.sql) kurulmadıysa tablo / fonksiyon yoktur: hazirDegil(e) true döner, uygulama
+  // bu bölümleri gizler ya da "hazırlanıyor" der; çökmez.
+  function hazirDegil(e) {
+    return /(\(404\)|PGRST20[0-9]|42P01|42883|could not find|does not exist|schema cache|relation .* does not)/i.test(String((e && e.message) || e || ""));
+  }
+  function bugunGun() { var d = new Date(Date.now() + 3 * 3600 * 1000); return d.toISOString().slice(0, 10); }
+  function fonksiyon(ad, govde, tekrar) {
+    var jt = (VT.oturum && VT.oturum.access_token) || KEY;
+    return fetch(URL_ + "/functions/v1/" + ad, {
+      method: "POST", headers: { Authorization: "Bearer " + jt, apikey: KEY, "Content-Type": "application/json" },
+      body: JSON.stringify(govde || {})
+    }).then(function (r) {
+      if (r.status === 401 && !tekrar) return tokenYenile().then(function () { return fonksiyon(ad, govde, true); });
+      return r.text().then(function (t) {
+        var d = null; try { d = t ? JSON.parse(t) : null; } catch (e) { d = null; }
+        if (r.status === 404 && !(d && d.hata)) { var e0 = new Error("takvim-esitle (404)"); e0.hazirDegil = true; throw e0; }
+        if (!r.ok) throw new Error((d && d.hata) || "Takvimler şu an kontrol edilemedi.");
+        return d || {};
+      });
+    }, function () { throw new Error("Takvimler şu an kontrol edilemedi."); });
+  }
+  VT.dt = {
+    hazirDegil: hazirDegil,
+    // bütün erişilen villaların bugünden sonraki dış blokları (bakıcı da okur; adres yok)
+    bloklar: function (villaIdler) {
+      if (!villaIdler.length) return Promise.resolve([]);
+      return api("dis_bloklar?select=id,takvim_id,villa_id,baslangic,bitis,tur,bagli_rezervasyon&villa_id=in.(" + villaIdler.join(",") +
+        ")&bitis=gte." + bugunGun() + "&order=baslangic");
+    },
+    // takvimlerin adı ve durumu (adres OLMADAN; bakıcı da görür)
+    durumlar: function (villaId) { return VT.rpc("takvim_durumlari", { p_villa: villaId }); },
+    // sahip: adresli tam liste
+    takvimler: function (villaId) {
+      return api("dis_takvimler?select=id,kaynak,ad,adres,aktif,son_basari,son_deneme,son_hata,hata_sayisi&villa_id=eq." + villaId + "&order=olusturma");
+    },
+    ekle: function (villaId, kaynak, ad, adres) {
+      return api("dis_takvimler", { method: "POST", donus: "return=representation", body: { villa_id: villaId, kaynak: kaynak, ad: ad, adres: adres } })
+        .then(function (d) { return (d && d[0]) || null; });
+    },
+    guncelle: function (id, alan) { return api("dis_takvimler?id=eq." + id, { method: "PATCH", donus: "return=representation", body: alan }); },
+    sil: function (id) { return api("dis_takvimler?id=eq." + id, { method: "DELETE" }); },
+    cakismalar: function () {
+      return api("cakismalar?select=id,villa_id,rezervasyon_id,blok_id,takvim_ad,baslangic,bitis,durum,olusturma&durum=eq.acik&order=olusturma");
+    },
+    cakismaCoz: function (id, durum, not) { return VT.rpc("cakisma_coz", { p_id: id, p_durum: durum, p_not: not || null }); },
+    icalAnahtar: function (villaId, yenile) { return VT.rpc("ical_anahtarim", { p_villa: villaId, p_yenile: !!yenile }); },
+    icalAdres: function (anahtar) { return URL_ + "/functions/v1/takvim-ver/" + anahtar + ".ics"; },
+    tutmaAl: function (villaId, bas, bit) { return VT.rpc("tutma_al", { p_villa: villaId, p_bas: bas, p_bit: bit }); },
+    tutmaBirak: function (id) { return VT.rpc("tutma_birak", { p_id: id }); },
+    blokRez: function (blokId, misafir) { return VT.rpc("blok_rez_olustur", { p_blok: blokId, p_misafir: misafir || null }); },
+    // takvim-esitle: { villa_id[, bas, bit] } ya da { villa_id, deneme: {adres, kaynak} }
+    esitle: function (govde) { return fonksiyon("takvim-esitle", govde); },
+    // 32.6: yeni rezervasyon VT.senkron'dan ayrı, tek POST ile (sunucu kilidi hatası yakalanabilsin)
+    rezGonder: function (v, r, disKontrol) {
+      var satir = rezSatiri(v, r);
+      if (disKontrol) { satir.dis_kontrol = disKontrol; satir.dis_kontrol_zamani = new Date().toISOString(); }
+      return api("rezervasyonlar", { method: "POST", donus: "resolution=merge-duplicates", body: [satir] });
+    }
+  };
+  // "DIS_CAKISMA: Airbnb 2026-11-17 - 2026-11-21" / "TUTMA_VAR: …" → { tur, site, bas, bit }
+  VT.dt.kilitHatasi = function (e) {
+    var m = String((e && e.message) || e || "");
+    var a = /DIS_CAKISMA:\s*(.*?)\s+(\d{4}-\d{2}-\d{2})\s*-\s*(\d{4}-\d{2}-\d{2})/.exec(m);
+    if (a) return { tur: "dis", site: a[1], bas: a[2], bit: a[3] };
+    if (/TUTMA_VAR/.test(m)) return { tur: "tutma" };
+    return null;
   };
 
   window.VT = VT;

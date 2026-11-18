@@ -888,6 +888,27 @@
   button.kSatir:active, .fyGun:active, .ipBtn:active, .seg button:active, #misFiltre button:active, .sekmeler button:active,
   .sekmeler button.basili{transform:scale(var(--basili-olcek))}
   .cell, .cell:active{transform:none}
+  /* ================= 32 DIŞ TAKVİMLER ================= */
+  .dtRozet{flex:none; width:2.25rem; height:2.25rem; border-radius:99px; color:#fff; display:inline-flex; align-items:center; justify-content:center;
+    font-size:.8235rem; font-weight:600; letter-spacing:.02em}
+  .dtSatir{gap:.75rem}
+  .dtSatir .dtDurum{display:flex; align-items:center; gap:.25rem}
+  .dtSatir .dtDurum.ok{color:var(--ok)}
+  .dtSatir .dtDurum.hata{color:var(--uyari)}
+  .dtKaynaklar{display:grid; gap:.625rem; margin-top:1rem}
+  .dtKaynakBtn{display:flex; align-items:center; gap:.875rem; width:100%; min-height:4rem; padding:.625rem 1rem; text-align:left;
+    border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose); background:#fff; font-size:1.0625rem}
+  .dtAdimlar{margin:.75rem 0 1.25rem; padding:0; list-style:none; counter-reset:dtadim}
+  .dtAdimlar li{counter-increment:dtadim; display:flex; gap:.75rem; align-items:flex-start; margin:.625rem 0; line-height:1.45}
+  .dtAdimlar li::before{content:counter(dtadim); flex:none; width:1.75rem; height:1.75rem; border-radius:99px; background:var(--soft); color:var(--ok);
+    display:flex; align-items:center; justify-content:center; font-size:.9375rem}
+  .dtMesaj{background:var(--soft); border-radius:var(--kose); padding:1rem; line-height:1.45; margin:.5rem 0}
+  .dtLink{background:var(--soft); border-radius:var(--kose); padding:1rem; word-break:break-all; font-size:.9375rem; margin:.5rem 0}
+  .dtUyari{color:var(--uyari); font-size:.9375rem; line-height:1.4; margin:-.5rem 0 1rem}
+  .dtSonuc{display:flex; gap:.75rem; align-items:flex-start; background:#E3EFEC; color:var(--ok); border-radius:var(--kose); padding:1rem; line-height:1.45; margin:1rem 0}
+  .dtSonuc svg{flex:none; margin-top:.125rem}
+  .dtBolum{margin-top:2.25rem}
+  .dtYapistir{margin:-.5rem 0 1rem}
   /* 31.8 boş hâl: büyük, sakin Lucide ikon (zemin --soft), tek cümle, tek ana düğme */
   .bosHal{display:flex; flex-direction:column; align-items:center; text-align:center; gap:.75rem; padding:1.5rem .25rem 1rem}
   .bosHal .bosIkon{width:5.5rem; height:5.5rem; border-radius:99px; background:var(--soft); color:var(--ok);
@@ -2037,6 +2058,10 @@
       <button class="satirBtn hide" id="bakiciBtn" data-ikk="bakici:anahtar">
         <span>Bakıcılar</span>
       </button>
+      <!-- 32.3: dış takvimler (yalnız sahip) -->
+      <button class="satirBtn hide" id="dtBtn" data-ikk="paylas:baglanti">
+        <span><span>Airbnb, Booking ve diğer siteler</span><span class="satirAlt" id="dtOzet">Takvim bağlantıları</span></span>
+      </button>
       <button class="satirBtn hide" id="giderlerimBtn" data-ikk="para:fis">
         <span>Giderlerim</span>
         <span class="sag" id="giderlerimOzet"></span>
@@ -2455,6 +2480,251 @@
     var tur=TITRESIM_DILI[olay]; if(!tur) return;
     try{ if(window.VTNative && VTNative.titret) VTNative.titret(tur); }catch(e){}
   }
+  // ================= 32 DIŞ TAKVİMLER (Airbnb, Booking, Vrbo, Villasepeti, diğer) =================
+  // Sunucu tarafı (VERITABANI_GOREV32.sql + takvim-esitle / takvim-ver) yoksa DT.hazir=false: satır ve bölümler gizli kalır.
+  var DT={hazir:null, bloklar:{}, durum:{}, cakismalar:[], son:{}};
+  var DT_KAYNAK={
+    airbnb:{ad:"Airbnb", harf:"A", renk:"#9B2C4A", ev:"https://www.airbnb.com/multicalendar",
+      adimlar:["Airbnb'de “Takvim”i açın ve villanızı seçin.","“Müsaitlik” bölümünde “Takvimleri bağla”ya dokunun.",
+               "“Başka bir web sitesine bağla”yı seçin.","Airbnb'nin verdiği linki kopyalayıp aşağıya yapıştırın."]},
+    booking:{ad:"Booking.com", kisa:"Booking", harf:"B", renk:"#3C4E8C", ev:"https://admin.booking.com/",
+      adimlar:["Booking.com ekstranetine (admin.booking.com) girin.","“Fiyatlar ve Müsaitlik” içinde “Takvimleri senkronize et”i açın.",
+               "“Takvimi dışa aktar”ı seçin; seçenek sorulursa “Yalnız rezerve edilen günler”i seçin.","Verilen linki kopyalayıp aşağıya yapıştırın."]},
+    vrbo:{ad:"Vrbo", harf:"V", renk:"#2E6E8E", ev:"https://www.vrbo.com/p/calendar",
+      adimlar:["Vrbo'da “Takvim”i açın ve villanızı seçin.","“İçe / dışa aktar” bölümünde “Takvimi dışa aktar”ı seçin.",
+               "Verilen linki kopyalayıp aşağıya yapıştırın."]},
+    villasepeti:{ad:"Villasepeti", harf:"VS", renk:"#4F6B22", yerel:true},
+    diger:{ad:"Diğer site", kisa:"Diğer site", harf:"•", renk:"#5F6A64", yerel:true}
+  };
+  function dtKaynak(k){ return DT_KAYNAK[k]||DT_KAYNAK.diger; }
+  function dtKisaAd(k){ var x=dtKaynak(k); return x.kisa||x.ad; }
+  function dtRozet(k){ var x=dtKaynak(k); return '<span class="dtRozet" style="background:'+x.renk+'" aria-hidden="true">'+esc(x.harf)+"</span>"; }
+  function dtOzellik(){ return !!(S.bulut && window.VT && VT.dt && VT.girisli && VT.girisli() && !S.destek); }
+  function dtHazir(){ return DT.hazir===true; }
+  function dtTakvimleri(villaId){ return DT.durum[villaId]||[]; }
+  function dtTakvimAd(villaId,takvimId){
+    var t=dtTakvimleri(villaId).filter(function(x){ return x.id===takvimId; })[0];
+    return t ? (t.ad||dtKisaAd(t.kaynak)) : cev("Diğer site");
+  }
+  function dtBloklarYaz(ids,l){
+    ids.forEach(function(id){ DT.bloklar[id]=[]; });
+    (l||[]).forEach(function(b){ (DT.bloklar[b.villa_id]=DT.bloklar[b.villa_id]||[]).push({id:b.id, takvim:b.takvim_id, bas:b.baslangic, bit:b.bitis, tur:b.tur, bagli:b.bagli_rezervasyon||null}); });
+  }
+  function dtDurumYukle(id){
+    return VT.dt.durumlar(id).then(function(l){ DT.durum[id]=Array.isArray(l)?l:[]; },function(e){ if(VT.dt.hazirDegil(e)) throw e; });
+  }
+  // Açılışta: bütün villaların dış blokları, açık çakışmalar ve takvim durumları
+  function dtYukle(){
+    if(!dtOzellik() || !S.villalar.length) return Promise.resolve();
+    var ids=S.villalar.map(function(v){ return v.id; });
+    return Promise.all([VT.dt.bloklar(ids), VT.dt.cakismalar()]).then(function(r){
+      DT.hazir=true; dtBloklarYaz(ids,r[0]); DT.cakismalar=r[1]||[];
+      return Promise.all(ids.map(dtDurumYukle));
+    }).catch(function(e){ if(VT.dt.hazirDegil(e)) DT.hazir=false; }).then(dtCizHepsi);
+  }
+  function dtCizHepsi(){
+    try{
+      if(aktif() && !document.getElementById("takvim").classList.contains("hide")) ciz();
+      else if(!document.getElementById("ana").classList.contains("hide") && !panelAcik()) cizAna();
+    }catch(e){}
+    try{ window.dispatchEvent(new CustomEvent("vt-dt")); }catch(e){}
+  }
+  // Eşitle: takvim-esitle (taze veri), sonra bloklar / durumlar / çakışmalar tazelenir. Cevap: sunucunun özeti
+  function dtEsitle(v,bas,bit){
+    if(!dtHazir() || !v || !dtTakvimleri(v.id).length) return Promise.resolve(null);
+    var g={villa_id:v.id}; if(bas && bit){ g.bas=bas; g.bit=bit; }
+    return VT.dt.esitle(g).then(function(c){
+      DT.son[v.id]=Date.now();
+      return Promise.all([VT.dt.bloklar([v.id]).then(function(l){ dtBloklarYaz([v.id],l); }), dtDurumYukle(v.id),
+        VT.dt.cakismalar().then(function(l){ DT.cakismalar=l||[]; },function(){})]).then(function(){ dtCizHepsi(); return c; });
+    });
+  }
+  // "3 dk önce" · "2 saattir"
+  function dtSure(t){
+    if(!t) return ""; var dk=Math.max(0,Math.round((Date.now()-Date.parse(t))/60000));
+    return dk<1 ? cev("az önce") : (dk<60 ? cev(dk+" dk önce") : (dk<1440 ? cev(Math.round(dk/60)+" saat önce") : cev(Math.round(dk/1440)+" gün önce")));
+  }
+  function dtSaattir(t){ var s=Math.max(1,Math.round((Date.now()-Date.parse(t))/3600000)); return s<48 ? cev(s+" saattir") : cev(Math.round(s/24)+" gündür"); }
+  // takvim satırının durumu: {ok, yazi}
+  function dtDurumu(t){
+    var son=t.son_basari, hata=(t.hata_sayisi||0)>0;
+    if(hata){
+      var bas=son||t.olusturma||t.son_deneme;
+      if(bas && Date.now()-Date.parse(bas)>45*60000) return {ok:false, yazi:dtSaattir(bas)+" "+cev("ulaşılamıyor")};
+      return {ok:false, yazi:cev(t.son_hata||"Takvim okunamadı.")};
+    }
+    if(son) return {ok:true, yazi:dtSure(son)+" "+cev("kontrol edildi")};
+    return {ok:true, yazi:cev("Kontrol bekleniyor")};
+  }
+  function dtOzetYaz(v){
+    var el=document.getElementById("dtOzet"); if(!el) return;
+    var l=dtTakvimleri(v.id);
+    el.textContent = !dtHazir() ? cev("Takvim bağlantıları") : (l.length ? l.map(function(t){ return t.ad||dtKisaAd(t.kaynak); }).join(", ") : cev("Bağlı takvim yok"));
+  }
+  document.getElementById("dtBtn").onclick=function(){ var v=aktif(); if(v) dtEkran(v); };
+
+  // ---- 32.3 Takvim bağlantıları ekranı ----
+  function dtEkran(v){
+    var o=perde('<div class="head"><h2>'+esc(cev("Airbnb, Booking ve diğer siteler"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Villanız başka sitelerde de satılıyorsa takvimleri burada bağlayın. Böylece aynı günler iki kez satılmaz."))+"</div>"+
+      '<div id="dtIc">'+iskelet()+"</div>");
+    o.querySelector(".sheet").dataset.adim="liste";
+    dtListeCiz(v);
+    rehberAc("dt",REHBER.dt);
+  }
+  function dtListeCiz(v){
+    var ic=document.getElementById("dtIc"); if(!ic) return;
+    Promise.all([VT.dt.takvimler(v.id), VT.dt.icalAnahtar(v.id)]).then(function(r){
+      DT.hazir=true;
+      var l=r[0]||[], anahtar=r[1], link=anahtar?VT.dt.icalAdres(anahtar):"";
+      DT.durum[v.id]=l.map(function(t){ return {id:t.id, kaynak:t.kaynak, ad:t.ad, aktif:t.aktif, son_basari:t.son_basari, son_deneme:t.son_deneme, son_hata:t.son_hata, hata_sayisi:t.hata_sayisi}; });
+      var h='<div class="eyebrow dtBolum" style="margin-top:1.5rem">'+esc(cev("Sitelerdeki takvimler (bize gelen)"))+"</div>";
+      if(l.length) h+='<div class="grup" id="dtListe">'+l.map(function(t){
+        var d=dtDurumu(t);
+        return '<button class="satirBtn dtSatir" data-tid="'+esc(t.id)+'">'+dtRozet(t.kaynak)+'<span><span>'+esc(t.ad||dtKisaAd(t.kaynak))+"</span>"+
+          '<span class="satirAlt dtDurum '+(d.ok?"ok":"hata")+'">'+(d.ok?ikon("tik",{boy:14,kalinlik:2.5}):ikon("uyari-ucgen",{boy:14}))+"<span>"+esc(d.yazi)+"</span></span></span></button>";
+      }).join("")+"</div>";
+      else h+='<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Henüz bir site takvimi bağlamadınız."))+"</div>";
+      h+='<button class="big" data-ik="arti" id="dtEkle">'+esc(cev("Site takvimi bağla"))+"</button>";
+      h+='<div class="eyebrow dtBolum">'+esc(cev("Bu villanın takvim linki (sitelere verilecek)"))+"</div>"+
+        '<div class="dtLink" id="dtLink">'+esc(link)+"</div>"+
+        '<div class="sm muted" style="line-height:1.45;margin-bottom:.75rem">'+esc(cev("Bu linki Airbnb, Booking ve diğer sitelerdeki takvim ayarına yapıştırın. Sizin buradan girdiğiniz günler orada da kapanır."))+"</div>"+
+        '<button class="big renkli is-paylas" data-ik="kopyala" id="dtKopya">'+esc(cev("Kopyala"))+"</button>"+
+        '<button class="big ghost" data-ik="yenile" id="dtLinkYenile" style="margin-top:.5rem">'+esc(cev("Linki yenile"))+"</button>";
+      ic.innerHTML=h;
+      dtOzetYaz(v);
+      kademeOyna(Array.prototype.slice.call(ic.children));
+      document.getElementById("dtEkle").onclick=function(){ dtBagla(v); };
+      document.getElementById("dtKopya").onclick=function(){ kopyala(link,cev("Takvim linki kopyalandı.")); };
+      document.getElementById("dtLinkYenile").onclick=function(){ dtLinkYenileSor(v); };
+      var ls=document.getElementById("dtListe");
+      if(ls) ls.onclick=function(e){ var b=e.target.closest("[data-tid]"); if(!b) return;
+        var t=l.filter(function(x){ return x.id===b.dataset.tid; })[0]; if(t) dtTakvimSheet(v,t); };
+    },function(e){
+      if(VT.dt.hazirDegil(e)){ DT.hazir=false;
+        ic.innerHTML=bosHal("baglanti","Bu özellik hazırlanıyor.","","Sunucu güncellemesi tamamlanınca burada Airbnb, Booking ve diğer sitelerin takvimlerini bağlayabileceksiniz.");
+        return; }
+      yukleHata(ic,e,function(){ dtListeCiz(v); });
+    });
+  }
+  function dtLinkYenileSor(v){
+    perde('<div class="head"><h2>'+esc(cev("Takvim linki yenilensin mi?"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div style="margin:.75rem 0 1.25rem;line-height:1.5">'+esc(cev("Eski link çalışmaz olur. Yeni linki Airbnb, Booking ve diğer sitelere yeniden yapıştırmanız gerekir."))+"</div>"+
+      '<button class="big" data-ik="yenile" id="dtYenileEvet">'+esc(cev("Evet, yenile"))+"</button>"+
+      '<button class="big ghost" id="dtYenileVaz" style="margin-top:.5rem">'+esc(cev("Vazgeç"))+"</button>");
+    document.getElementById("dtYenileVaz").onclick=function(){ dtEkran(v); };
+    document.getElementById("dtYenileEvet").onclick=function(){
+      kaydetIs(this,function(){ return VT.dt.icalAnahtar(v.id,true).then(function(){ dtEkran(v); tamam(cev("Takvim linki yenilendi")); }); });
+    };
+  }
+  // bağlı takvim: ad, link, kaldır
+  function dtTakvimSheet(v,t){
+    perde('<div class="head"><h2>'+esc(t.ad||dtKisaAd(t.kaynak))+"</h2>"+kapatBtn()+"</div>"+
+      '<div style="height:.75rem"></div>'+
+      alan("dt-ad",esc(cev("Ad")),esc(dtKisaAd(t.kaynak)),"text",esc(t.ad||""))+
+      alan("dt-adres2",esc(cev("Takvim linki (.ics)")),"https://…","url",esc(t.adres||""))+
+      '<button class="big" data-ik="tik" id="dt-kaydet">'+esc(cev("Kaydet"))+"</button>"+
+      '<button class="big ghost" id="dt-geri" style="margin-top:.5rem">'+esc(cev("Vazgeç"))+"</button>"+
+      '<button class="big tehlike" data-ik="cop" id="dt-kaldir">'+esc(cev("Bu takvimi kaldır"))+"</button>");
+    document.getElementById("dt-geri").onclick=function(){ dtEkran(v); };
+    document.getElementById("dt-kaydet").onclick=function(){
+      var ad=document.getElementById("dt-ad").value.trim()||dtKisaAd(t.kaynak), adres=document.getElementById("dt-adres2").value.trim();
+      if(!adres){ alanHata(document.getElementById("dt-adres2")); return; }
+      kaydetIs(this,function(){
+        var once=adres===t.adres ? Promise.resolve({deneme:{ok:true}}) : VT.dt.esitle({villa_id:v.id, deneme:{adres:adres, kaynak:t.kaynak}});
+        return once.then(function(c){
+          if(!c || !c.deneme || !c.deneme.ok) throw new Error((c && c.deneme && c.deneme.hata) || cev("Takvim okunamadı."));
+          return VT.dt.guncelle(t.id,{ad:ad.slice(0,40), adres:adres, hata_sayisi:0, son_hata:null, etag:null, son_degisim:null});
+        }).then(function(){ dtEsitle(v).catch(function(){}); dtEkran(v); tamam(cev("Takvim kaydedildi")); });
+      },function(e){ return dtHataYazi(e); });
+    };
+    document.getElementById("dt-kaldir").onclick=function(){
+      var b=this; if(!b._emin){ b._emin=true; b.lastChild.textContent=cev("Evet, kaldır"); return; }
+      kaydetIs(b,function(){ return VT.dt.sil(t.id).then(function(){
+        titret("silindi"); dtBloklarYaz([v.id],(DT.bloklar[v.id]||[]).filter(function(x){ return x.takvim!==t.id; }).map(function(x){
+          return {id:x.id, takvim_id:x.takvim, villa_id:v.id, baslangic:x.bas, bitis:x.bit, tur:x.tur, bagli_rezervasyon:x.bagli}; }));
+        dtEkran(v); dtCizHepsi(); bildir(cev("Takvim kaldırıldı."));
+      }); });
+    };
+  }
+  function dtHataYazi(e){
+    var m=String((e && e.message)||"");
+    if(/duplicate|23505|unique/i.test(m)) return cev("Bu link zaten bağlı.");
+    return kullaniciHatasi(e,cev("Takvim okunamadı. Linki kontrol edip tekrar deneyin."));
+  }
+  // "+ Site takvimi bağla": 1) kaynak 2) linkin nerede olduğu 3) link 4) Bağla (önce test)
+  function dtBagla(v){
+    var o=perde('<div class="head"><h2>'+esc(cev("Site takvimi bağla"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Takvim hangi siteden gelecek?"))+"</div>"+
+      '<div class="dtKaynaklar" id="dtKaynaklar">'+["airbnb","booking","vrbo","villasepeti","diger"].map(function(k){
+        return '<button class="dtKaynakBtn" data-k="'+k+'">'+dtRozet(k)+"<span>"+esc(cev(dtKaynak(k).ad))+"</span></button>"; }).join("")+"</div>"+
+      '<button class="big ghost" id="dtKaynakGeri" style="margin-top:1.25rem">'+esc(cev("Vazgeç"))+"</button>");
+    o.querySelector(".sheet").dataset.adim="kaynak";
+    document.getElementById("dtKaynakGeri").onclick=function(){ dtEkran(v); };
+    document.getElementById("dtKaynaklar").onclick=function(e){
+      var b=e.target.closest("[data-k]"); if(!b) return;
+      secimParla(b,function(){ rhBildir("dt:kaynak"); dtLinkAdimi(v,b.dataset.k); });
+    };
+  }
+  function dtLinkAdimi(v,k){
+    var x=dtKaynak(k), mesaj=cev("Merhaba, "+(v.ad||"villam")+" için sizdeki takvimin iCal (.ics) linkini gönderebilir misiniz? Kendi takvimimle eşitlemek istiyorum. Teşekkürler.");
+    var yardim = x.yerel
+      ? '<div style="margin:.75rem 0 .5rem;line-height:1.5">'+esc(cev("Sitenin müşteri temsilcisinden villanızın iCal (.ics) linkini isteyin."))+"</div>"+
+        '<div class="dtMesaj" id="dtMesaj">'+esc(mesaj)+"</div>"+
+        '<button class="big renkli is-paylas" data-ik="kopyala" id="dtMesajKopya" style="margin-bottom:1.25rem">'+esc(cev("Mesajı kopyala"))+"</button>"
+      : '<ol class="dtAdimlar">'+x.adimlar.map(function(a){ return "<li><span>"+esc(cev(a))+"</span></li>"; }).join("")+"</ol>";
+    var o=perde('<div class="head"><h2>'+esc(cev(x.ad))+"</h2>"+kapatBtn()+"</div>"+
+      '<button type="button" class="linkBtn maGeri" id="dtGeri">'+ikon("sol",{boy:18})+"<span>"+esc(cev("Site seçimi"))+"</span></button>"+
+      yardim+
+      alan("dt-adres",esc(cev("Takvim linki (.ics)")),"https://…","url","")+
+      '<div class="dtUyari hide" id="dtUyari"></div>'+
+      '<button class="big renkli is-gri dtYapistir" data-ik="yapistir" id="dtYapistir">'+esc(cev("Panodan yapıştır"))+"</button>"+
+      '<div id="dtSonuc"></div>'+
+      '<button class="big" data-ik="baglanti" id="dtBaglaBtn">'+esc(cev("Bağla"))+"</button>");
+    o.querySelector(".sheet").dataset.adim="link-"+k;
+    var inp=document.getElementById("dt-adres"); inp.setAttribute("autocomplete","off"); inp.setAttribute("autocapitalize","off"); inp.setAttribute("spellcheck","false");
+    document.getElementById("dtGeri").onclick=function(){ dtBagla(v); };
+    var mk=document.getElementById("dtMesajKopya"); if(mk) mk.onclick=function(){ kopyala(mesaj,cev("Mesaj kopyalandı.")); };
+    var yp=document.getElementById("dtYapistir");
+    if(!(navigator.clipboard && navigator.clipboard.readText)) yp.classList.add("hide");
+    yp.onclick=function(){
+      navigator.clipboard.readText().then(function(t){ inp.value=String(t||"").trim(); inp.dispatchEvent(new Event("input",{bubbles:true})); },
+        function(){ bildir(cev("Panoya erişilemedi. Linki alana basılı tutup yapıştırın.")); });
+    };
+    var uyar=document.getElementById("dtUyari");
+    inp.addEventListener("input",function(){ uyar.classList.add("hide"); inp.closest(".field").classList.remove("hata"); });
+    document.getElementById("dtBaglaBtn").onclick=function(){
+      var adres=inp.value.trim(), btn=this;
+      if(!adres){ alanHata(inp); return; }
+      // .ics ile bitmeyen ya da https olmayan link: kibar uyarı, ama denemeye izin var
+      var not=!/^https:\/\//i.test(adres) ? cev("Bu link https:// ile başlamıyor. Sitenin verdiği linki kontrol edin; yine de deniyoruz.")
+        : (!/\.ics(\?|#|$)/i.test(adres) ? cev("Bu link .ics ile bitmiyor. Takvim linki olduğundan emin olun; yine de deniyoruz.") : "");
+      if(not){ uyar.textContent=not; uyar.classList.remove("hide"); }
+      kaydetIs(btn,function(){
+        return VT.dt.esitle({villa_id:v.id, deneme:{adres:adres, kaynak:k}}).then(function(c){
+          var d=c && c.deneme; if(!d || !d.ok) throw new Error((d && d.hata) || cev("Takvim okunamadı."));
+          var ayni=dtTakvimleri(v.id).filter(function(t){ return t.kaynak===k; }).length;
+          return VT.dt.ekle(v.id,k,(dtKisaAd(k)+(ayni?" "+(ayni+1):"")).slice(0,40),adres).then(function(t){
+            if(t) DT.durum[v.id]=dtTakvimleri(v.id).concat([{id:t.id, kaynak:k, ad:t.ad, aktif:true, son_basari:null, hata_sayisi:0}]);
+            dtEsitle(v).catch(function(){});
+            dtBaglandi(v,d);
+          });
+        });
+      },function(e){ return dtHataYazi(e); });
+    };
+  }
+  function dtBaglandi(v,d){
+    var s=document.getElementById("dtSonuc"); if(!s) return;
+    s.innerHTML='<div class="dtSonuc" role="status">'+ikon("tik-daire",{boy:22})+"<span>"+
+      esc(cev(d.dolu_gun ? "Bağlandı: önümüzdeki 12 ayda "+d.dolu_gun+" dolu gün bulundu." : "Bağlandı: önümüzdeki 12 ayda dolu gün yok."))+"</span></div>";
+    var b=document.getElementById("dtBaglaBtn");
+    b.onclick=function(){ dtEkran(v); };
+    // kaydetIs düğmeyi eski hâline döndürdükten sonra "Tamam" yazsın
+    setTimeout(function(){ b.innerHTML=ikon("tik",{boy:20})+"<span>"+esc(cev("Tamam"))+"</span>"; },0);
+    var yp=document.getElementById("dtYapistir"); if(yp) yp.classList.add("hide");
+    kademeOyna([s.firstChild]); titret("kaydedildi"); rhBildir("dt:baglandi");
+  }
+
   // ================= 31.6 "İLK" ANLARI =================
   // İlk rezervasyon, ilk villa ve ilk gönderilen teklif için hesap başına bir kez sade bir kutlama kartı (konfeti yok).
   // Görülenler cihazda, hesaba göre saklanır. Bu cihazda kayıt yoksa ve hesapta zaten bu türden birden çok kayıt varsa
@@ -5006,6 +5276,8 @@
     }
     document.getElementById("fiyatBtn").classList[(sahip&&duz)?"remove":"add"]("hide");
     document.getElementById("bakiciBtn").classList[(S.bulut&&sahip&&!S.destek)?"remove":"add"]("hide");
+    document.getElementById("dtBtn").classList[(S.bulut&&sahip&&!S.destek&&DT.hazir!==false)?"remove":"add"]("hide");
+    dtOzetYaz(v);
     // 16.6: villa ekranında Teklifler bölümü görünüyorsa "Teklifler" satırı tekrarlanmaz
     var tkVar=!!(S.tkOn && S.tkOn[v.id] && S.tkOn[v.id].l && S.tkOn[v.id].l.length && teklifVerebilir());
     document.getElementById("teklifBtn").classList[(S.bulut&&sahip&&kurulu()&&!S.destek&&!tkVar)?"remove":"add"]("hide");
@@ -5460,6 +5732,14 @@
          metin:function(){ var k=pq("#fp-hsKutu"); return (k && !k.classList.contains("hide") && !pq("#fp-hsAc")) ? RM.fiyatHaftasonu : RM.fiyatHaftasonuAc; }},
         {hedef:function(){ var g=pq("#fp-gecmis"); return (g && !g.classList.contains("hide")) ? g : pq("#fp-uygula"); },
          metin:RM.kaydet, bekle:"olay", olay:"kaydedildi:fiyat"}
+      ]}; },
+    // 32.3 Dış takvim bağlama
+    dt:function(){ return {ad:"dt", basari:"Takvim bağlandı", bitis_olayi:"dt:baglandi",
+      adimlar:[
+        {hedef:rhTek("#dtEkle"), metin:RM.dtEkle, bekle:"dokunus"},
+        {hedef:rhTek("#dtKaynaklar"), metin:RM.dtKaynak, bekle:"olay", olay:"dt:kaynak"},
+        {hedef:rhAlan("#dt-adres"), deger:"#dt-adres", metin:RM.dtAdres, bekle:"deger"},
+        {hedef:rhTek("#dtBaglaBtn"), metin:RM.dtBagla, bekle:"olay", olay:"dt:baglandi"}
       ]}; },
     // 19.7 Paylaş
     paylas:function(){ return {ad:"paylas", basari:"Bağlantı paylaşıldı", bitis_olayi:"kaydedildi:paylas",
@@ -12304,6 +12584,7 @@
       if(kurtarilan || duzeltilen) kaydet();
       var ajAcik=!document.getElementById("ajanda").classList.contains("hide");
       cizAna(); anaYerlesimSakla();
+      dtYukle();   // 32: dış takvim blokları, çakışmalar (sunucu hazır değilse sessizce kapalı)
       if(ajAcik) sekmeGit("ajanda");
       acilisHazir();
       // Yan işler: biri hata verse bile yükleme bozulmasın ("Bağlantı kurulamadı" çıkmasın)

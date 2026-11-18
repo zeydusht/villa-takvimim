@@ -93,6 +93,11 @@
     fiyatHaftaici: "Hafta içi gecelik fiyatı yazın.",
     fiyatHaftasonuAc: "Cuma ve cumartesi geceleri farklıysa buraya dokunup fiyatı yazın.",
     fiyatHaftasonu: "Cuma ve cumartesi gecelerinin fiyatını yazın.",
+    // 32.3 dış takvim bağlama
+    dtEkle: "Başka sitedeki takvimi bağlamak için ‘Site takvimi bağla’ya dokunun.",
+    dtKaynak: "Takvimin geleceği siteye dokunun.",
+    dtAdres: "Sitenin verdiği takvim linkini buraya yapıştırın.",
+    dtBagla: "‘Bağla’ya dokunun. Link hemen denenir.",
     // paylaş
     paylasBilgi: "Bu bağlantıyı misafirlerinize gönderin. Fotoğrafları, boş günleri ve fiyatları görürler.",
     paylasDokun: "‘Bağlantıyı paylaş’a dokunun.",
