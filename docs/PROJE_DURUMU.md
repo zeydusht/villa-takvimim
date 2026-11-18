@@ -689,6 +689,14 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       App Store Connect "App Privacy" yanıtları PrivacyInfo.xcprivacy ile aynı olmalı.
       29.6 yönetici iki adımlı doğrulama (TOTP) hazır; veritabanında aal2 kuralı AÇILMADI (Zeyd ve Berat kurduktan sonra açılacak).
       GERÇEK İPHONE'DA TEST EDİLECEK (TestFlight derlemesi, izin metinleri, QR okutma).
+- [x] Görev 30 — Abonelik (istemci tarafı, şimdilik kapalı) + App Store metinleri + kalite turu · Claude Code (18 Kasım, gece görevi).
+      Netlify'a yüklenmedi; GitHub'a gönderildi (30.1–30.6 ayrı commit). Kararlar: `docs/GECE_RAPORU.md`, testler: `docs/qa/gorev30/README.md`.
+      Veritabanı (VERITABANI_GOREV29 ve 30) ürün yöneticisi tarafından 18 Kasım'da uygulandı. `sinir_acik` = false: kimse etkilenmez.
+      30.1 Pro ekranı + `www/kosullar.html` + gizlilikte abonelik bölümü. 30.2 `www/magaza.js` (RevenueCat 14.1.0; config.js'te
+      RC_IOS_KEY / RC_ANDROID_KEY boş → "Yakında"). 30.3 Pro ekranı yalnız sinir_acik ve villa_ekleyebilir=false iken (4. villa).
+      30.4 Hesap → Üyelik. 30.5 yönetimde rozet, üyelik ver / kaldır (onaylı). 30.6 `supabase/functions/abonelik-webhook` (DEPLOY EDİLMEDİ).
+      App Store: `docs/APPSTORE.md`, `docs/appstore-ekranlar/` (6 × 2 dil, 1320 × 2868).
+      Abonelik açılmadan önce: mağaza ürünleri + RevenueCat + anahtarlar + webhook deploy + PrivacyInfo'ya "Purchase History".
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.

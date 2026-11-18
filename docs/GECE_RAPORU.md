@@ -1,6 +1,63 @@
 # Gece raporu (18 Kasım 2026)
 
-_Özet en sonda tamamlanacak._
+_Claude Code. Netlify'a yükleme yapılmadı, veritabanı değiştirilmedi. Her adım ayrı commit, GitHub'a gönderildi._
+
+## Ne yapıldı
+
+1. **Görev 29 kontrolü:** eksik yok. Ürün yöneticisi gece SQL dosyalarını (29 ve 30) uygulamış; ölçüm ve yönetim istatistikleri artık canlıda çalışır.
+2. **Görev 30, abonelik (sınır kapalı, kimse etkilenmez):**
+   - 30.1 Villa Takvimim Pro ekranı (büyük yazı, "İlk ay ücretsiz", geri yükleme, otomatik yenileme yazısı), `kosullar.html`, gizlilikte abonelik bölümü.
+   - 30.2 RevenueCat mağaza bağlantısı (`magaza.js`). Anahtarlar boş olduğu için düğmeler "Yakında".
+   - 30.3 Pro ekranı yalnız sınır açıkken ve 4. villa eklenirken çıkar.
+   - 30.4 Hesap → Üyelik satırı ve "Aboneliği yönet".
+   - 30.5 Yönetim: abonelik rozeti, onaylı "Üyelik ver" / "Üyeliği kaldır".
+   - 30.6 `abonelik-webhook` sunucu fonksiyonu taslağı. Deploy edilmedi.
+3. **App Store:** `docs/APPSTORE.md`'de Türkçe ve İngilizce metinler, yaş derecelendirmesi, App Privacy cevapları ve inceleme notu var. `docs/appstore-ekranlar/`'da 12 ekran görüntüsü var (6 ekran × 2 dil, 1320 × 2868).
+4. **Kalite turu:** 16 durum denetlendi (iPhone SE dahil 4 boyut, normal ve çok büyük yazı, gece / gündüz modu). Şunlar düzeltildi:
+   - 2 emoji;
+   - 3 kesik ya da bölünen yazı;
+   - İngilizcede çevrilmeyen bir satır;
+   - Görev 29'dan kalan ikon kutusu hatası;
+   - DENETIM Ö3'ten 3 madde.
+5. **Testler (son kodla):**
+   - Görev 30'un bütün testleri geçti.
+   - Görev 19–29 testleri: hepsi geçti.
+   - Son toplu turda Görev 27.6'da ekran görüntüsü zaman aşımı ve klavye testinde bir zamanlama sapması oldu. Tek başına yeniden çalıştırılınca ikisi de geçti (86/86, 7/7).
+
+## Alınan önemli kararlar (ayrıntısı aşağıda)
+
+- Mağaza bağlıyken bile deneme hakkı yoksa "İlk ay ücretsiz" yazmıyor. Fiyat, deneme yazısıyla aynı büyüklükte (Apple kuralı).
+- Sınır kapalıyken "Üyelik" satırı da gizli. Yalnız sınır açılınca ya da kişiye üyelik verilince görünür.
+- Mağazadan alınmış aboneliğe yönetim panelinden elle dokunulamıyor (karışmasın diye).
+- App Store açıklamasında bu sürümde Pro anlatılmadı (abonelik kapalı).
+- Webhook sandbox (test) satın almalarını da işler; yoksa Apple incelemecisinin satın alması açılmaz.
+
+## Ne yapılamadı ve neden
+
+- **iOS / Android derlemesi ve gerçek satın alma denemesi:** Windows'ta Xcode yok, RevenueCat anahtarı ve mağaza ürünü de yok. Satın alma, sahte mağaza eklentisiyle test edildi.
+- **Webhook'un Supabase'de çalıştırılması:** görev gereği deploy edilmedi. Deno da kurulu değil. Node'da Deno ve veritabanı taklit edilerek 21 durumla test edildi.
+- **DENETIM Ö3'ün kalan 10 maddesi:** tasarım kararı istiyor (takvimde fiyat gösterimi, yedek hatırlatması vb.).
+- **Gerçek villa fotoğraflı ekran görüntüleri:** elimde fotoğraf yoktu. Villalar harf rozetiyle görünüyor.
+
+## Zeyd'in yapması gerekenler
+
+1. **Netlify'a yükleme** (siz söyleyince): uygulama içindeki "Kullanım Koşulları" ve gizlilik bağlantıları canlı siteyi açıyor. `kosullar.html` ve yeni gizlilik metni yüklenene kadar orada eski hâl ya da boş sayfa görünür.
+2. **Gizlilik ve koşullar:** köşeli parantezli iletişim alanları doldurulmalı. Yayından önce bir avukata gösterilmesi önerilir.
+3. **Aboneliği açmadan önce** (sırayla):
+   1. App Store Connect'te ücretli uygulama sözleşmesi, banka ve vergi bilgileri.
+   2. Aylık ürün `villatakvim_pro_aylik`, 1 ay ücretsiz deneme. Google Play'de de aynısı.
+   3. RevenueCat projesi: ürünler, "pro" yetkisi, "default" teklif içinde aylık paket.
+   4. RevenueCat herkese açık SDK anahtarlarını Claude'a verin. `config.js`'e girilip yeni sürüm derlenecek.
+   5. Webhook deploy: `supabase functions deploy abonelik-webhook --no-verify-jwt`, `RC_WEBHOOK_SECRET` gizli değeri, RevenueCat'te webhook adresi ve aynı Authorization değeri.
+   6. Xcode'da "In-App Purchase" yeteneği.
+   7. `PrivacyInfo.xcprivacy` ve App Store gizlilik etiketine "Purchase History" eklenmesi (Claude yapabilir).
+   8. TestFlight'ta sandbox ile satın alma, geri yükleme ve iptal denemesi.
+   9. En son `plan_ayarlari.sinir_acik = true` (ürün yöneticisi).
+4. **App Store:**
+   - İnceleme notuna demo hesabın e-posta ve şifresi yazılmalı.
+   - Uygulama içinde ad "Villa Takvim", mağazada "Villa Takvimim". Hangisi olacağına karar verin.
+5. **Görev 29'dan kalan:** yöneticiler iki adımlı doğrulamayı kurduktan sonra veritabanında aal2 kuralı açılmalı. Gerçek iPhone'da QR okutma denenmeli.
+6. **DENETIM Ö3'ün kalan maddeleri:** hangilerinin yapılacağını seçin.
 
 ## Kararlar (iş sırasında yazıldı)
 
