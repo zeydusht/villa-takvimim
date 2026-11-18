@@ -73,7 +73,8 @@ Kullanıcı yaşlı bir villa sahibi. Her karar "daha sade, daha net" yönünde 
 - **Para biçimi:** her yerde `12.300 ₺` (binlik nokta, boşluk, ₺). Takvim hücresinde dar bölünmeyen boşlukla `4.100 ₺`, yüz binin
   üstünde `120b ₺`. Tek kaynak: `para()` (uygulama), `nf.format(n)+" ₺"` (misafir sayfası).
 - **Dar alanda büyük yazı:** yan yana öğeler sığmazsa alt satıra geçer (`flex-wrap`, `min-width:min-content`, kap sorgusu); üst üste binmez.
-- **Uzunluk:** bir satır en fazla ~40 karakter (telefonda). Rehber baloncuğu en fazla 2 satır.
+- **Uzunluk:** bir satır en fazla ~40 karakter (telefonda). Rehber baloncuğu en fazla 2 satır. Rehber katmanı 16 px tabanlı eski
+  ölçülerinde kalır (`--rh-olcek`, Görev 31.10); yazı boyutu ayarıyla yine büyür.
 
 ## 3. Düğmeler
 

@@ -256,7 +256,10 @@
       ".rh.kapaniyor,.rhSon.kapaniyor{transition:none}}";
   function cssKur() {
     if (document.getElementById("rhCss")) return;
-    var s = document.createElement("style"); s.id = "rhCss"; s.textContent = CSS;
+    // 31.10: uygulamanın gövde yazısı 17 px oldu; rehber katmanı eski ölçülerinde kalsın diye bütün rem değerleri
+    // --rh-olcek ile çarpılır (index.html: 16/17). Yazı boyutu ayarıyla (Büyük, Çok büyük) yine birlikte büyür.
+    var s = document.createElement("style"); s.id = "rhCss";
+    s.textContent = CSS.replace(/(-?\d*\.?\d+)rem/g, function (m, n) { return "calc(" + n + "rem * var(--rh-olcek, 1))"; });
     (document.head || document.documentElement).appendChild(s);
   }
   // *kelime* → vurgulu (kalın değil)
@@ -746,9 +749,12 @@
     yaz(D.delik, "transform", "translate(" + Math.round(d.l - ox) + "px," + Math.round(d.t - oy) + "px)");
     yaz(D.delik, "width", Math.max(0, Math.round(d.w)) + "px"); yaz(D.delik, "height", Math.max(0, Math.round(d.h)) + "px");
     yaz(D.balon, "left", Math.round(b.l - ox) + "px"); yaz(D.balon, "width", Math.round(b.w) + "px");
-    var bh = D.balon.offsetHeight;
-    // baloncuğun alt kenarı hedefin üst kenarının 8 px üstünde
-    yaz(D.balon, "top", Math.round(d.t + pay - 8 - bh - oy) + "px");
+    var bh = D.balon.offsetHeight, g = alan();
+    // baloncuğun alt kenarı hedefin üst kenarının 8 px üstünde. 31.10: üstte yer yoksa (yazı 17 px olunca hedefler büyüdü)
+    // hedefin 8 px altına; altta da yer yoksa ekranın üst kenarına yapışır (ekrandan taşmaz)
+    var bt = d.t + pay - 8 - bh;
+    if (bt < g.ust + 4) bt = (d.t + d.h - pay + 8 + bh <= g.alt - 4) ? d.t + d.h - pay + 8 : g.ust + 4;
+    yaz(D.balon, "top", Math.round(bt - oy) + "px");
     D.delikEkran = d; D.balonEkran = b;
   }
   function solukCiz(d) {

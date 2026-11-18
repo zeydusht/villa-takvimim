@@ -100,6 +100,7 @@
     --satir-govde:1.45;
     --satir-baslik:1.2;
     --harf-serif:-.01em;         /* serif başlıklarda harf aralığı */
+    --rh-olcek:.941176;          /* 31.10: rehber katmanı eski (16 px tabanlı) ölçülerinde kalır: baloncuk en fazla 2 satır */
     --serif: ui-serif, Georgia, "Times New Roman", serif;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
@@ -1120,6 +1121,8 @@
   /* 22.2: rehberi olan panellerde başlığın yanında "?" (rehberi tek seferlik açar; rehber açıkken görünmez) */
   /* 31.10: panelde "? Nasıl?" hapı başlığın altında kendi satırında (başlık daralmaz, üst üste binme olmaz) */
   .head.rhSoruVar > .rhSoru{margin:.625rem 0 0}
+  /* rehber sürerken "Nasıl?" gereksiz (rehberi açan düğme): yer de kaplamaz, hedefler yukarıda kalır */
+  html.rhAcik .head.rhSoruVar > .rhSoru{display:none}
   /* 26.6: ekran başlığının yanındaki "?" (Misafirler, Fotoğraflar): başlığın hemen yanında, rozet sağda kalır */
   .baslikSatir.rhSoruVar > h1{flex:0 1 auto}
   .baslikSatir.rhSoruVar > .rhSoru{margin-right:auto}
@@ -2576,17 +2579,18 @@
       var ana=document.getElementById("ana"), l=document.querySelectorAll("#villalar > .kart");
       if(!ana || ana.classList.contains("hide") || !l.length) return;
       var a=ana.getBoundingClientRect().top;
-      try{ localStorage.setItem(ISK_ANA,JSON.stringify({ust:Math.round(l[0].getBoundingClientRect().top-a),
-        boy:Array.prototype.slice.call(l,0,4).map(function(k){ return Math.round(k.offsetHeight); })})); }catch(e){}
+      try{ localStorage.setItem(ISK_ANA,JSON.stringify({ust:+(l[0].getBoundingClientRect().top-a).toFixed(2),
+        boy:Array.prototype.slice.call(l,0,4).map(function(k){ return +k.getBoundingClientRect().height.toFixed(2); })})); }catch(e){}
     });
   }
   function anaYerlesimUygula(){
     var y=null; try{ y=JSON.parse(localStorage.getItem(ISK_ANA)||"null"); }catch(e){}
     var ana=document.getElementById("ana"), l=document.querySelectorAll("#villalar .iskKart");
     if(!y || !l.length) return;
-    l.forEach(function(k,i){ if(y.boy && y.boy[i]) k.style.minHeight=y.boy[i]+"px"; });
-    var fark=y.ust-Math.round(l[0].getBoundingClientRect().top-ana.getBoundingClientRect().top);
-    if(fark>24){ var b=document.createElement("div"); b.className="isk blok iskUst"; b.style.cssText="height:"+(fark-12)+"px;margin:0;border-radius:var(--kose)";
+    l.forEach(function(k,i){ if(y.boy && y.boy[i]) k.style.height=y.boy[i]+"px"; });
+    var fark=y.ust-(l[0].getBoundingClientRect().top-ana.getBoundingClientRect().top);
+    var ara=parseFloat(getComputedStyle(l[0].parentNode).rowGap)||0;
+    if(fark>24){ var b=document.createElement("div"); b.className="isk blok iskUst"; b.style.cssText="height:"+(fark-ara)+"px;margin:0;border-radius:var(--kose)";
       l[0].parentNode.insertBefore(b,l[0]); }
   }
   function villaIskelet(n){
@@ -6015,7 +6019,7 @@
       if(!N){ el.innerHTML='<div class="sm muted">'+esc(cev("Tarihleri seçince normal ücret burada görünür."))+"</div>"; return; }
       var sat=function(ad,deger,arti){ return '<div class="ucSatir"><span class="ucAd">'+ad+'</span><span class="ucDeger">'+(arti?"+":"")+para(deger)+"</span></div>"; };
       var gAd=N.tek ? cev(N.gc+" gece")+" × "+para(N.tek) : cev(N.gc+" gece");
-      var h='<div class="eyebrow lab" style="margin:0 0 .25rem">'+esc(cev("Normal ücret"))+"</div>"+sat(esc(gAd),N.geceler,false);
+      var h='<div class="eyebrow lab" style="margin:0 0 .25rem">'+esc(cev("Normal ücret"))+"</div>"+sat(esc(gAd).replace(/ ₺/g,"&nbsp;₺"),N.geceler,false);
       if(N.eksik) h+='<div class="sm warn" style="margin:-.25rem 0 .5rem">'+esc(cev(N.eksik+" gecenin fiyatı girilmemiş"))+"</div>";
       if(N.ek) h+=sat(esc(cev("Kısa konaklama ücreti")),N.ek,true);
       h+='<div class="ucCizgi"></div><div class="ucSatir ucToplam"><span class="ucAd">'+esc(cev("Konaklama ücreti"))+'</span><span class="ucDeger">'+para(N.konaklama)+"</span></div>";
@@ -6665,7 +6669,7 @@
     var kartCiz=function(){
       var el=document.getElementById("f-ucret"); if(!el) return;
       var gAd = (tekFiyat && !h.eksik) ? cev(g+" gece")+" × "+para(tekFiyat) : cev(g+" gece");
-      var html=satir("geceler",esc(gAd),U.geceler,false);
+      var html=satir("geceler",esc(gAd).replace(/ ₺/g,"&nbsp;₺"),U.geceler,false);   // 31.10: "₺" tek başına alt satıra düşmesin
       if(h.eksik && !U.geceler) html+='<div class="sm warn" style="margin:-.25rem 0 .5rem">'+esc(cev(h.eksik+" gecenin fiyatı girilmemiş, tutarı yazın"))+"</div>";
       if(U.ek || acik.ek) html+=satir("ek",esc(cev("Kısa konaklama ücreti")),U.ek,true);
       html+='<div class="ucCizgi"></div><div class="ucSatir ucToplam"><span class="ucAd">'+esc(cev("Konaklama ücreti"))+'</span><span class="ucDeger">'+para(konaklama())+"</span></div>";

@@ -1,6 +1,6 @@
 # Villa Takvim — Proje Durumu
 
-_Son güncelleme: 17 Kasım 2026_
+_Son güncelleme: 18 Kasım 2026_
 
 ## Ne bu?
 Villa Takvim'in (villatakvim.netlify.app) iPhone/Android uygulaması. App adı: **Villa Takvimim**.
@@ -697,6 +697,15 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       30.4 Hesap → Üyelik. 30.5 yönetimde rozet, üyelik ver / kaldır (onaylı). 30.6 `supabase/functions/abonelik-webhook` (DEPLOY EDİLMEDİ).
       App Store: `docs/APPSTORE.md`, `docs/appstore-ekranlar/` (6 × 2 dil, 1320 × 2868).
       Abonelik açılmadan önce: mağaza ürünleri + RevenueCat + anahtarlar + webhook deploy + PrivacyInfo'ya "Purchase History".
+- [x] Görev 31 — Tasarım dili 2.0: hareket, his, netlik · Claude Code (18 Kasım).
+      Netlify'a yüklenmedi; GitHub'a gönderildi (31.1–31.14 ayrı commit). Testler ve kararlar: `docs/qa/gorev31/README.md`,
+      videolar: `docs/qa/gorev31/video/`. Bütün değerler `:root` değişkenlerinde ve `docs/STIL.md`'de. Veritabanı değişmedi.
+      31.1 panel 340 / 220 ms çekmece eğrisi, bildirim geçişi. 31.2 panellerde kademeli giriş. 31.3 basınca %97 (120 / 200 ms).
+      31.4 tek titreşim tablosu (`TITRESIM_DILI`). 31.5 eşit genişlikte rakam, sayarak değişen toplam. 31.6 tik çizimi, "ilk" kartları.
+      31.7 iskelet (300 / 400 ms), "Kaydediliyor… / Tekrar dene". 31.8 boş hâller. 31.9 sade hata metni, alan titremesi.
+      31.10 gövde 17 px, en küçük 14 px, "? Nasıl?", "✕ Kapat". 31.11 ekranda tek ana düğme. 31.12 hızla çekip kapatma, lastik,
+      kapanırken dokununca geri açılma. 31.13 `?yavas=3` (yalnız inceleme için).
+      GERÇEK İPHONE'DA BAKILACAK: titreşimler (özellikle yeni `secim`), çekmece hissi, 17 px'lik yazı.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
