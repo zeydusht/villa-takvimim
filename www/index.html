@@ -862,6 +862,14 @@
   button.kSatir:active, .fyGun:active, .ipBtn:active, .seg button:active, #misFiltre button:active, .sekmeler button:active,
   .sekmeler button.basili{transform:scale(var(--basili-olcek))}
   .cell, .cell:active{transform:none}
+  /* 31.8 boş hâl: büyük, sakin Lucide ikon (zemin --soft), tek cümle, tek ana düğme */
+  .bosHal{display:flex; flex-direction:column; align-items:center; text-align:center; gap:.75rem; padding:1.5rem .25rem 1rem}
+  .bosHal .bosIkon{width:5.5rem; height:5.5rem; border-radius:99px; background:var(--soft); color:var(--ok);
+    display:flex; align-items:center; justify-content:center; flex:none}
+  .bosHal .bosYazi{font-size:1.0625rem; line-height:1.45; color:var(--ink); max-width:22rem}
+  .bosHal .bosAlt{font-size:.9375rem; line-height:1.45; color:var(--muted); max-width:22rem; margin-top:-.375rem}
+  .bosHal .big{margin-top:.25rem}
+  .bosHal .bakiciLink{margin-top:.25rem}
   /* 31.6 başarı anları: bildirimde çizilen tik; "ilk" kutlama kartı (konfeti yok) */
   .bildirim .bildirTik{flex:none; display:flex; color:#9FE0C9}
   .bildirim .bildirTik path{stroke-dasharray:1; stroke-dashoffset:1;
@@ -2132,6 +2140,7 @@
       <button class="kKutu gri" id="kGiderKutu" data-git="kGiderBol"><span class="kkIk" data-ik="fis" data-ik-boy="22"></span><span class="kkSayi" id="kGider">0 ₺</span><span class="kkEt">Giderler</span></button>
     </div>
     <div class="kCumle" id="kAcik"></div>
+    <div id="kasaBos" class="hide"></div>
 
     <div class="section" id="kAlinacakBol">
       <div class="bolumSatir" style="margin-bottom:.5rem"><div class="eyebrow" data-iki="sil:saat">Alınacak ödemeler</div>
@@ -3099,15 +3108,9 @@
          durumEtiket(!!ic, ic&&ic.guest)+
          (alt?'<span class="kalt">'+esc(alt)+"</span>":"")+"</span></button>";
     });
-    if(!S.villalar.length) h='<div style="margin-top:1.5rem">'+cizimImg("bos-villa")+"</div>"+'<div class="karsilama"><h2>'+esc(cev("Hoş geldiniz"))+"</h2>"+
-      "<ol>"+
-        '<li><span class="no">1</span><span>'+esc(cev("Villanızı ekleyin"))+"</span></li>"+
-        '<li><span class="no">2</span><span>'+esc(cev("Gecelik fiyatları girin"))+"</span></li>"+
-        '<li><span class="no">3</span><span>'+esc(cev("Rezervasyonları takvime işleyin"))+"</span></li>"+
-      "</ol>"+
-      '<button class="big" data-ik="arti" id="karsilamaEkle">'+esc(cev("Villa ekle"))+"</button>"+
-      ((S.bulut && window.VT && VT.girisli && VT.girisli())?'<button class="bakiciLink" id="karsilamaDavet">'+esc(cev("Bakıcı mısınız? Davet koduyla katılın"))+"</button>":"")+
-      "</div>";
+    if(!S.villalar.length) h=bosHal("ev","Henüz villa eklemediniz.",'<button class="big" data-ik="arti" id="karsilamaEkle">'+esc(cev("Villa ekle"))+"</button>",
+      "Villanızı ekleyin, gecelik fiyatları girin, rezervasyonları takvime işleyin.",
+      (S.bulut && window.VT && VT.girisli && VT.girisli())?'<button class="bakiciLink" id="karsilamaDavet">'+esc(cev("Bakıcı mısınız? Davet koduyla katılın"))+"</button>":"");
     if(S.villalar.length && !gorunen) h='<div class="sm muted" style="padding:.5rem 0">'+esc(cev(suz==="dolu"?"Bugün dolu villa yok.":"Bugün boş villa yok."))+"</div>";
     document.getElementById("villalar").innerHTML=h;
     // 18.15: başlığın altında yalnız "+ Villa ekle" (Takvim ve Teklifler hapları kalktı)
@@ -3760,8 +3763,7 @@
           (depBekler?'<span class="ajDepEt">'+esc(cev("Depozito iadesi"))+"</span>":"")+
         "</span>"+(sag?'<span class="ajSag">'+sag+"</span>":"")+"</button>";
     });
-    if(!olaylar.length) h+='<div style="margin-top:1.5rem">'+cizimImg("bos-takvim")+"</div>"+'<div class="sm muted" style="text-align:center">'+
-      esc(cev({gun:"Bugün giriş veya çıkış yok.", "7":"Önümüzdeki 7 günde giriş veya çıkış yok.", "30":"Önümüzdeki 30 günde giriş veya çıkış yok."}[AJ.mod]))+"</div>";
+    if(!olaylar.length) h+=bosHal("takvim-tik",{gun:"Bugün giriş ya da çıkış yok.", "7":"Önümüzdeki 7 günde giriş ya da çıkış yok.", "30":"Önümüzdeki 30 günde giriş ya da çıkış yok."}[AJ.mod]);
     var el=document.getElementById("ajandaListe");
     el.innerHTML=h;
     el.onclick=function(e){
@@ -4070,9 +4072,10 @@
       '<button type="button" data-s="fiyat"'+(MA.sira==="fiyat"?' class="on" aria-pressed="true"':' aria-pressed="false"')+">"+esc(cev("Fiyat (artan)"))+"</button></div></div>";
     h+=maSecUst(fiyatli,bos.length);
     if(bos.length) h+='<div class="maListe" id="maBosListe">'+bos.map(maKartHTML).join("")+"</div>";
-    else h+='<div class="maBosYok" id="maBosYok">'+cizimImg("bos-takvim")+'<div class="maBosYazi">'+esc(cev("Bu tarihlerde boş villa yok"))+"</div>"+
+    else h+='<div class="maBosYok" id="maBosYok">'+bosHal("takvim-x","Bu tarihlerde boş villa yok.",
+      '<button type="button" class="big" data-ik="takvim-aralik" id="maBosGeri">'+esc(cev("Tarihleri değiştir"))+"</button>",null,
       (MA.yakin?'<button type="button" class="big renkli is-rez" id="maYakin">'+ikon("takvim-aralik",{boy:20})+"<span>"+
-        esc(cev("En yakın boşluk: "+(MA.yakin.v.ad||cev("Villa"))+" · "+aralikYazi({b:MA.yakin.bas,s:MA.yakin.bit})))+"</span></button>":"")+"</div>";
+        esc(cev("En yakın boşluk: "+(MA.yakin.v.ad||cev("Villa"))+" · "+aralikYazi({b:MA.yakin.bas,s:MA.yakin.bit})))+"</span></button>":""))+"</div>";
     if(R.kismen.length){
       h+='<button type="button" class="ajKonak maKismenBtn'+(MA.kismenAcik?" acik":"")+'" id="maKismenBtn" aria-expanded="'+!!MA.kismenAcik+'">'+
         '<span class="ajKonakIk">'+ikon("takvim-aralik",{boy:20})+"</span><span>"+esc(cev("Kısmen boş ("+R.kismen.length+")"))+"</span>"+ikon("sag",{boy:20,sinif:"ajOk"})+"</button>"+
@@ -4199,7 +4202,7 @@
     maPerde(); rhSoru(REHBER.musait);
   }
   function maTiklaEk(e,t){
-    if(t.id==="maGeri"){ MA.adim="tarih"; MA.secMod=false; var b0=parse(MA.bas); MA.imlec=new Date(b0.getFullYear(),b0.getMonth(),1); maTarihCiz(); maUste(); return; }
+    if(t.id==="maGeri" || t.id==="maBosGeri"){ MA.adim="tarih"; MA.secMod=false; var b0=parse(MA.bas); MA.imlec=new Date(b0.getFullYear(),b0.getMonth(),1); maTarihCiz(); maUste(); return; }
     if(t.dataset.s){ if(MA.sira!==t.dataset.s){ MA.sira=t.dataset.s; titret("secim"); maSonucCiz(); } return; }
     if(t.dataset.mi){ maIslem(MA.liste[+t.dataset.mi],t.dataset.is); return; }
     if(t.dataset.fg){ maFiyatGir(MA.liste[+t.dataset.fg]); return; }
@@ -4609,6 +4612,15 @@
   }
 
   // 11.9 boş ekran çizimleri (www/img/*.webp)
+  document.addEventListener("click",function(e){
+    if(!e.target.closest || !e.target.closest("#rezBosEkle")) return;
+    var b=document.querySelector('#villaHap [data-is="rez"]'); if(b) b.click();
+  });
+  // 31.8: boş hâl — ikon, tek cümle, (varsa) kısa açıklama, tek ana düğme
+  function bosHal(ik,cumle,dugme,alt,ek){
+    return '<div class="bosHal" role="status"><span class="bosIkon" aria-hidden="true">'+ikon(ik,{boy:48,kalinlik:1.75})+"</span>"+
+      '<div class="bosYazi">'+esc(cev(cumle))+"</div>"+(alt?'<div class="bosAlt">'+esc(cev(alt))+"</div>":"")+(dugme||"")+(ek||"")+"</div>";
+  }
   function cizimImg(ad){ return '<img class="cizim" src="img/'+ad+'.webp" alt="" aria-hidden="true" width="800" height="800" decoding="async">'; }
 
   // Kurulum sihirbazının 6 adımı (villa ekranındaki kurulum kartı ve "Villa bilgileri" satırı da kullanır)
@@ -4876,7 +4888,8 @@
     var kalanlar=sir?tumYak.filter(function(r){ return r.id!==sir.r.id; }):tumYak, yak=kalanlar.slice(0,6);
     document.getElementById("siradaki").innerHTML=sir?siradakiHTML(v,sir):sirBosHTML(v);
     var lh="";
-    if(!tumYak.length) lh='<div style="margin-top:1rem">'+cizimImg("bos-rezervasyon")+'</div><div class="sm muted" style="text-align:center">Henüz rezervasyon yok. Takvimden tarih aralığı seçerek başlayın.</div>';
+    if(!tumYak.length) lh=bosHal("takvim","Henüz rezervasyon yok.",duzenlenebilir()?'<button class="big" data-ik="takvim-arti" id="rezBosEkle">'+esc(cev("Rezervasyon ekle"))+"</button>":"",
+      "Takvimden tarih aralığı seçerek başlayın.");
     else yak.forEach(function(r){ lh+=rezKartHTML(v,r,true); });
     // 16.6: "Tümünü gör" alttaki buton yerine başlıkta
     document.querySelector('#listeBas [data-tumu="rez"]').classList[kalanlar.length>6?"remove":"add"]("hide");
@@ -6030,9 +6043,8 @@
     VT.teklifler(v.id).then(function(l){
       var el=document.getElementById("tl-liste"); if(!el) return;
       l=Array.isArray(l)?l:[];
-      if(!l.length){ el.innerHTML='<div style="margin-top:.5rem">'+cizimImg("bos-rezervasyon")+"</div>"+
-        '<div class="sm muted" style="text-align:center;line-height:1.5">'+esc(cev("Henüz teklif göndermediniz."))+" "+
-        esc(cev("Teklif, misafire özel fiyatlı bir bağlantıdır; misafir fiyatı ve tarihleri görüp size yazar."))+"</div>"; return; }
+      if(!l.length){ el.innerHTML=bosHal("rozet-yuzde","Henüz teklif göndermediniz.","",
+        "Teklif, misafire özel fiyatlı bir bağlantıdır; misafir fiyatı ve tarihleri görüp size yazar."); return; }
       el.innerHTML='<div class="grup">'+l.map(function(t){
         var d=teklifDurumu(t);
         return '<button class="satirBtn tkSatir" data-kod="'+esc(t.kod)+'"><span class="ikKutu is-para">'+ikon("rozet-yuzde",{boy:20})+"</span>"+
@@ -7090,7 +7102,8 @@
           return '<button class="satirBtn" data-oid="'+o.id+'" data-ikk="para:banknot"><span>'+para(o.tutar)+
             (o.not?'<span class="satirAlt">'+esc(o.not)+"</span>":"")+"</span>"+
             '<span class="sag">'+kisa(o.tarih)+"</span></button>";
-        }).join("")+"</div>":"")+
+        }).join("")+"</div>":'<div class="eyebrow" style="margin:2.25rem 0 .25rem">'+esc(cev("Alınan ödemeler"))+"</div>"+
+          bosHal("banknot","Henüz ödeme alınmadı.","","Aldığınız tutarı yukarıya yazıp kaydedin."))+
       '<button class="big renkli is-para" data-ik="kalem" id="o-toplam" style="margin-top:1rem">Toplam tutarı düzenle</button>');
 
     var oT=document.getElementById("o-tutar");
@@ -8519,8 +8532,7 @@
           h+='<div class="row"><span class="name">'+esc(u.eposta||"—")+
              '<span class="muted" style="font-size:.8125rem"><br>Villa sahibi</span></span></div>';
         });
-        if(!bakicilar.length) h+='<div class="sm muted" style="padding:.75rem 0;line-height:1.5">'+esc(cev("Henüz bakıcı yok."))+" "+
-          esc(cev("Bakıcı takvimi ve misafir bilgilerini görür; ödemeleri ve tutarları göremez."))+"</div>";
+        if(!bakicilar.length) h+=bosHal("kisi-arti","Henüz bakıcı yok.","","Bakıcı takvimi ve misafir bilgilerini görür; ödemeleri ve tutarları göremez.");
         else bakicilar.forEach(function(u){
           h+='<div class="row"><span class="name">'+esc(u.eposta||"—")+
              '<span class="muted" style="font-size:.8125rem"><br>'+
@@ -8700,9 +8712,9 @@
     var hicYok=!hepsi.length;
     ["misSecModu","misFiltre"].forEach(function(id){ document.getElementById(id).classList.toggle("hide",hicYok); });
     var ara=document.getElementById("misAra"); if(ara) ara.closest(".field").classList.toggle("hide",hicYok);
-    if(hicYok) h='<div style="margin-top:.5rem">'+cizimImg("bos-rezervasyon")+"</div>"+
-      '<div class="sm muted" style="text-align:center">'+esc(cev("Henüz misafiriniz yok. İlk rezervasyonu girince misafir burada görünür."))+"</div>"+
-      (duzenlenebilir()?'<button class="big" data-ik="takvim-arti" id="misRezEkle" style="margin-top:1.25rem">'+esc(cev("Rezervasyon ekle"))+"</button>":"");
+    if(hicYok) h=bosHal("kisiler","Henüz misafiriniz yok.",
+      duzenlenebilir()?'<button class="big" data-ik="takvim-arti" id="misRezEkle">'+esc(cev("Rezervasyon ekle"))+"</button>":"",
+      "İlk rezervasyonu girince misafir burada görünür.");
     else if(!liste.length) h='<div class="sm muted">'+esc(cev("Bu filtreye uyan misafir yok."))+"</div>";
     else liste.forEach(function(g){
       var sec=!!MS.secili[g.anahtar];
@@ -9018,7 +9030,18 @@
     cizKasa();
   }
 
-  function cizKasa(){
+  // 31.8: dönemde hiç kayıt (alınacak, alınan, gider, gelir) yoksa tek boş hâl: "Bu dönemde kayıt yok." [Gider ekle]
+  function kasaBosCiz(){
+    var bos=["alinacakListe","alinanListe","giderListe","gelirListe"].every(function(id){
+      var e=document.getElementById(id); return !e || !e.querySelector("button,.row"); });
+    var kb=document.getElementById("kasaBos"); if(!kb) return;
+    ["kAlinacakBol","kAlinanBol","hareket"].forEach(function(id){ var e=document.getElementById(id); if(e) e.classList.toggle("hide",bos); });
+    kb.classList.toggle("hide",!bos);
+    kb.innerHTML=bos?bosHal("fis","Bu dönemde kayıt yok.",'<button class="big" data-ik="arti" id="kBosGider">'+esc(cev("Gider ekle"))+"</button>"):"";
+    var g=document.getElementById("kBosGider"); if(g) g.onclick=function(){ if(aktif()) hareketSheet("gider"); };
+  }
+  function cizKasa(){ cizKasaIc(); kasaBosCiz(); }
+  function cizKasaIc(){
     var v=aktif(); if(!v) return;
     var a=kasaAralik(S.kasaMod,S.yil,S.kasaAy);
     var h=kasaHesap(v,a);

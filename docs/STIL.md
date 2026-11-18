@@ -218,11 +218,15 @@ Dört tür (`.big`):
 
 ## 7. Durumlar
 
-- **Boş liste:**
-  - çizim (`img/bos-*.webp`);
-  - bir cümle ("Henüz … yok");
-  - ne yapılacağını gösteren düğme.
+- **Boş hâl (Görev 31.8, `bosHal`):**
+  - büyük, sakin Lucide ikon (48 pt, `--soft` zeminli daire);
+  - tek cümle ("Henüz … yok." / "Bu dönemde kayıt yok."), gerekirse altında kısa, soluk açıklama;
+  - **tek** ana düğme (yoksa hiç). İkincil yol (ör. "En yakın boşluk", bakıcı daveti) renkli ya da çerçeveli düğme olur.
+  - Örnekler: Villa yok → [Villa ekle]; Ajanda boş → düğme yok; Gelir&gider boş → [Gider ekle] (bölümler gizlenir);
+    müsaitlik sonuç yok → [Tarihleri değiştir] + en yakın boşluk; villanın rezervasyonu yok → [Rezervasyon ekle];
+    ödeme yok → ana iş üstteki "Ödemeyi kaydet".
   - Süzgeç boş kalırsa kısa not.
+  - Çizimler (`img/*.webp`) yalnız villa ekleme sihirbazında kalır.
 - **Yükleniyor (Görev 31.7):** dönen çark yerine iskelet (gri kutu, yazı yerine yuvarlak çizgiler).
   - Yalnız veri 300 ms'de gelmezse görünür (`--iskelet-gecikme`); göründüyse en az 400 ms kalır (`--iskelet-en-az`, `iskeletBitir`).
   - Üstünde 1,6 sn'lik yavaş, doğrusal parlama dolaşır (`--iskelet-parlama`); "Hareketi azalt"ta sabit.
