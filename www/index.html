@@ -69,7 +69,10 @@
     --hiz-secpanel:320ms;         /* seçim paneli açılışı */
     --hiz-kaydir:400ms;           /* takvim konumlama (25) */
     --hiz-parla:600ms;            /* değişen rakam / yeni satır parlaması */
-    --hiz-sayac:450ms;            /* 31.5: değişen toplam eski değerden yeniye sayarak geçer (--egri-giris) */
+    --hiz-sayac:450ms;
+    --hiz-tik:350ms;              /* 31.6: bildirimdeki tik çizilerek gelir (stroke-dashoffset), ardından başarı titreşimi */
+    --hiz-tik-gecikme:100ms;      /* tik, bildirim gelmeye başladıktan bu kadar sonra çizilmeye başlar */
+    --hiz-kutlama:260ms;          /* 31.6: "ilk" kutlama kartı scale(.96)'dan gelir */            /* 31.5: değişen toplam eski değerden yeniye sayarak geçer (--egri-giris) */
     --egri-gecis:cubic-bezier(0.65, 0, 0.35, 1);   /* yer değiştirme: yavaş başla, hızlan, yavaşlayarak dur */
     --egri-giris:cubic-bezier(0.22, 1, 0.36, 1);   /* belirme / giriş: hızlı gelir, yumuşakça oturur */
     --egri-cekmece:cubic-bezier(.32, .72, 0, 1);    /* 31.1: alttan açılan panel (iOS çekmecesi gibi) */
@@ -836,6 +839,23 @@
   button.kSatir:active, .fyGun:active, .ipBtn:active, .seg button:active, #misFiltre button:active, .sekmeler button:active,
   .sekmeler button.basili{transform:scale(var(--basili-olcek))}
   .cell, .cell:active{transform:none}
+  /* 31.6 başarı anları: bildirimde çizilen tik; "ilk" kutlama kartı (konfeti yok) */
+  .bildirim .bildirTik{flex:none; display:flex; color:#9FE0C9}
+  .bildirim .bildirTik path{stroke-dasharray:1; stroke-dashoffset:1;
+    animation:tikCiz var(--hiz-tik) var(--egri-giris) var(--hiz-tik-gecikme) forwards}
+  @keyframes tikCiz{to{stroke-dashoffset:0}}
+  .overlay.ilkPerde{align-items:center; padding:1.25rem}
+  .ilkKart{position:relative; width:100%; max-width:22rem; margin:auto; background:#fff; border-radius:1rem; padding:1.5rem 1.25rem 1.25rem;
+    box-shadow:0 16px 48px rgba(16,22,19,.18); text-align:center; animation:ilkGel var(--hiz-kutlama) var(--egri-giris)}
+  .overlay.kapaniyor .ilkKart{animation:ilkGit var(--hiz-kapa) var(--egri-gecis) forwards}
+  @keyframes ilkGel{from{opacity:0; transform:scale(var(--olcek-gelis))}}
+  @keyframes ilkGit{to{opacity:0; transform:scale(var(--olcek-gelis))}}
+  .ilkKart .ilkIkon{width:3.5rem; height:3.5rem; margin:0 auto .875rem; border-radius:99px; background:var(--soft); color:var(--ok);
+    display:flex; align-items:center; justify-content:center}
+  .ilkKart h2{font-family:var(--serif); font-size:1.375rem; font-weight:400; letter-spacing:-.01em; line-height:1.25; margin:0 0 .5rem}
+  .ilkKart p{margin:0 0 1.25rem; line-height:1.45; color:var(--muted)}
+  .ilkKart .big{margin-top:.5rem}
+  @media (prefers-reduced-motion: reduce){ .ilkKart, .overlay.kapaniyor .ilkKart{animation:none} .bildirim .bildirTik path{animation:none; stroke-dashoffset:0} }
   /* menüde seçilen satır: kapanmadan önce 120 ms ana renkte */
   .secildi, .secildi:active{background:var(--ok) !important; border-color:var(--ok) !important; color:#fff !important; transition:none !important}
   .secildi .vsAd, .secildi svg{color:#fff}
@@ -2341,6 +2361,51 @@
     var tur=TITRESIM_DILI[olay]; if(!tur) return;
     try{ if(window.VTNative && VTNative.titret) VTNative.titret(tur); }catch(e){}
   }
+  // ================= 31.6 "İLK" ANLARI =================
+  // İlk rezervasyon, ilk villa ve ilk gönderilen teklif için hesap başına bir kez sade bir kutlama kartı (konfeti yok).
+  // Görülenler cihazda, hesaba göre saklanır. Bu cihazda kayıt yoksa ve hesapta zaten bu türden birden çok kayıt varsa
+  // (eski kullanıcı) kart çıkmaz, hepsi görülmüş sayılır. Kart, açık panel kapanınca gösterilir. Ölçüm: ilk_an {tur}.
+  var ILK_AN={
+    rez:{ikon:"takvim-tik", baslik:"İlk rezervasyonunuz kaydedildi.", metin:"Misafirinize villa sayfasını göndermek ister misiniz?",
+      dugme:"Villa sayfasını gönder", ik:"paylas", is:function(){ var b=document.getElementById("paylasBtn"); if(b && aktif()) b.click(); }},
+    villa:{ikon:"ev", baslik:"İlk villanız eklendi.", metin:"Şimdi ilk rezervasyonu takvime işlemek ister misiniz?",
+      dugme:"Rezervasyon ekle", ik:"takvim-arti", is:function(){ var b=document.querySelector('#villaHap [data-is="rez"]'); if(b) b.click(); }},
+    teklif:{ikon:"rozet-yuzde", baslik:"İlk teklifiniz gönderildi.", metin:"Misafir bağlantıyı açınca Teklifler'den takip edebilirsiniz.",
+      dugme:"Teklifleri gör", ik:"liste-tik", is:function(){ if(aktif() && teklifVerebilir()) teklifListeSheet(aktif()); }}
+  };
+  function ilkAnahtar(){ return "vt-ilk-"+((window.VT && VT.oturum && VT.oturum.user && VT.oturum.user.id) || "yerel"); }
+  function ilkKayit(){ try{ return JSON.parse(store.get(ilkAnahtar())||"null"); }catch(e){ return null; } }
+  function ilkAn(tur){
+    if(!ILK_AN[tur] || !sahipMi()) return;
+    var g=ilkKayit();
+    if(!g){
+      var rz=0; S.villalar.forEach(function(v){ rz+=(v.rez||[]).length; });
+      var eski=(tur==="villa" && S.villalar.length>1) || (tur==="rez" && rz>1) || (tur==="teklif" && rz>0);
+      g=eski?{rez:1,villa:1,teklif:1}:{};
+      store.set(ilkAnahtar(),JSON.stringify(g));
+    }
+    if(g[tur]) return;
+    g[tur]=1; store.set(ilkAnahtar(),JSON.stringify(g));
+    S.ilkBekle=tur;
+    setTimeout(ilkGoster,hiz("kapa")+hiz("bildir-gel")+200);
+  }
+  function ilkGoster(){
+    var tur=S.ilkBekle, a=ILK_AN[tur]; if(!a) return;
+    if(document.querySelector(".overlay:not(.kapaniyor)")) return;   // panel kapanınca (gözlemci) tekrar denenir
+    S.ilkBekle=null;
+    olc("ilk_an",{tur:tur});
+    var o=document.createElement("div");
+    o.className="overlay ilkPerde";
+    o.innerHTML='<div class="ilkKart" role="dialog" aria-modal="true" aria-labelledby="ilkBaslik">'+
+      '<div class="ilkIkon">'+ikon(a.ikon,{boy:28})+"</div>"+
+      '<h2 id="ilkBaslik">'+esc(cev(a.baslik))+"</h2><p>"+esc(cev(a.metin))+"</p>"+
+      '<button class="big" data-ik="'+a.ik+'" id="ilkEvet">'+esc(cev(a.dugme))+"</button>"+
+      '<button class="big ghost" id="ilkKapat">'+esc(cev("Kapat"))+"</button></div>";
+    document.body.appendChild(o);
+    o.addEventListener("click",function(e){ if(e.target===o) kapatOverlay(o); });
+    o.querySelector("#ilkKapat").onclick=function(){ kapatOverlay(o); };
+    o.querySelector("#ilkEvet").onclick=function(){ kapatOverlay(o,true); a.is(); };
+  }
   // 31.3: menüde seçilen satır menü kapanmadan önce kısa süre ana renkte görünür; sonra iş yapılır
   function secimParla(el,sonra){
     if(!el){ sonra(); return; }
@@ -2403,8 +2468,12 @@
   function yeniCls(id){ return yeniMi(id)?" yeniSatir":""; }
   // Yükleniyor yerine 3 gri iskelet satır
   function iskelet(){ return '<div class="iskelet" aria-label="Yükleniyor"><i style="width:92%"></i><i style="width:74%"></i><i style="width:84%"></i></div>'; }
-  // Başarı bildirimi: başında ✓ + başarı titreşimi
-  function tamam(msg){ if(window.Rehber && Rehber.basariVar()) return; bildir("✓ "+msg); titret("kaydedildi"); }
+  // 31.6: başarı: bildirimdeki tik çizilerek gelir (350 ms), çizim bitince "basari" titreşimi
+  function tamam(msg){
+    if(window.Rehber && Rehber.basariVar()) return;
+    bildir(msg,null,true);
+    setTimeout(function(){ titret("kaydedildi"); },azHareket()?0:hiz("tik")+hiz("tik-gecikme"));
+  }
 
   // Görev 11: ikonlar HTML'e nitelikle yazılır, bu gözlemci yerleştirir (yazısı sonradan değişen buton ikonunu kaybetmez)
   //   data-ik="ikon"         → butonun soluna 20px ikon
@@ -4306,7 +4375,7 @@
         kayit.then(function(){ return VT.senkron(v); })
           .catch(function(e){ bildir("Villa buluta kaydedilemedi: "+(e.message||"")); });
       }
-      kapat(); cizAna(); ac(v.id); sihirbazAc(1); titret("villa_eklendi");
+      kapat(); cizAna(); ac(v.id); sihirbazAc(1); titret("villa_eklendi"); ilkAn("villa");
     };
   }
 
@@ -5826,7 +5895,7 @@
         if($("tk-wa")){ $("tk-wa").disabled=false; $("tk-kopya").disabled=false; }
         durum(cev("Teklif kaydedildi. Villa yönetimi → Teklifler'den takip edebilirsiniz."),"ok");
         titret("kaydedildi");
-        olc("teklif_olustur"); olc("teklif_paylas");
+        olc("teklif_olustur"); olc("teklif_paylas"); ilkAn("teklif");
         if(tur==="wa") rhBildir("kaydedildi:teklif");
         if(tur==="wa"){
           var u="https://wa.me/?text="+encodeURIComponent(metin);
@@ -6298,16 +6367,21 @@
     el.querySelector("button").onclick=function(){ clearTimeout(zaman); bildirKaldir(el); geriAl(); };
     bildirGoster(el,"#geriAlKutu");
   }
-  function bildir(msg,sure){
+  function bildir(msg,sure,tik){
     var el=document.createElement("div");
     el.className="bildirim";
-    el.textContent=msg;
+    if(tik){
+      el.innerHTML='<span class="bildirTik">'+ikon("tik",{boy:18,kalinlik:2.5})+"</span><span></span>";
+      el.lastChild.textContent=msg;
+      Array.prototype.forEach.call(el.querySelectorAll("path"),function(p){ p.setAttribute("pathLength","1"); });
+    } else el.textContent=msg;
     var cubuk2=Array.prototype.some.call(document.querySelectorAll("#fyBar,#misSecBar,.ftAlt"),function(x){
       return !x.classList.contains("hide") && x.offsetParent!==null; });
     el.style.cssText="position:fixed;left:50%;bottom:"+(document.body.classList.contains("sekmeli")?"calc("+(cubuk2?9.5:5.25)+"rem + env(safe-area-inset-bottom))":"2rem")+";transform:translateX(-50%);background:#101613;"+
-      "color:#fff;padding:.75rem 1.125rem;border-radius:99px;font-size:.875rem;z-index:60;max-width:90%";
+      "color:#fff;padding:.75rem 1.125rem;border-radius:99px;font-size:.875rem;z-index:60;max-width:90%;width:max-content"+(tik?";display:flex;align-items:center;gap:.5rem":"");
     bildirGoster(el,".bildirim:not(#geriAlKutu)");
     setTimeout(function(){ bildirKaldir(el); },sure||2500);
+    return el;
   }
 
   // ================= REZERVASYON =================
@@ -6513,6 +6587,7 @@
       setTimeout(function(){ Array.prototype.forEach.call(document.querySelectorAll(".cell.yeniParla"),function(c){ c.classList.remove("yeniParla"); }); },700);
       rhBildir("kaydedildi:rez");
       tamam(cev("Rezervasyon kaydedildi"));
+      ilkAn("rez");
       // 15.4: opsiyondan dönüştüyse opsiyon kalkar
       if(t.opsiyon && v.bilgi && Array.isArray(v.bilgi.opsiyonlar)){
         v.bilgi.opsiyonlar=v.bilgi.opsiyonlar.filter(function(x){ return x.id!==t.opsiyon.id; }); kaydet(); ciz();
@@ -11758,6 +11833,7 @@
     if(!acikP && MA && MA.donus){ MA.donus=false; setTimeout(function(){ if(!panelAcik()) musaitSonucAc(); },0); }
     document.body.classList[document.querySelector(".overlay:not(.kapaniyor)")?"add":"remove"]("panelAcik");
     kilitDenetle();
+    if(!acikP && S.ilkBekle) setTimeout(ilkGoster,hiz("kapa"));
   }).observe(document.body,{childList:true}); }catch(e){}
   // Tarayıcının alert() kutusu yerine uygulamanın kendi paneli.
   // Açık bir formun üstüne ayrı katman olarak açılır, formu kapatmaz.

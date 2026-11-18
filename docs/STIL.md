@@ -165,6 +165,8 @@ Dört tür (`.big`):
 | Klavye | `--hiz-klavye` | 300 ms | Klavye payı ve klavyeye hizalama |
 | Seçim paneli | `--hiz-secpanel` | 320 ms | Takvim seçim paneli açılışı (`--egri-cekmece`) |
 | Kaydırma | `--hiz-kaydir` | 400 ms | Takvim konumlama |
+| Tik çizimi | `--hiz-tik` | 350 ms | Başarı bildiriminde tik çizilir (`--hiz-tik-gecikme` 100 ms sonra) |
+| Kutlama kartı | `--hiz-kutlama` | 260 ms | "İlk" kartı `scale(.96)` + saydamlıktan gelir |
 | Sayaç | `--hiz-sayac` | 450 ms | Değişen toplam eski değerden yeniye sayarak geçer (`sayarakYaz`, `--egri-giris`, ara değerler binlik ayraçla; "Hareketi azalt"ta doğrudan): seçim paneli toplamı, Gelir&gider net tutarı, rezervasyon detayındaki "… alınacak", ödeme sonrası kalan |
 | Parlama | `--hiz-parla` | 600 ms | Değişen rakam / yeni satır |
 
@@ -228,9 +230,14 @@ Dört tür (`.big`):
 - **Çevrimdışı:**
   - üst çubuğun altında sakin şerit: "Çevrimdışı · değişiklikler bağlanınca kaydedilecek";
   - bağlantı gelince kendiliğinden kaydedilir.
-- **Başarı:**
-  - kısa bildirim ("… kaydedildi");
-  - rehberde ✓ kartı.
+- **Başarı (Görev 31.6):**
+  - kısa bildirim ("… kaydedildi", `tamam()`): bildirimdeki tik ikonu çizilerek gelir (`stroke-dashoffset`, 350 ms `--hiz-tik`,
+    100 ms gecikmeyle), çizim bitince `basari` titreşimi;
+  - rehberde ✓ kartı;
+  - **ilk** rezervasyon, **ilk** villa ve **ilk** gönderilen teklif için hesap başına bir kez sade kutlama kartı (`ilkAn`): büyük ikon,
+    bir cümle, tek ana düğme ve "Kapat". Konfeti yok. Kart 260 ms (`--hiz-kutlama`) ile `scale(.96)`'dan gelir. Açık panel varsa
+    panel kapanınca çıkar. Görülenler cihazda, hesaba göre saklanır (`vt-ilk-<hesap>`); hesapta zaten birden çok kayıt varsa
+    (eski kullanıcı) çıkmaz. Ölçüm: `ilk_an {tur}`.
 
 - **Tam ekran panel** (Görev 27, `.maSheet`): ekranın tamamını kaplayan, köşesiz panel; alttan kayarak açılır. Alttaki
   sabit satır (`.altSabit`) özeti ve tek ana düğmeyi taşır. Çok adımlı işlerde (tarih seç → sonuç) ekran değişmez, panelin içi

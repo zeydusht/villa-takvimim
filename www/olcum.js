@@ -28,6 +28,7 @@
     rehber_basla: { konu: "k" }, rehber_bitir: { konu: "k" }, rehber_kapat: { konu: "k", adim: "s" },
     yazi_boyutu: { deger: ["normal", "buyuk", "cokbuyuk"] }, dil: { deger: ["tr", "en"] },
     bildirim_izni: { verildi: "b" },
+    ilk_an: { tur: ["rez", "villa", "teklif"] },
     pro_goster: {}, pro_satin_al: { sonuc: ["tamam", "iptal", "hata"] }, pro_geri_yukle: { sonuc: ["tamam", "yok", "hata"] },
     hata: { tur: "hataTur", yer: "hataYer" }
   };
