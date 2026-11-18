@@ -69,7 +69,16 @@
     --egri-gecis:cubic-bezier(0.65, 0, 0.35, 1);   /* yer değiştirme: yavaş başla, hızlan, yavaşlayarak dur */
     --egri-giris:cubic-bezier(0.22, 1, 0.36, 1);   /* belirme / giriş: hızlı gelir, yumuşakça oturur */
     --egri-cekmece:cubic-bezier(.32, .72, 0, 1);    /* 31.1: alttan açılan panel (iOS çekmecesi gibi) */
-    --olcek-gelis:.96;            /* 31.1: hiçbir şey scale(0)'dan büyümez; küçük kutular buradan gelir */
+    --olcek-gelis:.96;
+    /* 31.2: panel içeriği her açılışta kademeli gelir: öğe 8 pt aşağıdan + saydamdan 240 ms, öğeler arası 40 ms, ilk öğe panel
+       açılmaya başladıktan 60 ms sonra, en fazla 6 kademe. "Hareketi azalt"ta yalnız 150 ms saydamlık. */
+    --kademe-sure:240ms;
+    --kademe-ara:40ms;
+    --kademe-ilk:60ms;
+    --kademe-kayma:8px;
+    --kademe-en:6;
+    --hiz-azalt:150ms;
+    --sekme-tazele:600000ms;     /* 31.2: uygulama 10 dk'dan uzun arka planda kaldıysa sekmenin kademeli girişi bir kez daha oynar */            /* 31.1: hiçbir şey scale(0)'dan büyümez; küçük kutular buradan gelir */
     --gecis:var(--hiz-bas);
     --serif: ui-serif, Georgia, "Times New Roman", serif;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -754,7 +763,7 @@
   /* 31.1: panel 340 ms --egri-cekmece ile açılır, 220 ms --egri-gecis ile kapanır; kararma 240 / 200 ms, yalnız saydamlık */
   .overlay:not(.gorucu):not(.anlik){animation:perdeKarar var(--hiz-karar-ac) var(--egri-giris)}
   .overlay > .sheet{animation:perdeAc var(--hiz-ac) var(--egri-cekmece)}
-  .overlay.kapaniyor{animation:perdeAydin var(--hiz-karar-kapa) var(--egri-gecis) forwards; pointer-events:none}
+  .overlay.kapaniyor, .overlay.kapaniyor:not(.gorucu):not(.anlik){animation:perdeAydin var(--hiz-karar-kapa) var(--egri-gecis) forwards; pointer-events:none}
   .overlay.kapaniyor > .sheet{animation:perdeKapa var(--hiz-kapa) var(--egri-gecis) forwards}
   @keyframes perdeKarar{from{background-color:rgba(16,22,19,0)}}
   @keyframes perdeAydin{to{background-color:rgba(16,22,19,0)}}
@@ -2239,11 +2248,62 @@
   // 31.1: JS'teki süreler de :root'taki --hiz-* değişkenlerinden okunur (ms, bir kez okunup saklanır)
   var HIZLAR={};
   function hiz(ad){
-    if(!(ad in HIZLAR)){ var v=""; try{ v=getComputedStyle(document.documentElement).getPropertyValue("--hiz-"+ad).trim(); }catch(e){}
+    if(!(ad in HIZLAR)){ var v=""; try{ v=getComputedStyle(document.documentElement).getPropertyValue(ad.indexOf("--")===0?ad:"--hiz-"+ad).trim(); }catch(e){}
       HIZLAR[ad]=parseFloat(v)||0; }
     return HIZLAR[ad];
   }
   var azHareket=function(){ try{ return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } };
+  // 31.2: panel içi kademeli giriş. Öğeler animasyon sürerken de basılabilir (WAAPI dokunuşu engellemez).
+  // o.ilk: ilk öğenin gecikmesi (varsayılan --kademe-ilk); yeniden çizimde çağrılmaz.
+  function kademeOyna(els,o){
+    o=o||{};
+    if(!els || !els.length || !document.body.animate) return;
+    var az=azHareket(), ilk=o.ilk!=null?o.ilk:hiz("--kademe-ilk"), ara=hiz("--kademe-ara"), en=hiz("--kademe-en")||6,
+        sure=hiz("--kademe-sure"), y=hiz("--kademe-kayma"), g=egriAl("giris");
+    Array.prototype.forEach.call(els,function(el,i){
+      try{
+        if(az) el.animate([{opacity:0},{opacity:1}],{duration:hiz("azalt"),easing:"linear",fill:"backwards"});
+        else el.animate([{opacity:0,transform:"translateY("+y+"px)"},{opacity:1,transform:"translateY(0)"}],
+          {duration:sure,delay:ilk+ara*Math.min(i,en-1),easing:g,fill:"backwards"});
+      }catch(e){}
+    });
+  }
+  // panelin ilk düzey öğeleri (X hariç). İki ya da daha az öğe varsa içerik kabı (ör. "Hangi villam boş?" içi) açılır.
+  function panelOgeleri(sh){
+    var gor=function(x){ return x.nodeType===1 && !x.classList.contains("x") && !x.classList.contains("hide") && !/^(SCRIPT|STYLE)$/.test(x.tagName) && x.offsetHeight>0; };
+    var l=Array.prototype.filter.call(sh.children,gor);
+    if(l.length<=2){
+      var y=[];
+      l.forEach(function(x){
+        var ic=Array.prototype.filter.call(x.children,gor);
+        if(x.tagName==="DIV" && ic.length>=2 && !x.classList.contains("head") && !x.classList.contains("altSabit")) y=y.concat(ic); else y.push(x);
+      });
+      l=y;
+    }
+    return l;
+  }
+  function panelOzet(o){
+    var sh=o && o.querySelector(".sheet"); if(!sh) return null;
+    var b=sh.querySelector("h2,h3");
+    return {baslik:(b?b.textContent:"")+"|"+(sh.dataset.adim||""), ogeler:panelOgeleri(sh).map(function(x){ return x.textContent; })};
+  }
+  // Panel açıldı: ilk düzey öğeler sırayla gelir. Aynı panel yeniden çizildiyse (aynı başlık ve adım) giriş oynamaz,
+  // yalnız değişen satır parlar.
+  function panelKademe(o,eski){
+    requestAnimationFrame(function(){
+      if(!o.parentNode || o.classList.contains("kapaniyor") || o.classList.contains("gorucu")) return;
+      var sh=o.querySelector(".sheet"); if(!sh) return;
+      var l=panelOgeleri(sh), b=sh.querySelector("h2,h3"), bas=(b?b.textContent:"")+"|"+(sh.dataset.adim||"");
+      if(eski && eski.baslik===bas){
+        if(eski.ogeler.length===l.length){
+          var fark=l.filter(function(x,i){ return x.textContent!==eski.ogeler[i]; });
+          if(fark.length && fark.length<=3) fark.forEach(parlat);
+        }
+        return;
+      }
+      kademeOyna(l);
+    });
+  }
   // Gerçek titreşim (yalnız uygulama içinde; web'de hiçbir şey yapmaz). Hesap → Titreşim ile kapatılabilir.
   var TITRESIM="villa-takvim-titresim";
   function titret(tur){
@@ -3234,6 +3294,16 @@
     };
     requestAnimationFrame(oynat);
   }
+  // 31.2: uygulama 10 dakikadan uzun arka planda kaldıysa, öne gelince açık sekmede kademeli giriş bir kez daha oynar
+  (function(){
+    var gizlendi=0;
+    document.addEventListener("visibilitychange",function(){
+      if(document.hidden){ gizlendi=Date.now(); return; }
+      if(!gizlendi || Date.now()-gizlendi<hiz("--sekme-tazele")) return;
+      gizlendi=0; KADEME.gor={};
+      for(var id in KADEME_EKRAN){ var e=document.getElementById(id); if(e && !e.classList.contains("hide")){ kademeli(id); break; } }
+    });
+  })();
   var BELIR=null;
   function belirIzle(els,y){
     if(azHareket() || !window.IntersectionObserver) return;
@@ -3502,7 +3572,7 @@
   }
   function maPerde(){
     var o=perde('<div class="head"><h2>'+esc(cev("Hangi villam boş?"))+"</h2>"+kapatBtn()+'</div><div id="maIc" class="maIc"></div>');
-    o.classList.add("maPerde"); o.querySelector(".sheet").classList.add("maSheet");
+    o.classList.add("maPerde"); o.querySelector(".sheet").classList.add("maSheet"); o.querySelector(".sheet").dataset.adim=MA.adim||"tarih";
     document.getElementById("maIc").addEventListener("click",maTikla);
     maCiz();
     return o;
@@ -4711,13 +4781,10 @@
     if(r1) r1.onclick=function(){ S.taslak=al(); form(); };
     if(r2) r2.onclick=function(){ var sc=al(); ozelTeklifSheet(aktif(),{giris:sc.start,cikis:sc.end}); };
     if(r3) r3.onclick=function(){ var sc=al(); opsiyonSheet(aktif(),sc); };
-    // 20.6: içerik 40 ms arayla sırayla belirir
-    if((yeni || durumDegisti) && !azHareket() && p.animate){
-      var giris=egriAl("giris"), parca=[].concat(Array.prototype.slice.call(p.querySelectorAll(".spUst,.spTutar,.spUyari")),
-        Array.prototype.slice.call(p.querySelectorAll(".spBtn")));
-      parca.forEach(function(el,i){
-        el.animate([{opacity:0,transform:"translateY(8px)"},{opacity:1,transform:"translateY(0)"}],{duration:220,delay:(yeni?120:0)+40*i,easing:giris,fill:"backwards"});
-      });
+    // 20.6 / 31.2: içerik her açılışta (ve giriş → aralık geçişinde) sırayla belirir; aynı durumda yeniden çizimde oynamaz
+    if(yeni || durumDegisti){
+      kademeOyna([].concat(Array.prototype.slice.call(p.querySelectorAll(".spUst,.spTutar,.spUyari")),
+        Array.prototype.slice.call(p.querySelectorAll(".spBtn"))),{ilk:yeni?hiz("--kademe-ilk"):0});
     }
     odakCiz();
     // 25: iki aşamalı konumlama (giriş günü → takvim üst çubuğun altına; çıkış günü → ızgaranın son satırı panelin üstüne)
@@ -6632,6 +6699,7 @@
         titret("hafif");
         document.getElementById("ak-alindi").innerHTML=ikon("tik",{boy:18,kalinlik:2.5})+"<span>"+esc(cev(para(t)+" alındı"))+"</span>";
         document.getElementById("ak-ic").classList.add("ikinci");
+        kademeOyna(Array.prototype.filter.call(document.getElementById("ak-s2").children,function(x){ return x.offsetHeight>0; }));
         rhBildir("odeme:alindi");
         document.getElementById("ak-s1").setAttribute("aria-hidden","true");
         document.getElementById("ak-s2").removeAttribute("aria-hidden");
@@ -9446,11 +9514,7 @@
       // adım içeriği: çizim 0,96 → 1 + solma (320 ms); altındaki öğeler 40 ms arayla belirir
       var ciz0=el.querySelector(".cizim");
       if(ciz0) ciz0.animate([{opacity:0,transform:"scale(.96)"},{opacity:1,transform:"scale(1)"}],{duration:320,easing:giris,fill:"backwards"});
-      var k=0;
-      Array.prototype.forEach.call(el.children,function(c){
-        if(c.classList.contains("cizim")) return;
-        c.animate([{opacity:0,transform:"translateY(8px)"},{opacity:1,transform:"translateY(0)"}],{duration:240,delay:80+40*(k++),easing:giris,fill:"backwards"});
-      });
+      kademeOyna(Array.prototype.filter.call(el.children,function(c){ return !c.classList.contains("cizim"); }));
     }
   }
   function shSayfaHazir(){
@@ -11537,6 +11601,7 @@
   function perde(html,altKapat){
     // Başka panelin yerine açılıyorsa: eskisi hemen kalkar, arka plan kararmış kalır, yenisi aşağıdan kayar
     var yerine=!!document.querySelector(".overlay:not(.kapaniyor)");
+    var acikL=document.querySelectorAll(".overlay:not(.kapaniyor)"), eskiOzet=yerine?panelOzet(acikL[acikL.length-1]):null;
     Array.prototype.forEach.call(document.querySelectorAll(".overlay.kapaniyor"),function(x){ x.remove(); });
     kapat(true);
     var o=document.createElement("div");
@@ -11552,6 +11617,7 @@
     var x=o.querySelector(".x");
     if(x) x.onclick=function(){ x.classList.add("basildi"); setTimeout(function(){ kapat(); },100); };
     asagiCekKapat(o,sh);
+    panelKademe(o,eskiOzet);
     return o;
   }
   // Panelin üst kısmından (tutamaç / başlık) aşağı çekince kapanır.
@@ -11616,6 +11682,7 @@
     o.querySelector("button").onclick=kapa;
     o.addEventListener("click",function(e){ if(e.target===o) kapa(); });
     document.body.appendChild(o);
+    panelKademe(o,null);
   }
 
   document.getElementById("yedek").onclick=function(){

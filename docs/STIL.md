@@ -158,7 +158,15 @@ Dört tür (`.big`):
 
 **JavaScript'teki standart değerler:**
 - Süreler JS'te de `hiz("kapa")` ile `:root`'tan okunur; sayı gömülmez.
-- **Kademeli giriş:** 260 ms, 35 ms arayla, en fazla 8 kademe, 10 pt.
+- **Sekmelerde kademeli giriş** (Villalarım, Takvim, Ajanda, Gelir&gider): 260 ms, 35 ms arayla, en fazla 8 kademe, 10 pt.
+  Oturumda bir kez oynar. Uygulama 10 dakikadan (`--sekme-tazele`) uzun arka planda kaldıysa, öne gelince açık sekmede bir kez daha.
+- **Panellerde kademeli giriş** (Görev 31.2, `kademeOyna`, `panelKademe`): alttan açılan her panel, uyarı paneli, takvim seçim paneli,
+  ödeme akışının 2. adımı, "Hangi villam boş?" sonuçları, villa ekleme adımları.
+  - Her açılışta ilk düzey öğeler: 8 pt aşağıdan + saydamdan (`--kademe-kayma`), 240 ms (`--kademe-sure`), `--egri-giris`.
+  - Öğeler arası 40 ms (`--kademe-ara`); ilk öğe panel açılmaya başladıktan 60 ms sonra (`--kademe-ilk`); en fazla 6 kademe (`--kademe-en`).
+  - Aynı panel (aynı başlık ve adım) yeniden çizilirse giriş tekrar oynamaz; yalnız değişen satır `--hiz-parla` ile parlar.
+  - Giriş sürerken bütün düğmeler basılabilir.
+  - "Hareketi azalt"ta öğeler kaymaz, yalnız 150 ms (`--hiz-azalt`) saydamlıkla gelir.
 - **Kaydırınca belirme:** 320 ms; misafir sayfasında 16 pt, uygulamada 8 pt.
 - **Rehber adım geçişi:** 420 ms. Rehber metni 120 ms'de çapraz geçer.
 
