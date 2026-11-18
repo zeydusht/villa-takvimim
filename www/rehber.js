@@ -1030,7 +1030,7 @@
     if (d.a && d.a.cikis) { try { d.a.cikis(); } catch (e) {} }
     var o = d.o;
     if (azH()) o.remove();
-    else { o.classList.add("kapaniyor"); setTimeout(function () { if (o.parentNode) o.remove(); }, 210); }
+    else { o.classList.add("kapaniyor"); setTimeout(function () { if (o.parentNode) o.remove(); }, 230); }
     var t = d.t;
     if (tamamlandi) {
       var m = d.basari || t.basari;
@@ -1055,7 +1055,7 @@
     var kapa = function () {
       if (bitti) return; bitti = true; clearTimeout(o._z);
       if (B === o) B = null;
-      if (azH()) o.remove(); else { o.classList.add("kapaniyor"); setTimeout(function () { if (o.parentNode) o.remove(); }, 190); }
+      if (azH()) o.remove(); else { o.classList.add("kapaniyor"); setTimeout(function () { if (o.parentNode) o.remove(); }, 230); }
       if (sonra) sonra();
     };
     o._kapa = kapa;

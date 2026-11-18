@@ -128,22 +128,36 @@ Dört tür (`.big`):
 **Eğriler:**
 - `--egri-gecis`: cubic-bezier(.65, 0, .35, 1). Yer değiştirme, kapanış ve kaydırma için.
 - `--egri-giris`: cubic-bezier(.22, 1, .36, 1). Belirme ve giriş için.
-- Başka eğri yazılmaz. Dönen yükleme göstergesi doğrusal olabilir.
+- `--egri-cekmece`: cubic-bezier(.32, .72, 0, 1). Alttan açılan panellerin açılışı (iOS çekmecesi gibi). Görev 31.1.
+- Başka eğri yazılmaz. Dönen yükleme göstergesi ve iskelet parlaması doğrusal olabilir.
+
+**Temel ilke (Görev 31):**
+- Sık yapılan işte hareket az olur, seyrek yapılan işte olabilir.
+- Kapanış açılıştan hızlıdır.
+- Hareket hiçbir zaman bekletmez: animasyon sürerken dokunma çalışır, animasyon yarıda kesilebilir.
+- Hiçbir şey `scale(0)`'dan büyümez. Küçük kutular `scale(var(--olcek-gelis))` (.96) + saydamlıktan, dokunulan yerden gelir;
+  ortadaki pencereler (geniş ekranda panel) ortadan büyür.
 
 | Süre | Değişken | Değer | Ne için |
 |---|---|---|---|
 | Basma | `--hiz-bas` | 100 ms | Basma ve renk tepkisi |
 | Ay solması | `--hiz-ay` | 150 ms | Ay değişince |
-| Panel kapanma | `--hiz-kapa` | 180 ms | Panel, bildirim kapanışı |
-| Ekran | `--hiz-ekran` | 200 ms | Ekran geçişi solması, sihirbaz adımı, kararma |
-| Panel açılma | `--hiz-ac` | 220 ms | Panel, bildirim, çevrimdışı şeridi |
+| Ekran | `--hiz-ekran` | 200 ms | Ekran geçişi solması, sihirbaz adımı |
+| Kararma kapanışı | `--hiz-karar-kapa` | 200 ms | Panelin arka planı açılırken (yalnız saydamlık) |
+| Bildirim gidişi | `--hiz-bildir-git` | 200 ms | Bildirim (toast) solar |
+| Küçük öğe | `--hiz-oge` | 220 ms | Yeni satır, çevrimdışı şeridi, açılır ok, yenile göstergesi |
+| Panel kapanma | `--hiz-kapa` | 220 ms | Panel kapanışı (`--egri-gecis`) |
+| Kararma | `--hiz-karar-ac` | 240 ms | Panelin arka planı kararır (yalnız saydamlık) |
+| Bildirim gelişi | `--hiz-bildir-gel` | 300 ms | Bildirim 8 pt aşağıdan gelir. Geçişle yapılır: yenisi gelince eskisi yarıda kesilip solar |
+| Panel açılma | `--hiz-ac` | 340 ms | Alttan açılan panel (`--egri-cekmece`) |
 | Çubuk | `--hiz-cubuk` | 280 ms | İlerleme çubuğu, ödeme akışı kayması |
 | Klavye | `--hiz-klavye` | 300 ms | Klavye payı ve klavyeye hizalama |
-| Seçim paneli | `--hiz-secpanel` | 320 ms | Takvim seçim paneli açılışı |
+| Seçim paneli | `--hiz-secpanel` | 320 ms | Takvim seçim paneli açılışı (`--egri-cekmece`) |
 | Kaydırma | `--hiz-kaydir` | 400 ms | Takvim konumlama |
 | Parlama | `--hiz-parla` | 600 ms | Değişen rakam / yeni satır |
 
 **JavaScript'teki standart değerler:**
+- Süreler JS'te de `hiz("kapa")` ile `:root`'tan okunur; sayı gömülmez.
 - **Kademeli giriş:** 260 ms, 35 ms arayla, en fazla 8 kademe, 10 pt.
 - **Kaydırınca belirme:** 320 ms; misafir sayfasında 16 pt, uygulamada 8 pt.
 - **Rehber adım geçişi:** 420 ms. Rehber metni 120 ms'de çapraz geçer.

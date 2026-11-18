@@ -51,8 +51,13 @@
     --tehlike-basili-zemin:#FBF1F4;
     /* Hareket süreleri (Görev 9). Eğriler (19B.5): yer değiştirme ve kapanış --egri-gecis, belirme / giriş --egri-giris. */
     --hiz-bas:100ms;              /* basma / renk tepkisi */
-    --hiz-ac:220ms;               /* panel, bildirim açılışı */
-    --hiz-kapa:180ms;             /* panel, bildirim kapanışı */
+    --hiz-ac:340ms;               /* 31.1: alttan açılan panel (--egri-cekmece ile) */
+    --hiz-kapa:220ms;             /* 31.1: panel kapanışı (--egri-gecis ile) */
+    --hiz-oge:220ms;              /* 31.1: küçük öğe (yeni satır, çevrimdışı şeridi, açılır ok, yenile göstergesi) */
+    --hiz-karar-ac:240ms;         /* 31.1: arka plan kararması (yalnız saydamlık) */
+    --hiz-karar-kapa:200ms;
+    --hiz-bildir-gel:300ms;       /* 31.1: bildirim (toast) gelişi / gidişi; yenisi gelince eskisi yarıda kesilir */
+    --hiz-bildir-git:200ms;
     --hiz-ekran:200ms;
     /* 26.8: geri kalan bütün süreler de burada (STIL.md) */
     --hiz-ay:150ms;               /* ay değişince kısa solma */
@@ -60,9 +65,11 @@
     --hiz-klavye:300ms;           /* klavye payı, klavyeye hizalama (24.1) */
     --hiz-secpanel:320ms;         /* seçim paneli açılışı */
     --hiz-kaydir:400ms;           /* takvim konumlama (25) */
-    --hiz-parla:600ms;            /* değişen rakam / yeni satır parlaması */            /* sihirbaz adımı, ilerleme çubuğu */
+    --hiz-parla:600ms;            /* değişen rakam / yeni satır parlaması */
     --egri-gecis:cubic-bezier(0.65, 0, 0.35, 1);   /* yer değiştirme: yavaş başla, hızlan, yavaşlayarak dur */
     --egri-giris:cubic-bezier(0.22, 1, 0.36, 1);   /* belirme / giriş: hızlı gelir, yumuşakça oturur */
+    --egri-cekmece:cubic-bezier(.32, .72, 0, 1);    /* 31.1: alttan açılan panel (iOS çekmecesi gibi) */
+    --olcek-gelis:.96;            /* 31.1: hiçbir şey scale(0)'dan büyümez; küçük kutular buradan gelir */
     --gecis:var(--hiz-bas);
     --serif: ui-serif, Georgia, "Times New Roman", serif;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -226,7 +233,7 @@
     background:#fff; box-shadow:0 2px 12px rgba(16,22,19,.16); display:flex; align-items:center; justify-content:center;
     color:var(--ok); z-index:44; opacity:0; pointer-events:none; will-change:transform,opacity}
   .yenileGos .yenileOk{display:flex}
-  .yenileGos.birak{transition:transform var(--hiz-ac) var(--egri-gecis), opacity var(--hiz-ac) var(--egri-giris)}
+  .yenileGos.birak{transition:transform var(--hiz-oge) var(--egri-gecis), opacity var(--hiz-oge) var(--egri-giris)}
   .yenileGos.donuyor svg{animation:yenileDon .8s linear infinite}
   /* iOS'un kendi sayfa esnemesi üst çubuğun üstünde boşluk açmasın; çekme etkisini uygulama veriyor */
   html{overscroll-behavior-y:none}
@@ -733,9 +740,9 @@
   .x svg{position:relative; z-index:1}
   /* basınca daire merkezden açık yeşille dolar ve hafif küçülür */
   .x::before{content:""; position:absolute; inset:0; border-radius:inherit; background:var(--basili-zemin);
-    transform:scale(0); transition:transform var(--hiz-bas) var(--egri-giris)}
+    transform:scale(.6); opacity:0; transition:transform var(--hiz-bas) var(--egri-giris), opacity var(--hiz-bas) var(--egri-giris)}
   .x:active, .x.basildi{transform:scale(.92); border-color:var(--basili-cerceve)}
-  .x:active::before, .x.basildi::before{transform:scale(1)}
+  .x:active::before, .x.basildi::before{transform:scale(1); opacity:1}
   .sheet > .x{top:.75rem; right:.75rem}
   .sheet > .x ~ h2{padding-right:2.5rem}
   .sheet::before{content:""; position:absolute; top:.5rem; left:50%; width:2.25rem; height:.3125rem;
@@ -744,23 +751,32 @@
   .sheet.cekiliyor{transition:none}
   /* 9.5 Paneller: aşağıdan kayarak açılır, arka plan %40 kararır; kapanışta tersi */
   .overlay{background:rgba(16,22,19,.4)}
-  .overlay:not(.gorucu):not(.anlik){animation:perdeKarar var(--hiz-ac) var(--egri-giris)}
-  .overlay > .sheet{animation:perdeAc var(--hiz-ac) var(--egri-giris)}
-  .overlay.kapaniyor{animation:perdeAydin var(--hiz-kapa) var(--egri-gecis) forwards; pointer-events:none}
+  /* 31.1: panel 340 ms --egri-cekmece ile açılır, 220 ms --egri-gecis ile kapanır; kararma 240 / 200 ms, yalnız saydamlık */
+  .overlay:not(.gorucu):not(.anlik){animation:perdeKarar var(--hiz-karar-ac) var(--egri-giris)}
+  .overlay > .sheet{animation:perdeAc var(--hiz-ac) var(--egri-cekmece)}
+  .overlay.kapaniyor{animation:perdeAydin var(--hiz-karar-kapa) var(--egri-gecis) forwards; pointer-events:none}
   .overlay.kapaniyor > .sheet{animation:perdeKapa var(--hiz-kapa) var(--egri-gecis) forwards}
   @keyframes perdeKarar{from{background-color:rgba(16,22,19,0)}}
   @keyframes perdeAydin{to{background-color:rgba(16,22,19,0)}}
   @keyframes perdeAc{from{transform:translateY(100%)}}
   @keyframes perdeKapa{to{transform:translateY(100%)}}
-  /* 9.3 bildirim: 8px aşağıdan belirir, solarak gider */
-  .bildirim{animation:bildirGel var(--hiz-ac) var(--egri-giris)}
-  .bildirim.gidiyor{animation:bildirGit var(--hiz-kapa) var(--egri-gecis) forwards}
-  @keyframes bildirGel{from{opacity:0; transform:translate(-50%,8px)}}
-  @keyframes bildirGit{to{opacity:0}}
+  /* geniş ekranda panel ortada: ortadan büyür (scale(.96) + saydamlık), solarak küçülür */
+  @media(min-width:640px){
+    .overlay > .sheet{animation-name:perdeOrtaAc; animation-timing-function:var(--egri-giris)}
+    .overlay.kapaniyor > .sheet{animation-name:perdeOrtaKapa}
+  }
+  @keyframes perdeOrtaAc{from{opacity:0; transform:scale(var(--olcek-gelis))}}
+  @keyframes perdeOrtaKapa{to{opacity:0; transform:scale(var(--olcek-gelis))}}
+  /* 9.3 / 31.1 bildirim: 8 pt aşağıdan 300 ms'de gelir, 200 ms'de solar. Geçiş (transition) olduğu için yenisi gelince
+     eskisi olduğu yerden kesilir. Ortalama satır içi transform'da; kayma ayrı "translate" özelliğinde. */
+  .bildirim{opacity:0; translate:0 8px;
+    transition:opacity var(--hiz-bildir-git) var(--egri-gecis), translate var(--hiz-bildir-git) var(--egri-gecis)}
+  .bildirim.gorunur{opacity:1; translate:0 0; transition-duration:var(--hiz-bildir-gel); transition-timing-function:var(--egri-giris)}
+  .bildirim.gidiyor{opacity:0; translate:0 0; pointer-events:none}
   /* 9.3 değişen önemli rakam / 9.6 yeni satır: bir kez açık yeşil */
   .parla{animation:parla var(--hiz-parla) var(--egri-giris)}
   @keyframes parla{0%,40%{background-color:#D5EBE4}100%{background-color:transparent}}
-  .yeniSatir{animation:satirGel var(--hiz-ac) var(--egri-giris)}
+  .yeniSatir{animation:satirGel var(--hiz-oge) var(--egri-giris)}
   @keyframes satirGel{from{opacity:0; transform:translateY(-8px)}}
   .cell.yeniParla{animation:halka var(--hiz-parla) var(--egri-giris)}
   @keyframes halka{0%{box-shadow:inset 0 0 0 0 #9FD4C4}35%{box-shadow:inset 0 0 0 4px #9FD4C4}100%{box-shadow:inset 0 0 0 0 rgba(159,212,196,0)}}
@@ -790,7 +806,8 @@
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after{animation-duration:1ms !important; animation-delay:0ms !important; animation-iteration-count:1 !important;
       transition-property:color, background-color, border-color, opacity, box-shadow !important}
-    .kayIleri, .kayGeri, .yeniSatir, .bildirim, .overlay > .sheet, .overlay.kapaniyor > .sheet{animation:none !important}
+    .kayIleri, .kayGeri, .yeniSatir, .overlay > .sheet, .overlay.kapaniyor > .sheet{animation:none !important}
+    .bildirim{translate:none !important}
     :active, .basili, .x.basildi{transform:none !important}
   }
   /* 24.1: klavye payı (alt dolgu) 300 ms'de, --egri-gecis ile; klOlc = son yerleşimi ölçerken geçiş kapalı */
@@ -986,7 +1003,7 @@
   /* 26.6: çevrimdışı şeridi — üst çubuğun hemen altında, sakin (koyu gri), dokunuşu engellemez */
   .cevrimSerit{position:fixed; left:0; right:0; z-index:46; display:flex; align-items:center; justify-content:center; gap:.5rem;
     padding:.5rem 1rem; background:#2E3833; color:#fff; font-size:.875rem; line-height:1.35; text-align:center; pointer-events:none;
-    transform:translateY(-120%); opacity:0; transition:transform var(--hiz-ac) var(--egri-giris), opacity var(--hiz-ac) var(--egri-giris)}
+    transform:translateY(-120%); opacity:0; transition:transform var(--hiz-oge) var(--egri-giris), opacity var(--hiz-oge) var(--egri-giris)}
   .cevrimSerit.acik{transform:none; opacity:1}
   @media (prefers-reduced-motion: reduce){ .cevrimSerit{transition:none} }
   html.klOlc .sheet{transition:none!important}
@@ -1084,7 +1101,7 @@
     width:3rem; height:3rem; transition:transform var(--hiz-bas) var(--egri-giris), border-color var(--hiz-bas), color var(--hiz-bas)}
   .barGeri svg, .nav button svg{position:relative; z-index:1}
   .barGeri::before, .nav button::before{content:""; position:absolute; inset:0; border-radius:inherit;
-    transform:scale(0); transition:transform var(--hiz-bas) var(--egri-giris)}
+    transform:scale(.6); opacity:0; transition:transform var(--hiz-bas) var(--egri-giris), opacity var(--hiz-bas) var(--egri-giris)}
   .barGeri{border:2px solid rgba(255,255,255,.8); background:rgba(255,255,255,.14); margin:-.5rem .25rem -.5rem -.125rem}
   .barGeri::before{background:#fff}
   .barGeri:active{opacity:1; transform:scale(.92); color:var(--ok)}
@@ -1092,7 +1109,7 @@
   .nav button{border:var(--cerceve-kalinlik) solid var(--cerceve); background:#fff; margin-right:0}
   .nav button::before{background:var(--basili-zemin)}
   .nav button:active{background:#fff; transform:scale(.92); border-color:var(--basili-cerceve)}
-  .barGeri:active::before, .nav button:active::before{transform:scale(1)}
+  .barGeri:active::before, .nav button:active::before{transform:scale(1); opacity:1}
   .monthbar{gap:.75rem}
   .monthbar > div:first-child{min-width:0}
   /* 10.3 villa başlık kartı */
@@ -1281,7 +1298,7 @@
   .sssMadde summary{display:flex; align-items:center; justify-content:space-between; gap:.75rem; min-height:3.5rem; padding:.625rem 1rem;
     font-size:1.0625rem; list-style:none; cursor:pointer}
   .sssMadde summary::-webkit-details-marker{display:none}
-  .sssMadde .sssOk{flex:none; transition:transform var(--hiz-ac)}
+  .sssMadde .sssOk{flex:none; transition:transform var(--hiz-oge)}
   .sssMadde[open] .sssOk{transform:rotate(180deg)}
   .sssCevap{padding:0 1rem 1rem; font-size:1rem; line-height:1.5; color:#3F4843}
   /* 18.19: Takvim sekmesi */
@@ -1307,7 +1324,7 @@
     border-radius:var(--kose); background:#E3EFEC; color:var(--ok); font-size:1.0625rem; text-align:left}
   .ajKonak span:nth-child(2){flex:1}
   .ajKonakIk{display:flex}
-  .ajKonak .ajOk{transition:transform var(--hiz-ac)}
+  .ajKonak .ajOk{transition:transform var(--hiz-oge)}
   .ajKonak.acik .ajOk{transform:rotate(90deg)}
   .ajSatir .ajEt .ik{display:inline-block; vertical-align:-3px; margin-right:.25rem}
   /* 11.5 rezervasyon detayı ikonlu bilgi satırları */
@@ -1509,7 +1526,7 @@
     padding:1rem 1rem 1.125rem; max-width:40rem; margin:0 auto;
     transform:translateY(calc(100% + var(--menu-h))); visibility:hidden;
     transition:transform var(--hiz-kapa) var(--egri-gecis), visibility 0s linear var(--hiz-kapa)}
-  .secPanel.acik{transform:none; visibility:visible; transition:transform var(--hiz-secpanel) var(--egri-giris), visibility 0s}
+  .secPanel.acik{transform:none; visibility:visible; transition:transform var(--hiz-secpanel) var(--egri-cekmece), visibility 0s}
   body.panelAcik .secPanel{visibility:hidden}
   /* 26.1: panel boyu yalnız .wrap'e yazılır ve kalıtılmaz (kökte değişince sayfadaki her öğenin stili yeniden hesaplanıyordu) */
   @property --secPanelH{syntax:"<length>"; inherits:false; initial-value:9rem}
@@ -2219,6 +2236,13 @@
   var EGRILER={};
   var egriAl=function(ad){ if(EGRILER[ad]) return EGRILER[ad]; var v=""; try{ v=getComputedStyle(document.documentElement).getPropertyValue("--egri-"+ad).trim(); }catch(e){}
     return (EGRILER[ad]=v || (ad==="gecis" ? "cubic-bezier(0.65, 0, 0.35, 1)" : "cubic-bezier(0.22, 1, 0.36, 1)")); };
+  // 31.1: JS'teki süreler de :root'taki --hiz-* değişkenlerinden okunur (ms, bir kez okunup saklanır)
+  var HIZLAR={};
+  function hiz(ad){
+    if(!(ad in HIZLAR)){ var v=""; try{ v=getComputedStyle(document.documentElement).getPropertyValue("--hiz-"+ad).trim(); }catch(e){}
+      HIZLAR[ad]=parseFloat(v)||0; }
+    return HIZLAR[ad];
+  }
   var azHareket=function(){ try{ return window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } };
   // Gerçek titreşim (yalnız uygulama içinde; web'de hiçbir şey yapmaz). Hesap → Titreşim ile kapatılabilir.
   var TITRESIM="villa-takvim-titresim";
@@ -2868,7 +2892,7 @@
       g.style.opacity=String(c<=0?0:Math.min(1,o*1.3));
       if(!g.classList.contains("donuyor")) ok.style.transform="rotate("+Math.round(c*4)+"deg)";
       if(ekran){
-        ekran.style.transition=gecis?"transform var(--hiz-ac) var(--egri-gecis)":"none";
+        ekran.style.transition=gecis?"transform var(--hiz-oge) var(--egri-gecis)":"none";
         ekran.style.transform=c>0?"translateY("+c+"px)":"";
       }
     };
@@ -6092,8 +6116,20 @@
     return true;
   }
   // 5 saniye ekranda kalan, "Geri al" butonlu bildirim
+  // 31.1: bildirim geçişleri. Göster: eski aynı tür bildirim olduğu yerden solmaya başlar, yenisi 8 pt aşağıdan gelir.
+  function bildirKaldir(el){
+    if(!el || el.classList.contains("gidiyor")) return;
+    el.classList.remove("gorunur"); el.classList.add("gidiyor");
+    setTimeout(function(){ if(el.parentNode) el.remove(); },hiz("bildir-git")+20);
+  }
+  function bildirGoster(el,eskiler){
+    Array.prototype.forEach.call(document.querySelectorAll(eskiler),function(x){ if(x!==el) bildirKaldir(x); });
+    document.body.appendChild(el);
+    void el.offsetWidth;   // başlangıç hâli (saydam, 8 pt aşağıda) bir kez yerleşsin; sonra geçiş başlar
+    el.classList.add("gorunur");
+  }
   function geriAlBildir(msg,geriAl){
-    var eski=document.getElementById("geriAlKutu"); if(eski) eski.remove();
+    var eski=document.getElementById("geriAlKutu"); if(eski){ eski.id=""; bildirKaldir(eski); }
     var el=document.createElement("div");
     el.id="geriAlKutu"; el.className="bildirim";
     var cubuk=Array.prototype.some.call(document.querySelectorAll("#fyBar,#misSecBar,.ftAlt"),function(x){
@@ -6105,9 +6141,9 @@
     el.innerHTML='<span></span><button type="button" style="color:#9FE0C9;font-weight:500;padding:.625rem .875rem;'+
       'min-height:48px;border-radius:99px;white-space:nowrap;flex:none">'+esc(cev("Geri al"))+'</button>';
     el.firstChild.textContent=msg;
-    var zaman=setTimeout(function(){ el.remove(); },5000);
-    el.querySelector("button").onclick=function(){ clearTimeout(zaman); el.remove(); geriAl(); };
-    document.body.appendChild(el);
+    var zaman=setTimeout(function(){ bildirKaldir(el); },5000);
+    el.querySelector("button").onclick=function(){ clearTimeout(zaman); bildirKaldir(el); geriAl(); };
+    bildirGoster(el,"#geriAlKutu");
   }
   function bildir(msg,sure){
     var el=document.createElement("div");
@@ -6117,8 +6153,8 @@
       return !x.classList.contains("hide") && x.offsetParent!==null; });
     el.style.cssText="position:fixed;left:50%;bottom:"+(document.body.classList.contains("sekmeli")?"calc("+(cubuk2?9.5:5.25)+"rem + env(safe-area-inset-bottom))":"2rem")+";transform:translateX(-50%);background:#101613;"+
       "color:#fff;padding:.75rem 1.125rem;border-radius:99px;font-size:.875rem;z-index:60;max-width:90%";
-    document.body.appendChild(el);
-    setTimeout(function(){ el.classList.add("gidiyor"); setTimeout(function(){ el.remove(); },200); },sure||2500);
+    bildirGoster(el,".bildirim:not(#geriAlKutu)");
+    setTimeout(function(){ bildirKaldir(el); },sure||2500);
   }
 
   // ================= REZERVASYON =================
@@ -11544,7 +11580,7 @@
     if(!o || o.classList.contains("kapaniyor")) return;
     if(anlik || azHareket()){ o.remove(); kilitDenetle(); return; }
     o.classList.add("kapaniyor"); kilitDenetle();
-    setTimeout(function(){ if(o.parentNode) o.remove(); },190);
+    setTimeout(function(){ if(o.parentNode) o.remove(); },Math.max(hiz("kapa"),hiz("karar-kapa"))+10);
   }
   function kapat(anlik){
     var l=document.querySelectorAll(".overlay:not(.kapaniyor)");
