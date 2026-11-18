@@ -77,6 +77,8 @@
     --iskelet-isik:#F7F9F8;
     --cek-hiz-esigi:.11;          /* 31.12: aşağı çekme hızı (px/ms) bunu geçerse mesafe yetmese de panel kapanır */
     --cek-mesafe:90px;            /* aşağı çekme mesafesi eşiği */
+    --tutma-sure:600000ms;        /* 32.5: rezervasyon girilirken tarihler 10 dk ayrılır */
+    --tutma-kontrol:60000ms;      /* ayırma süresince dış takvimler her 60 sn'de okunur */
     --hiz-titreme:300ms;          /* 31.9: hatalı alan 2 kez hafifçe titrer (±4 pt) */
     --titreme-mesafe:4px;
     --hiz-tik:350ms;              /* 31.6: bildirimdeki tik çizilerek gelir (stroke-dashoffset), ardından başarı titreşimi */
@@ -1551,6 +1553,13 @@
   .lj-disK{background:repeating-linear-gradient(135deg,rgba(95,106,100,.18) 0 2px,#F7F9F8 2px 5px)}
   .dtEt{display:inline-flex; align-items:center; margin-left:.375rem; padding:.0625rem .5rem; border-radius:99px; background:var(--soft);
     color:var(--muted); font-size:.8235rem; line-height:1.4; vertical-align:middle; white-space:nowrap}
+  /* 32.5 ayırma hapı ve "az önce satıldı" şeridi (formun üstünde) */
+  .tutmaHap{display:inline-flex; align-items:center; gap:.375rem; margin:0 0 .75rem; padding:.375rem .875rem; border-radius:99px;
+    background:var(--basili-zemin); color:var(--ok); font-size:.9375rem; line-height:1.3}
+  .tutmaHap.bitti{background:var(--soft); color:var(--muted)}
+  .disSerit{display:flex; flex-direction:column; gap:.625rem; margin:0 0 1rem; padding:.875rem 1rem; border-radius:var(--kose);
+    background:#FBEFF2; border:var(--cerceve-kalinlik) solid var(--uyari); color:var(--uyari); font-size:1rem; line-height:1.45}
+  .disSerit .big{margin:0}
   .dtBlokTarih{display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin:1rem 0}
   .dtBlokTarih .lab{font-size:.9375rem; color:var(--muted)}
   .dtBlokTarih .deg{font-size:1.125rem}
@@ -2641,6 +2650,84 @@
         ciz(); return r;
       });
     });
+  }
+
+  // ---- 32.5 rezervasyon girerken 10 dakikalık ayırma ----
+  // "Rezervasyon"a basınca: (1) arka planda dış takvimler tazelenir, (2) tutma_al. Ayırma bizimse formun üstünde geri sayan hap;
+  // forma dokunuldukça sessizce uzatılır; form kapanınca tutma_birak. Başkasınınsa form açılmaz.
+  // Ayırma süresince her 60 sn'de dış takvimler okunur; seçili tarihlere bir satış denk gelirse kırmızı şerit, Kaydet pasif.
+  var TUT=null;
+  function rezBasla(){
+    var v=aktif(), t=S.taslak;
+    if(!v || !t || !dtOzellik() || DT.hazir===false){ form(); return; }
+    dtEsitle(v).catch(function(){});
+    VT.dt.tutmaAl(v.id,t.start,t.end).then(function(c){
+      if(c && c.ok===false){
+        var dk=Math.max(1,Math.min(10,Math.ceil((Date.parse(c.bitis)-Date.now())/60000)||10));
+        titret("hata");
+        uyari(cev("Bu tarihler şu an başka biri tarafından ayrılmış ("+dk+" dk). Başka tarih seçin ya da bekleyin."));
+        return;
+      }
+      form();
+      if(c && c.id) tutmaBagla(v,t,c.id);
+    },function(){ form(); });   // sunucu yoksa / bağlantı yoksa form yine açılır (kayıtta sunucu kilidi denetler)
+  }
+  function tutmaBagla(v,t,id){
+    tutmaBitir(true);
+    var l=document.querySelectorAll(".overlay:not(.kapaniyor)"), o=l[l.length-1]; if(!o) return;
+    var sh=o.querySelector(".sheet"), head=sh.querySelector(".head");
+    TUT={id:id, villa:v.id, bas:t.start, bit:t.end, son:Date.now()+hiz("--tutma-sure"), alindi:Date.now(), o:o, engel:false};
+    var hap=document.createElement("div"); hap.className="tutmaHap"; hap.id="tutmaHap"; hap.setAttribute("role","status");
+    var serit=document.createElement("div"); serit.className="disSerit hide"; serit.id="disSerit"; serit.setAttribute("role","alert");
+    head.insertAdjacentElement("afterend",serit); head.insertAdjacentElement("afterend",hap);
+    tutmaYaz();
+    TUT.saat=setInterval(function(){
+      if(!TUT) return;
+      if(!TUT.o.parentNode || TUT.o.classList.contains("kapaniyor")){ tutmaBitir(); return; }
+      tutmaYaz();
+    },1000);
+    TUT.kontrol=setInterval(function(){ if(TUT) tutmaKontrol(v); },hiz("--tutma-kontrol"));
+    // forma dokunuldukça (son alıştan 60 sn geçtiyse) sessizce yeniden alınır
+    var uzat=function(){
+      if(!TUT || Date.now()-TUT.alindi<60000) return;
+      TUT.alindi=Date.now();
+      VT.dt.tutmaAl(v.id,TUT.bas,TUT.bit).then(function(c){ if(TUT && c && c.ok){ TUT.id=c.id; TUT.son=Date.now()+hiz("--tutma-sure"); tutmaYaz(); } },function(){});
+    };
+    sh.addEventListener("focusin",uzat); sh.addEventListener("input",uzat); sh.addEventListener("pointerdown",uzat);
+  }
+  function tutmaYaz(){
+    var el=document.getElementById("tutmaHap"); if(!el || !TUT) return;
+    var kalan=Math.max(0,Math.round((TUT.son-Date.now())/1000)), dk=Math.floor(kalan/60), sn=kalan%60;
+    el.classList.toggle("bitti",!kalan);
+    el.innerHTML=ikon("saat",{boy:16})+"<span>"+esc(kalan ? cev("Bu tarihler 10 dk sizin için ayrıldı")+" · "+dk+":"+(sn<10?"0":"")+sn
+      : cev("Ayırma süresi doldu; forma dokununca yenilenir"))+"</span>";
+    if(!kalan) TUT.alindi=0;
+  }
+  function tutmaKontrol(v){
+    dtEsitle(v,TUT.bas,TUT.bit).then(function(){
+      if(!TUT) return;
+      var b=dtAraliktaki(v,TUT.bas,TUT.bit,["rezervasyon","bilinmiyor"])[0];
+      if(b && !TUT.engel) tutmaEngel(v,b);
+    },function(){});
+  }
+  // seçili tarihlere bir satış denk geldi: kırmızı şerit, Kaydet pasif, "Tarihleri değiştir"
+  function tutmaEngel(v,b){
+    TUT.engel=true;
+    var s=document.getElementById("disSerit"); if(!s) return;
+    s.innerHTML="<div>"+esc(cev("Dikkat: "+aralikYazi({b:TUT.bas,s:TUT.bit})+" az önce "+ekDe(dtTakvimAd(v.id,b.takvim))+" satıldı."))+"</div>"+
+      '<button class="big renkli is-rez" data-ik="takvim-aralik" id="disTarih" type="button">'+esc(cev("Tarihleri değiştir"))+"</button>";
+    s.classList.remove("hide");
+    var k=document.getElementById("f-kaydet"); if(k){ k.disabled=true; k.setAttribute("aria-disabled","true"); }
+    document.getElementById("disTarih").onclick=function(){ kapat(); S.secim=null; S.start=null; S.rezModu=true; ciz(); };
+    try{ s.scrollIntoView({block:"nearest", behavior:azHareket()?"auto":"smooth"}); }catch(e){}
+    titret("hata");
+  }
+  // form kapandı / vazgeçildi / kaydedildi: ayırma bırakılır
+  function tutmaBitir(sessiz){
+    if(!TUT) return;
+    clearInterval(TUT.saat); clearInterval(TUT.kontrol);
+    var id=TUT.id; TUT=null;
+    if(id) VT.dt.tutmaBirak(id).catch(function(){});
   }
 
   // ---- 32.3 Takvim bağlantıları ekranı ----
@@ -5488,7 +5575,7 @@
     document.getElementById("spKapat").onclick=function(){ secimBitir(); };
     var al=function(){ var sc=S.secim; S.secim=null; S.start=null; ciz(); return sc; };
     var r1=document.getElementById("spRez"), r2=document.getElementById("spTeklif"), r3=document.getElementById("spOps");
-    if(r1) r1.onclick=function(){ S.taslak=al(); form(); };
+    if(r1) r1.onclick=function(){ S.taslak=al(); rezBasla(); };
     if(r2) r2.onclick=function(){ var sc=al(); ozelTeklifSheet(aktif(),{giris:sc.start,cikis:sc.end}); };
     if(r3) r3.onclick=function(){ var sc=al(); opsiyonSheet(aktif(),sc); };
     // 20.6 / 31.2: içerik her açılışta (ve giriş → aralık geçişinde) sırayla belirir; aynı durumda yeniden çizimde oynamaz
@@ -6023,7 +6110,7 @@
     var niyet=S.rezNiyet; S.rezNiyet=false;
     if(niyet==="teklif"){ secimCiz(); ozelTeklifSheet(aktif(),{giris:tsl.start,cikis:tsl.end}); rhBildir("aralik"); return; }
     if(niyet==="ops"){ secimCiz(); opsiyonSheet(aktif(),tsl); rhBildir("aralik"); return; }
-    if(niyet){ S.taslak=tsl; secimCiz(); form(); rhBildir("aralik"); return; }
+    if(niyet){ S.taslak=tsl; secimCiz(); rezBasla(); rhBildir("aralik"); return; }
     S.secim=tsl; secimCiz(); rhBildir("aralik");
   });
 
@@ -6054,7 +6141,7 @@
       // 19.3: tarihler zaten seçiliyse ilgili panel hemen açılır (rehber tarih adımlarını atlar)
       if(S.secim){
         var sc0=S.secim; S.secim=null; S.start=null; ciz();
-        if(is==="rez"){ S.taslak=sc0; form(); }
+        if(is==="rez"){ S.taslak=sc0; rezBasla(); }
         else if(is==="teklif") ozelTeklifSheet(aktif(),{giris:sc0.start,cikis:sc0.end});
         else opsiyonSheet(aktif(),sc0);
         return;
