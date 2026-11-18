@@ -1,5 +1,5 @@
 -- VERITABANI_GOREV30.sql — Abonelik altyapısı
--- Ürün yöneticisi Zeyd'in onayıyla uygular. Claude Code ÇALIŞTIRMAZ, sadece adları kullanır.
+-- UYGULANDI: 2026-11-18 (Zeyd onayıyla). Claude Code ÇALIŞTIRMAZ, sadece adları kullanır.
 -- Sınır uygulaması başlangıçta KAPALI (sinir_acik = false): kimse etkilenmez.
 
 create table if not exists public.plan_ayarlari (
@@ -78,7 +78,7 @@ create or replace function public.abonelik_kaldir(p_id uuid) returns void
 language plpgsql security definer set search_path = public as $$
 begin
   if not yonetici_mi() then raise exception 'Yetkiniz yok'; end if;
-  delete from abonelikler where kullanici = p_id and kaynak = 'manuel';
+  update abonelikler set durum = 'suresi_doldu', bitis = now(), guncelleme = now() where kullanici = p_id and kaynak = 'manuel';
   insert into destek_kayitlari (yonetici, villa_id, hedef_kullanici, islem) values (auth.uid(), null, p_id, 'abonelik_kaldir');
 end $$;
 
@@ -95,8 +95,7 @@ grant execute on function public.abone_mi(uuid), public.villa_ekleyebilir(), pub
   public.abonelik_ver(uuid,int,text), public.abonelik_kaldir(uuid), public.tum_abonelikler() to authenticated;
 
 -- Villa ekleme kuralına sınır kontrolü (sinir_acik=false iken etkisi yok)
-drop policy if exists p_villa_ekle on public.villalar;
-create policy p_villa_ekle on public.villalar for insert to authenticated
+alter policy p_villa_ekle on public.villalar
   with check (sahip = auth.uid() and onayli() and villa_ekleyebilir());
 
 -- Mağaza bildirimleri: Edge Function "abonelik-webhook" (RevenueCat) service_role ile abonelikler'e yazar.

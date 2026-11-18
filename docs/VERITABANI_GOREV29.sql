@@ -1,6 +1,6 @@
 -- VERITABANI_GOREV29.sql
 -- Güvenlik sıkılaştırma + kullanım ölçümü (olaylar) + yönetici istatistikleri
--- Bu dosyayı Claude (ürün yöneticisi) Zeyd'in onayıyla Supabase'e uygular.
+-- UYGULANDI: 2026-11-18 (Zeyd onayıyla).
 -- Claude Code bu dosyayı ÇALIŞTIRMAZ, sadece okur.
 
 -------------------------------------------------------------------------------
