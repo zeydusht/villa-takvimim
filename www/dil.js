@@ -864,6 +864,10 @@
     "Satın alımları geri yükledi":"Restored purchases",
     "Aboneliği başlat":"Start subscription",
     "Bekleyin…":"Please wait…",
+    "Gizlilik metnini açın":"Open the privacy notice",
+    "Teklif, misafire özel fiyatlı bir bağlantıdır; misafir fiyatı ve tarihleri görüp size yazar.":"An offer is a link with a special price for a guest; the guest sees the price and dates and gets in touch with you.",
+    "Henüz bakıcı yok.":"No caretakers yet.",
+    "Bakıcı takvimi ve misafir bilgilerini görür; ödemeleri ve tutarları göremez.":"A caretaker sees the calendar and guest details but not payments or amounts.",
     "Üyelik":"Membership",
     "Pro · deneme":"Pro · trial",
     "Pro · iptal edildi":"Pro · cancelled",
@@ -1245,6 +1249,10 @@
     [/^· gün aralığı seçin$/, "· select a date range"],
     [/^Çıkışta (.+) depozito iade edilir \(hasar yoksa\)\.$/,
       "$1 deposit is refunded at check-out (if there is no damage)."],
+    // Görev 30 (kalite turu: "Bugün ve yarın" listesi İngilizcede Türkçe kalıyordu)
+    [/^Yarın (\d+:\d+)$/, "Tomorrow $1"],
+    [/^· (.+) giriş yapacak$/, "· $1 checks in"],
+    [/^· (.+) çıkış yapacak$/, "· $1 checks out"],
     // Görev 30
     [/^(\d+) villaya kadar$/, "Up to $1 villas"],
     [/^Bitiş: (.+)$/, "Ends: $1"],

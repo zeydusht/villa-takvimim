@@ -3,7 +3,7 @@
 
 // Sürüm: her yayında artırılır. Dosya değişince telefonlar yeni servisi kurar;
 // açılışta eski sürümlerden kalan önbellekler silinir, böylece eski ekran kalmaz.
-var SURUM = "vt-2026-11-18-gorev30e";
+var SURUM = "vt-2026-11-18-gorev30f";
 
 self.addEventListener("install", function (e) {
   self.skipWaiting();

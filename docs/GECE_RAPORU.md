@@ -89,3 +89,10 @@ _Özet en sonda tamamlanacak._
 - Karar: Ekran görüntüleri: koyu yeşil zemin, üstte serif başlık, altta telefon çerçevesinde uygulamanın gerçek ekranı. 6 ekran × 2 dil, 1320 × 2868.
 - Bulunan hata: İngilizcede "Bugün ve yarın" listesindeki "Yarın 16:00 · … giriş yapacak" satırları Türkçe kalıyordu. Çevirisi eklendi (kalite turu commit'inde).
 - Not: Uygulama içinde ad "Villa Takvim", mağazada "Villa Takvimim". Değiştirmedim, Zeyd'e soruldu.
+
+### 4) Kalite turu
+- Karar: DENETIM.md'deki Ö1 / Ö2 maddelerinin hepsi zaten kapalıydı. Ö3'ten tasarım kararı gerektirmeyen üçü yapıldı: 6 (Teklifler / Bakıcılar boş hâli), 12 (girişteki küçük gizlilik bağlantısı), 13 (misafir sayfasında özellik adı büyük harfle).
+  Neden: kalan Ö3 maddeleri (takvimde fiyat gösterimi, ipucu kartları, yedek hatırlatması vb.) ürün kararı istiyor; gece kendi başıma karar vermedim.
+- Karar: Gece modu için uygulamayı koyu renge çevirmedim.
+  Neden: uygulama bilerek yalnız açık renk (`color-scheme: light only`); gece modunda da beyaz zemin ve okunur yazı doğrulandı.
+- Bulunan ve düzeltilenler: 2 emoji (STIL ihlali), çok büyük yazıda 2 kesik / bölünen yazı, İngilizcede 1 çevrilmeyen satır, 29.7'den kalan ikon kutusu hatası (30.4'te). Ayrıntı: DENETIM.md sonu.

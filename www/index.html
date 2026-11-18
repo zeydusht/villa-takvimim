@@ -454,7 +454,10 @@
   .shOps{margin-top:1rem}
   .shSayfaBtn{min-height:4rem; font-size:1.125rem}
   .shHazir{text-align:center; padding:1rem; border-radius:var(--kose); background:#E3EFEC}
-  .shHazirBas{font-family:var(--serif); font-size:1.5rem; color:var(--ok); margin:.25rem 0 .75rem}
+  .rizaLink{display:inline-flex; align-items:center; min-height:3rem; padding:0 .25rem; margin:-.5rem 0 .5rem 2rem; color:var(--ok); font-size:.9375rem}
+  .shHazirBas{font-family:var(--serif); font-size:1.5rem; color:var(--ok); margin:.25rem 0 .75rem; display:flex; align-items:center; justify-content:center; gap:.5rem}
+  .destekAd{display:inline-flex; align-items:center; gap:.375rem}
+  .destekAd .ik{flex:none}
   .shYukleniyor{display:flex; align-items:center; justify-content:center; gap:.75rem; min-height:4rem; color:var(--muted); font-size:1rem}
   .shDonen{width:1.75rem; height:1.75rem; border-radius:99px; border:3px solid #D3DAD6; border-top-color:var(--ok); animation:shDon .8s linear infinite}
   @keyframes shDon{to{transform:rotate(360deg)}}
@@ -1161,6 +1164,7 @@
   .ayGrup{font-family:var(--serif); font-size:1.125rem; margin:1.5rem 0 .25rem}
   .ayGrup:first-of-type{margin-top:1rem}
   /* 10.10 villa yönetimi satırları */
+  .satirBtn .sag.kGoster{flex:none; max-width:none}   /* kalite turu: çok büyük yazıda "Göster" kesilmesin */
   .satirBtn .sag.tamamYazi{color:var(--ok); max-width:none}
   .satirBtn .sag.eksikEt{flex:none; max-width:none; color:var(--lacivert); background:#fff;
     border:1.5px solid var(--lacivert); border-radius:99px; padding:.125rem .5625rem .1875rem; font-size:.8125rem}
@@ -1567,7 +1571,7 @@
   </div>
 
   <div class="destekBar hide" id="destekBar">
-    <span id="destekAd">🛟 Destek modu</span>
+    <span id="destekAd" class="destekAd">Destek modu</span>
     <button class="big ghost" id="destekCik">Çık</button>
   </div>
 
@@ -1587,9 +1591,9 @@
         <input id="g-sifre" type="password" autocomplete="current-password" placeholder="En az 6 karakter"></div>
       <label class="onayKutu hide" id="g-rizaSatir">
         <input type="checkbox" id="g-riza">
-        <span class="sm" style="line-height:1.4"><a href="gizlilik.html" target="_blank" rel="noopener">Gizlilik metnini</a> okudum, kişisel verilerin
-          burada anlatıldığı şekilde işlenmesini kabul ediyorum.</span>
+        <span class="sm" style="line-height:1.4">Gizlilik metnini okudum, kişisel verilerin burada anlatıldığı şekilde işlenmesini kabul ediyorum.</span>
       </label>
+      <a class="rizaLink hide" id="g-rizaLink" href="gizlilik.html" target="_blank" rel="noopener">Gizlilik metnini açın</a>
       <div class="sm warn" id="g-hata" style="min-height:1.25rem"></div>
       <button class="big" data-ik="giris" id="g-gonder">Giriş yap</button>
       <button class="big renkli is-rez" data-ik="kisi-arti" id="g-mod" style="margin-top:.5rem">Hesabım yok, oluştur</button>
@@ -4504,7 +4508,7 @@
       var tikSvg=ikon("tik",{boy:14,kalinlik:3});
       if(kapali){
         kur.innerHTML='<button class="satirBtn" data-kk="ac" data-ikk="bilgi:liste-tik"><span class="kTek">'+
-          esc(cev("Villa kurulumu"))+" · "+kd.biten+"/"+SH_ADIM+'</span><span class="sag">'+esc(cev("Göster"))+"</span></button>";
+          esc(cev("Villa kurulumu"))+" · "+kd.biten+"/"+SH_ADIM+'</span><span class="sag kGoster">'+esc(cev("Göster"))+"</span></button>";
       } else {
         kur.innerHTML='<div class="kBas"><span class="kBasSol"><span class="kBaslik">'+esc(cev("Villanızı hazırlayın"))+"</span>"+
           '<span class="kSay">'+kd.biten+"/"+SH_ADIM+"</span></span>"+gizleBtn+"</div>"+
@@ -5687,7 +5691,9 @@
     VT.teklifler(v.id).then(function(l){
       var el=document.getElementById("tl-liste"); if(!el) return;
       l=Array.isArray(l)?l:[];
-      if(!l.length){ el.innerHTML='<div class="sm muted">'+esc(cev("Henüz teklif göndermediniz."))+"</div>"; return; }
+      if(!l.length){ el.innerHTML='<div style="margin-top:.5rem">'+cizimImg("bos-rezervasyon")+"</div>"+
+        '<div class="sm muted" style="text-align:center;line-height:1.5">'+esc(cev("Henüz teklif göndermediniz."))+" "+
+        esc(cev("Teklif, misafire özel fiyatlı bir bağlantıdır; misafir fiyatı ve tarihleri görüp size yazar."))+"</div>"; return; }
       el.innerHTML='<div class="grup">'+l.map(function(t){
         var d=teklifDurumu(t);
         return '<button class="satirBtn tkSatir" data-kod="'+esc(t.kod)+'"><span class="ikKutu is-para">'+ikon("rozet-yuzde",{boy:20})+"</span>"+
@@ -6374,7 +6380,7 @@
   }
   function detay(r){
     perde('<div class="head">'+
-      '<div class="sm muted" style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem">'+
+      '<div class="sm muted" style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem;white-space:nowrap;flex:none">'+
         '<span class="dot" style="background:'+r.color+'"></span>'+esc(cev(gece(r)+" gece"))+"</div>"+
       "<h3>"+esc(r.guest)+"</h3>"+kapatBtn()+"</div>"+
       // 17.4: en üstte "Ödemeyi al ve misafiri yerleştir" / "Misafir çıktı mı?"
@@ -6851,6 +6857,7 @@
     girisMod=mod;
     var kayit=girisMod==="kayit";
     document.getElementById("g-rizaSatir").classList[kayit?"remove":"add"]("hide");
+    document.getElementById("g-rizaLink").classList[kayit?"remove":"add"]("hide");
     document.getElementById("g-adAlan").style.display=kayit?"block":"none";
     document.getElementById("g-gonder").textContent=kayit?"Hesap oluştur":"Giriş yap";
     document.getElementById("g-mod").classList[kayit?"add":"remove"]("hide");
@@ -8050,9 +8057,9 @@
         db.classList.remove("hide");
         db.style.top=(ab?ab.offsetHeight:0)+"px";
         var sahipAd=bilgi.sahip_ad || (v.bilgi&&v.bilgi.sahip) || bilgi.sahip_eposta || "";
-        document.getElementById("destekAd").textContent = sahipAd
-          ? "🛟 "+cev("Destek modu")+" · "+cev(ekIn(sahipAd)+" villasına bakıyorsunuz")
-          : "🛟 "+cev("Destek modu")+" · "+cev("Villa sahibinin villasına bakıyorsunuz");
+        document.getElementById("destekAd").innerHTML = ikon("yardim",{boy:18})+"<span>"+esc(sahipAd
+          ? cev("Destek modu")+" · "+cev(ekIn(sahipAd)+" villasına bakıyorsunuz")
+          : cev("Destek modu")+" · "+cev("Villa sahibinin villasına bakıyorsunuz"))+"</span>";
         goster("takvim");
         ciz();
       });
@@ -8161,7 +8168,8 @@
           h+='<div class="row"><span class="name">'+esc(u.eposta||"—")+
              '<span class="muted" style="font-size:.8125rem"><br>Villa sahibi</span></span></div>';
         });
-        if(!bakicilar.length) h+='<div class="sm muted" style="padding:.75rem 0">Henüz bakıcı yok.</div>';
+        if(!bakicilar.length) h+='<div class="sm muted" style="padding:.75rem 0;line-height:1.5">'+esc(cev("Henüz bakıcı yok."))+" "+
+          esc(cev("Bakıcı takvimi ve misafir bilgilerini görür; ödemeleri ve tutarları göremez."))+"</div>";
         else bakicilar.forEach(function(u){
           h+='<div class="row"><span class="name">'+esc(u.eposta||"—")+
              '<span class="muted" style="font-size:.8125rem"><br>'+
@@ -9410,7 +9418,7 @@
     }
   }
   function shSayfaHazir(){
-    return '<div class="shHazir"><div class="shHazirBas">🎉 '+esc(cev("Villa sayfanız hazır"))+"</div>"+
+    return '<div class="shHazir"><div class="shHazirBas">'+ikon("tik-daire",{boy:26})+"<span>"+esc(cev("Villa sayfanız hazır"))+"</span></div>"+
       '<button class="big" data-ik="tik" id="sh-sayfaTamam">'+esc(cev("Tamam"))+"</button></div>";
   }
   function shBagla(a){

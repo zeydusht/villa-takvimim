@@ -39,14 +39,14 @@ _Claude Code, 17 Kasım 2026. Stil kuralları: `docs/STIL.md`._
 | 3 | Her ekran, internet yokken | Çevrimdışı olduğu hiçbir yerde görünmüyor. Kayıt iki kez sessizce deneniyor, sonra "Buluta kaydedilemedi" penceresi teknik hata metniyle ("Failed to fetch") çıkıyor. İnternet gelince kendiliğinden kaydetmiyor. | Üst çubuğun altında sakin şerit: "Çevrimdışı · değişiklikler bağlanınca kaydedilecek". Ağ hatasında pencere yok; bağlantı gelince bekleyen değişiklik kendiliğinden kaydediliyor ("Değişiklikler kaydedildi."). Sunucunun kendisi hata verirse "Tekrar dene"li pencere eskisi gibi. | Ö1 | `denetim-once/390/38-cevrimdisi.png` → `duzeltme/cevrimdisi/serit-390.png`, `baglandi-390.png` | ✓ yapıldı |
 | 4 | Fotoğraflar → seçip sil | Onay var ama Geri al yok (diğer silmelerle tutarsız). | Onay kaldı + Geri al (fotoğraflar aynı sıraya döner). Fotoğraf dosyası sunucudan silinmediği için geri almak güvenli. | Ö2 | `duzeltme/geri-al/foto-silindi-390.png` | ✓ yapıldı |
 | 5 | "Geri al" bildirimi | Düğmesi 44 pt. | 48 pt; İngilizcede "Undo". | Ö2 | — | ✓ yapıldı |
-| 6 | Misafir sayfası (g.html), her yerde | İkincil yazı rengi (#6B7C85) beyazda 4,33, açık gri zeminde 4,02: AA'nın altında. Gün adları, açıklamalar, künye, kişi / oda etiketleri, açıklama satırı. | #5B6A72: beyazda 5,60, açık gride 5,20. | Ö2 | `denetim-once/390/g-normal.png` → `denetim/390/g-normal.png` | ✓ yapıldı |
+| 6 | Misafir sayfası (g.html), her yerde | İkincil yazı rengi (#6B7C85) beyazda 4,33, açık gri zeminde 4,02: AA'nın altında. Gün adları, açıklamalar, künye, kişi / oda etiketleri, açıklama satırı. | #5B6A72: beyazda 5,60, açık gride 5,20. | Ö2 | `denetim-once/390/g-normal.png` → `denetim/390/g-normal.png` | ✓ yapıldı ✓ 18 Kasım (gece görevi): Teklifler'de çizim + açıklama, Bakıcılar'da açıklama. |
 | 7 | Misafir sayfası takvimi | Fiyatlar 8 px, gün adları 11 px. | Fiyat 11 px (takvim hücresi istisnası, STIL.md), gün adları 13 px. | Ö2 | aynı | ✓ yapıldı |
 | 8 | Misafir sayfası | "Soru sormak için yazın" düğmesi 42 pt; üst konum yazısı 12 px. | 48 pt; 13 px. | Ö2 | aynı | ✓ yapıldı |
 | 9 | Alt menü (Villalar · Takvim · Hesap) | Etiketler 12 px. | 13 px. | Ö2 | `denetim-once/390/01-villalarim.png` → `denetim/390/01-villalarim.png` | ✓ yapıldı |
 | 10 | Villa takvimi | Gün adları (Pt Sa Ça…) 12 px, açıklama satırı (Dolu, Boş, Bugün…) 12 px. | 13 px (açıklama satırında satır arası da açıldı). | Ö2 | `…/04-villa-ekrani.png` | ✓ yapıldı |
 | 11 | Fiyatlar → Aylar | "Geçen yıl: …" yazısının kontrastı 2,96. "geçmiş" etiketi 12 px. | İkincil renk (5,9); etiket 13 px. | Ö2 | `…/12-fiyat-aylar.png` | ✓ yapıldı |
-| 12 | Fiyatlar → Günler | Dolu günde misafirin baş harfleri 9 px, soluk. | 11 px (hücre istisnası), daha belirgin. | Ö2 | `…/13-fiyat-gunler.png` | ✓ yapıldı |
-| 13 | Fotoğraflar | "Kapak" etiketi 11 px (villa ekranındaki küçük şeritte 9 px). "Birden fazla seç" 44 pt. | 13 px; 48 pt. | Ö2 | `…/23-fotograflar.png` | ✓ yapıldı |
+| 12 | Fiyatlar → Günler | Dolu günde misafirin baş harfleri 9 px, soluk. | 11 px (hücre istisnası), daha belirgin. | Ö2 | `…/13-fiyat-gunler.png` | ✓ yapıldı ✓ 18 Kasım: metin düz, "Gizlilik metnini açın" ayrı satırda 48 pt (yalnız kayıt modunda). |
+| 13 | Fotoğraflar | "Kapak" etiketi 11 px (villa ekranındaki küçük şeritte 9 px). "Birden fazla seç" 44 pt. | 13 px; 48 pt. | Ö2 | `…/23-fotograflar.png` | ✓ yapıldı ✓ 18 Kasım: yalnız görünümde ilk harf büyük. |
 | 14 | Gelir & gider | Kutulardaki "+ … depozito" alt yazıları 12 px. "Gider ekle" / "Gelir ekle" 44 pt. | 13 px; 48 pt. | Ö2 | `…/19-gelir-gider.png` | ✓ yapıldı |
 | 15 | Boş günleri paylaş | "En az kaç gece" − / + düğmeleri 44 pt; villa bilgilerindeki oda sayaçları 40 pt. | 48 pt. | Ö2 | `…/36-boslari-paylas.png` | ✓ yapıldı |
 | 16 | Giriş ekranı | "Zaten hesabın var mı? Giriş yap": uygulamanın geri kalanı "siz" diyor. Düğme 44 pt. Alttaki "Gizlilik ve kişisel veriler" bağlantısı 19 pt yüksekliğinde. | "Zaten hesabınız var mı? Giriş yapın", 48 pt; bağlantı 48 pt. | Ö2 | `…/03-giris.png` | ✓ yapıldı |
@@ -128,3 +128,22 @@ Ayrıntı ve ekranlarda gezinme panellerinde rehber her açılışta kendiliğin
 | 12 | Giriş ekranındaki satır içi "Gizlilik metnini" bağlantısı | Ayrı satıra alınsın. | Dokunma alanı 19 pt. |
 | 13 | Misafir sayfasında özellik adları | Veride küçük harfle girilmiş özellikler büyük harfle başlasın. | Görünüm. |
 | 14 | Çevrimdışıyken bekleyen değişiklik sayısı | Şeritte "2 değişiklik bekliyor". | Güven. |
+
+## Gece görevi kalite turu (18 Kasım 2026)
+
+16 durum (iPhone SE 375 × 667, 360, 390, 430 · Normal ve Çok büyük yazı · gece ve gündüz modu), her durumda 7 ekran yukarıdan aşağı kaydırılarak denetlendi (Villalar, Takvim, Hesap, villa takvimi, rezervasyon ayrıntısı, Gelir & gider, geri dönüş). Görseller: `qa/gorev30/kalite/`.
+
+| Bulgu | Yapılan |
+|---|---|
+| Destek modu şeridinde ve "Villa sayfanız hazır" başlığında emoji (🛟, 🎉) | Lucide ikonları (`yardim`, `tik-daire`) |
+| Hesap satırlarında ikon kutusu uzuyordu (Görev 29.7'deki CSS) | Kural yalnız yazı sütununa uygulanıyor |
+| Büyük yazıda e-posta sağ köşede harf harf bölünüyordu | E-posta "Hesabım"ın altında |
+| Çok büyük yazıda "Kullanıcılar" kelimesi bölünüyordu | Kelime bölünmez |
+| Çok büyük yazıda villa kurulumu satırında "Göster" kesiliyordu | Esnemez |
+| iPhone SE'de çok büyük yazıda rezervasyon başlığında "3 gece" iki satıra bölünüyordu | Tek satır |
+| İngilizcede "Bugün ve yarın" listesinde "Yarın 16:00 · … giriş yapacak" Türkçe kalıyordu | Çeviri kalıbı eklendi |
+| Gece modu | Uygulama bilerek yalnız açık renk; gece modunda da zemin beyaz, okunur (16 durumda doğrulandı) |
+| Konsol / sayfa hatası | Hiçbir durumda yok |
+
+Açık kalanlar (Ö3): 1, 2, 3, 4, 5, 7, 8, 10, 11, 14. Hepsi tasarım kararı istiyor; Zeyd'le seçilmeli.
+

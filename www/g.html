@@ -891,7 +891,8 @@
     return '<div class="amblemler">'+dizi.map(function(o){
       // 12.10: uygulamadaki özellik düğmeleriyle aynı Lucide ikonu (ozellik.js); tabloda yoksa eski amblem
       var ik=(window.OZ_IKON && window.OZ_IKON[String(o||"").trim()]) ? window.ozIkon(o,22) : "";
-      return '<div class="amb"><span class="ambIkon">'+(ik||amblem(o))+"</span><span>"+esc(CEV(o))+"</span></div>";
+      var ad=String(CEV(o)||""); ad=ad.charAt(0).toLocaleUpperCase(document.documentElement.lang==="en"?"en":"tr")+ad.slice(1);
+      return '<div class="amb"><span class="ambIkon">'+(ik||amblem(o))+"</span><span>"+esc(ad)+"</span></div>";
     }).join("")+"</div>";
   }
 
