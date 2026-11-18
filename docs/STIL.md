@@ -167,6 +167,7 @@ Dört tür (`.big`):
 | Kaydırma | `--hiz-kaydir` | 400 ms | Takvim konumlama |
 | Tik çizimi | `--hiz-tik` | 350 ms | Başarı bildiriminde tik çizilir (`--hiz-tik-gecikme` 100 ms sonra) |
 | Kutlama kartı | `--hiz-kutlama` | 260 ms | "İlk" kartı `scale(.96)` + saydamlıktan gelir |
+| Titreme | `--hiz-titreme` | 300 ms | Hatalı alan 2 kez ±4 pt (`--titreme-mesafe`) |
 | Sayaç | `--hiz-sayac` | 450 ms | Değişen toplam eski değerden yeniye sayarak geçer (`sayarakYaz`, `--egri-giris`, ara değerler binlik ayraçla; "Hareketi azalt"ta doğrudan): seçim paneli toplamı, Gelir&gider net tutarı, rezervasyon detayındaki "… alınacak", ödeme sonrası kalan |
 | Parlama | `--hiz-parla` | 600 ms | Değişen rakam / yeni satır |
 
@@ -235,9 +236,14 @@ Dört tür (`.big`):
   - Villa takvimi ve Gelir&gider verisi villa listesiyle birlikte gelir; ayrı yükleniyor hâlleri yok.
 - **Kaydet düğmesi** (`kaydetIs`): basınca hemen "Kaydediliyor…", ikinci basış engellenir. Başarılı olunca bildirim çıkar. Hata olursa
   düğme eski hâline döner, altında kırmızı, okunur bir açıklama ve "Tekrar dene" çıkar.
-- **Hata:**
-  - "Bağlantı kurulamadı" + "Tekrar dene".
-  - Teknik hata metni kullanıcıya en sonda ve küçük gösterilir.
+- **Hata (Görev 31.9):**
+  - Kullanıcıya teknik mesaj gösterilmez ("Failed to fetch", "JWT", "500", tablo adı, İngilizce sunucu mesajı). Hepsi
+    `kullaniciHatasi(e, varsayılan)` ile sade bir Türkçe cümleye çevrilir (İngilizcesi dil.js'de); sunucunun yazdığı Türkçe
+    açıklamalar ("Yetkiniz yok." vb.) olduğu gibi kalır.
+  - Yanında "Tekrar dene" olur (`yukleHata`, `kaydetIs`).
+  - Hata mesajı hatanın olduğu yerde gösterilir (alanın altında, listenin yerinde); ekranın en üstünde değil.
+  - Form hatası (`alanHata`): hatalı alan kırmızı çerçeve alır, sayfa o alana kayar, alan 2 kez hafifçe titrer (±4 pt, 300 ms,
+    `--hiz-titreme`). "Hareketi azalt"ta titreme yok. Yazmaya başlayınca kırmızı kalkar.
 - **Çevrimdışı:**
   - üst çubuğun altında sakin şerit: "Çevrimdışı · değişiklikler bağlanınca kaydedilecek";
   - bağlantı gelince kendiliğinden kaydedilir.
