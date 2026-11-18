@@ -348,6 +348,12 @@
 
   // ---------------- Görev 30: abonelik (sunucu: VERITABANI_GOREV30.sql; yoksa çağıran sessizce gizler) ----------------
   VT.abonelikDurumum = function () { return VT.rpc("abonelik_durumum"); };
+  // yönetici (sunucu yetkiyi denetler; her işlem destek_kayitlari'na yazılır). p_gun null = süresiz
+  VT.tumAbonelikler = function () { return VT.rpc("tum_abonelikler"); };
+  VT.abonelikVer = function (id, gun, not) {
+    return VT.rpc("abonelik_ver", { p_id: id, p_gun: gun ? Math.round(gun) : null, p_not: (not && String(not).trim().slice(0, 200)) || null });
+  };
+  VT.abonelikKaldir = function (id) { return VT.rpc("abonelik_kaldir", { p_id: id }); };
   VT.planAyarlari = function () {
     return api("plan_ayarlari?select=anahtar,deger").then(function (l) {
       var o = {}; (Array.isArray(l) ? l : []).forEach(function (x) { if (x && x.anahtar) o[x.anahtar] = x.deger; }); return o;

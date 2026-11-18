@@ -59,3 +59,11 @@ _Özet en sonda tamamlanacak._
 - Karar: Ücretsiz panelde "Villa Takvimim Pro'yu gör" düğmesi yalnız 30.3 kuralı sağlanınca (sınır açık ve ekleyemez) çıkar. Uygulamada mağaza hazırsa "Satın alımları geri yükle" de burada var.
   Neden: Apple geri yüklemenin kolay bulunmasını istiyor; Pro ekranı kuralı da bozulmuyor.
 - Karar (düzeltme): Görev 29.7'de Hesap satırlarına eklediğim bir CSS kuralı ikon kutusunu genişletiyordu ("Hesabım" ikonunun kutusu uzundu; canlıda vardı). Kural yalnız yazı sütununu esnetecek şekilde düzeltildi. Ayrıca e-posta "Hesabım"ın altına alındı (büyük yazıda sağ köşede harf harf bölünüyordu), "Kullanıcılar" kelimesinin bölünmesi engellendi.
+
+### 30.5 Yönetim paneli
+- Karar: Kullanıcı listesinde her kişinin altında rozet: Ücretsiz (gri), Pro / Pro · deneme / Pro · iptal edildi (yeşil), Elle verildi (lacivert). `tum_abonelikler` yoksa rozet hiç çıkmaz.
+  Neden: Görev 29'daki "Abonelik: —" yer tutucusunun yerine geçti. Süresi dolmuş kayıt (ürün yöneticisinin SQL'inde "kaldır" artık silmiyor, `suresi_doldu` yapıyor) "Ücretsiz" sayılır.
+- Karar: Kullanıcı detayında "Üyelik" bölümü: durum, bitiş tarihi, kaynak ve not. "Üyelik ver" → süre (30 gün / 1 yıl / süresiz) + isteğe bağlı not → onay paneli → sunucu. "Üyeliği kaldır" yalnız elle verilmiş açık üyelikte, kırmızı düğme ve onayla.
+- Karar: Mağazadan (App Store / Google Play) alınmış açık abonelikte "Üyelik ver" ve "kaldır" gösterilmez; "kullanıcı mağazadan yönetir" yazar.
+  Neden: elle verilen üyelik mağaza kaydının üstüne yazar, sonraki mağaza bildirimi de onu geri değiştirir; karışıklık çıkar.
+- Karar: Elle verilmiş açık üyelikte düğme "Üyeliği uzat ya da değiştir" adını alır.

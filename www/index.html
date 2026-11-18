@@ -815,7 +815,13 @@
   .isSAd{font-size:.8125rem; color:var(--muted); white-space:nowrap; min-height:1.1em}
   .ksSira{display:flex; align-items:center; flex-wrap:wrap; gap:.5rem .75rem; margin:0 0 1rem}
   .ksSira .seg{flex:1 1 16rem; margin:0}
-  .ksAbone{color:var(--muted)}
+  /* 30.5: abonelik rozeti (kullanıcı listesi) */
+  .ksRozet{display:inline-block; white-space:nowrap; font-size:.8125rem; line-height:1.4; padding:.125rem .5rem; border-radius:999px; margin-top:.25rem;
+    background:var(--soft); color:var(--muted)}
+  .ksRozet.pro{background:var(--basili-zemin); color:var(--ok)}
+  .ksRozet.elle{background:var(--lacivert-zemin); color:var(--lacivert)}
+  .kdUyelik{background:var(--soft); border-radius:.75rem; padding:.875rem 1rem; line-height:1.5}
+  .kdUyelik .kdUyNot{color:var(--muted); font-size:.875rem; margin-top:.25rem; overflow-wrap:anywhere}
   /* alt yazılı satırlarda sağdaki değer (e-posta, Açık / Kapalı) kesilmesin: sol sütun alt satıra kayar */
   /* yazı sütunu esner; ikon kutusu (data-ikk ile başa eklenir) ve sağdaki değer esnemez */
   #hesapBtn > span:not(.ikKutu):not(.sag), #mfaBtn > span:not(.ikKutu):not(.sag), #uyelikBtn > span:not(.ikKutu):not(.sag){flex:1 1 9rem}
@@ -7405,6 +7411,9 @@
     // 29.3: son görülme / platform / sürüm (sunucu güncellemesi yoksa liste yine çalışır)
     var SG=null;
     var sgYukle=VT.sonGorulmeler ? VT.sonGorulmeler().then(function(l){ SG={}; (l||[]).forEach(function(x){ SG[x.kullanici]=x; }); },function(){ SG=null; }) : Promise.resolve();
+    // 30.5: abonelik rozeti (tum_abonelikler; sunucu güncellemesi yoksa rozet hiç görünmez)
+    var AB=null;
+    var abYukle=VT.tumAbonelikler ? VT.tumAbonelikler().then(function(l){ if(!Array.isArray(l)) return; AB={}; l.forEach(function(x){ if(x&&x.kullanici) AB[x.kullanici]=x; }); },function(){ AB=null; }) : Promise.resolve();
     yenile();
 
     function yenile(){
@@ -7413,7 +7422,7 @@
         b.className=(b.dataset.k===KS.filtre)?"on":""; });
       Array.prototype.forEach.call(document.getElementById("ks-sira").children,function(b){
         b.className=(b.dataset.s===KS.sira)?"on":""; b.setAttribute("aria-pressed",String(b.dataset.s===KS.sira)); });
-      Promise.all([VT.tumKullanicilar(), sgYukle]).then(function(x){ return x[0]; }).then(function(l){
+      Promise.all([VT.tumKullanicilar(), sgYukle, abYukle]).then(function(x){ return x[0]; }).then(function(l){
         el=document.getElementById("ks-liste"); if(!el) return;
         var ben=(VT.kullanici()||{}).id;
         var liste=(l||[]).filter(function(u){
@@ -7449,8 +7458,8 @@
                 if(!SG) return "";
                 if(!g) return "<br>"+esc(cev("Son görülme: bilinmiyor"));
                 return "<br>"+esc(cev("Son görülme: "+oncesi(g.son)))+(g.platform?" · "+esc(PLATFORM_AD[g.platform]||g.platform):"")+(g.surum?" · "+esc(g.surum):""); })()+
-              // Görev 30: abonelik burada gösterilecek
-              '<br><span class="ksAbone" data-abonelik="'+u.id+'">'+esc(cev("Abonelik"))+": —</span>"+
+              // 30.5: abonelik rozeti
+              (AB?"<br>"+aboRozet(AB[u.id]):"")+
               "</span>"+
             '<span style="font-size:.8125rem;color:'+durum[1]+'"><br>'+durum[0]+"</span></span>"+
             '<span style="display:flex;gap:.375rem;flex:none;flex-wrap:wrap;justify-content:flex-end">'+
@@ -7520,11 +7529,37 @@
             (t?'<a class="big" style="margin-top:0;display:block;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/'+
               t+'">WhatsApp</a>':"")+"</div>";
         })()+
+        // 30.5: üyelik (tum_abonelikler); ver / kaldır önce onay sorar
+        '<div class="eyebrow" style="margin-bottom:.625rem">'+esc(cev("Üyelik"))+"</div>"+
+        '<div id="kd-uyelik" style="margin-bottom:1.5rem">'+iskelet()+"</div>"+
         '<div class="eyebrow" style="margin-bottom:.625rem">Erişebildiği villalar</div>'+
         '<div id="kd-liste"><div class="sm muted">Yükleniyor…</div></div>'+
         // 29.3: kullanıcının son 200 olayı (bakış destek kaydına geçer; önce onay)
         '<button class="big renkli is-gri" data-ik="liste-tik" id="kd-etkinlik">'+esc(cev("Etkinliği gör"))+"</button>");
-      dolu();
+      dolu(); uyelikDoldur();
+      function uyelikDoldur(){
+        var el=document.getElementById("kd-uyelik"); if(!el) return;
+        if(!VT.tumAbonelikler){ el.innerHTML=""; return; }
+        VT.tumAbonelikler().then(function(l){
+          el=document.getElementById("kd-uyelik"); if(!el) return;
+          if(!Array.isArray(l)){ el.innerHTML='<div class="sm muted">'+esc(cev("Üyelik bölümü hazırlanıyor."))+"</div>"; return; }
+          var a=l.filter(function(x){ return x && x.kullanici===id; })[0], acik=aboAcik(a);
+          var magaza=acik && a.kaynak!=="manuel", elle=acik && a.kaynak==="manuel";
+          var parca=[cev(aboEtiket(a))];
+          if(acik && a.bitis) parca.push(cev("Bitiş: "+aboTarih(a.bitis))); else if(elle) parca.push(cev("Süresiz"));
+          if(magaza) parca.push(a.kaynak==="google"?"Google Play":"App Store");
+          el.innerHTML='<div class="kdUyelik"><div>'+esc(parca.join(" · "))+"</div>"+
+              (a&&a.notu?'<div class="kdUyNot">'+esc(cev("Not")+": "+a.notu)+"</div>":"")+"</div>"+
+            (magaza?'<div class="sm muted" style="margin-top:.5rem;line-height:1.5">'+esc(cev("Mağaza aboneliği. Kullanıcı App Store / Google Play'den yönetir; buradan değiştirilmez."))+"</div>"
+              :'<button class="big renkli is-para" data-ik="yildiz" id="kd-uyelik-ver">'+esc(cev(elle?"Üyeliği uzat ya da değiştir":"Üyelik ver"))+"</button>"+
+               (elle?'<button class="big tehlike" data-ik="x-daire" id="kd-uyelik-kaldir" style="margin-top:1.25rem">'+esc(cev("Üyeliği kaldır"))+"</button>":""));
+        }).catch(function(e){
+          var el2=document.getElementById("kd-uyelik"); if(!el2) return;
+          var m=String((e&&e.message)||"");
+          el2.innerHTML='<div class="sm muted">'+esc(cev(/could not find|does not exist|404|schema cache/i.test(m)?"Üyelik bölümü hazırlanıyor.":
+            (/yetkiniz yok/i.test(m)?"Yetkiniz yok.":"Üyelik bilgisi yüklenemedi.")))+"</div>";
+        });
+      }
       function dolu(){
         VT.kullaniciVillalari(id).then(function(vl){
           var oz=document.getElementById("kd-ozet");
@@ -7546,6 +7581,8 @@
       }
       document.querySelector(".overlay:not(.kapaniyor) .sheet").addEventListener("click",function(e){
         if(e.target.closest("#kd-etkinlik")){ etkinlikOnay(u); return; }
+        if(e.target.closest("#kd-uyelik-ver")){ uyelikVerSheet(u); return; }
+        if(e.target.closest("#kd-uyelik-kaldir")){ uyelikKaldirOnay(u); return; }
         var vb=e.target.closest("[data-villa]");
         if(vb){ villaDetaySheet(vb.dataset.villa, id); return; }
         var k=e.target.closest("[data-kaldir]"); if(!k) return;
@@ -7696,6 +7733,72 @@
     document.getElementById("uyelikAlt").textContent=cev(g.alt);
   }
   function aboBaslat(){ aboYukle().then(uyelikCiz); }
+  // ---- 30.5 yönetim: rozet, üyelik ver / kaldır ----
+  function aboEtiket(a){
+    if(!aboAcik(a)) return "Ücretsiz";
+    if(a.durum==="manuel") return "Elle verildi";
+    if(a.durum==="deneme") return "Pro · deneme";
+    if(a.durum==="iptal_edildi") return "Pro · iptal edildi";
+    return "Pro";
+  }
+  function aboRozet(a){
+    var e=aboEtiket(a), s=e==="Ücretsiz"?"":(e==="Elle verildi"?" elle":" pro");
+    return '<span class="ksRozet'+s+'">'+esc(cev(e))+"</span>";
+  }
+  var UV_SURE={"30":"30 günlük üyelik verilecek. Bu işlem kayda geçer.","365":"1 yıllık üyelik verilecek. Bu işlem kayda geçer.","0":"Süresiz üyelik verilecek. Bu işlem kayda geçer."};
+  function uyelikVerSheet(u){
+    var sec="30";
+    perde('<div class="head"><h2>'+esc(cev("Üyelik ver"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.375rem 0 1.25rem">'+esc(u.ad||u.eposta||"")+"</div>"+
+      '<div class="eyebrow" style="margin-bottom:.5rem">'+esc(cev("Süre"))+"</div>"+
+      '<div class="seg" id="uv-sure"><button data-g="30" class="on">'+esc(cev("30 gün"))+'</button><button data-g="365">'+esc(cev("1 yıl"))+
+        '</button><button data-g="0">'+esc(cev("Süresiz"))+"</button></div>"+
+      '<div class="field" style="margin-top:1.25rem"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Not (isteğe bağlı)"))+"</div>"+
+        '<input id="uv-not" maxlength="200" autocomplete="off" placeholder="'+esc(cev("Örn. tanıtım üyeliği"))+'"></div>'+
+      '<button class="big" data-ik="yildiz" id="uv-devam">'+esc(cev("Devam"))+"</button>"+
+      '<button class="big ghost" id="uv-geri" style="margin-top:.5rem">'+esc(cev("Vazgeç"))+"</button>");
+    document.getElementById("uv-sure").onclick=function(e){
+      var b=e.target.closest("[data-g]"); if(!b) return; sec=b.dataset.g;
+      Array.prototype.forEach.call(this.children,function(x){ x.classList[x===b?"add":"remove"]("on"); x.setAttribute("aria-pressed",String(x===b)); });
+    };
+    document.getElementById("uv-geri").onclick=function(){ kapat(); kullaniciDetay(u.id); };
+    document.getElementById("uv-devam").onclick=function(){
+      var not=document.getElementById("uv-not").value;
+      perde('<div class="head"><h2>'+esc(cev("Üyelik verilsin mi?"))+"</h2>"+kapatBtn()+"</div>"+
+        '<div class="sm muted" style="margin:.375rem 0 .75rem">'+esc(u.ad||u.eposta||"")+"</div>"+
+        '<div style="line-height:1.5;margin-bottom:1.25rem">'+esc(cev(UV_SURE[sec]))+"</div>"+
+        '<button class="big" data-ik="tik" id="uv-evet">'+esc(cev("Evet, ver"))+"</button>"+
+        '<button class="big ghost" id="uv-hayir" style="margin-top:.5rem">'+esc(cev("Vazgeç"))+"</button>"+
+        '<div class="sm warn hide" id="uv-hata" role="alert" style="margin-top:.75rem"></div>');
+      document.getElementById("uv-hayir").onclick=function(){ kapat(); kullaniciDetay(u.id); };
+      document.getElementById("uv-evet").onclick=function(){
+        var b=this, h=document.getElementById("uv-hata"); b.disabled=true; h.classList.add("hide");
+        VT.abonelikVer(u.id, +sec||null, not).then(function(){ kapat(); tamam(cev("Üyelik verildi")); kullaniciDetay(u.id); })
+          .catch(function(e){ b.disabled=false; h.textContent=yonHataUye(e); h.classList.remove("hide"); });
+      };
+    };
+  }
+  function uyelikKaldirOnay(u){
+    perde('<div class="head"><h2>'+esc(cev("Üyelik kaldırılsın mı?"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.375rem 0 .75rem">'+esc(u.ad||u.eposta||"")+"</div>"+
+      '<div style="line-height:1.5">'+esc(cev("Kişi ücretsiz plana döner; villaları silinmez. Bu işlem kayda geçer."))+"</div>"+
+      '<button class="big ghost" id="uk-hayir" style="margin-top:1.25rem">'+esc(cev("Vazgeç"))+"</button>"+
+      '<button class="big tehlike" data-ik="x-daire" id="uk-evet" style="margin-top:2rem">'+esc(cev("Evet, kaldır"))+"</button>"+
+      '<div class="sm warn hide" id="uk-hata" role="alert" style="margin-top:.75rem"></div>');
+    document.getElementById("uk-hayir").onclick=function(){ kapat(); kullaniciDetay(u.id); };
+    document.getElementById("uk-evet").onclick=function(){
+      var b=this, h=document.getElementById("uk-hata"); b.disabled=true; h.classList.add("hide");
+      VT.abonelikKaldir(u.id).then(function(){ kapat(); tamam(cev("Üyelik kaldırıldı")); kullaniciDetay(u.id); })
+        .catch(function(e){ b.disabled=false; h.textContent=yonHataUye(e); h.classList.remove("hide"); });
+    };
+  }
+  function yonHataUye(e){
+    var m=String((e&&e.message)||"");
+    if(/yetkiniz yok/i.test(m)) return cev("Yetkiniz yok.");
+    if(/could not find|does not exist|404|schema cache/i.test(m)) return cev("Üyelik bölümü hazırlanıyor.");
+    if(/fetch|network|ulaşılamadı/i.test(m)) return cev("Bağlantı kurulamadı. İnternetinizi kontrol edip tekrar deneyin.");
+    return cev("İşlem yapılamadı. Tekrar deneyin.");
+  }
   document.getElementById("uyelikBtn").onclick=function(){ uyelikSheet(); };
   function uyelikSheet(){
     var g=uyelikBilgi(ABO); if(!g) return;
