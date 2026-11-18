@@ -830,11 +830,11 @@
   .proSonra{font-family:var(--serif); font-size:1.375rem; line-height:1.3; margin-top:.25rem; color:var(--ink)}
   .proSonra.proSonraNot{font-family:var(--sans); font-size:1rem; color:var(--muted)}
   .proSheet .big{font-size:1.125rem; min-height:3.5rem}
-  .big.proYakinda{background:var(--soft); color:var(--muted); border:1px solid var(--line); box-shadow:none}
+  .proSheet .big.proYakinda, .proSheet .big.ghost.proYakinda{background:var(--soft); color:var(--muted); border:1px solid var(--line); box-shadow:none}
   .proSheet .big.ghost{margin-top:.75rem}
   .proKucuk{font-size:.9375rem; color:var(--muted); line-height:1.55; margin:1.375rem 0 .5rem}
   .proLink{display:flex; flex-wrap:wrap; gap:0 1.5rem}
-  .proLink a{display:inline-flex; align-items:center; min-height:3rem; color:var(--ok); font-size:1rem}
+  .proLink a{display:inline-flex; align-items:center; justify-content:center; min-height:3rem; min-width:3rem; padding:0 .25rem; color:var(--ok); font-size:1rem}
   #mfaBtn .sag{flex:none; max-width:none}
   #yoneticiBtn .sag{white-space:normal; overflow:visible; text-overflow:clip; text-align:right; max-width:45%}
   /* 29.6: iki adımlı doğrulama */
@@ -4063,8 +4063,25 @@
       };
     }
   });
+  // 30.3: "Villa ekle" önce abonelik sınırına bakar. Pro ekranı YALNIZ sunucu sinir_acik === true ve villa_ekleyebilir === false
+  // dediğinde açılır (4. villa). Sınır kapalıyken, sunucu güncellemesi yokken ya da cevap gecikirse hiçbir şey sorulmaz.
+  function villaEkleIzin(devam){
+    if(!(S.bulut && window.VT && VT.girisli && VT.girisli() && VT.abonelikDurumum)) return devam();
+    var sahip=S.villalar.filter(function(v){ return !v.rol || v.rol==="sahip"; }).length;
+    var sinir=(ABO && ABO.ucretsiz_villa) || 3;
+    if(sahip+1<=sinir) return devam();   // ücretsiz sınırın altında: sunucuya sormaya gerek yok
+    var bitti=false;
+    var son=function(a){
+      if(bitti) return; bitti=true;
+      if(a && a.sinir_acik===true && a.villa_ekleyebilir===false){ PRO.sonra=villaEkleAc; proSheet(); }
+      else devam();
+    };
+    setTimeout(function(){ son(null); },3000);
+    aboYukle().then(son);
+  }
+  document.getElementById("villaEkle").onclick=function(){ villaEkleIzin(villaEkleAc); };
   // 18.10: "Villa ekle" yalnız adı sorar; eklenince kurulum sihirbazı açılır (fotoğraf, konum vb. sihirbazda)
-  document.getElementById("villaEkle").onclick=function(){
+  function villaEkleAc(){
     perde('<div class="head"><h2>'+esc(cev("Yeni villa"))+"</h2>"+kapatBtn()+"</div>"+
       '<div class="field" style="margin-top:1.25rem"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Villanızın adı"))+"</div>"+
       '<input id="v-ad" placeholder="'+esc(cev("Örn. Villa Salta"))+'" autocomplete="off" enterkeyhint="done"></div>'+
@@ -4092,7 +4109,7 @@
       }
       kapat(); cizAna(); ac(v.id); sihirbazAc(1);
     };
-  };
+  }
 
   // ================= VİLLA SİLME (30 gün geri alınabilir) =================
   // Bulutta: villalar.silindi_tarih doldurulur. Yerel kullanımda: villa bu cihazda ayrı bir listede bekler.
@@ -7532,8 +7549,8 @@
       ABO=(d && typeof d==="object" && !Array.isArray(d) && "sinir_acik" in d) ? d : null; return ABO;
     }).catch(function(){ ABO=null; return null; });
   }
-  var PRO_FAYDA=[["ev","Sınırsız villa"],["bakici","Her villada bakıcı ve ekip"],["paylas","Teklif, opsiyon ve villa sayfası paylaşımı"],
-    ["para","Ödemeler, gelir-gider ve rezervasyon formu"]];
+  var PRO_FAYDA=[["ev","Sınırsız villa"],["kisiler","Her villada bakıcı ve ekip"],["paylas","Teklif, opsiyon ve villa sayfası paylaşımı"],
+    ["cuzdan","Ödemeler, gelir-gider ve rezervasyon formu"]];
   function proSheet(){
     var n=(ABO&&ABO.ucretsiz_villa)||3;
     var o=perde('<div class="head"><h2>Villa Takvimim Pro</h2>'+kapatBtn()+"</div>"+
@@ -7556,6 +7573,7 @@
   // Mağaza bağlantısı yokken (web ya da anahtar girilmemiş): düğmeler "Yakında", uygulama çökmez
   function proYakinda(){
     var al=document.getElementById("pro-al"), gr=document.getElementById("pro-geri"); if(!al) return;
+    al.disabled=false; gr.disabled=false;
     al.textContent=cev("Yakında"); al.classList.add("proYakinda"); al.setAttribute("aria-disabled","true");
     gr.classList.add("proYakinda"); gr.setAttribute("aria-disabled","true");
     var not=function(){ var h=document.getElementById("pro-hata"); if(h){ h.textContent=cev("Mağaza bağlantısı yakında açılacak."); h.classList.remove("hide"); } };

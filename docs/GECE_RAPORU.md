@@ -40,3 +40,13 @@ _Özet en sonda tamamlanacak._
 - Karar: Pro olunca yarım kalan "villa ekle" kendiliğinden açılır.
   Neden: kullanıcı Pro ekranına 4. villayı eklerken gelmişti.
 - Karar: Ölçüme `pro_satin_al` ve `pro_geri_yukle` olayları eklendi; yalnız sonuç gider (tamam / iptal / hata / yok). Fiyat gitmez.
+
+### 30.3 Pro ekranı ne zaman açılır
+- Karar: "Villa ekle"ye dokununca Pro ekranı yalnız sunucu `sinir_acik === true` ve `villa_ekleyebilir === false` derse açılır. Öbür bütün durumlarda (sınır kapalı, sunucu güncellemesi yok, boş cevap) her zamanki "Yeni villa" formu açılır.
+  Neden: görevdeki kesin kural; `sinir_acik` false iken Pro ekranı hiçbir yerde çıkmamalı.
+- Karar: Kullanıcının kendi villası ücretsiz sınırın altındaysa (ör. 2 villa) sunucuya hiç sorulmaz.
+  Neden: villa eklemek hiç yavaşlamasın. Yalnız 3. villadan sonra bir soru gider.
+- Karar: Sunucu 3 saniyede cevap vermezse form açılır.
+  Neden: yavaş internette kullanıcı beklemesin. Sınır açıksa sunucu kuralı 4. villayı yine kabul etmez.
+- Karar: Pro ekranındaki iki fayda ikonu `kisiler` ve `cuzdan` oldu.
+  Neden: ilk denemedeki `bakici` / `para` adları iş rengi adıydı, ikon çizmiyordu (testte görüldü, düzeltildi).
