@@ -706,6 +706,15 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       31.10 gövde 17 px, en küçük 14 px, "? Nasıl?", "✕ Kapat". 31.11 ekranda tek ana düğme. 31.12 hızla çekip kapatma, lastik,
       kapanırken dokununca geri açılma. 31.13 `?yavas=3` (yalnız inceleme için).
       GERÇEK İPHONE'DA BAKILACAK: titreşimler (özellikle yeni `secim`), çekmece hissi, 17 px'lik yazı.
+- [x] Görev 32 — Dış takvimler (Airbnb, Booking, Vrbo, Villasepeti; iCal), 10 dk ayırma, Kaydet'te anlık kontrol, çakışma alarmı
+      · Claude Code (18 Kasım). Netlify'a yüklenmedi; GitHub'a gönderildi (32.1–32.9 ayrı commit). Testler ve açma adımları:
+      `docs/qa/gorev32/README.md`.
+      ÖNCE (ürün yöneticisi): `docs/VERITABANI_GOREV32.sql` uygulanır; `takvim-esitle` ve `takvim-ver` deploy edilir
+      (`--no-verify-jwt`); `ESITLE_GIZLI` gizli değişkeni ve iki zamanlayıcı (10 dk "tam", 1 dk "dakika") kurulur.
+      Uygulanana kadar uygulama bugünkü gibi çalışır, dış takvim bölümleri gizli kalır.
+      Sunucu: `supabase/functions/takvim-esitle` (okuma, SSRF koruması, bekleyen onayı, çakışma ve ulaşılamıyor bildirimleri),
+      `supabase/functions/takvim-ver` (bizden dışarıya .ics; misafir bilgisi yok). Ortak: `supabase/functions/_shared`.
+      GERÇEK HESAPLARLA DENENECEK: Airbnb / Booking / Vrbo'nun gerçek linkleri ve bizim linkin o sitelere yapıştırılması.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.

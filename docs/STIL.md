@@ -283,6 +283,23 @@ ile işaretlenir (iki kez çarpılmasın).
 - **Kural uyarısı olan kart** (ör. en az gece sağlanmıyor): kart soluk zeminli ve kesik çerçeveli, üstünde şarap kırmızısı
   etiket; işlem yine yapılabilir (karar sahibin). Metin soluklaştırılmaz (kontrast korunur).
 
+## 7b. Dış takvimler (Görev 32)
+
+- **Takvimde dış blok:** `--muted` tonunda çapraz çizgi (`.cell.dis`), ilk gecede ve hafta başında kaynağın kısa adı ("Airbnb");
+  "kapalı" türü daha soluk (`.disKapali`) ve üstünde "kapalı". Bizdeki rezervasyona bağlanmış satış normal rezervasyon gibi,
+  yanında küçük kaynak etiketi (`.dtEt`).
+- **Kaynak rozeti** (`dtRozet`): harf + renk (Airbnb şarap, Booking lacivert, Vrbo mavi, Villasepeti yeşil, diğer gri). Marka logosu
+  kullanılmaz.
+- **Tazelik satırı** takvimin üstünde: "Airbnb, Booking · 2 dk önce kontrol edildi"; 1 saattir okunamayan takvim kırmızı
+  ("Villasepeti 2 saattir okunamıyor"), yalnız o zaman dokunulur.
+- **Ayırma hapı** formun üstünde: "Bu tarihler 10 dk sizin için ayrıldı · 9:41" (`--tutma-sure`, `--tutma-kontrol`).
+- **Kontrol listesi** (Kaydet): her site bir satır, dönen gösterge; sonuç gelince 40 ms kademeli ✓ / ✕ / ⚠ (`--kontrol-kademe`),
+  en az 600 ms görünür (`--kontrol-en-az`). Satış çakışırsa kırmızı kutu ve "Yine de kaydet" YOK; yalnız kapalıysa `--uyari` renkli
+  soru.
+- **Çakışma kartı:** Villalarım'ın en üstünde, kapatılamaz, `--uyari` çerçeve ve düğme. Uyarı işareti emoji değil, Lucide
+  `uyari-ucgen`.
+- **Bulunma eki:** site adlarına `ekDe()` ("Airbnb'de", "Vrbo'da").
+
 ## 8. Rehber (Yardımlı mod)
 
 - **Her işlem paneli** Yardımlı modda rehberle başlar (`rehberAc`).
