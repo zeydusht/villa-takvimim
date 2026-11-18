@@ -1543,6 +1543,17 @@
   .cell.ops{background:repeating-linear-gradient(135deg,#C9D2E3 0 4px,#EEF1F6 4px 9px) !important; color:#2F3B55}
   .cell.ops .fy{opacity:.95}
   .lj-ops{background:repeating-linear-gradient(135deg,#C9D2E3 0 3px,#EEF1F6 3px 6px)}
+  /* 32.4 dış takvim blokları: --muted tonunda çapraz çizgi; "kapalı" daha soluk. Üstünde kaynağın kısa adı */
+  .cell.dis{background:repeating-linear-gradient(135deg,rgba(95,106,100,.42) 0 3px,#F1F5F3 3px 8px) !important; color:#2E3833}
+  .cell.dis.disKapali{background:repeating-linear-gradient(135deg,rgba(95,106,100,.18) 0 3px,#F7F9F8 3px 8px) !important}
+  .cell.dis .fy.disAd{font-size:.6875rem; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 2px; color:#2E3833}
+  .lj-dis{background:repeating-linear-gradient(135deg,rgba(95,106,100,.42) 0 2px,#F1F5F3 2px 5px)}
+  .lj-disK{background:repeating-linear-gradient(135deg,rgba(95,106,100,.18) 0 2px,#F7F9F8 2px 5px)}
+  .dtEt{display:inline-flex; align-items:center; margin-left:.375rem; padding:.0625rem .5rem; border-radius:99px; background:var(--soft);
+    color:var(--muted); font-size:.8235rem; line-height:1.4; vertical-align:middle; white-space:nowrap}
+  .dtBlokTarih{display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin:1rem 0}
+  .dtBlokTarih .lab{font-size:.9375rem; color:var(--muted)}
+  .dtBlokTarih .deg{font-size:1.125rem}
   .opsEt{flex:none; font-size:.8235rem; border-radius:99px; padding:.1875rem .5625rem .25rem; white-space:nowrap; background:#E9ECF2; color:#3D4C6B; border:1.5px solid #B7C0D3}
   .opsEt.doldu{background:#EEF1EF; color:#5F6A64; border-color:transparent}
   .opsEt.yakin{background:#fff; color:#9B2C4A; border-color:#9B2C4A}
@@ -2012,6 +2023,8 @@
       <span><i style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--cerceve)"></i>Boş</span>
       <span><i class="lj-bugun"></i>Bugün</span>
       <span><i class="lj-ops"></i>Opsiyonlu</span>
+      <span class="ljDis hide"><i class="lj-dis"></i>Diğer sitelerde dolu</span>
+      <span class="ljDis hide"><i class="lj-disK"></i>Diğer sitelerde kapalı</span>
       <span class="lj-gecmis"><i style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--cerceve)"></i>Geçmiş gün</span>
       <span><b class="lj-harf" style="font-weight:400">AY</b>Misafirin baş harfleri</span>
     </div>
@@ -2514,13 +2527,17 @@
     return VT.dt.durumlar(id).then(function(l){ DT.durum[id]=Array.isArray(l)?l:[]; },function(e){ if(VT.dt.hazirDegil(e)) throw e; });
   }
   // Açılışta: bütün villaların dış blokları, açık çakışmalar ve takvim durumları
+  // Sunucu tarafı yoksa sonuç cihazda 6 saat hatırlanır (her açılışta yeniden sorup konsola 404 yazmasın)
+  var DT_YOK="vt-dt-yok";
   function dtYukle(){
     if(!dtOzellik() || !S.villalar.length) return Promise.resolve();
+    var yok=+(store.get(DT_YOK)||0);
+    if(yok && Date.now()-yok<6*3600000){ DT.hazir=false; return Promise.resolve(); }
     var ids=S.villalar.map(function(v){ return v.id; });
     return Promise.all([VT.dt.bloklar(ids), VT.dt.cakismalar()]).then(function(r){
       DT.hazir=true; dtBloklarYaz(ids,r[0]); DT.cakismalar=r[1]||[];
       return Promise.all(ids.map(dtDurumYukle));
-    }).catch(function(e){ if(VT.dt.hazirDegil(e)) DT.hazir=false; }).then(dtCizHepsi);
+    }).catch(function(e){ if(VT.dt.hazirDegil(e)){ DT.hazir=false; store.set(DT_YOK,String(Date.now())); } }).then(dtCizHepsi);
   }
   function dtCizHepsi(){
     try{
@@ -2562,6 +2579,69 @@
     el.textContent = !dtHazir() ? cev("Takvim bağlantıları") : (l.length ? l.map(function(t){ return t.ad||dtKisaAd(t.kaynak); }).join(", ") : cev("Bağlı takvim yok"));
   }
   document.getElementById("dtBtn").onclick=function(){ var v=aktif(); if(v) dtEkran(v); };
+
+  // ---- 32.4 takvimde dış bloklar ----
+  // Bir gecenin dış bloğu (bizdeki bir rezervasyona bağlı olanlar sayılmaz; o rezervasyon normal görünür)
+  function dtGeceHaritasi(v){
+    var M=new Map(), rz={}; (v.rez||[]).forEach(function(r){ rz[r.id]=1; });
+    (DT.bloklar[v.id]||[]).forEach(function(b){
+      if(b.bagli && rz[b.bagli]) return;
+      for(var d=parse(b.bas); fmt(d)<b.bit; d=addDays(d,1)){ var k=fmt(d), e=M.get(k); if(!e || (e.tur==="kapali" && b.tur!=="kapali")) M.set(k,b); }
+    });
+    return M;
+  }
+  function dtGeceBlok(v,k){ return v ? dtGeceHaritasi(v).get(k)||null : null; }
+  // [bas, bit) aralığına denk gelen dış bloklar
+  function dtAraliktaki(v,bas,bit,turler){
+    var rz={}; (v.rez||[]).forEach(function(r){ rz[r.id]=1; });
+    return (DT.bloklar[v.id]||[]).filter(function(b){ return !(b.bagli && rz[b.bagli]) && b.bas<bit && bas<b.bit && (!turler || turler.indexOf(b.tur)>=0); });
+  }
+  // bizdeki rezervasyon bir dış bloğa bağlıysa sitenin adı ("Airbnb")
+  function dtRezKaynak(v,r){
+    var b=(DT.bloklar[v.id]||[]).filter(function(x){ return x.bagli===r.id; })[0];
+    return b ? dtTakvimAd(v.id,b.takvim) : "";
+  }
+  // "Airbnb'de", "Vrbo'da", "Booking'de" (bulunma eki)
+  function ekDe(ad){
+    var t=String(ad||"").trim(), son="";
+    for(var i=t.length-1;i>=0;i--){ var c=t.charAt(i).toLocaleLowerCase("tr"); if("aeıioöuü".indexOf(c)>=0){ son=c; break; } }
+    var sert="fstkçşhp".indexOf(t.slice(-1).toLocaleLowerCase("tr"))>=0;
+    return t+"'"+(sert?"t":"d")+("aıou".indexOf(son)>=0?"a":"e");
+  }
+  function dtBlokSheet(v,b){
+    var ad=dtTakvimAd(v.id,b.takvim), t=dtTakvimleri(v.id).filter(function(x){ return x.id===b.takvim; })[0];
+    var baslik = b.tur==="kapali" ? "Bu tarihler "+ekDe(ad)+" kapalı" : (b.tur==="rezervasyon" ? "Bu tarihler "+ekDe(ad)+" satılmış" : "Bu tarihler "+ekDe(ad)+" dolu");
+    var not = b.tur==="kapali" ? "Siz kapatmış olabilirsiniz. Bu günlere yine de rezervasyon girebilirsiniz; kaydederken sorulur."
+      : (b.tur==="bilinmiyor" ? "Bu site satış ile kapatmayı ayırt etmiyor; satılmış gibi davranılır." : "");
+    perde('<div class="head"><h2>'+esc(cev(baslik))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="dtBlokTarih"><div><div class="lab">'+esc(cev("Giriş"))+'</div><div class="deg">'+esc(gunAdli(b.bas))+"</div></div>"+
+        '<div><div class="lab">'+esc(cev("Çıkış"))+'</div><div class="deg">'+esc(gunAdli(b.bit))+"</div></div></div>"+
+      '<div class="sm muted">'+esc(cev("Son kontrol"))+": "+esc(t && t.son_basari ? dtSure(t.son_basari) : cev("henüz yok"))+"</div>"+
+      (not?'<div class="sm muted" style="margin-top:.5rem;line-height:1.45">'+esc(cev(not))+"</div>":"")+
+      (sahipMi() && b.tur!=="kapali" ? '<button class="big" data-ik="kisi-arti" id="dtMisafirEkle">'+esc(cev("Misafir bilgisi ekle"))+"</button>"+
+        '<div class="sm muted" style="margin-top:.5rem;line-height:1.45">'+esc(cev("Bu satış bizde de rezervasyon olarak görünür; ödeme ve bakıcı takibine girer."))+"</div>" : "")+
+      '<button class="big ghost" data-kapat style="margin-top:1rem">'+esc(cev("Kapat"))+"</button>");
+    var e=document.getElementById("dtMisafirEkle");
+    if(e) e.onclick=function(){ kaydetIs(e,function(){ return dtBlokRez(v,b).then(function(r){ if(r) duzenleSheet(r); }); }); };
+  }
+  // Dış bloğa bağlı rezervasyon oluştur (sunucu: blok_rez_olustur), uygulamaya al, tarih aynı kaldıkça engel yok
+  function dtBlokRez(v,b){
+    return VT.dt.blokRez(b.id).then(function(id){
+      id=String(id||"").replace(/"/g,"");
+      return VT.villaTekYukle(v.id).then(function(v2){
+        var r=(v2.rez||[]).filter(function(x){ return x.id===id; })[0];
+        if(!r) throw new Error(cev("Rezervasyon oluşturulamadı."));
+        if(!v.rez.some(function(x){ return x.id===id; })){
+          v.rez.push(r);
+          if(v.__anlik && v2.__anlik && v2.__anlik.rez){ v.__anlik.rez[id]=v2.__anlik.rez[id]; if(v2.__anlik.mali) v.__anlik.mali[id]=v2.__anlik.mali[id]; }
+        }
+        b.bagli=id; (DT.cakismalar||[]).forEach(function(c){ if(c.blok_id===b.id) c.durum="ayni_rez"; });
+        DT.cakismalar=(DT.cakismalar||[]).filter(function(c){ return c.durum==="acik"; });
+        store.set(K2,JSON.stringify({villalar:S.villalar}));
+        ciz(); return r;
+      });
+    });
+  }
 
   // ---- 32.3 Takvim bağlantıları ekranı ----
   function dtEkran(v){
@@ -4318,9 +4398,10 @@
   }
   // bir villanın seçili aralıktaki durumu: gece gece boş / dolu (rezervasyon) / opsiyonlu
   function maDurum(v,bas,bit,sira){
-    var M=harita(v.rez||[]), parca=[], son=null, bosG=0, gc=0;
+    var M=harita(v.rez||[]), DG=dtGeceHaritasi(v), parca=[], son=null, bosG=0, gc=0;
     for(var d=parse(bas); fmt(d)<bit; d=addDays(d,1)){
-      var k=fmt(d), o=M.get(k), tur=(o&&o.aksam)?"dolu":(opsGece(v,k)?"ops":"bos"), ert=fmt(addDays(d,1));
+      var k=fmt(d), o=M.get(k), dg=DG.get(k), ert=fmt(addDays(d,1));
+      var tur=(o&&o.aksam)?"dolu":(opsGece(v,k)?"ops":(dg?(dg.tur==="kapali"?"kapali":"dolu"):"bos"));
       gc++; if(tur==="bos") bosG++;
       if(son && son.tur===tur) son.bit=ert; else { son={tur:tur, bas:k, bit:ert}; parca.push(son); }
     }
@@ -4344,8 +4425,8 @@
   // hiç boş villa yoksa: aynı gece sayısında, istenen tarihe en yakın boşluk (önce sonrası, sonra öncesi; en çok 120 gün)
   function maEnYakin(bas,bit,kisi){
     var n=maGece(bas,bit), tk=fmt(today), L=S.villalar.filter(function(v){ var c=sayi((v.bilgi||{}).kapasite); return !(kisi && c && c<kisi); })
-      .map(function(v){ return {v:v, M:harita(v.rez||[])}; });
-    var bosMu=function(x,a,z){ for(var d=parse(a); fmt(d)<z; d=addDays(d,1)){ var k=fmt(d), o=x.M.get(k); if((o&&o.aksam)||opsGece(x.v,k)) return false; } return true; };
+      .map(function(v){ return {v:v, M:harita(v.rez||[]), D:dtGeceHaritasi(v)}; });
+    var bosMu=function(x,a,z){ for(var d=parse(a); fmt(d)<z; d=addDays(d,1)){ var k=fmt(d), o=x.M.get(k); if((o&&o.aksam)||opsGece(x.v,k)||x.D.get(k)) return false; } return true; };
     for(var off=1; off<=120; off++) for(var yon=1; yon>=-1; yon-=2){
       var a=fmt(addDays(parse(bas),off*yon)); if(a<tk) continue;
       var z=fmt(addDays(parse(a),n));
@@ -4367,7 +4448,7 @@
   function maKismenYazi(r){
     var EN=maEN(), p=r.parca, ayli=parse(MA.bas).getMonth()!==parse(MA.bit).getMonth();
     var g=function(k){ return ayli ? kisa(k) : String(parse(k).getDate()); };
-    var ad=function(t){ return EN ? (t==="ops"?"on hold":"booked") : (t==="ops"?"opsiyonlu":"dolu"); };
+    var ad=function(t){ return EN ? (t==="ops"?"on hold":(t==="kapali"?"booked (closed on the site)":"booked")) : (t==="ops"?"opsiyonlu":(t==="kapali"?"dolu (sitede kapalı)":"dolu")); };
     if(p.length===2 && p[0].tur==="bos")
       return EN ? "Free "+g(p[0].bas)+"–"+g(p[0].bit)+", "+ad(p[1].tur)+" from "+g(p[1].bas)
                 : g(p[0].bas)+"–"+g(p[0].bit)+" boş, "+maGunEk(p[1].bas,ayli,0)+" itibaren "+ad(p[1].tur);
@@ -5019,7 +5100,7 @@
                          :'<span class="tarihIk">'+ikon("giris",{boy:15,sinif:"gir"})+esc(kisa(r.start))+'<span class="fiil">'+esc(cev("girecek"))+"</span></span> ")+
                  '<span class="tarihIk">'+ikon("cikis",{boy:15,sinif:"cik"})+esc(kisa(r.end))+'<span class="fiil">'+esc(cev("çıkacak"))+"</span></span>";
     return '<button class="row rezKart'+(yeniOlabilir?yeniCls(r.id):"")+'" data-id="'+r.id+'">'+harfDaire(r)+
-      '<span class="rkMetin"><span class="rkAd">'+esc(r.guest)+'</span><span class="rkAlt">'+tarihler+
+      '<span class="rkMetin"><span class="rkAd">'+esc(r.guest)+(dtRezKaynak(v,r)?'<span class="dtEt">'+esc(dtRezKaynak(v,r))+"</span>":"")+'</span><span class="rkAlt">'+tarihler+
       (tutarYok?' <span class="eksikYazi">'+esc(cev("· tutar girilmedi"))+"</span>":"")+
       "</span></span>"+
       ((yakin||kalan>0)?'<span class="rkSag">'+(yakin?'<span class="yakinEt">'+esc(cev(yakin))+"</span>":"")+(kalan>0?kalanEt(kalan):"")+"</span>":"")+
@@ -5097,7 +5178,7 @@
     var adet=new Date(y,m+1,0).getDate();
     var lead=(new Date(y,m,1).getDay()+6)%7;
     var tk=fmt(today);
-    var h="", hucreler=[];
+    var h="", hucreler=[], DG=dtGeceHaritasi(v);
     for(var j=0;j<lead;j++) h+="<div></div>";
     for(var d=1; d<=adet; d++){
       var date=new Date(y,m,d), k=fmt(date), o2=gun(k);
@@ -5129,17 +5210,25 @@
       if(secBas) rl=!(sa&&onc.aksam&&onc.aksam.id===sa.id)||col===0;
       if(secSon) rr=!(ak&&son.sabah&&son.sabah.id===ak.id)||col===6;
       var opsG=(!sa && !ak && !secIc) ? opsGece(v,k) : null;
-      var cls="cell"+((tam||tekGece||secIc)?" full":"")+(opsG?" ops":"")+(k===tk?" today":"")+(tekBas?" sel":"")+
+      // 32.4: dış blok (rezervasyon, opsiyon ve seçim yoksa)
+      var disB=(!ak && !opsG && !secIc && !secBas) ? DG.get(k) : null;
+      if(disB){
+        var dOnc=DG.get(fmt(addDays(date,-1))), dSon=DG.get(fmt(addDays(date,1)));
+        rl=!(dOnc && dOnc.id===disB.id)||col===0; rr=!(dSon && dSon.id===disB.id)||col===6;
+      }
+      var cls="cell"+((tam||tekGece||secIc)?" full":"")+(opsG?" ops":"")+(disB?" dis"+(disB.tur==="kapali"?" disKapali":""):"")+(k===tk?" today":"")+(tekBas?" sel":"")+
         (secIc?" secIc":"")+(secBas?" secBas":"")+(secSon?" secSon":"")+(k<tk?" gecmis":"");
       var st="background:"+bg+";border-radius:"+(rl?"10px":"0")+" "+(rr?"10px":"0")+" "+(rr?"10px":"0")+" "+(rl?"10px":"0");
       var fi=paraGorur()?v.fiyatlar[k]:0;
       // dolu günde (akşamı dolu) fiyat yerine misafirin baş harfleri
       var etiket = ak ? '<span class="fy bh">'+esc(basHarf(ak.guest))+"</span>"
-                      : '<span class="fy">'+(fi?kisaFiyat(fi):"")+"</span>";
+                 : (disB ? '<span class="fy disAd">'+((rl||k===disB.bas)?esc(disB.tur==="kapali"?cev("kapalı"):dtTakvimAd(v.id,disB.takvim)):"")+"</span>"
+                 : '<span class="fy">'+(fi?kisaFiyat(fi):"")+"</span>");
       h+='<button class="'+cls+'" data-k="'+k+'" style="'+st+'"><span class="gn">'+d+"</span>"+etiket+"</button>";
       hucreler.push({k:k, cls:cls, st:st, ic:'<span class="gn">'+d+"</span>"+etiket});
     }
     izgaraYaz(h,hucreler,lead);
+    Array.prototype.forEach.call(document.querySelectorAll(".lejant .ljDis"),function(x){ x.classList.toggle("hide",!(DT.bloklar[v.id]||[]).length); });
 
     var hint=document.getElementById("hint");
     // 26.1: ipucu yalnız değişince yazılır (aynı yazıyı her dokunuşta yeniden yazmak sayfanın yerleşimini bozuyordu)
@@ -5908,6 +5997,9 @@
       }
       var opT=opsGece(aktif(),k);
       if(opT && sahipMi() && !S.rezModu){ opsDetay(aktif(),opT); return; }
+      // 32.4: dış bloğa dokununca açıklama paneli ("+ Rezervasyon" ile başlandıysa kapalı günden başlanabilir)
+      var dB=dtGeceBlok(aktif(),k);
+      if(dB && !(S.rezModu && dB.tur==="kapali")){ dtBlokSheet(aktif(),dB); return; }
       if(S.salt){ S.uyari="Villa şu anda başkası tarafından düzenleniyor."; secimCiz(); return; }
       // "+ Rezervasyon" (ya da Teklif / Opsiyon) hapıyla başladıysa aralık seçilince doğrudan ilgili panel açılır
       S.rezNiyet=S.rezModu||false; S.rezModu=false;
@@ -5923,6 +6015,9 @@
       if(!o.aksam) S.start=k;
       S.uyari="Bu tarihler arasında dolu gün var."; titret("hata"); secimCiz(); return;
     }
+    // 32.4: başka sitede satılmış gün (kapalı günler kaydederken sorulur)
+    var dSat=dtAraliktaki(aktif(),S.start,k,["rezervasyon","bilinmiyor"])[0];
+    if(dSat){ S.uyari=cev("Bu tarihler arasında "+ekDe(dtTakvimAd(aktif().id,dSat.takvim))+" satılmış gün var."); titret("hata"); secimCiz(); return; }
     var tsl={start:S.start, end:k, color:renkSec(aktif().rez,parse(S.start),parse(k))};
     S.start=null; titret("aralik");
     var niyet=S.rezNiyet; S.rezNiyet=false;
@@ -7120,7 +7215,7 @@
   function detay(r){
     perde('<div class="head">'+
       '<div class="sm muted" style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem;white-space:nowrap;flex:none">'+
-        '<span class="dot" style="background:'+r.color+'"></span>'+esc(cev(gece(r)+" gece"))+"</div>"+
+        '<span class="dot" style="background:'+r.color+'"></span>'+esc(cev(gece(r)+" gece"))+(dtRezKaynak(aktif(),r)?'<span class="dtEt">'+esc(dtRezKaynak(aktif(),r))+"</span>":"")+"</div>"+
       "<h3>"+esc(r.guest)+"</h3>"+kapatBtn()+"</div>"+
       // 17.4: en üstte "Ödemeyi al ve misafiri yerleştir" / "Misafir çıktı mı?"
       akisBlok(aktif(),r)+
