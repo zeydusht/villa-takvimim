@@ -818,6 +818,23 @@
   .ksAbone{color:var(--muted)}
   /* alt yazılı satırlarda sağdaki değer (e-posta, Açık / Kapalı) kesilmesin: sol sütun alt satıra kayar */
   #hesapBtn > span:first-child, #mfaBtn > span:first-child{flex:1 1 9rem}
+  /* Görev 30.1: Villa Takvimim Pro ekranı — sade, büyük yazı (yaşlı kullanıcı) */
+  .proSheet .head h2{font-size:1.875rem; line-height:1.2}
+  .proGiris{font-size:1.125rem; line-height:1.5; margin:.875rem 0 1.375rem}
+  .proFayda{list-style:none; margin:0 0 1.5rem; padding:0; display:grid; gap:1rem}
+  .proFayda li{display:flex; align-items:center; gap:.875rem; font-size:1.125rem; line-height:1.4}
+  .proFayda .proIk{flex:none; width:2.75rem; height:2.75rem; border-radius:50%; background:var(--basili-zemin); color:var(--ok);
+    display:flex; align-items:center; justify-content:center}
+  .proFiyat{background:var(--soft); border-radius:.75rem; padding:1.125rem 1rem; text-align:center}
+  .proDeneme{font-family:var(--serif); font-size:1.375rem; line-height:1.3; color:var(--ok)}
+  .proSonra{font-family:var(--serif); font-size:1.375rem; line-height:1.3; margin-top:.25rem; color:var(--ink)}
+  .proSonra.proSonraNot{font-family:var(--sans); font-size:1rem; color:var(--muted)}
+  .proSheet .big{font-size:1.125rem; min-height:3.5rem}
+  .big.proYakinda{background:var(--soft); color:var(--muted); border:1px solid var(--line); box-shadow:none}
+  .proSheet .big.ghost{margin-top:.75rem}
+  .proKucuk{font-size:.9375rem; color:var(--muted); line-height:1.55; margin:1.375rem 0 .5rem}
+  .proLink{display:flex; flex-wrap:wrap; gap:0 1.5rem}
+  .proLink a{display:inline-flex; align-items:center; min-height:3rem; color:var(--ok); font-size:1rem}
   #mfaBtn .sag{flex:none; max-width:none}
   #yoneticiBtn .sag{white-space:normal; overflow:visible; text-overflow:clip; text-align:right; max-width:45%}
   /* 29.6: iki adımlı doğrulama */
@@ -7503,6 +7520,40 @@
     });
   }
 
+  // ================= Görev 30 VİLLA TAKVİMİM PRO (abonelik) =================
+  // Pro ekranı yalnız sunucu "sınır açık" derken ve kullanıcı yeni villa ekleyemezken açılır (30.3); sinir_acik kapalıyken hiçbir yerde görünmez.
+  var ABO=null;   // son abonelik_durumum() cevabı; sunucu güncellemesi yoksa null
+  var PRO_FAYDA=[["ev","Sınırsız villa"],["bakici","Her villada bakıcı ve ekip"],["paylas","Teklif, opsiyon ve villa sayfası paylaşımı"],
+    ["para","Ödemeler, gelir-gider ve rezervasyon formu"]];
+  function proSheet(){
+    var n=(ABO&&ABO.ucretsiz_villa)||3;
+    var o=perde('<div class="head"><h2>Villa Takvimim Pro</h2>'+kapatBtn()+"</div>"+
+      '<p class="proGiris">'+esc(cev("Ücretsiz planda "+n+" villaya kadar ekleyebilirsiniz. Daha fazla villa için Pro'ya geçin."))+"</p>"+
+      '<ul class="proFayda">'+PRO_FAYDA.map(function(f){
+        return '<li><span class="proIk">'+ikon(f[0],{boy:22})+"</span><span>"+esc(cev(f[1]))+"</span></li>"; }).join("")+"</ul>"+
+      '<div class="proFiyat" id="pro-fiyat"><div class="proDeneme" id="pro-deneme">'+esc(cev("İlk ay ücretsiz"))+"</div>"+
+        '<div class="proSonra proSonraNot" id="pro-sonra">'+esc(cev("Aylık ücret mağazada gösterilir"))+"</div></div>"+
+      '<button class="big" id="pro-al" type="button">'+esc(cev("Ücretsiz denemeyi başlat"))+"</button>"+
+      '<button class="big ghost" id="pro-geri" type="button">'+esc(cev("Satın alımları geri yükle"))+"</button>"+
+      '<div class="sm warn hide" id="pro-hata" role="alert" style="margin-top:.75rem"></div>'+
+      '<p class="proKucuk">'+esc(cev("Abonelik her ay otomatik yenilenir. App Store / Google Play hesap ayarlarından istediğiniz zaman iptal edebilirsiniz. Deneme bitmeden iptal ederseniz ücret alınmaz."))+"</p>"+
+      '<div class="proLink"><a href="gizlilik.html" target="_blank" rel="noopener">'+esc(cev("Gizlilik"))+"</a>"+
+        '<a href="kosullar.html" target="_blank" rel="noopener">'+esc(cev("Kullanım Koşulları"))+"</a></div>");
+    o.firstChild.classList.add("proSheet");
+    olc("pro_goster");
+    proMagazaBagla();
+    return o;
+  }
+  // Mağaza bağlantısı yokken (web ya da anahtar girilmemiş): düğmeler "Yakında", uygulama çökmez
+  function proYakinda(){
+    var al=document.getElementById("pro-al"), gr=document.getElementById("pro-geri"); if(!al) return;
+    al.textContent=cev("Yakında"); al.classList.add("proYakinda"); al.setAttribute("aria-disabled","true");
+    gr.classList.add("proYakinda"); gr.setAttribute("aria-disabled","true");
+    var not=function(){ var h=document.getElementById("pro-hata"); if(h){ h.textContent=cev("Mağaza bağlantısı yakında açılacak."); h.classList.remove("hide"); } };
+    al.onclick=not; gr.onclick=not;
+  }
+  function proMagazaBagla(){ proYakinda(); }
+
   // ================= 29.6 İKİ ADIMLI DOĞRULAMA (yalnız yönetici; Supabase Auth TOTP) =================
   // Kurulum: QR kodu Google Authenticator / Apple Şifreler ile okutulur, 6 haneli kodla doğrulanır.
   // Girişte: doğrulanmış faktör varsa şifreden sonra kod sorulur, oturum aal2'ye yükselir.
@@ -7594,7 +7645,7 @@
   }
 
   // ================= 29.3 YÖNETİM: ÖZET VE İSTATİSTİKLER (yalnız yönetici; sunucu: istatistik_ozet) =================
-  var OLAY_ETIKET={uygulama_ac:"Uygulamayı açtı", ekran_gor:"Ekran açtı", villa_ekle:"Villa ekledi", villa_sil:"Villa sildi",
+  var OLAY_ETIKET={pro_goster:"Pro ekranını gördü", uygulama_ac:"Uygulamayı açtı", ekran_gor:"Ekran açtı", villa_ekle:"Villa ekledi", villa_sil:"Villa sildi",
     rez_ekle:"Rezervasyon ekledi", rez_duzenle:"Rezervasyon düzenledi", rez_sil:"Rezervasyon sildi", opsiyon_ekle:"Opsiyon koydu",
     teklif_olustur:"Teklif oluşturdu", teklif_paylas:"Teklif gönderdi", paylasim_linki:"Villa sayfasını paylaştı", foto_yukle:"Fotoğraf yükledi",
     bakici_davet:"Bakıcı davet etti", bakici_katildi:"Bakıcı olarak katıldı", musaitlik_ara:"Boş villa aradı", secip_gonder:"Boş villaları gönderdi",

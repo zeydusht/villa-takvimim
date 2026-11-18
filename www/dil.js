@@ -845,6 +845,21 @@
     "Gizlilik":"Privacy",
     "Kullanım istatistiklerini paylaş":"Share usage statistics",
     "Hangi özelliklerin kullanıldığını sayar. Misafir, fiyat ve kişisel bilgi gönderilmez.":"Counts which features are used. No guest, price or personal information is sent.",
+    // Görev 30
+    "Sınırsız villa":"Unlimited villas",
+    "Her villada bakıcı ve ekip":"Caretakers and team for every villa",
+    "Teklif, opsiyon ve villa sayfası paylaşımı":"Offers, options and villa page sharing",
+    "Ödemeler, gelir-gider ve rezervasyon formu":"Payments, income and expenses, booking form",
+    "İlk ay ücretsiz":"First month free",
+    "Aylık ücret mağazada gösterilir":"The monthly price is shown in the store",
+    "Ücretsiz denemeyi başlat":"Start free trial",
+    "Satın alımları geri yükle":"Restore purchases",
+    "Abonelik her ay otomatik yenilenir. App Store / Google Play hesap ayarlarından istediğiniz zaman iptal edebilirsiniz. Deneme bitmeden iptal ederseniz ücret alınmaz.":
+      "The subscription renews automatically every month. You can cancel at any time in your App Store / Google Play account settings. If you cancel before the trial ends, you will not be charged.",
+    "Kullanım Koşulları":"Terms of Use",
+    "Yakında":"Coming soon",
+    "Mağaza bağlantısı yakında açılacak.":"Store purchases will be available soon.",
+    "Pro ekranını gördü":"Saw the Pro screen",
     // Görev 27
     "Müşterinin istediği *giriş* gününe dokunun.":"Tap the *check-in* day the customer wants.",
     "Şimdi *çıkış* gününe dokunun.":"Now tap the *check-out* day.",
@@ -1177,6 +1192,9 @@
     [/^· gün aralığı seçin$/, "· select a date range"],
     [/^Çıkışta (.+) depozito iade edilir \(hasar yoksa\)\.$/,
       "$1 deposit is refunded at check-out (if there is no damage)."],
+    // Görev 30
+    [/^Ücretsiz planda (\d+) villaya kadar ekleyebilirsiniz\. Daha fazla villa için Pro'ya geçin\.$/,
+      "On the free plan you can add up to $1 villas. Switch to Pro for more villas."],
     // Görev 27
     [/^1 villa boş$/, "1 villa free"],
     [/^(\d+) dakika önce$/, "$1 minutes ago"],
