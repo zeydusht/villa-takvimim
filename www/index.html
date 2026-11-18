@@ -196,6 +196,9 @@
   .hap.ana{background:var(--ok); border-color:var(--ok); color:#fff}
   .hap.ana svg.ik{color:#fff}
   .hap.ana:active{background:#08443F}
+  /* 31.11: seçim paneli açıkken ana iş paneldeki düğme; üstteki "+ Rezervasyon" hapı renkli (ikincil) olur */
+  body.secPanelAcik #villaHap .hap.ana{background:var(--basili-zemin); border-color:#B9D3CE; color:var(--ok)}
+  body.secPanelAcik #villaHap .hap.ana svg.ik{color:var(--ok)}
   /* Görev 16.5: yuvarlak eylem butonları (56px daire + altında küçük yazı) */
   .eylemSira{display:flex; justify-content:space-around; gap:.5rem; margin:1.25rem 0 .5rem}
   .eylem{flex:1 1 0; display:flex; flex-direction:column; align-items:center; gap:.4375rem; min-width:0; max-width:5.5rem;
@@ -10172,9 +10175,11 @@
             (d.fazla?'<span class="sm muted"> · '+esc(cev("ilk "+l2.length+" alınacak"))+"</span>":"")+"</div>"+
           '<button class="big" data-ik="resim-arti" id="dr-ekle">'+esc(cev("Hepsini ekle"))+"</button>";
         sonuc.classList.remove("hide");
+        bul.classList.add("renkli","is-foto");   // 31.11: sonuç gelince ana iş "Hepsini ekle"; arama ikincil olur
         document.getElementById("dr-ekle").onclick=function(){ driveAktar(v,l,l2,sonuc,[bul,link]); };
         rhBildir("drive:bulundu");
       }).catch(function(e){
+        bul.classList.remove("renkli","is-foto");
         hataYaz(kullaniciHatasi(e,cev("Bağlantı kurulamadı. İnternetinizi kontrol edin.")));
       }).then(function(){ bul.disabled=false; bul.textContent=cev("Fotoğrafları bul"); });
     };

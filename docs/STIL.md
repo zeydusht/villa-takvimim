@@ -81,7 +81,7 @@ Dört tür (`.big`):
 
 | Tür | Sınıf | Görünüş | Ne zaman |
 |---|---|---|---|
-| Ana | `.big` | Dolu yeşil, beyaz yazı | Ekrandaki tek ana iş (Kaydet, Rezervasyonu kaydet) |
+| Ana | `.big` | Dolu yeşil, beyaz yazı | Ekrandaki tek ana iş (Kaydet, Rezervasyonu kaydet). Görev 31.11: bir ekranda / panelde aynı anda **en fazla bir** tane; fazlası renkli ya da sade olur |
 | Renkli | `.big.renkli.is-…` | İş renginin açık zemini, iş renginde yazı | Yan işler (Değiştir, Fotoğraf ekle, Teklif) |
 | Sade | `.big.ghost` | Beyaz, gri çerçeve | Vazgeç, Geri |
 | Tehlike | `.big.tehlike` | Beyaz, kırmızı çerçeve ve yazı; üstünde boşluk | Sil, iptal et, yayından kaldır |
