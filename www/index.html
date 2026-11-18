@@ -69,6 +69,7 @@
     --hiz-secpanel:320ms;         /* seçim paneli açılışı */
     --hiz-kaydir:400ms;           /* takvim konumlama (25) */
     --hiz-parla:600ms;            /* değişen rakam / yeni satır parlaması */
+    --hiz-sayac:450ms;            /* 31.5: değişen toplam eski değerden yeniye sayarak geçer (--egri-giris) */
     --egri-gecis:cubic-bezier(0.65, 0, 0.35, 1);   /* yer değiştirme: yavaş başla, hızlan, yavaşlayarak dur */
     --egri-giris:cubic-bezier(0.22, 1, 0.36, 1);   /* belirme / giriş: hızlı gelir, yumuşakça oturur */
     --egri-cekmece:cubic-bezier(.32, .72, 0, 1);    /* 31.1: alttan açılan panel (iOS çekmecesi gibi) */
@@ -88,7 +89,7 @@
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
   html,body{margin:0; background:#fff !important; color:#101613; font-family:var(--sans);
-    -webkit-font-smoothing:antialiased; font-size:1rem; color-scheme:light only}
+    -webkit-font-smoothing:antialiased; font-size:1rem; color-scheme:light only; font-variant-numeric:tabular-nums}
   body{display:flex; justify-content:center; min-height:100vh}
   @media (prefers-color-scheme: dark){ html,body{background:#fff !important; color:#101613} }
   .kilitBar{background:#FDECEC; border:1px solid #F3C9C9; border-radius:.75rem;
@@ -2241,7 +2242,7 @@
   // Türkçede "%53", İngilizcede "53%"
   var yuzdeYaz=function(n){ return (window.DIL&&DIL.ingilizce&&DIL.ingilizce()) ? n+"%" : "%"+n; };
   var kisaFiyat=function(n){
-    return n>=100000 ? Math.round(n/1000)+"b₺" : nf.format(n)+"₺";
+    return n>=100000 ? Math.round(n/1000)+"b\u202F₺" : nf.format(n)+"\u202F₺";
   };
   var sayi=function(s){ var n=parseInt(String(s).replace(/[^\d]/g,""),10); return isNaN(n)?0:n };
 
@@ -2304,7 +2305,7 @@
   function panelOzet(o){
     var sh=o && o.querySelector(".sheet"); if(!sh) return null;
     var b=sh.querySelector("h2,h3");
-    return {baslik:(b?b.textContent:"")+"|"+(sh.dataset.adim||""), ogeler:panelOgeleri(sh).map(function(x){ return x.textContent; })};
+    return {baslik:(b?b.textContent:"")+"|"+(sh.dataset.adim||""), ogeler:panelOgeleri(sh).map(function(x){ return x.textContent; }), say:sayaclar(sh)};
   }
   // Panel açıldı: ilk düzey öğeler sırayla gelir. Aynı panel yeniden çizildiyse (aynı başlık ve adım) giriş oynamaz,
   // yalnız değişen satır parlar.
@@ -2314,6 +2315,7 @@
       var sh=o.querySelector(".sheet"); if(!sh) return;
       var l=panelOgeleri(sh), b=sh.querySelector("h2,h3"), bas=(b?b.textContent:"")+"|"+(sh.dataset.adim||"");
       if(eski && eski.baslik===bas){
+        sayaclariGecir(sh,eski.say);
         if(eski.ogeler.length===l.length){
           var fark=l.filter(function(x,i){ return x.textContent!==eski.ogeler[i]; });
           if(fark.length && fark.length<=3) fark.forEach(parlat);
@@ -2349,6 +2351,45 @@
     var t=e.target && e.target.closest ? e.target.closest('.svic,[role="switch"],button') : null;
     if(t && (t.matches('.svic,[role="switch"]') || t.querySelector(".svic"))) titret("anahtar");
   });
+  // 31.5: değişen toplam eski değerden yeniye sayarak geçer (450 ms, --egri-giris; ara değerler binlik ayraçla).
+  // "Hareketi azalt"ta doğrudan yeni değer. Eğri, :root'taki cubic-bezier'den hesaplanır.
+  function egriFn(ad){
+    var m=/cubic-bezier\(([^)]+)\)/.exec(egriAl(ad)), p=m?m[1].split(",").map(parseFloat):[.22,1,.36,1];
+    var x1=p[0], y1=p[1], x2=p[2], y2=p[3];
+    var b=function(t,a,c){ return 3*a*t*(1-t)*(1-t)+3*c*t*t*(1-t)+t*t*t; };
+    return function(x){ if(x<=0) return 0; if(x>=1) return 1; var lo=0, hi=1, t=x;
+      for(var i=0;i<24;i++){ t=(lo+hi)/2; if(b(t,x1,x2)<x) lo=t; else hi=t; } return b(t,y1,y2); };
+  }
+  function sayarakYaz(el,eski,yeni,bicim){
+    bicim=bicim||para;
+    if(!el) return;
+    cancelAnimationFrame(el._sayRaf||0);
+    el.dataset.deger=String(yeni);
+    if(eski==null || isNaN(eski) || eski===yeni || azHareket()){ el.textContent=bicim(yeni); return; }
+    var f=egriFn("giris"), t0=performance.now(), sure=hiz("sayac");
+    var ad=function(t){ var k=Math.min(1,(t-t0)/sure); el.textContent=bicim(Math.round(eski+(yeni-eski)*f(k)));
+      if(k<1) el._sayRaf=requestAnimationFrame(ad); };
+    el.textContent=bicim(eski); el._sayRaf=requestAnimationFrame(ad);
+  }
+  // kap içindeki [data-say] öğelerinin değerleri (yeniden çizimden önce alınır)
+  function sayaclar(kap){
+    var m={}; if(!kap) return m;
+    Array.prototype.forEach.call(kap.querySelectorAll("[data-say]"),function(e){ m[e.dataset.say]=parseFloat(e.dataset.deger); });
+    return m;
+  }
+  function sayaclariGecir(kap,eski){
+    if(!kap || !eski) return;
+    Array.prototype.forEach.call(kap.querySelectorAll("[data-say]"),function(e){
+      var k=e.dataset.say, y=parseFloat(e.dataset.deger);
+      if(k in eski && eski[k]!==y) sayarakYaz(e,eski[k],y);
+    });
+  }
+  // para HTML'i: tutar sayaç olarak işaretlenir (metin cümlenin içindeyse yalnız tutar sayar)
+  function paraSay(anahtar,n,metin){
+    var m=esc(para(n)), s=metin==null?m:esc(metin), i=s.indexOf(m);
+    if(i<0) return s;
+    return s.slice(0,i)+'<span class="sayac" data-say="'+esc(anahtar)+'" data-deger="'+n+'">'+m+"</span>"+s.slice(i+m.length);
+  }
   // Bir öğeyi bir kez açık yeşil vurgula (600ms)
   function parlat(el){
     if(typeof el==="string") el=document.querySelector(el);
@@ -2798,7 +2839,7 @@
     var sat=function(ad,deger,cls){
       return '<div class="para'+(cls?" "+cls:"")+'"><span class="muted">'+ad+"</span><span>"+deger+"</span></div>"; };
     var h = k.kalan>0
-      ? '<div class="alinacakBuyuk">'+ikon("cuzdan",{boy:24})+"<span>"+esc(cev(para(k.kalan)+" alınacak"))+"</span></div>"
+      ? '<div class="alinacakBuyuk">'+ikon("cuzdan",{boy:24})+"<span>"+paraSay("kalan:"+r.id,k.kalan,cev(para(k.kalan)+" alınacak"))+"</span></div>"
       : '<div class="alindiTamam">'+ikon("tik-daire",{boy:22})+"<span>"+esc(cev("Ödemenin tamamı alındı"))+"</span></div>";
     h+=sat(esc(cev("Konaklama ücreti")), para(k.konaklama));
     if(k.dep) h+=sat(esc(cev("Hasar depozitosu"))+' <span class="sm">'+esc(cev("(çıkışta iade)"))+"</span>", para(k.dep));
@@ -4793,7 +4834,7 @@
       var tarih=a.getMonth()===z.getMonth() ? a.getDate()+" → "+z.getDate()+" "+AYLAR[z.getMonth()] : kisa(sc.start)+" → "+kisa(sc.end);
       // 20.7: toplam tek yerden (fiyat.js)
       var k=paraGorur()?konaklamaHesap(v,sc.start,sc.end):null, dep=paraGorur()?sayi((v.bilgi||{}).depozito):0;
-      var toplam=(k && !k.eksik && k.toplam>0) ? para(k.toplam) : "";
+      var toplam=(k && !k.eksik && k.toplam>0) ? paraSay("secToplam",k.toplam) : "";
       var dokum = !k ? "" : (k.eksik ? cev(k.eksik+" gecenin fiyatı girilmemiş")
         : para(k.geceler)+" "+cev("konaklama")+(k.ek?" + "+para(k.ek)+" "+cev("kısa konaklama"):"")+(dep?" · "+cev("depozito ayrıca"):""));
       var btn=[];
@@ -4805,8 +4846,13 @@
         '<div class="spBtnler" style="grid-template-columns:repeat('+btn.length+',minmax(0,1fr))">'+btn.join("")+"</div>";
     }
     var yeni=!p.classList.contains("acik"), durumDegisti=(p.dataset.durum!==durum);
+    // panel açıkken seçilen aralık değişince toplam önceki aralığın toplamından sayar (arada "çıkış gününü seçin" olsa da)
+    var eskiSay=yeni?null:sayaclar(p);
+    if(eskiSay && !("secToplam" in eskiSay) && S.secSonToplam!=null) eskiSay.secToplam=S.secSonToplam;
     p.dataset.durum=durum;
     p.innerHTML=h;
+    sayaclariGecir(p,eskiSay);
+    var stp=p.querySelector('[data-say="secToplam"]'); if(stp) S.secSonToplam=parseFloat(stp.dataset.deger);
     p.classList.add("acik");
     document.body.classList.add("secPanelAcik"); document.body.classList.remove("secPay");
     // 26.1: panel boyu bir sonraki karenin başında ölçülür (dokunuş anında yerleşimi zorlamasın)
@@ -4969,7 +5015,7 @@
   },true);
   function secPanelKapat(){
     var p=document.getElementById("secPanel"); if(!p) return;
-    p.classList.remove("acik"); p.dataset.durum="";
+    p.classList.remove("acik"); p.dataset.durum=""; S.secSonToplam=null;
     TK.no++; cancelAnimationFrame(TK.raf);
     // 25.3: seçim kalkınca sayfa olduğu yerde kalır: panelin payı kalkınca sayfa kısalıp yukarı zıplayacaksa pay, kullanıcı
     // yukarı kaydırıp gereksiz hâle gelene kadar kalır (secPay)
@@ -6718,6 +6764,7 @@
         "</div>"+
         '<div class="akisSayfa" id="ak-s2" aria-hidden="true">'+
           '<div class="akisAlindi" id="ak-alindi"></div>'+
+          '<div class="sm muted akisKalan" id="ak-kalan"></div>'+
           '<div class="akisSoru">'+esc(cev("Misafiri yerleştirdiniz mi?"))+"</div>"+
           '<button class="big akisEvet" data-ik="tik" id="ak-evet">'+esc(cev("Evet, yerleştirdim"))+"</button>"+
           '<button class="akisKucuk" id="ak-henuz">'+esc(cev("Henüz değil"))+"</button>"+
@@ -6738,6 +6785,8 @@
         if(!sor){ kapat(); rhBildir("kaydedildi:odeme"); tamam(cev(para(t)+" ödeme kaydedildi")); return; }
         titret("odeme");
         document.getElementById("ak-alindi").innerHTML=ikon("tik",{boy:18,kalinlik:2.5})+"<span>"+esc(cev(para(t)+" alındı"))+"</span>";
+        var akK=document.getElementById("ak-kalan");
+        if(akK){ var yk=Math.max(0,kl-t); akK.innerHTML=esc(cev("Kalan ödeme"))+': <span class="sayac"></span>'; sayarakYaz(akK.lastChild,kl,yk); }
         document.getElementById("ak-ic").classList.add("ikinci");
         kademeOyna(Array.prototype.filter.call(document.getElementById("ak-s2").children,function(x){ return x.offsetHeight>0; }));
         rhBildir("odeme:alindi");
@@ -8838,7 +8887,8 @@
       var k=kalemler(v,r); rzT+=k.konaklama; rzA+=k.gelir; });
     document.getElementById("kNetLab").textContent=cev(don+" net kazanç");
     var kn=document.getElementById("kNet");
-    kn.textContent=para(h.net); kn.className="okVal"+(h.net<0?" eksi":"");
+    var knEski=(kn.offsetParent!==null && kn.dataset.deger!=null)?parseFloat(kn.dataset.deger):null;
+    kn.className="okVal"+(h.net<0?" eksi":""); sayarakYaz(kn,knEski,h.net);
     // 14.9: tek cümle — "Bu yıl 68.000 ₺ rezervasyon var; 10.000 ₺'si alındı, 1.500 ₺ gider çıktı."
     var buDon = S.kasaMod==="tum" ? "Toplamda"
       : (S.kasaMod==="yil" ? (S.yil===today.getFullYear() ? "Bu yıl" : don+" yılında")

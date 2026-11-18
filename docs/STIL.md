@@ -65,6 +65,10 @@ Kullanıcı yaşlı bir villa sahibi. Her karar "daha sade, daha net" yönünde 
 | **En küçük** (etiket, rozet, alt menü, takvim gün adları) | .8125rem | **13 px** |
 | İstisna: takvim hücresi içi (fiyat, baş harf) | .6875rem, fiyatta `clamp(11px, .6875rem, 3.1vw)` | 11 px (hücre 46–60 pt) |
 
+- **Rakamlar** (Görev 31.5): uygulamada ve misafir sayfasında bütün yazıda `font-variant-numeric: tabular-nums`; para, tarih, kişi ve
+  gece sayısı değişince yazı zıplamaz.
+- **Para biçimi:** her yerde `12.300 ₺` (binlik nokta, boşluk, ₺). Takvim hücresinde dar bölünmeyen boşlukla `4.100 ₺`, yüz binin
+  üstünde `120b ₺`. Tek kaynak: `para()` (uygulama), `nf.format(n)+" ₺"` (misafir sayfası).
 - **Dar alanda büyük yazı:** yan yana öğeler sığmazsa alt satıra geçer (`flex-wrap`, `min-width:min-content`, kap sorgusu); üst üste binmez.
 - **Uzunluk:** bir satır en fazla ~40 karakter (telefonda). Rehber baloncuğu en fazla 2 satır.
 
@@ -161,6 +165,7 @@ Dört tür (`.big`):
 | Klavye | `--hiz-klavye` | 300 ms | Klavye payı ve klavyeye hizalama |
 | Seçim paneli | `--hiz-secpanel` | 320 ms | Takvim seçim paneli açılışı (`--egri-cekmece`) |
 | Kaydırma | `--hiz-kaydir` | 400 ms | Takvim konumlama |
+| Sayaç | `--hiz-sayac` | 450 ms | Değişen toplam eski değerden yeniye sayarak geçer (`sayarakYaz`, `--egri-giris`, ara değerler binlik ayraçla; "Hareketi azalt"ta doğrudan): seçim paneli toplamı, Gelir&gider net tutarı, rezervasyon detayındaki "… alınacak", ödeme sonrası kalan |
 | Parlama | `--hiz-parla` | 600 ms | Değişen rakam / yeni satır |
 
 **JavaScript'teki standart değerler:**

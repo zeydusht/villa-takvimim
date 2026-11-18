@@ -477,7 +477,7 @@
   var AYLAR=EN?AYAD_EN:AYLAR_TR;
   var nf=new Intl.NumberFormat(EN?"en-US":"tr-TR");
   var kisaFiyat=function(n){
-    return n>=100000 ? Math.round(n/1000)+"b₺" : nf.format(n)+"₺";
+    return n>=100000 ? Math.round(n/1000)+"b\u202F₺" : nf.format(n)+"\u202F₺";
   };
 
   function guvenliAdres(u){
