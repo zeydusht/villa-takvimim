@@ -865,6 +865,8 @@
     "Aboneliği başlat":"Start subscription",
     "Bekleyin…":"Please wait…",
     "Gizlilik metnini açın":"Open the privacy notice",
+    "Yükleniyor":"Loading", "Villalarınız yükleniyor…":"Loading your villas…",
+    "Kaydedilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Could not save. Check your internet connection and try again.",
     "İlk rezervasyonunuz kaydedildi.":"Your first booking is saved.",
     "Misafirinize villa sayfasını göndermek ister misiniz?":"Would you like to send your guest the villa page?",
     "Villa sayfasını gönder":"Send villa page",

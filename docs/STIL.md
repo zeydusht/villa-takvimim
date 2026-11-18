@@ -223,7 +223,14 @@ Dört tür (`.big`):
   - bir cümle ("Henüz … yok");
   - ne yapılacağını gösteren düğme.
   - Süzgeç boş kalırsa kısa not.
-- **Yükleniyor:** iskelet ekran (`.iskelet`); 400 ms'den kısa yüklemede görünmez.
+- **Yükleniyor (Görev 31.7):** dönen çark yerine iskelet (gri kutu, yazı yerine yuvarlak çizgiler).
+  - Yalnız veri 300 ms'de gelmezse görünür (`--iskelet-gecikme`); göründüyse en az 400 ms kalır (`--iskelet-en-az`, `iskeletBitir`).
+  - Üstünde 1,6 sn'lik yavaş, doğrusal parlama dolaşır (`--iskelet-parlama`); "Hareketi azalt"ta sabit.
+  - Villalarım: gerçek kart sınıflarıyla çizilir; son açılışın yerleşimi (listenin yeri, kart boyları) cihazda saklanır (`vt-isk-ana`),
+    iskelet aynı yerleşimle gelir. Veri gelince hiçbir şey kaymaz. Ajanda yüklenirken boş hâl değil iskelet görünür.
+  - Villa takvimi ve Gelir&gider verisi villa listesiyle birlikte gelir; ayrı yükleniyor hâlleri yok.
+- **Kaydet düğmesi** (`kaydetIs`): basınca hemen "Kaydediliyor…", ikinci basış engellenir. Başarılı olunca bildirim çıkar. Hata olursa
+  düğme eski hâline döner, altında kırmızı, okunur bir açıklama ve "Tekrar dene" çıkar.
 - **Hata:**
   - "Bağlantı kurulamadı" + "Tekrar dene".
   - Teknik hata metni kullanıcıya en sonda ve küçük gösterilir.

@@ -70,6 +70,11 @@
     --hiz-kaydir:400ms;           /* takvim konumlama (25) */
     --hiz-parla:600ms;            /* değişen rakam / yeni satır parlaması */
     --hiz-sayac:450ms;
+    --iskelet-gecikme:300ms;      /* 31.7: iskelet yalnız veri bu kadar sürede gelmezse görünür */
+    --iskelet-en-az:400ms;        /* göründüyse en az bu kadar kalır (yanıp sönmesin) */
+    --iskelet-parlama:1600ms;     /* iskelette dolaşan yavaş parlama (doğrusal) */
+    --iskelet-zemin:#ECEFED;
+    --iskelet-isik:#F7F9F8;
     --hiz-tik:350ms;              /* 31.6: bildirimdeki tik çizilerek gelir (stroke-dashoffset), ardından başarı titreşimi */
     --hiz-tik-gecikme:100ms;      /* tik, bildirim gelmeye başladıktan bu kadar sonra çizilmeye başlar */
     --hiz-kutlama:260ms;          /* 31.6: "ilk" kutlama kartı scale(.96)'dan gelir */            /* 31.5: değişen toplam eski değerden yeniye sayarak geçer (--egri-giris) */
@@ -804,10 +809,28 @@
   .kayGeri{animation:kayGeri var(--hiz-ekran) var(--egri-giris)}
   @keyframes kayIleri{from{opacity:0; transform:translateX(28px)}}
   @keyframes kayGeri{from{opacity:0; transform:translateX(-28px)}}
-  /* 9.2 iskelet satırlar: sabit açık gri; 400ms'den kısa yüklemede hiç görünmez */
-  .iskelet{animation:iskelet 1ms 400ms both; padding:.25rem 0}
-  .iskelet i{display:block; height:.875rem; border-radius:6px; background:#ECEFED; margin:.875rem 0}
+  /* 9.2 / 31.7 iskelet: veri 300 ms'de gelmezse görünür, üstünde 1,6 sn'lik yavaş parlama dolaşır. Yerleşim dolu hâliyle aynı
+     (gerçek kart sınıfları, yazı yerine yuvarlak çizgiler): veri gelince hiçbir şey kaymaz. "Hareketi azalt"ta parlama yok. */
+  .iskelet{animation:iskelet 1ms var(--iskelet-gecikme) both; padding:.25rem 0}
+  .iskelet i, .isk{display:block; height:.875rem; border-radius:6px; margin:.875rem 0;
+    background:linear-gradient(90deg,var(--iskelet-zemin) 0%,var(--iskelet-zemin) 35%,var(--iskelet-isik) 50%,var(--iskelet-zemin) 65%,var(--iskelet-zemin) 100%);
+    background-size:300% 100%; animation:iskParla var(--iskelet-parlama) linear infinite}
   @keyframes iskelet{from{opacity:0} to{opacity:1}}
+  @keyframes iskParla{from{background-position:100% 0} to{background-position:0 0}}
+  .iskGrup{animation:iskelet 1ms var(--iskelet-gecikme) both}
+  .kartlar > .iskGrup{display:grid; gap:.75rem}
+  .iskKart{pointer-events:none; border-color:var(--line) !important}
+  .iskKart .harf{background:none !important; padding:0; overflow:hidden}
+  .iskKart .harf .isk, .iskKart .isk.blok{margin:0; width:100%; height:100%; border-radius:inherit}
+  .iskKart .isk.yazi{display:inline-block; margin:0; height:auto; color:transparent; border-radius:99px; line-height:inherit; vertical-align:middle}
+  .hap.iskHap{pointer-events:none; position:relative; border-color:transparent; color:transparent; background:none; overflow:hidden}
+  .hap.iskHap svg{opacity:0}
+  .hap.iskHap .isk{position:absolute; inset:0; margin:0; width:auto; height:auto; border-radius:inherit}
+  @media (prefers-reduced-motion: reduce){ .iskelet i, .isk{animation:none; background:var(--iskelet-zemin)} }
+  /* 31.7 kaydetme hatası: düğmenin hemen altında, kırmızı ve okunur; yanında "Tekrar dene" */
+  .kaydetHata{display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; margin:.5rem 0 0;
+    color:var(--uyari); font-size:.9375rem; line-height:1.4}
+  .kaydetHata .linkBtn{flex:none}
   /* 9.10 küçük metin bağlantıları → çerçeveli küçük butonlar */
   .kurulum .kGizle, .linkBtn, .bakiciLink, .foot button, #g-unuttum, .kilitBar button, #fotoBas .tumu{
     text-decoration:none !important; border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose);
@@ -2467,7 +2490,76 @@
   function yeniMi(id){ return !!(id && S.yeniId===id && Date.now()-(S.yeniZaman||0)<1500); }
   function yeniCls(id){ return yeniMi(id)?" yeniSatir":""; }
   // Yükleniyor yerine 3 gri iskelet satır
-  function iskelet(){ return '<div class="iskelet" aria-label="Yükleniyor"><i style="width:92%"></i><i style="width:74%"></i><i style="width:84%"></i></div>'; }
+  function iskelet(){ return '<div class="iskelet" aria-label="'+esc(cev("Yükleniyor"))+'"><i style="width:92%"></i><i style="width:74%"></i><i style="width:84%"></i></div>'; }
+  // 31.7: iskelet zamanlaması. Veri 300 ms'den önce geldiyse iskelet hiç görünmez; göründüyse en az 400 ms kalır.
+  var ISKELET={t0:0};
+  function iskeletBasla(){ ISKELET.t0=performance.now(); }
+  function iskeletBitir(fn){
+    var g=performance.now()-ISKELET.t0, gec=hiz("--iskelet-gecikme"), az=hiz("--iskelet-en-az");
+    if(!ISKELET.t0 || g<gec || g-gec>=az){ ISKELET.t0=0; fn(); return; }
+    ISKELET.t0=0; setTimeout(fn,az-(g-gec));
+  }
+  // Villalarım iskeleti: gerçek kart sınıflarıyla. Son açılışta listenin ekrandaki yeri ve kartların boyu cihazda saklanır
+  // (vt-isk-ana); iskelet aynı yerleşimle çizilir: listenin üstündeki bölümler (Bugün ve yarın vb.) için aynı boyda gri blok,
+  // kartlar aynı boyda. Veri gelince hiçbir şey kaymaz.
+  var ISK_ANA="vt-isk-ana";
+  function anaYerlesimSakla(){
+    requestAnimationFrame(function(){
+      var ana=document.getElementById("ana"), l=document.querySelectorAll("#villalar > .kart");
+      if(!ana || ana.classList.contains("hide") || !l.length) return;
+      var a=ana.getBoundingClientRect().top;
+      try{ localStorage.setItem(ISK_ANA,JSON.stringify({ust:Math.round(l[0].getBoundingClientRect().top-a),
+        boy:Array.prototype.slice.call(l,0,4).map(function(k){ return Math.round(k.offsetHeight); })})); }catch(e){}
+    });
+  }
+  function anaYerlesimUygula(){
+    var y=null; try{ y=JSON.parse(localStorage.getItem(ISK_ANA)||"null"); }catch(e){}
+    var ana=document.getElementById("ana"), l=document.querySelectorAll("#villalar .iskKart");
+    if(!y || !l.length) return;
+    l.forEach(function(k,i){ if(y.boy && y.boy[i]) k.style.minHeight=y.boy[i]+"px"; });
+    var fark=y.ust-Math.round(l[0].getBoundingClientRect().top-ana.getBoundingClientRect().top);
+    if(fark>24){ var b=document.createElement("div"); b.className="isk blok iskUst"; b.style.cssText="height:"+(fark-12)+"px;margin:0;border-radius:var(--kose)";
+      l[0].parentNode.insertBefore(b,l[0]); }
+  }
+  function villaIskelet(n){
+    var h="";
+    for(var i=0;i<n;i++) h+='<div class="kart iskKart" aria-hidden="true"><span class="harf"><i class="isk"></i></span>'+
+      '<span class="kartAlt"><span class="kad"><span class="isk yazi">Villa Deniz</span></span>'+
+      '<span class="kalt"><span class="isk yazi">Sıradaki: 20 Kas · Misafir</span></span></span></div>';
+    return '<div class="iskGrup" role="status" aria-label="'+esc(cev("Yükleniyor"))+'">'+h+"</div>";
+  }
+  // Ajanda iskeleti: gün başlığı + olay satırları
+  function ajandaIskelet(){
+    var s='<div class="ajKart iskKart" aria-hidden="true"><span class="vRozet" style="background:none;overflow:hidden"><i class="isk blok"></i></span><span class="ajKartIc">'+
+      '<span class="ajVilla"><span class="isk yazi">Villa Deniz</span></span><span class="ajAlt"><span class="isk yazi">Giriş 16:00 · Misafir</span></span></span></div>';
+    return '<div class="iskGrup" role="status" aria-label="'+esc(cev("Yükleniyor"))+'"><div class="ajGunBas"><span class="isk yazi">Bugün · Pazartesi</span></div>'+s+s+
+      '<div class="ajGunBas"><span class="isk yazi">Çarşamba 18 Kas</span></div>'+s+"</div>";
+  }
+  // 31.7: Kaydet düğmesi. Basınca hemen "Kaydediliyor…", ikinci basış engellenir. Başarılıysa düğme eski hâline döner
+  // (bildirimi çağıran gösterir). Hata olursa düğme eski hâline döner, altında kırmızı, okunur açıklama ve "Tekrar dene" çıkar.
+  function kaydetIs(btn,is,hataYazi){
+    if(!btn || btn._kaydediyor) return Promise.resolve(null);
+    var eski=btn.innerHTML, hk=btn.nextElementSibling;
+    if(!hk || !hk.classList.contains("kaydetHata")){ hk=document.createElement("div"); hk.className="kaydetHata hide"; hk.setAttribute("role","alert"); btn.insertAdjacentElement("afterend",hk); }
+    hk.classList.add("hide");
+    btn._kaydediyor=true; btn.disabled=true; btn.setAttribute("aria-busy","true"); btn.textContent=cev("Kaydediliyor…");
+    var geri=function(){ btn._kaydediyor=false; btn.disabled=false; btn.removeAttribute("aria-busy"); btn.innerHTML=eski; };
+    return Promise.resolve().then(is).then(function(x){ geri(); return x; },function(e){
+      geri();
+      hk.innerHTML="<span>"+esc(hataYazi?hataYazi(e):kullaniciHatasi(e))+'</span><button type="button" class="linkBtn">'+esc(cev("Tekrar dene"))+"</button>";
+      hk.classList.remove("hide");
+      hk.querySelector("button").onclick=function(){ hk.classList.add("hide"); btn.click(); };
+      titret("hata");
+      return null;
+    });
+  }
+  // Hata metni: teknik ayrıntı kullanıcıya gösterilmez
+  function kullaniciHatasi(e){
+    var m=String((e && (e.message||e)) || "");
+    if(!m || /fetch|network|jwt|token|\b[45]\d\d\b|timeout|abort|json|syntax|undefined|null|TypeError|PGRST|violat|constraint|permission|policy|rpc|supabase/i.test(m))
+      return cev("Kaydedilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.");
+    return cev(m);
+  }
   // 31.6: başarı: bildirimdeki tik çizilerek gelir (350 ms), çizim bitince "basari" titreşimi
   function tamam(msg){
     if(window.Rehber && Rehber.basariVar()) return;
@@ -3605,6 +3697,7 @@
   function gunUzun(d){ return GUN_UZUN[(window.DIL&&DIL.ingilizce&&DIL.ingilizce())?"en":"tr"][d.getDay()]; }
   function cizAjanda(){
     goster("ajanda");
+    if(S.yukleniyor){ document.getElementById("ajOzet").textContent=""; document.getElementById("ajandaListe").innerHTML=ajandaIskelet(); return; }
     maKartCiz();
     Array.prototype.forEach.call(document.querySelectorAll("#ajSeg button"),function(b){
       b.classList[b.dataset.m===AJ.mod?"add":"remove"]("on"); });
@@ -6854,8 +6947,8 @@
     btn.onclick=function(){
       t=sayi(inp.value);
       if(!t){ hata.textContent=cev("Alınan tutarı girin."); titret("eksik"); inp.focus(); return; }
-      var yazi=btn.textContent; btn.disabled=true; btn.textContent=cev("Kaydediliyor…");
-      odemeKaydet(v,r,t).then(function(){
+      hata.textContent="";
+      kaydetIs(btn,function(){ return odemeKaydet(v,r,t).then(function(){
         ciz(); if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
         if(!sor){ kapat(); rhBildir("kaydedildi:odeme"); tamam(cev(para(t)+" ödeme kaydedildi")); return; }
         titret("odeme");
@@ -6868,10 +6961,7 @@
         document.getElementById("ak-s1").setAttribute("aria-hidden","true");
         document.getElementById("ak-s2").removeAttribute("aria-hidden");
         try{ inp.blur(); }catch(x){}
-      },function(e){
-        btn.disabled=false; btn.textContent=yazi;
-        hata.textContent=odemeHata(e); titret("hata");
-      });
+      }); },odemeHata);
     };
     document.getElementById("ak-evet").onclick=function(){ kapat(); rhBildir("kaydedildi:odeme",{basari:"Misafir yerleştirildi"}); yerlestir(v,r,t); };
     document.getElementById("ak-henuz").onclick=function(){ kapat(); rhBildir("kaydedildi:odeme"); tamam(cev(para(t)+" alındı")); };
@@ -7419,14 +7509,7 @@
     document.getElementById("h-bilgi").onclick=function(){
       var b=this, ad=document.getElementById("h-ad2").value.trim();
       var tel=document.getElementById("h-tel").value.trim();
-      b.disabled=true; b.textContent="Kaydediliyor…";
-      VT.profilGuncelle(ad,tel).then(function(){
-        b.disabled=false; b.textContent="Bilgilerimi kaydet";
-        cizAna(); tamam(cev("Bilgileriniz kaydedildi"));
-      }).catch(function(e){
-        b.disabled=false; b.textContent="Bilgilerimi kaydet";
-        bildir(e.message||"Kaydedilemedi.");
-      });
+      kaydetIs(b,function(){ return VT.profilGuncelle(ad,tel).then(function(){ cizAna(); tamam(cev("Bilgileriniz kaydedildi")); }); });
     };
     document.getElementById("h-veri").onclick=function(){
       var d={ hesap:(k&&k.email)||"", tarih:new Date().toISOString(), villalar:S.villalar };
@@ -11959,15 +12042,8 @@
     var h=document.getElementById("s-hata");
     if(a.length<6){ h.textContent="Şifre en az 6 karakter olmalı."; return; }
     if(a!==b){ h.textContent="İki şifre aynı değil."; return; }
-    var btn=this; btn.disabled=true; btn.textContent="Kaydediliyor…"; h.textContent="";
-    VT.sifreGuncelle(a).then(function(){
-      btn.disabled=false; btn.textContent="Şifreyi kaydet";
-      bildir("Şifreniz güncellendi.");
-      bulutYukle();
-    }).catch(function(e){
-      btn.disabled=false; btn.textContent="Şifreyi kaydet";
-      h.textContent=e.message||"Şifre güncellenemedi.";
-    });
+    h.textContent="";
+    kaydetIs(this,function(){ return VT.sifreGuncelle(a).then(function(){ bildir(cev("Şifreniz güncellendi.")); bulutYukle(); }); });
   };
   document.getElementById("s-vazgec").onclick=function(){
     VT.cikis().then(function(){ goster("giris"); });
@@ -12058,14 +12134,22 @@
   // ana ekran, villalar yüklenirken: iskelet satırlar
   function anaIskelet(){
     goster("ana");
-    document.getElementById("ozet").textContent="Villalarınız yükleniyor…";
-    document.getElementById("villalar").innerHTML=iskelet();
+    iskeletBasla();
+    document.getElementById("ozet").textContent=cev("Villalarınız yükleniyor…");
+    // "+ Villa ekle" hapının yeri de tutulur (veri gelince liste aşağı kaymasın)
+    var ah=document.getElementById("anaHap");
+    ah.innerHTML='<span class="hap iskHap iskGrup" aria-hidden="true"><i class="isk"></i>'+ikon("arti",{boy:18})+"<span>"+esc(cev("Villa ekle"))+"</span></span>";
+    ah.classList.remove("hide");
+    var y=null; try{ y=JSON.parse(localStorage.getItem(ISK_ANA)||"null"); }catch(e){}
+    var n=Math.max(1,Math.min(4,(y && y.boy && y.boy.length) || (S.villalar&&S.villalar.length) || 2));
+    document.getElementById("villalar").innerHTML=villaIskelet(n);
+    anaYerlesimUygula();
   }
 
   function villalariGetir(hazirSoz){
     S.bulut=true; S.yukleniyor=true;
     anaIskelet();
-    (hazirSoz||VT.villalariYukle()).then(function(liste){
+    (hazirSoz||VT.villalariYukle()).then(function(liste){ return new Promise(function(z){ iskeletBitir(function(){ z(liste); }); }); }).then(function(liste){
       if(!VT.girisli()){ S.yukleniyor=false; return; } // bu arada oturum sona erdi
       S.villalar=liste; S.villalar.forEach(duzelt);
       if(depIadeAktar()) kaydet();
@@ -12079,7 +12163,9 @@
       var kurtarilan=yerelKayitlariKurtar();
       var duzeltilen=kimlikDuzelt();
       if(kurtarilan || duzeltilen) kaydet();
-      cizAna();
+      var ajAcik=!document.getElementById("ajanda").classList.contains("hide");
+      cizAna(); anaYerlesimSakla();
+      if(ajAcik) sekmeGit("ajanda");
       acilisHazir();
       // Yan işler: biri hata verse bile yükleme bozulmasın ("Bağlantı kurulamadı" çıkmasın)
       [tasimaSor, yoneticiKontrol, mfaKontrol, magazaBaslat, aboBaslat, fotoTasi, silinenGuncelle, davetBekleyenKullan].forEach(function(is){
