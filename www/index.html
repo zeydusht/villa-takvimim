@@ -79,6 +79,7 @@
     --cek-mesafe:90px;            /* aşağı çekme mesafesi eşiği */
     --kontrol-en-az:600ms;        /* 32.6: kontrol listesi en az bu kadar görünür (çok hızlı biterse yanıp sönmesin) */
     --kontrol-kademe:40ms;        /* her site satırı sonucu geldiği an, 40 ms kademeli işaretlenir */
+    --tazele-araligi:60000ms;     /* 32.8: aynı villa için uygulamadan en sık yenileme (sunucu da 20 sn sınırlar) */
     --tutma-sure:600000ms;        /* 32.5: rezervasyon girilirken tarihler 10 dk ayrılır */
     --tutma-kontrol:60000ms;      /* ayırma süresince dış takvimler her 60 sn'de okunur */
     --hiz-titreme:300ms;          /* 31.9: hatalı alan 2 kez hafifçe titrer (±4 pt) */
@@ -1555,6 +1556,12 @@
   .lj-disK{background:repeating-linear-gradient(135deg,rgba(95,106,100,.18) 0 2px,#F7F9F8 2px 5px)}
   .dtEt{display:inline-flex; align-items:center; margin-left:.375rem; padding:.0625rem .5rem; border-radius:99px; background:var(--soft);
     color:var(--muted); font-size:.8235rem; line-height:1.4; vertical-align:middle; white-space:nowrap}
+  /* 32.8 tazelik satırı (takvimin üstünde) */
+  .tazelik{display:flex; align-items:center; gap:.375rem; width:100%; min-height:2.25rem; margin:.25rem 0 .125rem; padding:.25rem 0;
+    font-size:.875rem; line-height:1.35; color:var(--muted); text-align:left; background:none; border:0; cursor:default}
+  .tazelik svg{flex:none; color:var(--ok)}
+  .tazelik.kotu{color:var(--uyari); cursor:pointer; min-height:3rem}
+  .tazelik.kotu svg{color:var(--uyari)}
   /* 32.7 çakışma alarmı */
   .cakismaKart{background:#FBEFF2; border:var(--cerceve-kalinlik) solid var(--uyari); border-radius:var(--kose); padding:1rem; margin:0 0 1rem; color:var(--uyari)}
   .cakismaKart .ckUst{display:flex; gap:.625rem; align-items:flex-start; line-height:1.45; font-size:1.0625rem}
@@ -2065,6 +2072,8 @@
 
     <!-- 17.3: hızlı işlem hapları ay başlığı ile gün başlıkları arasında (özet kutuları kalktı) -->
     <div class="hapKap" id="villaHapKap"><div class="hapSira" id="villaHap" role="toolbar"></div></div>
+    <!-- 32.8: dış takvimlerin tazeliği -->
+    <div class="tazelik hide" id="tazelik"></div>
     <div class="dow" id="dow"><div>Pt</div><div>Sa</div><div>Ça</div><div>Pe</div><div>Cu</div><div>Ct</div><div>Pz</div></div>
     <div class="grid" id="grid"></div>
     <div class="lejant">
@@ -2931,6 +2940,50 @@
     if(e.data && e.data.tur==="git" && e.data.yol){ if(S.yukleniyor) S.bekleyenYol=e.data.yol; else bildirimYolu(e.data.yol); }
   });
   if(/[?&](villa|cakisma)=/.test(location.search)) S.bekleyenYol=location.search;
+
+  // ---- 32.8 tazelik ----
+  // Takvimin üstünde: "Airbnb, Booking ✓ 2 dk önce kontrol edildi." · 1 saattir okunamayan takvim: kırmızı, dokununca ayar ekranı
+  function dtTazelikCiz(v){
+    var el=document.getElementById("tazelik"); if(!el) return;
+    var l=dtTakvimleri(v.id).filter(function(t){ return t.aktif!==false; });
+    if(!dtHazir() || !l.length){ el.classList.add("hide"); el._v=null; return; }
+    var kotu=l.filter(function(t){ return (t.hata_sayisi||0)>0 && Date.now()-Date.parse(t.son_basari||t.son_deneme||0)>3600000; });
+    el.classList.remove("hide"); el.classList.toggle("kotu",!!kotu.length); el._v=v.id;
+    if(kotu.length){
+      var en=kotu.map(function(t){ return t.son_basari||t.son_deneme; }).sort()[0];
+      el.innerHTML=ikon("uyari-ucgen",{boy:16})+"<span>"+esc(cev(kotu.map(function(t){ return t.ad||dtKisaAd(t.kaynak); }).join(", ")+" "+dtSaattir(en)+" okunamıyor"))+"</span>";
+      el.setAttribute("aria-label",el.textContent);
+      if(sahipMi() && !S.destek){ el.setAttribute("role","button"); el.tabIndex=0; }   // yalnız kırmızıyken dokunulur
+    } else {
+      el.removeAttribute("role"); el.removeAttribute("tabindex");
+      var sonlar=l.map(function(t){ return t.son_basari; }).filter(Boolean).sort();
+      el.innerHTML=ikon("tik",{boy:15,kalinlik:2.5})+"<span>"+esc(l.map(function(t){ return t.ad||dtKisaAd(t.kaynak); }).join(", ")+" · "+
+        (sonlar.length ? dtSure(sonlar[0])+" "+cev("kontrol edildi") : cev("kontrol bekleniyor")))+"</span>";
+      el.removeAttribute("aria-label");
+    }
+  }
+  document.getElementById("tazelik").onclick=function(){
+    var v=aktif(); if(!v || !this.classList.contains("kotu") || !sahipMi() || S.destek) return;
+    dtEkran(v);
+  };
+  // yenileme anları: villa ekranı / Takvim sekmesi açılınca, uygulama öne gelince, aşağı çekince (aynı villa için en sık 60 sn)
+  function dtTazele(v,zorla){
+    if(!v || !dtHazir() || !dtTakvimleri(v.id).length) return Promise.resolve();
+    if(!zorla && DT.son[v.id] && Date.now()-DT.son[v.id]<hiz("--tazele-araligi")) return Promise.resolve();
+    DT.son[v.id]=Date.now();
+    return dtEsitle(v).catch(function(){});
+  }
+  function dtTazeleHepsi(zorla){
+    var l=S.villalar.filter(function(v){ return dtTakvimleri(v.id).length; }), i=0;
+    var sira=function(){ if(i>=l.length) return Promise.resolve(); return dtTazele(l[i++],zorla).then(sira); };
+    return sira();
+  }
+  document.addEventListener("visibilitychange",function(){
+    if(document.hidden || !dtHazir()) return;
+    var v=aktif();
+    if(v && !document.getElementById("takvim").classList.contains("hide")) dtTazele(v);
+    else VT.dt.cakismalar().then(function(l){ DT.cakismalar=l||[]; dtCizHepsi(); },function(){});
+  });
 
   // ---- 32.7 çakışma alarmı: çözülmeden susmaz ----
   function dtCakisanRez(id){ return (DT.cakismalar||[]).some(function(c){ return c.rezervasyon_id===id && c.durum==="acik"; }); }
@@ -3970,6 +4023,8 @@
       if(e==="takvim"){ if(aktif()) ciz(); else { S.aktif=null; cizAna(); } }
       else if(e==="ajanda") cizAjanda();
       else if(e==="ana") cizAna();
+      // 32.8: aşağı çekip yenileme dış takvimleri de yeniler (arka planda)
+      if(dtHazir()){ if(e==="takvim" && aktif()) dtTazele(aktif(),true); else dtTazeleHepsi(true); }
     },function(h){ yenileniyor=false; throw h; });
   }
   // 18.18: gösterge üst çubuğa bağlı (iOS / Chrome gibi): içerik aşağı çekildikçe gösterge üst çubuğun hemen altından
@@ -4471,7 +4526,7 @@
       if(yg && S.villalar.some(function(v){ return v.id===yg.aktif; })) return villaYiginDon(yg);
       cizAna();
     }
-    else if(hedef==="ajanda") cizAjanda();
+    else if(hedef==="ajanda"){ cizAjanda(); dtTazeleHepsi(); }
     else { silinenGuncelle(); hesapEkranCiz(); goster("hesapEkran"); }
   }
   // saklanan villa ekranına geri dön (ay, kaydırma ve açık alt ekran korunur)
@@ -5200,6 +5255,7 @@
     goster("takvim");
     ciz();
     kilitBaslat(id);
+    dtTazele(aktif());   // 32.8: villa ekranı açılınca dış takvimler arka planda
   }
   document.getElementById("geri").onclick=function(){
     kilitBitir();
@@ -5734,7 +5790,7 @@
     document.getElementById("fiyatBtn").classList[(sahip&&duz)?"remove":"add"]("hide");
     document.getElementById("bakiciBtn").classList[(S.bulut&&sahip&&!S.destek)?"remove":"add"]("hide");
     document.getElementById("dtBtn").classList[(S.bulut&&sahip&&!S.destek&&DT.hazir!==false)?"remove":"add"]("hide");
-    dtOzetYaz(v);
+    dtOzetYaz(v); dtTazelikCiz(v);
     // 16.6: villa ekranında Teklifler bölümü görünüyorsa "Teklifler" satırı tekrarlanmaz
     var tkVar=!!(S.tkOn && S.tkOn[v.id] && S.tkOn[v.id].l && S.tkOn[v.id].l.length && teklifVerebilir());
     document.getElementById("teklifBtn").classList[(S.bulut&&sahip&&kurulu()&&!S.destek&&!tkVar)?"remove":"add"]("hide");
