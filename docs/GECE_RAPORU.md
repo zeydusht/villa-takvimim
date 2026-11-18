@@ -67,3 +67,15 @@ _Özet en sonda tamamlanacak._
 - Karar: Mağazadan (App Store / Google Play) alınmış açık abonelikte "Üyelik ver" ve "kaldır" gösterilmez; "kullanıcı mağazadan yönetir" yazar.
   Neden: elle verilen üyelik mağaza kaydının üstüne yazar, sonraki mağaza bildirimi de onu geri değiştirir; karışıklık çıkar.
 - Karar: Elle verilmiş açık üyelikte düğme "Üyeliği uzat ya da değiştir" adını alır.
+
+### 30.6 Sunucu fonksiyonu taslağı (deploy edilmedi)
+- Karar: `supabase/functions/abonelik-webhook/index.ts` dış paket kullanmıyor; tabloya PostgREST üzerinden service_role ile `on_conflict=kullanici` upsert yapıyor.
+  Neden: Deno'da sürüm / paket sorunu çıkmasın, dosya tek başına çalışsın.
+- Karar: `Authorization` başlığı `RC_WEBHOOK_SECRET` ile sabit zamanlı karşılaştırılır; hem düz değer hem "Bearer <değer>" kabul edilir. Gizli değer ayarlı değilse her istek reddedilir.
+- Karar: Kullanıcı kimliği `app_user_id`; uuid değilse (satın alma uygulamaya girişten önce anonim başladıysa) `original_app_user_id` ve `aliases` içindeki uuid kullanılır. Hiç uuid yoksa olay yok sayılır (200).
+- Karar: Durum: deneme süresi → `deneme`; ücretli → `aktif`; iptal ama süre bitmedi → `iptal_edildi`; süre bitti ya da EXPIRATION → `suresi_doldu`. BILLING_ISSUE süre bitene kadar erişimi kapatmaz (mağazanın ek süresi).
+- Karar: Sıra dışı gelen eski bir olay, daha yeni bir mağaza kaydının üstüne yazmaz (`guncelleme` = olayın zamanı).
+- Karar: Sandbox (test) satın almaları da işlenir.
+  Neden: Apple incelemecisi sandbox ile satın alır; işlenmezse Pro açılmaz ve uygulama reddedilir.
+- Karar: İşlenmeyen olaylar (TEST, TRANSFER, başka mağaza) ve silinmiş kullanıcı 200 alır; yalnız geçici yazma hatası 500 döner (RevenueCat tekrar dener).
+- Test: `docs/qa/gorev30/webhook/test.mjs` (Deno ve veritabanı taklit edilerek 21 durum). `node docs/qa/gorev30/webhook/test.mjs` ile çalışır.
