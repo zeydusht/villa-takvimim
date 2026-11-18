@@ -817,7 +817,16 @@
   .ksSira .seg{flex:1 1 16rem; margin:0}
   .ksAbone{color:var(--muted)}
   /* alt yazılı satırlarda sağdaki değer (e-posta, Açık / Kapalı) kesilmesin: sol sütun alt satıra kayar */
-  #hesapBtn > span:first-child, #mfaBtn > span:first-child{flex:1 1 9rem}
+  /* yazı sütunu esner; ikon kutusu (data-ikk ile başa eklenir) ve sağdaki değer esnemez */
+  #hesapBtn > span:not(.ikKutu):not(.sag), #mfaBtn > span:not(.ikKutu):not(.sag), #uyelikBtn > span:not(.ikKutu):not(.sag){flex:1 1 9rem}
+  #uyelikBtn .sag{flex:none; max-width:none}
+  #hesapAd{color:#3F4843; font-size:.875rem; overflow-wrap:anywhere}
+  #hesapAd:empty{display:none}
+  #yoneticiBtn > span:not(.ikKutu):not(.sag){flex:1 1 auto; min-width:min-content; overflow-wrap:normal}
+  /* 30.4: Üyelik paneli */
+  .uyKutu{background:var(--soft); border-radius:.75rem; padding:1.125rem 1rem; margin:.75rem 0 1.25rem}
+  .uyKutu .uyBas{font-family:var(--serif); font-size:1.5rem; line-height:1.25}
+  .uyKutu .uyAlt{font-size:1rem; margin-top:.375rem; color:var(--muted); line-height:1.45}
   /* Görev 30.1: Villa Takvimim Pro ekranı — sade, büyük yazı (yaşlı kullanıcı) */
   .proSheet .head h2{font-size:1.875rem; line-height:1.2}
   .proGiris{font-size:1.125rem; line-height:1.5; margin:.875rem 0 1.375rem}
@@ -1674,8 +1683,13 @@
     <div class="grup">
     <button class="satirBtn hide" id="hesapBtn" data-ikk="hesap:hesap">
       <!-- 29.5: hesap silme kolay bulunsun (Apple zorunlu) -->
-      <span><span>Hesabım</span><span class="satirAlt">Bilgileriniz, şifre, hesabı silme</span></span>
-      <span class="sag" id="hesapAd"></span>
+      <!-- e-posta yazının altında: dar ekranda / büyük yazıda sağ köşede sıkışıp bölünmesin -->
+      <span><span>Hesabım</span><span class="satirAlt" id="hesapAd"></span><span class="satirAlt">Bilgileriniz, şifre, hesabı silme</span></span>
+    </button>
+    <!-- Görev 30.4: Üyelik. Sunucu güncellemesi yoksa, ya da sınır kapalıyken ve üyelik yokken gizli -->
+    <button class="satirBtn hide" id="uyelikBtn" data-ikk="hesap:yildiz">
+      <span><span>Üyelik</span><span class="satirAlt" id="uyelikAlt"></span></span>
+      <span class="sag" id="uyelikDurum"></span>
     </button>
     <button class="satirBtn hide" id="davetBtn" data-ikk="bakici:anahtar">
       <span><span>Bakıcı olarak villaya katıl</span>
@@ -6937,6 +6951,7 @@
         S.villalar=[]; S.aktif=null; S.bulut=false; S.mod="rez"; S.start=null;
         document.getElementById("hesapBtn").classList.add("hide");
         document.getElementById("davetBtn").classList.add("hide");
+        document.getElementById("uyelikBtn").classList.add("hide");
         yonetimKaldir();
         document.getElementById("villalar").innerHTML="";
         document.getElementById("g-eposta").value="";
@@ -7014,6 +7029,7 @@
     document.getElementById("hsTitresimBolum").classList[app?"remove":"add"]("hide");
     document.getElementById("hs-titresim").className="svic"+(store.get(TITRESIM)==="kapali"?"":" on");
     olcumCiz();
+    uyelikCiz(); if(bulut) aboBaslat();   // 30.4
     // 16.3 kilit: yalnız uygulamada, girişli kullanıcıda ve eklenti varsa
     var kilitVar=!!(app && bulut && window.VTAcilis && VTAcilis.kilitDestek());
     document.getElementById("hsGuvenlikBolum").classList[kilitVar?"remove":"add"]("hide");
@@ -7647,12 +7663,75 @@
   }
   function proSonuc(basari){
     return aboYenileBekle().then(function(acik){
-      kapat();
+      kapat(); uyelikCiz();
       if(acik){
         tamam(basari);
         var s=PRO.sonra; PRO.sonra=null; if(s) setTimeout(s,250);   // ör. yarım kalan "villa ekle"
       } else uyari(cev("Satın alma alındı. Üyeliğiniz birkaç dakika içinde açılacak; açılmazsa \"Satın alımları geri yükle\"ye dokunun."));
     });
+  }
+  // ---- 30.4 Hesap → Üyelik ----
+  function aboTarih(iso){ var d=new Date(iso); if(isNaN(d)) return ""; return d.getDate()+" "+AYLAR[d.getMonth()]+" "+d.getFullYear(); }
+  // abone_mi() ile aynı kural: deneme / aktif / elle / iptal edildi ve süresi bitmemiş
+  function aboAcik(a){
+    return !!(a && ["deneme","aktif","manuel","iptal_edildi"].indexOf(a.durum)>=0 && (!a.bitis || new Date(a.bitis).getTime()>Date.now()));
+  }
+  function uyelikBilgi(a){
+    if(!a) return null;
+    var t=a.bitis?aboTarih(a.bitis):"";
+    var acik=("abone" in a) ? !!a.abone : aboAcik(a);
+    if(acik && a.durum==="manuel") return {sag:"Elle verildi", alt:t?"Bitiş: "+t:"Süresiz", baslik:"Villa Takvimim Pro", aciklama:"Bu üyelik size elle verildi.", pro:true};
+    if(acik && a.durum==="deneme") return {sag:"Pro", alt:t?"Ücretsiz deneme · "+t+" tarihine kadar":"Ücretsiz deneme", baslik:"Villa Takvimim Pro", pro:true, magaza:true};
+    if(acik && a.durum==="iptal_edildi") return {sag:"Pro", alt:t?t+" tarihinde bitiyor":"", baslik:"Villa Takvimim Pro", aciklama:"Abonelik yenilenmeyecek. Bitiş tarihine kadar Pro açık kalır.", pro:true, magaza:true};
+    if(acik) return {sag:"Pro", alt:t?"Yenilenme: "+t:"", baslik:"Villa Takvimim Pro", pro:true, magaza:a.kaynak!=="manuel"};
+    return {sag:"Ücretsiz", alt:((a.ucretsiz_villa||3)+" villaya kadar"), baslik:"Ücretsiz plan", pro:false};
+  }
+  function uyelikCiz(){
+    var b=document.getElementById("uyelikBtn"); if(!b) return;
+    var bulut=!!(S.bulut && window.VT && VT.girisli && VT.girisli());
+    var g=bulut && ABO && (ABO.sinir_acik===true || ABO.abone===true) ? uyelikBilgi(ABO) : null;
+    b.classList[g?"remove":"add"]("hide");
+    if(!g) return;
+    document.getElementById("uyelikDurum").textContent=cev(g.sag);
+    document.getElementById("uyelikAlt").textContent=cev(g.alt);
+  }
+  function aboBaslat(){ aboYukle().then(uyelikCiz); }
+  document.getElementById("uyelikBtn").onclick=function(){ uyelikSheet(); };
+  function uyelikSheet(){
+    var g=uyelikBilgi(ABO); if(!g) return;
+    var M=window.Magaza;
+    var magazaAd=ABO.kaynak==="google"?"Google Play":"App Store";
+    perde('<div class="head"><h2>'+esc(cev("Üyelik"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="uyKutu"><div class="uyBas">'+esc(cev(g.baslik))+"</div>"+
+        (g.alt?'<div class="uyAlt">'+esc(cev(g.alt))+"</div>":"")+"</div>"+
+      (g.aciklama?'<p class="sm" style="line-height:1.5;margin:0 0 1rem">'+esc(cev(g.aciklama))+"</p>":"")+
+      (!g.pro && ABO.villa_ekleyebilir===false?'<p style="line-height:1.5;margin:0 0 1rem">'+esc(cev("Daha fazla villa eklemek için Villa Takvimim Pro gerekir."))+"</p>":"")+
+      (g.magaza?'<p class="sm muted" style="line-height:1.5;margin:0 0 .25rem">'+esc(cev("Aboneliğinizi "+magazaAd+" hesap ayarlarından yönetebilir ya da iptal edebilirsiniz."))+"</p>"+
+        '<button class="big" data-ik="dis-baglanti" id="uy-yonet" type="button">'+esc(cev("Aboneliği yönet"))+"</button>":"")+
+      // Pro ekranı yalnız sınır açık ve yeni villa eklenemiyorken (30.3 kuralı)
+      (!g.pro && ABO.sinir_acik===true && ABO.villa_ekleyebilir===false?'<button class="big" data-ik="yildiz" id="uy-pro" type="button">'+esc(cev("Villa Takvimim Pro'yu gör"))+"</button>":"")+
+      (!g.pro && M && M.hazir()?'<button class="big ghost" id="uy-geri" type="button" style="margin-top:.75rem">'+esc(cev("Satın alımları geri yükle"))+"</button>":"")+
+      '<div class="sm warn hide" id="uy-hata" role="alert" style="margin-top:.75rem"></div>');
+    var y=document.getElementById("uy-yonet");
+    if(y) y.onclick=function(){
+      var git=function(u){
+        var P=window.Capacitor&&Capacitor.Plugins;
+        if(P && P.App && P.App.openUrl && Capacitor.isNativePlatform && Capacitor.isNativePlatform()) P.App.openUrl({url:u}).catch(function(){ window.open(u,"_blank"); });
+        else window.open(u,"_blank");
+      };
+      var genel=ABO.kaynak==="google"?"https://play.google.com/store/account/subscriptions":"https://apps.apple.com/account/subscriptions";
+      if(M && M.hazir()) M.yonetAdresi().then(git,function(){ git(genel); }); else git(genel);
+    };
+    var pb=document.getElementById("uy-pro"); if(pb) pb.onclick=function(){ PRO.sonra=null; proSheet(); };
+    var gb=document.getElementById("uy-geri");
+    if(gb) gb.onclick=function(){
+      var k=VT.kullanici(), h=document.getElementById("uy-hata"); gb.disabled=true; h.classList.add("hide");
+      M.baslat(k.id).then(function(){ return M.geriYukle(); }).then(function(r){
+        olc("pro_geri_yukle",{sonuc:r.aktif?"tamam":"yok"});
+        if(!r.aktif){ gb.disabled=false; h.textContent=cev("Bu mağaza hesabında geri yüklenecek bir abonelik bulunamadı."); h.classList.remove("hide"); return; }
+        return aboYenileBekle().then(function(acik){ kapat(); uyelikCiz(); if(acik) tamam(cev("Satın alımlarınız geri yüklendi")); else uyari(cev("Satın alma alındı. Üyeliğiniz birkaç dakika içinde açılacak; açılmazsa \"Satın alımları geri yükle\"ye dokunun.")); });
+      }).catch(function(e){ olc("pro_geri_yukle",{sonuc:"hata"}); gb.disabled=false; h.textContent=cev(M.hataMetni(e)); h.classList.remove("hide"); });
+    };
   }
   // açılışta: mağaza oturumu Supabase kullanıcısıyla açılır (yenilemeler ve bekleyen satın almalar mağaza tarafında eşleşsin)
   function magazaBaslat(){
@@ -11623,7 +11702,7 @@
       cizAna();
       acilisHazir();
       // Yan işler: biri hata verse bile yükleme bozulmasın ("Bağlantı kurulamadı" çıkmasın)
-      [tasimaSor, yoneticiKontrol, mfaKontrol, magazaBaslat, fotoTasi, silinenGuncelle, davetBekleyenKullan].forEach(function(is){
+      [tasimaSor, yoneticiKontrol, mfaKontrol, magazaBaslat, aboBaslat, fotoTasi, silinenGuncelle, davetBekleyenKullan].forEach(function(is){
         try{ is(); }catch(e){ try{ console.error("yan iş hatası:", is.name, e); }catch(x){} }
       });
       // destek modundan çıkılınca, girilen yere (Hesap → Kullanıcılar) geri dön

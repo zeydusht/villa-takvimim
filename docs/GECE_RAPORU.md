@@ -50,3 +50,12 @@ _Özet en sonda tamamlanacak._
   Neden: yavaş internette kullanıcı beklemesin. Sınır açıksa sunucu kuralı 4. villayı yine kabul etmez.
 - Karar: Pro ekranındaki iki fayda ikonu `kisiler` ve `cuzdan` oldu.
   Neden: ilk denemedeki `bakici` / `para` adları iş rengi adıydı, ikon çizmiyordu (testte görüldü, düzeltildi).
+
+### 30.4 Hesap → Üyelik
+- Karar: "Üyelik" satırı yalnız sunucu "sınır açık" derken ya da kullanıcının açık bir üyeliği varken görünür. Sunucu güncellemesi yoksa, ya da sınır kapalıyken üyeliği olmayan kullanıcıda gizli.
+  Neden: sınır kapalıyken herkes sınırsız; "Ücretsiz · 3 villaya kadar" yazmak 3'ten fazla villası olanı yanıltır.
+- Karar: Satırda sağda kısa durum (Ücretsiz / Pro / Elle verildi), altında ayrıntı (deneme bitişi, yenilenme, bitiş tarihi, süresiz).
+- Karar: "Aboneliği yönet" yalnız mağazadan alınmış üyelikte görünür. Uygulamada işletim sisteminin abonelik sayfasını açar (önce RevenueCat'in verdiği adres, yoksa App Store / Google Play'in genel abonelik sayfası).
+- Karar: Ücretsiz panelde "Villa Takvimim Pro'yu gör" düğmesi yalnız 30.3 kuralı sağlanınca (sınır açık ve ekleyemez) çıkar. Uygulamada mağaza hazırsa "Satın alımları geri yükle" de burada var.
+  Neden: Apple geri yüklemenin kolay bulunmasını istiyor; Pro ekranı kuralı da bozulmuyor.
+- Karar (düzeltme): Görev 29.7'de Hesap satırlarına eklediğim bir CSS kuralı ikon kutusunu genişletiyordu ("Hesabım" ikonunun kutusu uzundu; canlıda vardı). Kural yalnız yazı sütununu esnetecek şekilde düzeltildi. Ayrıca e-posta "Hesabım"ın altına alındı (büyük yazıda sağ köşede harf harf bölünüyordu), "Kullanıcılar" kelimesinin bölünmesi engellendi.
