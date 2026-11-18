@@ -194,6 +194,10 @@ Dört tür (`.big`):
 - **Kaydırınca belirme:** 320 ms; misafir sayfasında 16 pt, uygulamada 8 pt.
 - **Rehber adım geçişi:** 420 ms. Rehber metni 120 ms'de çapraz geçer.
 
+**Yavaş çekim (Görev 31.13, yalnız inceleme için):** adrese `?yavas=3` eklenince bütün CSS süreleri ve JS animasyonları 3 ile
+çarpılır. Kullanıcıya hiçbir yerde görünmez. JS'te `hiz()` ile okunan süreler zaten ölçeklidir; böyle bir animasyon `olcekli:1`
+ile işaretlenir (iki kez çarpılmasın).
+
 **Kurallar:**
 - Yalnız `transform` ve `opacity` canlandırılır. Yükseklik ve kutu boyu canlandırılmaz; tek istisna klavye payı.
 - Ölçüm (`getBoundingClientRect`, `offsetHeight`, `getComputedStyle`) her karede yapılmaz. Gerekirse bir sonraki karenin başında bir kez yapılır.

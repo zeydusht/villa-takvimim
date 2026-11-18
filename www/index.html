@@ -1687,6 +1687,34 @@
 </style>
 </head>
 <body>
+<script>
+/* 31.13: ?yavas=3 — yalnız inceleme için yavaş çekim. CSS'teki bütün süreler (:root --hiz-* değişkenleri ve kurallardaki sayılar)
+   ve JS animasyonları (Element.animate) k ile çarpılır. Kullanıcıya hiçbir yerde görünmez; adreste yoksa hiçbir şey yapmaz. */
+(function(){
+  var m=/[?&]yavas=(\d+(?:\.\d+)?)/.exec(location.search); if(!m) return;
+  var k=parseFloat(m[1]); if(!(k>0) || k===1 || k>20) return;
+  window.VT_YAVAS=k;
+  var olc=function(v){ return String(v).replace(/(\d*\.?\d+)(ms|s)\b/g,function(_,n,b){ return (parseFloat(n)*k)+b; }); };
+  var OZ=["transition","transition-duration","transition-delay","animation","animation-duration","animation-delay"];
+  var SURE=/^--(hiz-|kademe-(sure|ara|ilk)$|iskelet-(gecikme|en-az|parlama)$)/;
+  function kurallar(l){
+    for(var i=0;i<l.length;i++){
+      var r=l[i];
+      if(r.cssRules && !r.style) kurallar(r.cssRules);
+      if(!r.style) continue;
+      if(r.selectorText===":root") for(var j=0;j<r.style.length;j++){ var ad=r.style[j]; if(SURE.test(ad)) r.style.setProperty(ad,olc(r.style.getPropertyValue(ad))); }
+      OZ.forEach(function(p){ var v=r.style.getPropertyValue(p); if(v && /\d(ms|s)\b/.test(v)) r.style.setProperty(p,olc(v),r.style.getPropertyPriority(p)); });
+    }
+  }
+  for(var s=0;s<document.styleSheets.length;s++){ try{ kurallar(document.styleSheets[s].cssRules); }catch(e){} }
+  var asil=Element.prototype.animate;
+  Element.prototype.animate=function(kare,o){
+    if(typeof o==="number") o=o*k;
+    else if(o && typeof o==="object" && !o.olcekli){ o=Object.assign({},o); ["duration","delay","endDelay"].forEach(function(a){ if(typeof o[a]==="number") o[a]*=k; }); }
+    return asil.call(this,kare,o);
+  };
+})();
+</script>
 <script src="acilis.js"></script>
 <div class="wrap">
   <div class="appBar hide" id="appBar">
@@ -2365,9 +2393,9 @@
         sure=hiz("--kademe-sure"), y=hiz("--kademe-kayma"), g=egriAl("giris");
     Array.prototype.forEach.call(els,function(el,i){
       try{
-        if(az) el.animate([{opacity:0},{opacity:1}],{duration:hiz("azalt"),easing:"linear",fill:"backwards"});
+        if(az) el.animate([{opacity:0},{opacity:1}],{duration:hiz("azalt"),easing:"linear",fill:"backwards",olcekli:1});
         else el.animate([{opacity:0,transform:"translateY("+y+"px)"},{opacity:1,transform:"translateY(0)"}],
-          {duration:sure,delay:ilk+ara*Math.min(i,en-1),easing:g,fill:"backwards"});
+          {duration:sure,delay:ilk+ara*Math.min(i,en-1),easing:g,fill:"backwards",olcekli:1});
       }catch(e){}
     });
   }
@@ -2621,7 +2649,7 @@
     if(azHareket() || !f || !f.animate) return;
     var d=hiz("--titreme-mesafe");
     f.animate([{transform:"translateX(0)"},{transform:"translateX(-"+d+"px)"},{transform:"translateX("+d+"px)"},{transform:"translateX(-"+d+"px)"},
-      {transform:"translateX("+d+"px)"},{transform:"translateX(0)"}],{duration:hiz("titreme"),easing:"linear"});
+      {transform:"translateX("+d+"px)"},{transform:"translateX(0)"}],{duration:hiz("titreme"),easing:"linear",olcekli:1});
     var temizle=function(){ if(String(inp.value||"").trim()){ f.classList.remove("hata"); inp.removeEventListener("input",temizle); } };
     inp.addEventListener("input",temizle);
   }
@@ -11999,8 +12027,8 @@
     o.classList.remove("kapaniyor"); o.classList.add("geriAciliyor"); kilitDenetle();
     if(sh) sh.style.transform="";   // aşağı çekilerek kapandıysa parmağın bıraktığı yer silinir
     try{
-      if(sh) sh.animate([{transform:tr==="none"?"translateY(0)":tr, opacity:op},{transform:"translateY(0)", opacity:1}],{duration:hiz("ac"), easing:egriAl("cekmece")});
-      o.animate([{backgroundColor:bg},{backgroundColor:"rgba(16,22,19,.4)"}],{duration:hiz("karar-ac"), easing:egriAl("giris")});
+      if(sh) sh.animate([{transform:tr==="none"?"translateY(0)":tr, opacity:op},{transform:"translateY(0)", opacity:1}],{duration:hiz("ac"), easing:egriAl("cekmece"), olcekli:1});
+      o.animate([{backgroundColor:bg},{backgroundColor:"rgba(16,22,19,.4)"}],{duration:hiz("karar-ac"), easing:egriAl("giris"), olcekli:1});
     }catch(e){}
   }
   function kapat(anlik){
