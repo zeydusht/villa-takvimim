@@ -383,9 +383,9 @@
     };
     o.addEventListener("click", guvenli(function (e) {
       if (!D || D.o !== o) return;
-      if (e.target.closest(".rhKapat")) { titret("hafif"); bitir(false, true); return; }
-      if (e.target.closest(".rhGeri")) { titret("hafif"); geri(); return; }
-      if (e.target.closest(".rhIleri")) { if (!D.ileri.disabled) { titret("hafif"); ilerle(); } else salla(); return; }
+      if (e.target.closest(".rhKapat")) { bitir(false, true); return; }
+      if (e.target.closest(".rhGeri")) { geri(); return; }
+      if (e.target.closest(".rhIleri")) { if (!D.ileri.disabled) ilerle(); else salla(); return; }
     }));
     document.documentElement.classList.add("rhAcik");
     try {
@@ -523,7 +523,7 @@
   // yanlış yere dokunuldu: baloncuk hafifçe sallanır
   function salla() {
     if (!D) return;
-    titret("hafif");
+    titret("eksik");   // 31.4: yanlış yere dokunuldu (baloncuk sallanır)
     if (azH() || !D.ic.animate) return;
     D.ic.animate([{ transform: "translateX(0)" }, { transform: "translateX(-8px)" }, { transform: "translateX(7px)" },
       { transform: "translateX(-4px)" }, { transform: "translateX(0)" }], { duration: 320, easing: egri("giris") });
@@ -1064,7 +1064,7 @@
   }
   function sonKaldir(anlik) { if (B) { var b = B; B = null; clearTimeout(b._z); if (anlik) b.remove(); else if (b._kapa) b._kapa(); } }
   function basariGoster(m, alt) {
-    titret("basari");
+    titret("kaydedildi");
     var tik = ikonHTML("tik", 38) || "✓";
     sonKart('<div class="rhTik" aria-hidden="true">' + tik + "</div>" +
       '<div class="rhKartBas">' + esc(cev(m)) + "</div>" +

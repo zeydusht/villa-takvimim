@@ -184,6 +184,21 @@ Dört tür (`.big`):
 - "Hareketi azalt" açıksa animasyon yoktur.
 - Açılış animasyonu (`acilis.js`) değiştirilmez.
 
+**Titreşim dili (Görev 31.4):**
+- Yalnız iOS / Android uygulamasında ve Hesap → Titreşim açıksa.
+- Kod olayın adını verir (`titret("kaydedildi")`); türü tek eşleme tablosundan (`TITRESIM_DILI`) gelir. Tabloda olmayan
+  sıradan dokunuşlar (panel açma, kapatma, adımcı dışındaki düğmeler) titremez.
+
+| Olay | Ad | Titreşim |
+|---|---|---|
+| Kaydetme, ödeme alma, villa ekleme başarılı | `kaydedildi`, `odeme`, `villa_eklendi` | `basari` |
+| Silme, iptal | `silindi`, `iptal` | `sil` |
+| Hata, eksik alan | `hata`, `eksik` | `uyari` |
+| Takvimde aralığın ikinci günü, sekme değişimi, anahtar açıp kapama, değer seçimi (kişi sayısı, sıralama, yazı boyutu) | `aralik`, `sekme`, `anahtar`, `secim` | `secim` (Haptics `selectionChanged`) |
+| Uzun basma başladı, sürükleme bir yere oturdu, aşağı çekip yenileme eşiği | `uzun_bas`, `oturdu` | `hafif` |
+
+- Titreşim tek başına bilgi taşımaz; her zaman görsel bir geri bildirimle (bildirim, renk, panel, hata yazısı) birlikte gelir.
+
 **Klavye (Görev 24):**
 - Odakta kaydırma yok.
 - Klavye oturunca tek kaydırma (300 ms): alanın altı klavyenin 12 pt üstüne gelir.

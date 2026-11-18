@@ -2325,8 +2325,18 @@
   }
   // Gerçek titreşim (yalnız uygulama içinde; web'de hiçbir şey yapmaz). Hesap → Titreşim ile kapatılabilir.
   var TITRESIM="villa-takvim-titresim";
-  function titret(tur){
+  // 31.4 titreşim dili: tek eşleme tablosu. Kod olayın adını verir, titreşimin türü buradan gelir. Titreşim hiçbir zaman tek başına
+  // bilgi taşımaz: her çağrının yanında görsel bir geri bildirim (bildirim, renk, panel, hata yazısı) vardır.
+  var TITRESIM_DILI={
+    kaydedildi:"basari", odeme:"basari", villa_eklendi:"basari",     // kaydetme, ödeme alma, villa ekleme başarılı
+    silindi:"sil", iptal:"sil",                                      // silme, iptal
+    hata:"uyari", eksik:"uyari",                                     // hata, eksik alan
+    aralik:"secim", sekme:"secim", anahtar:"secim", secim:"secim",   // aralığın 2. günü, sekme değişimi, anahtar, değer seçimi
+    uzun_bas:"hafif", oturdu:"hafif"                                 // uzun basma başladı, sürükleme bir yere oturdu
+  };
+  function titret(olay){
     if(store.get(TITRESIM)==="kapali") return;
+    var tur=TITRESIM_DILI[olay]; if(!tur) return;
     try{ if(window.VTNative && VTNative.titret) VTNative.titret(tur); }catch(e){}
   }
   // 31.3: menüde seçilen satır menü kapanmadan önce kısa süre ana renkte görünür; sonra iş yapılır
@@ -2335,6 +2345,10 @@
     el.classList.add("secildi");
     setTimeout(function(){ el.classList.remove("secildi"); sonra(); },hiz("secildi"));
   }
+  document.addEventListener("click",function(e){
+    var t=e.target && e.target.closest ? e.target.closest('.svic,[role="switch"],button') : null;
+    if(t && (t.matches('.svic,[role="switch"]') || t.querySelector(".svic"))) titret("anahtar");
+  });
   // Bir öğeyi bir kez açık yeşil vurgula (600ms)
   function parlat(el){
     if(typeof el==="string") el=document.querySelector(el);
@@ -2349,7 +2363,7 @@
   // Yükleniyor yerine 3 gri iskelet satır
   function iskelet(){ return '<div class="iskelet" aria-label="Yükleniyor"><i style="width:92%"></i><i style="width:74%"></i><i style="width:84%"></i></div>'; }
   // Başarı bildirimi: başında ✓ + başarı titreşimi
-  function tamam(msg){ if(window.Rehber && Rehber.basariVar()) return; bildir("✓ "+msg); titret("basari"); }
+  function tamam(msg){ if(window.Rehber && Rehber.basariVar()) return; bildir("✓ "+msg); titret("kaydedildi"); }
 
   // Görev 11: ikonlar HTML'e nitelikle yazılır, bu gözlemci yerleştirir (yazısı sonradan değişen buton ikonunu kaybetmez)
   //   data-ik="ikon"         → butonun soluna 20px ikon
@@ -2536,7 +2550,7 @@
           '<button class="big" data-ik="yenile" id="sk-tekrar">Tekrar dene</button>'+
           '<button class="big renkli is-gri" data-ik="geri-al" id="sk-geri" style="margin-top:.5rem">'+esc(cev("Değişikliği geri al"))+"</button>"+
           '<div class="sm muted" style="margin-top:.5rem">'+esc(cev("Geri alırsanız buluttaki son hâle dönülür; kaydedilemeyen değişiklik silinir."))+"</div>");
-        titret("uyari");
+        titret("hata");
         document.getElementById("sk-tekrar").onclick=function(){
           kapat(); S.senkHata=0; senkronPlanla();
         };
@@ -3010,7 +3024,7 @@
       // ilk 10 px ölü bölge: basılı tutarken parmağın küçük kayması göstergeyi oynatmaz
       if(dy<=OLU){ if(cekme>0){ cekme=0; esikte=false; ciz(0,false); } return; }
       cekme=lastik(dy-OLU);
-      if(cekme>=ESIK && !esikte){ esikte=true; titret("hafif"); kur().classList.add("donuyor"); }
+      if(cekme>=ESIK && !esikte){ esikte=true; titret("oturdu"); kur().classList.add("donuyor"); }
       else if(cekme<ESIK && esikte){ esikte=false; kur().classList.remove("donuyor"); }
       ciz(cekme,false);
       if(e.cancelable) e.preventDefault();
@@ -3429,6 +3443,7 @@
   function sekmeGit(hedef){
     var acik=acikEkran(), villada=VILLA_EKRAN.indexOf(acik)>=0;
     var ayni=seciliSekme()===hedef;
+    if(!ayni) titret("sekme");
     if(ayni){
       // seçili sekmeye tekrar basıldı: köke dön; zaten kökteyse en üste kay
       if(villada){
@@ -3581,7 +3596,7 @@
       '<span class="maKartAlt">'+esc(cev(fiyatli?"Tarih seçin, boş villaları fiyatlarıyla görün":"Tarih seçin, boş villaları görün"))+"</span></span>"+
       ikon("sag",{boy:20})+"</button>";
     if(yer._h!==h){ yer.innerHTML=h; yer._h=h; }
-    document.getElementById("maKart").onclick=function(){ titret("hafif"); musaitAc(); };
+    document.getElementById("maKart").onclick=function(){ musaitAc(); };
   }
   // 28.2: panel her açılışta temiz başlar (seçim yok, kişi sayısı boş, sıralama "Benim sıram"). Önceki arama MA.son'da
   // saklanır; altta "Son arama: … · tekrar ara" ile geri getirilir (rehber bu bağlantıyı vurgulamaz).
@@ -3642,7 +3657,7 @@
     } else { a = MA.bas ? parse(MA.bas) : today; z=addDays(a,7); }
     MA.bas=fmt(a); MA.bit=fmt(z); MA.hap=h;
     MA.imlec=new Date(a.getFullYear(),a.getMonth(),1);
-    titret("hafif"); maIzgaraCiz(); maAltCiz(); aySolma("maGrid");
+    titret("aralik"); maIzgaraCiz(); maAltCiz(); aySolma("maGrid");
     rhBildir("ma:aralik");
   }
   // sade takvim: doluluk yok; geçmiş günler soluk ve seçilemez; seçim 18.2 görünümünde (aradaki geceler koyu yeşil,
@@ -3705,7 +3720,7 @@
     if(!MA.bas){ MA.bas=k; maIzgaraCiz(); maAltCiz(); rhBildir("ma:bas"); return; }
     if(k===MA.bas){ MA.bas=null; maIzgaraCiz(); maAltCiz(); rhBildir("ma:temiz"); return; }
     if(k<MA.bas){ MA.bas=k; maIzgaraCiz(); maAltCiz(); rhBildir("ma:bas"); return; }
-    MA.bit=k; titret("hafif"); maIzgaraCiz(); maAltCiz(); rhBildir("ma:aralik");
+    MA.bit=k; titret("aralik"); maIzgaraCiz(); maAltCiz(); rhBildir("ma:aralik");
   }
   function maTikla(e){
     var t=e.target.closest("button"); if(!t || t.disabled) return;
@@ -3715,15 +3730,15 @@
     }
     if(t.classList.contains("cell") && t.closest("#maGrid")){ maGunSec(t.dataset.k); return; }
     if(t.dataset.h){ maHizli(t.dataset.h); return; }
-    if(t.id==="maKisiAz"){ if(MA.kisi>0){ MA.kisi--; titret("hafif"); maAltCiz(); } return; }
-    if(t.id==="maKisiCok"){ if(MA.kisi<40){ MA.kisi++; titret("hafif"); maAltCiz(); } return; }
+    if(t.id==="maKisiAz"){ if(MA.kisi>0){ MA.kisi--; titret("secim"); maAltCiz(); } return; }
+    if(t.id==="maKisiCok"){ if(MA.kisi<40){ MA.kisi++; titret("secim"); maAltCiz(); } return; }
     if(t.id==="maGoster"){
       if(!(MA.bas && MA.bit) || typeof maSonucCiz!=="function") return;
-      titret("hafif"); MA.son={bas:MA.bas, bit:MA.bit, kisi:MA.kisi};
+      MA.son={bas:MA.bas, bit:MA.bit, kisi:MA.kisi};
       MA.adim="sonuc"; MA.secMod=false; maSonucCiz(); maUste(); maOlc(); rhBildir("ma:sonuc"); return;
     }
     if(t.id==="maSonArama" && MA.son){
-      titret("hafif"); MA.bas=MA.son.bas; MA.bit=MA.son.bit; MA.kisi=MA.son.kisi||0; MA.hap="";
+      MA.bas=MA.son.bas; MA.bit=MA.son.bit; MA.kisi=MA.son.kisi||0; MA.hap="";
       MA.adim="sonuc"; MA.secMod=false; maSonucCiz(); maUste(); maOlc(); rhBildir("ma:sonuc"); return;
     }
     if(typeof maTiklaEk==="function") maTiklaEk(e,t);
@@ -3926,20 +3941,20 @@
     if(t.id==="maSecAc"){
       MA.secMod=true; MA.secili={};
       MA.liste.forEach(function(x){ if(x.para && !x.engel) MA.secili[x.v.id]=true; });   // kural engeli olanlar başta seçili değil
-      titret("hafif"); maSonucCiz();
+      maSonucCiz();
       var b=document.querySelector(".maSecBilgi"); if(b) try{ b.scrollIntoView({block:"start", behavior:azHareket()?"auto":"smooth"}); }catch(x){}
       return;
     }
-    if(t.id==="maSecKapat"){ MA.secMod=false; titret("hafif"); maSonucCiz(); return; }
+    if(t.id==="maSecKapat"){ MA.secMod=false; maSonucCiz(); return; }
     if(t.dataset.sv){
       var x=MA.liste[+t.dataset.sv]; if(!x) return;
-      var on=!MA.secili[x.v.id]; MA.secili[x.v.id]=on; titret("hafif");
+      var on=!MA.secili[x.v.id]; MA.secili[x.v.id]=on; titret("secim");
       t.setAttribute("aria-pressed",String(on));
       t.closest(".maVilla").classList.toggle("secili",on);
       var k=t.querySelector(".maKutu"); if(k) k.classList.toggle("on",on);
       maSecGuncelle(); return;
     }
-    if(t.id==="maWa"){ olc("secip_gonder",{adet:maSecililer().length}); var m=document.getElementById("maMesaj").value; titret("basari"); window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank"); rhBildir("musait:gonderildi"); return; }
+    if(t.id==="maWa"){ olc("secip_gonder",{adet:maSecililer().length}); var m=document.getElementById("maMesaj").value; window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank"); rhBildir("musait:gonderildi"); return; }
     if(t.id==="maKopyala"){ olc("secip_gonder",{adet:maSecililer().length}); kopyala(document.getElementById("maMesaj").value,cev("Mesaj kopyalandı.")); rhBildir("musait:gonderildi"); return; }
   }
 
@@ -3958,7 +3973,7 @@
     S.aktif=v.id; MAP=harita(v.rez); S.salt=false; S.ustDetay=true; S.start=null; S.secim=null;
     MA.donus=true;
     var ar={start:MA.bas, end:MA.bit, color:renkSec(v.rez,parse(MA.bas),parse(MA.bit))};
-    titret("hafif");
+    
     if(is==="teklif") ozelTeklifSheet(v,{giris:ar.start,cikis:ar.end});
     else if(is==="ops") opsiyonSheet(v,ar);
     else { S.taslak=ar; form(); }
@@ -3982,7 +3997,7 @@
   }
   function maTiklaEk(e,t){
     if(t.id==="maGeri"){ MA.adim="tarih"; MA.secMod=false; var b0=parse(MA.bas); MA.imlec=new Date(b0.getFullYear(),b0.getMonth(),1); maTarihCiz(); maUste(); return; }
-    if(t.dataset.s){ if(MA.sira!==t.dataset.s){ MA.sira=t.dataset.s; titret("hafif"); maSonucCiz(); } return; }
+    if(t.dataset.s){ if(MA.sira!==t.dataset.s){ MA.sira=t.dataset.s; titret("secim"); maSonucCiz(); } return; }
     if(t.dataset.mi){ maIslem(MA.liste[+t.dataset.mi],t.dataset.is); return; }
     if(t.dataset.fg){ maFiyatGir(MA.liste[+t.dataset.fg]); return; }
     if(t.dataset.kv){ maVillaTakvim(MA.sonuc && MA.sonuc.kismen[+t.dataset.kv]); return; }
@@ -3991,7 +4006,7 @@
       document.getElementById("maKismen").classList.toggle("hide",!MA.kismenAcik); return;
     }
     if(t.id==="maYakin" && MA.yakin){
-      MA.bas=MA.yakin.bas; MA.bit=MA.yakin.bit; MA.hap=""; MA.son={bas:MA.bas, bit:MA.bit, kisi:MA.kisi}; titret("hafif"); maSonucCiz(); maUste(); return;
+      MA.bas=MA.yakin.bas; MA.bit=MA.yakin.bit; MA.hap=""; MA.son={bas:MA.bas, bit:MA.bit, kisi:MA.kisi}; titret("aralik"); maSonucCiz(); maUste(); return;
     }
     if(typeof maTiklaEk2==="function") maTiklaEk2(e,t);
   }
@@ -4053,7 +4068,7 @@
       zaman=setTimeout(function(){
         zaman=null; aktifS=true; sy0=window.scrollY;
         kilitle(); o.basla(el);
-        titret("hafif"); try{ if(navigator.vibrate) navigator.vibrate(12); }catch(e){}
+        titret("uzun_bas");
       },sure);
     }
     function hareket(cx,cy){
@@ -4132,7 +4147,7 @@
               .concat(S.villalar.filter(function(v){ return gorunen.indexOf(v.id)<0; }));
             villaSiraYaz(); kaydet();
             try{ localStorage.setItem(SIRA_IPUCU,"1"); }catch(e){}
-            titret("basari");
+            titret("oturdu");
           }
           cizAna();
         },azHareket()?0:190);
@@ -4237,7 +4252,7 @@
     i.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); b.click(); } });
     i.focus();
     b.onclick=function(){
-      if(!i.value.trim()){ i.parentNode.classList.add("hata"); adHata.classList.remove("hide"); i.focus(); titret("uyari"); return; }
+      if(!i.value.trim()){ i.parentNode.classList.add("hata"); adHata.classList.remove("hide"); i.focus(); titret("eksik"); return; }
       var v={id:uid(), ad:i.value.trim(), color:PALET[S.villalar.length%PALET.length], rez:[], fotolar:[]};
       duzelt(v);
       S.villalar.push(v); olc("villa_ekle");
@@ -4250,7 +4265,7 @@
         kayit.then(function(){ return VT.senkron(v); })
           .catch(function(e){ bildir("Villa buluta kaydedilemedi: "+(e.message||"")); });
       }
-      kapat(); cizAna(); ac(v.id); sihirbazAc(1);
+      kapat(); cizAna(); ac(v.id); sihirbazAc(1); titret("villa_eklendi");
     };
   }
 
@@ -4292,7 +4307,7 @@
     inp.addEventListener("input",function(){ btn.disabled = kucuk(inp.value)!==kucuk(ad); });
     btn.onclick=function(){
       if(kucuk(inp.value)!==kucuk(ad)) return;
-      titret("sil"); kapat(); villaSil(v);
+      titret("silindi"); kapat(); villaSil(v);
     };
   }
 
@@ -4800,7 +4815,7 @@
       var ph=p.offsetHeight+"px";
       if(S.secPanelH!==ph){ S.secPanelH=ph; var w=document.querySelector(".wrap"); if(w) w.style.setProperty("--secPanelH",ph); }
     });
-    document.getElementById("spKapat").onclick=function(){ titret("hafif"); secimBitir(); };
+    document.getElementById("spKapat").onclick=function(){ secimBitir(); };
     var al=function(){ var sc=S.secim; S.secim=null; S.start=null; ciz(); return sc; };
     var r1=document.getElementById("spRez"), r2=document.getElementById("spTeklif"), r3=document.getElementById("spOps");
     if(r1) r1.onclick=function(){ S.taslak=al(); form(); };
@@ -4950,7 +4965,7 @@
     var k=takvimKutu();
     if(k && e.clientX>=k.left && e.clientX<=k.right && e.clientY>=k.top && e.clientY<=k.bottom) return;
     e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-    titret("hafif"); secimBitir();
+    secimBitir();
   },true);
   function secPanelKapat(){
     var p=document.getElementById("secPanel"); if(!p) return;
@@ -5020,7 +5035,7 @@
     b.type="button"; b.className="rhSoru"; b.setAttribute("aria-label",cev("Bu işlem için yardım"));
     b.innerHTML=ikon("yardim",{boy:24,kalinlik:1.75});
     h.insertAdjacentElement("afterend",b); h.parentNode.classList.add("rhSoruVar");
-    b.onclick=function(){ titret("hafif"); Rehber.panelden(o,tanim()); };
+    b.onclick=function(){ Rehber.panelden(o,tanim()); };
   }
   // 26.6: ekran başlığının yanına "?" (ekranlarda rehber kendiliğinden başlamaz; isteyen dokunur)
   function ekranSoru(id,tanim){
@@ -5030,7 +5045,7 @@
     b.type="button"; b.className="rhSoru"; b.setAttribute("aria-label",cev("Bu işlem için yardım"));
     b.innerHTML=ikon("yardim",{boy:24,kalinlik:1.75});
     h.insertAdjacentElement("afterend",b); h.parentNode.classList.add("rhSoruVar");
-    b.onclick=function(){ titret("hafif"); Rehber.panelden(ek,tanim()); };
+    b.onclick=function(){ Rehber.panelden(ek,tanim()); };
   }
   var panelAcik=function(){ return !!document.querySelector(".overlay:not(.kapaniyor)"); };
   // açık panellerde en üstten aşağı ara (üstte uyarı açıksa arkadaki paneldeki öğe yine bulunur; rehber bekler)
@@ -5317,10 +5332,10 @@
     // Y > S
     if(dogrula(parse(S.start),parse(k))){
       if(!o.aksam) S.start=k;
-      S.uyari="Bu tarihler arasında dolu gün var."; titret("uyari"); secimCiz(); return;
+      S.uyari="Bu tarihler arasında dolu gün var."; titret("hata"); secimCiz(); return;
     }
     var tsl={start:S.start, end:k, color:renkSec(aktif().rez,parse(S.start),parse(k))};
-    S.start=null;
+    S.start=null; titret("aralik");
     var niyet=S.rezNiyet; S.rezNiyet=false;
     if(niyet==="teklif"){ secimCiz(); ozelTeklifSheet(aktif(),{giris:tsl.start,cikis:tsl.end}); rhBildir("aralik"); return; }
     if(niyet==="ops"){ secimCiz(); opsiyonSheet(aktif(),tsl); rhBildir("aralik"); return; }
@@ -5564,7 +5579,7 @@
     var son=gecerlilikBagla("op-gec","2");
     document.getElementById("op-kaydet").onclick=function(){
       var ad=document.getElementById("op-ad").value.trim();
-      if(!ad){ document.getElementById("op-adHata").classList.remove("hide"); document.getElementById("op-ad").focus(); titret("uyari"); return; }
+      if(!ad){ document.getElementById("op-adHata").classList.remove("hide"); document.getElementById("op-ad").focus(); titret("eksik"); return; }
       var s2=son(); if(!s2) return uyari(cev("Opsiyonun biteceği günü seçin."));
       v.bilgi=v.bilgi||{}; v.bilgi.opsiyonlar=(v.bilgi.opsiyonlar||[]).filter(opsGorunur);
       v.bilgi.opsiyonlar.push({id:uid(), start:ar.start, end:ar.end, ad:ad, tel:document.getElementById("op-tel").value.trim(),
@@ -5747,8 +5762,8 @@
     $("tk-yenile").onclick=function(){ T.mesajElle=false; this.classList.add("hide"); guncelle(); };
     function durum(t,tur){ var d=$("tk-durum"); if(!d) return; d.className="sm"+(tur==="hata"?" warn":(tur==="ok"?" okYazi":" muted")); d.textContent=t; }
     function gonder(tur){
-      var th=tarihHatasi(); if(th){ durum(th,"hata"); titret("uyari"); return; }
-      if(!T.fiyat){ durum(cev("Teklif fiyatını yazın."),"hata"); fi.focus(); titret("uyari"); return; }
+      var th=tarihHatasi(); if(th){ durum(th,"hata"); titret("hata"); return; }
+      if(!T.fiyat){ durum(cev("Teklif fiyatını yazın."),"hata"); fi.focus(); titret("eksik"); return; }
       if(T.gec==="tarih" && !$("tk-son").value){ durum(cev("Teklifin geçerli olacağı son günü seçin."),"hata"); return; }
       if(!teklifVerebilir()) return uyari(cev("Teklif göndermek için giriş yapmış olmanız gerekiyor."));
       if(!(v.paylasim && v.paylasim.yayin)) return yayinGerekli(v);
@@ -5764,7 +5779,7 @@
       villaHazir(v.id).then(function(){ return VT.teklifKaydet(kayit); }).then(function(){
         if($("tk-wa")){ $("tk-wa").disabled=false; $("tk-kopya").disabled=false; }
         durum(cev("Teklif kaydedildi. Villa yönetimi → Teklifler'den takip edebilirsiniz."),"ok");
-        titret("basari");
+        titret("kaydedildi");
         olc("teklif_olustur"); olc("teklif_paylas");
         if(tur==="wa") rhBildir("kaydedildi:teklif");
         if(tur==="wa"){
@@ -6162,7 +6177,7 @@
       kaydet(); kapat();
       F.secMod=false; F.secAy={}; F.secGun={}; F.capa=null; fiyatYenile();
       geriAlBildir("✓ "+cev(msg),function(){ fiyatGeriYukle(v,eski); });
-      titret(/silindi/.test(msg)?"sil":"basari");
+      titret(/silindi/.test(msg)?"silindi":"kaydedildi");
     }
     var gecmisOnay=false;
     if(gecmisVar){
@@ -6174,7 +6189,7 @@
       if(!f) return uyari("Gecelik fiyat girin.");
       if(gecmisVar && !gecmisOnay){
         document.getElementById("fp-uygula").classList.add("hide");
-        var gk=document.getElementById("fp-gecmis"); gk.classList.remove("hide"); titret("uyari");
+        var gk=document.getElementById("fp-gecmis"); gk.classList.remove("hide"); titret("hata");
         try{ gk.scrollIntoView({block:"nearest",behavior:"smooth"}); }catch(e){}
         return;
       }
@@ -6360,7 +6375,7 @@
         bt.onclick=function(){
           var k=bt.dataset.ut, inp=document.getElementById("f-u-"+k);
           if(inp){ U[k]=sayi(inp.value); try{ inp.blur(); }catch(x){} }
-          acik[k]=false; titret("hafif"); kartCiz(); kalanYaz();
+          acik[k]=false; kartCiz(); kalanYaz();
         };
       });
       Array.prototype.forEach.call(el.querySelectorAll(".ucAlan input"),function(inp){
@@ -6408,7 +6423,7 @@
         try{ od.blur(); }catch(x){}
         if(!sayi(od.value)) return;
         document.getElementById("f-kaporaDeger").textContent=para(sayi(od.value));
-        kpGir.classList.add("hide"); kpOzet.classList.remove("hide"); titret("hafif"); kalanYaz();
+        kpGir.classList.add("hide"); kpOzet.classList.remove("hide"); kalanYaz();
         rhBildir("kapora:tamam");
       };
       document.getElementById("f-kaporaTamam").onclick=kaporaTamam;
@@ -6428,7 +6443,7 @@
     rehberAc("rez",REHBER.rez);
     btn.onclick=function(){
       if(!isim.value.trim()){
-        isim.parentNode.classList.add("hata"); isimHata.classList.remove("hide"); isim.focus(); titret("uyari"); return; }
+        isim.parentNode.classList.add("hata"); isimHata.classList.remove("hide"); isim.focus(); titret("eksik"); return; }
       var yeni={ id:uid(), start:t.start, end:t.end, color:t.color,
         guest:isim.value.trim(),
         people:document.getElementById("f-people").value||"",
@@ -6554,7 +6569,7 @@
     btn.onclick=function(){
       if(!emin){ emin=true; document.getElementById("d-iptalYazi").textContent=cev("Evet, rezervasyonu iptal et");
         btn.classList.add("emin"); return; }
-      titret("sil");
+      titret("iptal");
       var v=aktif(), yer=v.rez.indexOf(r);
       v.rez=v.rez.filter(function(x){return x.id!==r.id});
       kaydet(); kapat(); ciz(); olc("rez_sil");
@@ -6716,12 +6731,12 @@
     tm.onclick=function(){ inp.value=binlik(kl); secim(); hata.textContent=""; };
     btn.onclick=function(){
       t=sayi(inp.value);
-      if(!t){ hata.textContent=cev("Alınan tutarı girin."); titret("uyari"); inp.focus(); return; }
+      if(!t){ hata.textContent=cev("Alınan tutarı girin."); titret("eksik"); inp.focus(); return; }
       var yazi=btn.textContent; btn.disabled=true; btn.textContent=cev("Kaydediliyor…");
       odemeKaydet(v,r,t).then(function(){
         ciz(); if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
         if(!sor){ kapat(); rhBildir("kaydedildi:odeme"); tamam(cev(para(t)+" ödeme kaydedildi")); return; }
-        titret("hafif");
+        titret("odeme");
         document.getElementById("ak-alindi").innerHTML=ikon("tik",{boy:18,kalinlik:2.5})+"<span>"+esc(cev(para(t)+" alındı"))+"</span>";
         document.getElementById("ak-ic").classList.add("ikinci");
         kademeOyna(Array.prototype.filter.call(document.getElementById("ak-s2").children,function(x){ return x.offsetHeight>0; }));
@@ -6731,7 +6746,7 @@
         try{ inp.blur(); }catch(x){}
       },function(e){
         btn.disabled=false; btn.textContent=yazi;
-        hata.textContent=odemeHata(e); titret("uyari");
+        hata.textContent=odemeHata(e); titret("hata");
       });
     };
     document.getElementById("ak-evet").onclick=function(){ kapat(); rhBildir("kaydedildi:odeme",{basari:"Misafir yerleştirildi"}); yerlestir(v,r,t); };
@@ -6917,7 +6932,7 @@
         tazele(); tamam(cev("Ödeme güncellendi"));
       };
       document.getElementById("os-sil").onclick=function(){
-        titret("sil");
+        titret("silindi");
         // 26.6: silinen ödeme 5 saniye içinde "Geri al" ile döner (eskiden onaysız ve geri dönüşsüz siliniyordu)
         var yeri=r.odemeler.indexOf(o);
         var tazele=function(){
@@ -7184,7 +7199,7 @@
     sw.className="svic"+(ac?" on":""); sw.setAttribute("aria-checked",String(ac));
   }
   document.getElementById("yardimSatir").onclick=function(){
-    titret("hafif");
+    
     var ac=!Rehber.modAcik(); Rehber.modAyarla(ac); yardimCiz();
     bildir(cev(ac?"Yardımlı mod açıldı":"Yardımlı mod kapatıldı. Panellerdeki ? ile yine yardım alabilirsiniz."));
   };
@@ -7212,13 +7227,13 @@
   }
   document.getElementById("olcumSatir").onclick=function(){
     if(!(window.VT && VT.olcumAyarla)) return;
-    VT.olcumAyarla(!VT.olcumAcik()); titret("hafif"); olcumCiz();
+    VT.olcumAyarla(!VT.olcumAcik()); olcumCiz();
   };
   document.getElementById("hs-titresim").onclick=function(){
     var acik=store.get(TITRESIM)!=="kapali";
     store.set(TITRESIM,acik?"kapali":"acik");
     this.className="svic"+(acik?"":" on");
-    if(!acik) titret("basari");
+    
   };
   // ================= 26.7 YAZI BOYUTU =================
   // Normal 100 % · Büyük 112,5 % · Çok büyük 125 %: kök yazı boyutu; uygulamanın yazıları ve boşlukları rem olduğu için hepsi
@@ -7236,7 +7251,7 @@
   yaziUygula(yaziAl(),false);
   document.getElementById("hs-yazi").addEventListener("click",function(e){
     var b=e.target.closest("[data-y]"); if(!b) return;
-    titret("hafif"); yaziUygula(b.dataset.y,true); olc("yazi_boyutu",{deger:b.dataset.y});
+    titret("secim"); yaziUygula(b.dataset.y,true); olc("yazi_boyutu",{deger:b.dataset.y});
   });
   // iPhone'un sistem yazı boyutu büyükse (Ayarlar → Ekran → Metin Boyutu) ilk açılışta bir kez "Büyük" önerilir
   function yaziOner(){
@@ -7803,7 +7818,7 @@
       }).catch(function(e){
         olc("pro_satin_al",{sonuc:"hata"});
         if(!document.getElementById("pro-al")) return;
-        al.disabled=false; gr.disabled=false; al.textContent=eski; proHata(M.hataMetni(e)); titret("uyari");
+        al.disabled=false; gr.disabled=false; al.textContent=eski; proHata(M.hataMetni(e)); titret("hata");
       });
     };
     gr.onclick=function(){
@@ -8041,7 +8056,7 @@
       var b=this, h=document.getElementById("mfa-hata"); b.disabled=true; h.classList.add("hide");
       VT.mfaDogrula(k.id, document.getElementById("mfa-kod").value).then(function(){
         kapat(); mfaDurumYaz(); tamam(cev("İki adımlı doğrulama açıldı"));
-      }).catch(function(e){ b.disabled=false; h.textContent=e.message; h.classList.remove("hide"); titret("uyari"); });
+      }).catch(function(e){ b.disabled=false; h.textContent=e.message; h.classList.remove("hide"); titret("hata"); });
     };
   }
   // girişte / açılışta: yöneticinin doğrulanmış faktörü varsa ve oturum aal1 ise kod sorulur. Vazgeçen çıkış yapar.
@@ -8063,7 +8078,7 @@
       var b=this, h=document.getElementById("mk-hata"); b.disabled=true; h.classList.add("hide");
       VT.mfaDogrula(f.id, document.getElementById("mk-kod").value).then(function(){
         MFA_SORULUYOR=false; kapat(); tamam(cev("Doğrulandı"));
-      }).catch(function(e){ b.disabled=false; h.textContent=e.message; h.classList.remove("hide"); titret("uyari"); });
+      }).catch(function(e){ b.disabled=false; h.textContent=e.message; h.classList.remove("hide"); titret("hata"); });
     };
     document.getElementById("mk-cikis").onclick=function(){ MFA_SORULUYOR=false; kapat(true); cikisYap(); };
   }
@@ -8506,7 +8521,7 @@
     if(!aktif()) return;
     // 26.6: boş durumdaki "Rezervasyon ekle": villa ekranına dön, rezervasyonu başlat (Takvim'deki "+ Rezervasyon" ile aynı)
     if(e.target.closest("#misRezEkle")){
-      titret("hafif"); goster("takvim"); ciz();
+      goster("takvim"); ciz();
       requestAnimationFrame(function(){ var r=document.querySelector('#villaHap [data-is="rez"]'); if(r) r.click(); });
       return;
     }
@@ -9182,7 +9197,7 @@
     document.getElementById("hd-vaz").onclick=kapat;
     document.getElementById("hd-duz").onclick=function(){ kapat(); hareketSheet(tip,g,sonra); };
     document.getElementById("hd-sil").onclick=function(){
-      titret("sil");
+      titret("silindi");
       // 26.6: silinen kayıt 5 saniye içinde "Geri al" ile döner (eskiden onaysız ve geri dönüşsüz siliniyordu)
       var alan=tip==="gelir"?"gelirler":"giderler", l0=(v[alan]||[]), yeri=l0.indexOf(g);
       v[alan]=l0.filter(function(x){return x.id!==g.id});
@@ -9631,7 +9646,7 @@
             shBagla(7); return;
           }
           v.paylasim.imza=icerikImza(v); kaydet();
-          titret("basari");
+          titret("kaydedildi");
           $("sh-sayfaAlan").innerHTML=shSayfaHazir();
           parlat($("sh-sayfaAlan").firstChild);
           tamamBagla();
@@ -9656,7 +9671,7 @@
   document.getElementById("shIleri").onclick=function(){
     if(SH.adim===1){
       var ad=document.getElementById("sh-ad");
-      if(ad && !ad.value.trim()){ ad.parentNode.classList.add("hata"); ad.focus(); titret("uyari"); return; }
+      if(ad && !ad.value.trim()){ ad.parentNode.classList.add("hata"); ad.focus(); titret("eksik"); return; }
     }
     if(SH.adim===4) shFiyatUygula();
     SH.adim++; SH.yon=1; shKaydet(); shCiz();
@@ -9749,7 +9764,7 @@
       '<button class="big ghost" data-kapat style="margin-top:1.25rem">'+esc(cev("Vazgeç"))+"</button>"+
       '<button class="big tehlike" data-ik="cop" id="fts-evet" style="margin-top:2rem">'+esc(cev("Evet, sil"))+"</button>");
     document.getElementById("fts-evet").onclick=function(){
-      titret("sil");
+      titret("silindi");
       // 26.6: silinen fotoğraflar 5 saniye içinde "Geri al" ile aynı sıraya döner
       var once=(v.fotolar||[]).slice();
       v.fotolar=once.filter(function(f){ return !FT.sec[f.id]; });
@@ -9992,7 +10007,7 @@
         };
         o.querySelector("#gSil").onclick=function(){
           if(!emin){ emin=true; etiket(); return; }
-          titret("sil");
+          titret("silindi");
           v.fotolar.splice(i,1); emin=false;
           kaydet(); fotoYenile(); bildir(cev("Fotoğraf silindi.")); ciz2();
         };
@@ -10711,7 +10726,7 @@
     });
     surukleSirala(kutu,".kuralSatir",".kuralTut",function(sira){
       var yeni=sira.map(function(i){ return b[alanAd][i]; });
-      if(yeni.join("\n")!==b[alanAd].join("\n")){ b[alanAd]=yeni; titret("basari"); }
+      if(yeni.join("\n")!==b[alanAd].join("\n")){ b[alanAd]=yeni; titret("oturdu"); }
       ciz();
     });
     ciz();
@@ -11041,11 +11056,11 @@
       var a=document.getElementById("b-enAzBas").value, z=document.getElementById("b-enAzBit").value, n=sayi(document.getElementById("b-enAzGece").value);
       var hata=document.getElementById("b-enAzHata");
       var m=(!a||!z||!(n>0)) ? "Dönem başı, dönem sonu ve gece sayısını girin." : (z<a ? "Dönem sonu, dönem başından önce olamaz." : "");
-      if(m){ hata.textContent=cev(m); hata.classList.remove("hide"); titret("uyari"); return; }
+      if(m){ hata.textContent=cev(m); hata.classList.remove("hide"); titret("hata"); return; }
       hata.classList.add("hide");
       b.enAzDonem.push({bas:a, bit:z, gece:n});
       b.enAzDonem.sort(function(x,y){ return x.bas<y.bas?-1:1; });
-      enAzCiz(); titret("hafif");
+      enAzCiz(); titret("kaydedildi");
       ["b-enAzBas","b-enAzBit","b-enAzGece"].forEach(function(id){ var el=document.getElementById(id); el.value=""; el.dispatchEvent(new Event("input",{bubbles:true})); });
       document.getElementById("b-enAzYeni").classList.add("hide"); document.getElementById("b-enAzEkle").classList.remove("hide");
     };
@@ -11138,7 +11153,7 @@
     surukleSirala(odaKutu,".odaKart",".kuralTut",function(sira){
       var yeni=sira.map(function(i){ return b.odaListe[i]; });
       var degisti=yeni.some(function(x,j){ return x!==b.odaListe[j]; });
-      b.odaListe=yeni; if(degisti) titret("basari"); odaCiz();
+      b.odaListe=yeni; if(degisti) titret("oturdu"); odaCiz();
     });
     document.getElementById("b-odaEkle").onclick=function(){
       var ilk=!b.odaListe.length;
@@ -11237,7 +11252,7 @@
       if(!v.bilgi.iptal) delete v.bilgi.iptal;
       if(v.bilgi.havuz){ delete v.bilgi.havuzBoyut; delete v.bilgi.havuzDerinlik; }
       kapat(); ciz(); kaydet();
-      if(konumYok){ titret("uyari"); bildir(cev("Kaydedildi. Harita için konum bulunamadı.")); }
+      if(konumYok){ titret("hata"); bildir(cev("Kaydedildi. Harita için konum bulunamadı.")); }
       else tamam(cev("Villa bilgileri kaydedildi"));
     };
     rhSoru(REHBER.bilgi);   // 26.6
@@ -11697,7 +11712,7 @@
   // Tarayıcının alert() kutusu yerine uygulamanın kendi paneli.
   // Açık bir formun üstüne ayrı katman olarak açılır, formu kapatmaz.
   function uyari(metin){
-    titret("uyari");
+    titret("hata");
     var o=document.createElement("div");
     o.className="overlay";
     o.innerHTML='<div class="sheet"><p style="margin:0 0 1.25rem;font-size:1rem;line-height:1.5"></p>'+
