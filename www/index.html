@@ -75,6 +75,8 @@
     --iskelet-parlama:1600ms;     /* iskelette dolaşan yavaş parlama (doğrusal) */
     --iskelet-zemin:#ECEFED;
     --iskelet-isik:#F7F9F8;
+    --cek-hiz-esigi:.11;          /* 31.12: aşağı çekme hızı (px/ms) bunu geçerse mesafe yetmese de panel kapanır */
+    --cek-mesafe:90px;            /* aşağı çekme mesafesi eşiği */
     --hiz-titreme:300ms;          /* 31.9: hatalı alan 2 kez hafifçe titrer (±4 pt) */
     --titreme-mesafe:4px;
     --hiz-tik:350ms;              /* 31.6: bildirimdeki tik çizilerek gelir (stroke-dashoffset), ardından başarı titreşimi */
@@ -796,7 +798,9 @@
   /* 31.1: panel 340 ms --egri-cekmece ile açılır, 220 ms --egri-gecis ile kapanır; kararma 240 / 200 ms, yalnız saydamlık */
   .overlay:not(.gorucu):not(.anlik){animation:perdeKarar var(--hiz-karar-ac) var(--egri-giris)}
   .overlay > .sheet{animation:perdeAc var(--hiz-ac) var(--egri-cekmece)}
-  .overlay.kapaniyor, .overlay.kapaniyor:not(.gorucu):not(.anlik){animation:perdeAydin var(--hiz-karar-kapa) var(--egri-gecis) forwards; pointer-events:none}
+  .overlay.kapaniyor, .overlay.kapaniyor:not(.gorucu):not(.anlik){animation:perdeAydin var(--hiz-karar-kapa) var(--egri-gecis) forwards}
+  /* 31.12: kapanmakta olan panele dokunulunca kapanış durur, panel olduğu yerden geri açılır (animasyonu JS sürer) */
+  .overlay.geriAciliyor, .overlay.geriAciliyor > .sheet{animation:none !important}
   .overlay.kapaniyor > .sheet{animation:perdeKapa var(--hiz-kapa) var(--egri-gecis) forwards}
   @keyframes perdeKarar{from{background-color:rgba(16,22,19,0)}}
   @keyframes perdeAydin{to{background-color:rgba(16,22,19,0)}}
@@ -814,7 +818,7 @@
   .bildirim{opacity:0; translate:0 8px;
     transition:opacity var(--hiz-bildir-git) var(--egri-gecis), translate var(--hiz-bildir-git) var(--egri-gecis)}
   .bildirim.gorunur{opacity:1; translate:0 0; transition-duration:var(--hiz-bildir-gel); transition-timing-function:var(--egri-giris)}
-  .bildirim.gidiyor{opacity:0; translate:0 0; pointer-events:none}
+  .bildirim.gidiyor{opacity:0; translate:0 0}
   /* 9.3 değişen önemli rakam / 9.6 yeni satır: bir kez açık yeşil */
   .parla{animation:parla var(--hiz-parla) var(--egri-giris)}
   @keyframes parla{0%,40%{background-color:#D5EBE4}100%{background-color:transparent}}
@@ -11933,8 +11937,9 @@
     var sh=o.firstChild;
     // Tek kapatma yolu: sağ üstteki X. Başlığında X olmayan panellere de eklenir.
     if(altKapat!==false && !sh.querySelector(".x")) sh.insertAdjacentHTML("afterbegin",kapatBtn());
-    o.addEventListener("click",function(e){ if(e.target.closest("[data-kapat]")) kapat(); });
-    o.addEventListener("click",function(e){ if(e.target===o && !o.classList.contains("mfaZorunlu")) kapat(); });   // 29.6: zorunlu panel dışa dokununca kapanmaz
+    o.addEventListener("click",function(e){ if(o.classList.contains("kapaniyor")) return; if(e.target.closest("[data-kapat]")) kapat(); });
+    o.addEventListener("click",function(e){ if(o.classList.contains("kapaniyor")) return; if(e.target===o && !o.classList.contains("mfaZorunlu")) kapat(); });
+    o.addEventListener("pointerdown",function(e){ if(o.classList.contains("kapaniyor") && e.target.closest && e.target.closest(".sheet")) geriAc(o); },true);   // 29.6: zorunlu panel dışa dokununca kapanmaz
     document.body.appendChild(o);
     kilitDenetle();
     var x=o.querySelector(".x");
@@ -11944,32 +11949,59 @@
     return o;
   }
   // Panelin üst kısmından (tutamaç / başlık) aşağı çekince kapanır.
+  // 31.12: hız eşiği: parmak 0,11 px/ms'den hızlı aşağı gidiyorsa mesafe yetmese de kapanır. Yukarı çekince lastik etkisi:
+  // panel parmağı izler ama mesafe uzadıkça daha az gider (iOS gibi), bırakınca yerine döner.
+  function lastik(x,boy){ return (1-1/((x*0.55/boy)+1))*boy; }
   function asagiCekKapat(o,sh){
-    var y0=null, dy=0;
+    var y0=null, dy=0, iz=[];
     sh.addEventListener("touchstart",function(e){
       if(o.classList.contains("mfaZorunlu") || o.scrollTop>0 || e.touches.length!==1) return;   // 29.6: zorunlu panel aşağı çekilip kapanmaz
+      if(o.classList.contains("kapaniyor")) return;
       var ust=sh.getBoundingClientRect().top;
       if(e.touches[0].clientY-ust>72 || e.target.closest("input,textarea,select")) return;
-      y0=e.touches[0].clientY; dy=0; sh.classList.add("cekiliyor");
+      y0=e.touches[0].clientY; dy=0; iz=[{y:y0,t:e.timeStamp||performance.now()}]; sh.classList.add("cekiliyor");
     },{passive:true});
     sh.addEventListener("touchmove",function(e){
       if(y0===null) return;
-      dy=Math.max(0,e.touches[0].clientY-y0);
-      sh.style.transform="translateY("+dy+"px)";
+      var y=e.touches[0].clientY, ham=y-y0;
+      iz.push({y:y,t:e.timeStamp||performance.now()}); if(iz.length>6) iz.shift();
+      dy=ham;
+      var g=ham>=0 ? ham : -lastik(-ham,window.innerHeight);
+      sh.style.transform="translateY("+g+"px)";
     },{passive:true});
-    sh.addEventListener("touchend",function(){
+    var birak=function(){
       if(y0===null) return;
       y0=null; sh.classList.remove("cekiliyor");
-      if(dy>90){ if(o.parentNode) kapatOverlay(o); }
+      // son ~100 ms'deki hız (px/ms, aşağı +)
+      var son=iz[iz.length-1], ilk=iz[0], hz0=0;
+      for(var i=iz.length-1;i>=0;i--){ if(son.t-iz[i].t<=100) ilk=iz[i]; else break; }
+      if(son && ilk && son.t>ilk.t) hz0=(son.y-ilk.y)/(son.t-ilk.t);
+      if(dy>hiz("--cek-mesafe") || (dy>8 && hz0>hiz("--cek-hiz-esigi"))){ if(o.parentNode) kapatOverlay(o); }
       else sh.style.transform="";
-    });
+    };
+    sh.addEventListener("touchend",birak);
+    sh.addEventListener("touchcancel",birak);
   }
   // Paneli kapat: aşağı kayar, arka plan açılır (--hiz-kapa). anlik=true ise hemen kaldırır.
   function kapatOverlay(o,anlik){
     if(!o || o.classList.contains("kapaniyor")) return;
     if(anlik || azHareket()){ o.remove(); kilitDenetle(); return; }
+    o.classList.remove("geriAciliyor");
     o.classList.add("kapaniyor"); kilitDenetle();
-    setTimeout(function(){ if(o.parentNode) o.remove(); },Math.max(hiz("kapa"),hiz("karar-kapa"))+10);
+    clearTimeout(o._kapaT);
+    o._kapaT=setTimeout(function(){ if(o.parentNode && o.classList.contains("kapaniyor")) o.remove(); },Math.max(hiz("kapa"),hiz("karar-kapa"))+10);
+  }
+  // 31.12: kapanmakta olan panel, olduğu yerden (yarıda) geri açılır: kapanış durur, panel çekmece eğrisiyle yerine döner
+  function geriAc(o){
+    if(!o || !o.classList.contains("kapaniyor")) return;
+    clearTimeout(o._kapaT);
+    var sh=o.querySelector(".sheet"), cs=sh?getComputedStyle(sh):null, tr=cs?cs.transform:"none", op=cs?cs.opacity:"1", bg=getComputedStyle(o).backgroundColor;
+    o.classList.remove("kapaniyor"); o.classList.add("geriAciliyor"); kilitDenetle();
+    if(sh) sh.style.transform="";   // aşağı çekilerek kapandıysa parmağın bıraktığı yer silinir
+    try{
+      if(sh) sh.animate([{transform:tr==="none"?"translateY(0)":tr, opacity:op},{transform:"translateY(0)", opacity:1}],{duration:hiz("ac"), easing:egriAl("cekmece")});
+      o.animate([{backgroundColor:bg},{backgroundColor:"rgba(16,22,19,.4)"}],{duration:hiz("karar-ac"), easing:egriAl("giris")});
+    }catch(e){}
   }
   function kapat(anlik){
     var l=document.querySelectorAll(".overlay:not(.kapaniyor)");

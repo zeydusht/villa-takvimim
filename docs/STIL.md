@@ -201,6 +201,13 @@ Dört tür (`.big`):
 - "Hareketi azalt" açıksa animasyon yoktur.
 - Açılış animasyonu (`acilis.js`) değiştirilmez.
 
+**Mekânsal tutarlılık ve kesilebilirlik (Görev 31.12):**
+- İleri giden ekran sağdan gelir, geri dönen sola gider. Alttan açılan panel aşağı kaydırılarak kapanır.
+- Aşağı çekme: mesafe 90 pt'yi (`--cek-mesafe`) geçerse ya da parmak hızı 0,11 px/ms'yi (`--cek-hiz-esigi`) geçerse kapanır.
+- Panelin üst sınırından yukarı çekilirse lastik etkisi: panel parmağı izler ama mesafe uzadıkça daha az gider; bırakınca yerine döner.
+- Hiçbir animasyon sırasında `pointer-events:none` kalmaz. Kapanmakta olan panele dokunulursa kapanış durur, panel olduğu yerden
+  çekmece eğrisiyle geri açılır (`geriAc`).
+
 **Titreşim dili (Görev 31.4):**
 - Yalnız iOS / Android uygulamasında ve Hesap → Titreşim açıksa.
 - Kod olayın adını verir (`titret("kaydedildi")`); türü tek eşleme tablosundan (`TITRESIM_DILI`) gelir. Tabloda olmayan
