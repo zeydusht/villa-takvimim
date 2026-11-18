@@ -79,3 +79,13 @@ _Özet en sonda tamamlanacak._
   Neden: Apple incelemecisi sandbox ile satın alır; işlenmezse Pro açılmaz ve uygulama reddedilir.
 - Karar: İşlenmeyen olaylar (TEST, TRANSFER, başka mağaza) ve silinmiş kullanıcı 200 alır; yalnız geçici yazma hatası 500 döner (RevenueCat tekrar dener).
 - Test: `docs/qa/gorev30/webhook/test.mjs` (Deno ve veritabanı taklit edilerek 21 durum). `node docs/qa/gorev30/webhook/test.mjs` ile çalışır.
+
+### 3) App Store metinleri
+- Karar: Bu sürümün açıklamasında Pro / abonelikten söz edilmedi.
+  Neden: abonelik kapalı ve RevenueCat anahtarları boş; olmayan bir satın almayı anlatmak Apple incelemesinde sorun çıkarır. Abonelik açılınca eklenecekler `docs/APPSTORE.md`'de.
+- Karar: App Privacy cevapları `PrivacyInfo.xcprivacy` ile bire bir aynı (7 veri türü, hepsi kimliğe bağlı, izleme yok). "Satın alımlar" bu sürümde yok; abonelik açılırken hem manifeste hem etikete eklenmeli.
+- Karar: Anahtar kelimelerde uygulama adındaki "villa" ve "takvim" tekrarlanmadı, başka marka adı kullanılmadı.
+- Karar: Destek adresi olarak şimdilik `kosullar.html` (iletişim bölümü var) önerildi. Netlify'a yüklenene kadar açılmaz.
+- Karar: Ekran görüntüleri: koyu yeşil zemin, üstte serif başlık, altta telefon çerçevesinde uygulamanın gerçek ekranı. 6 ekran × 2 dil, 1320 × 2868.
+- Bulunan hata: İngilizcede "Bugün ve yarın" listesindeki "Yarın 16:00 · … giriş yapacak" satırları Türkçe kalıyordu. Çevirisi eklendi (kalite turu commit'inde).
+- Not: Uygulama içinde ad "Villa Takvim", mağazada "Villa Takvimim". Değiştirmedim, Zeyd'e soruldu.
