@@ -865,6 +865,7 @@
     "Aboneliği başlat":"Start subscription",
     "Bekleyin…":"Please wait…",
     "Gizlilik metnini açın":"Open the privacy notice",
+    "Nasıl?":"How?",
     "İnternet bağlantınızı kontrol edip tekrar deneyin.":"Check your internet connection and try again.",
     "Yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Could not load. Check your internet connection and try again.",
     "İşlem yapılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Could not complete. Check your internet connection and try again.",

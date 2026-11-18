@@ -47,23 +47,26 @@ Kullanıcı yaşlı bir villa sahibi. Her karar "daha sade, daha net" yönünde 
 ## 2. Yazı
 
 - **Aileler:** başlıklar `--serif` (ui-serif, Georgia), metin `--sans` (sistem yazısı).
-- **Birim:** bütün yazı boyutları ve boşluklar `rem`. Piksel kullanılmaz; Hesap → Görünüm'deki yazı boyutu ayarı kökü ölçekler:
-  - Normal %100 = 16 px;
-  - Büyük %112,5;
-  - Çok büyük %125.
+- **Birim:** bütün yazı boyutları ve boşluklar `rem`. Piksel kullanılmaz; Hesap → Görünüm'deki yazı boyutu ayarı kökü ölçekler
+  (Görev 31.10, `--yazi-kok`):
+  - Normal %106,25 = **17 px** (iOS'un varsayılan gövde boyutu);
+  - Büyük %119,5 (≈ 19 px);
+  - Çok büyük %132,8 (≈ 21 px).
+- **Satır yüksekliği:** gövdede 1.45 (`--satir-govde`), başlıklarda 1.2 (`--satir-baslik`).
+- **Serif başlıklarda** harf aralığı `-.01em` (`--harf-serif`).
 - **Kalın yazı yok.** Tek istisna: takvim seçim panelinin yeşil başlığı ve büyük toplamı (600, Görev 20.5).
 
 | Kullanım | Boyut | Normal boyutta |
 |---|---|---|
-| Ekran başlığı (`h1`) | 2.25rem serif (iç ekranlarda 1.875rem) | 36 / 30 px |
-| Panel başlığı (`.sheet h2/h3`) | 1.5rem serif | 24 px |
-| Bölüm başlığı (`.eyebrow`) | 1.1875rem serif | 19 px |
-| Büyük tutar | 1.875–2.25rem | 30–36 px |
-| Gövde | 1rem | 16 px |
-| Satır, düğme | .9375–1rem | 15–16 px |
-| İkincil (`.sm`, alt yazı) | .875rem | 14 px |
-| **En küçük** (etiket, rozet, alt menü, takvim gün adları) | .8125rem | **13 px** |
-| İstisna: takvim hücresi içi (fiyat, baş harf) | .6875rem, fiyatta `clamp(11px, .6875rem, 3.1vw)` | 11 px (hücre 46–60 pt) |
+| Ekran başlığı (`h1`) | 2.25rem serif (iç ekranlarda 1.875rem) | 38 / 32 px |
+| Panel başlığı (`.sheet h2/h3`) | 1.5rem serif | 25,5 px |
+| Bölüm başlığı (`.eyebrow`) | 1.1875rem serif | 20 px |
+| Büyük tutar | 1.875–2.25rem | 32–38 px |
+| Gövde | 1rem | **17 px** |
+| Satır, düğme | .9375–1rem | 16–17 px |
+| İkincil (`.sm`, alt yazı) | .875rem | 15 px |
+| **En küçük** (etiket, rozet, alt menü, takvim gün adları) | .8235rem | **14 px** |
+| İstisna: takvim hücresi içi (fiyat, baş harf), fiyat ızgarası, takvim açıklaması | .6875rem, fiyatta `clamp(11px, .6875rem, 3.1vw)` | 11–12 px (hücre 46–60 pt) |
 
 - **Rakamlar** (Görev 31.5): uygulamada ve misafir sayfasında bütün yazıda `font-variant-numeric: tabular-nums`; para, tarih, kişi ve
   gece sayısı değişince yazı zıplamaz.
@@ -105,6 +108,12 @@ Dört tür (`.big`):
   - Kalıcı ve geri alınamayan işlemler (hesap silme) yalnız onaylı yapılır.
 
 ## 4. İkonlar
+
+- **Tek başına ikon yok** (Görev 31.10): anlam taşıyan her ikonun yanında yazı olur ("✕ Kapat", "? Nasıl?", "✕ Şimdi değil").
+  İstisnalar: üst çubuktaki geri oku; ayın / dönemin yanındaki ‹ › okları ve kişi sayısındaki − / + (bağlamıyla anlaşılır yön ve
+  adım işaretleri; erişilebilirlik etiketleri var).
+- **Yardım:** yalnız "?" değil, "? Nasıl?" yazan hap (`rhSoru`). Panelde başlığın altında kendi satırında; dar başlık satırında
+  (ekran başlığı yanında) yalnız "?" kalabilir. Erişilebilirlik etiketi "Yardım".
 
 - Yalnız `ikon(ad, {boy, kalinlik})` kullanılır: Lucide çizgi ikonları, `class="ik"`.
 - Boyut 16–24, çizgi 1.75–2.
