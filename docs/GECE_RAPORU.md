@@ -23,3 +23,20 @@ _Özet en sonda tamamlanacak._
   Neden: mağaza bağlantısı RevenueCat üzerinden; KVKK aydınlatması eksik kalmasın.
 - Karar: Ölçüme `pro_goster` olayı eklendi (verisiz).
   Neden: Pro ekranının kaç kez açıldığı ürün kararı için gerekli. İçinde fiyat ya da kişisel bilgi yok.
+
+### 30.2 Mağaza bağlantısı
+- Karar: `@revenuecat/purchases-capacitor` 14.1.0 sürümüne sabitlendi (en yenisi 14.1.1 iki gün önce çıkmıştı).
+  Neden: yeni çıkan sürüm yerine iki haftadır kullanılan sürüm daha güvenli. Capacitor 8 ile uyumlu.
+- Karar: Mağaza kodu ayrı dosyada (`www/magaza.js`). Web'de, anahtar boşken ya da eklenti yokken hiçbir mağaza çağrısı yapılmaz; Pro ekranı "Yakında" der.
+  Neden: görevdeki "anahtar boşsa ya da web ise çökmesin" kuralı; kodun tamamı tek yerde.
+- Karar: Mağaza oturumu açılışta Supabase kullanıcı id'siyle açılır (`appUserID`). Başka hesapla girilince `logIn`, çıkışta `logOut`.
+  Neden: yenilemeler ve bekleyen satın almalar doğru hesaba bağlansın. RevenueCat'e ad ya da e-posta gitmez.
+- Karar: Ürün `plan_ayarlari.urun_aylik` ile seçilir. Yoksa mağazadaki "aylık" paket kullanılır.
+  Neden: ürün kimliği değişirse uygulamayı güncellemeden sunucudan değiştirilebilsin.
+- Karar: iOS'ta deneme hakkı daha önce kullanılmışsa "İlk ay ücretsiz" gizlenir; düğme "Aboneliği başlat" olur.
+  Neden: hakkı olmayan kişiye "ücretsiz" demek yanıltıcı olur ve Apple incelemesinde reddedilir.
+- Karar: Satın alma sonrası `abonelik_durumum()` 12 saniye boyunca 2 saniyede bir yeniden çekilir. Gelmezse "Üyeliğiniz birkaç dakika içinde açılacak" denir.
+  Neden: abonelik sunucuya mağaza bildirimiyle (webhook) birkaç saniye sonra yazılır.
+- Karar: Pro olunca yarım kalan "villa ekle" kendiliğinden açılır.
+  Neden: kullanıcı Pro ekranına 4. villayı eklerken gelmişti.
+- Karar: Ölçüme `pro_satin_al` ve `pro_geri_yukle` olayları eklendi; yalnız sonuç gider (tamam / iptal / hata / yok). Fiyat gitmez.

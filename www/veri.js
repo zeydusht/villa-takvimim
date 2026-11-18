@@ -346,6 +346,14 @@
   VT.sonGorulmeler = function () { return VT.rpc("son_gorulmeler"); };
   VT.kullaniciEtkinlik = function (id) { return VT.rpc("kullanici_etkinlik_gor", { p_id: id }); };   // bakış destek_kayitlari'na yazılır
 
+  // ---------------- Görev 30: abonelik (sunucu: VERITABANI_GOREV30.sql; yoksa çağıran sessizce gizler) ----------------
+  VT.abonelikDurumum = function () { return VT.rpc("abonelik_durumum"); };
+  VT.planAyarlari = function () {
+    return api("plan_ayarlari?select=anahtar,deger").then(function (l) {
+      var o = {}; (Array.isArray(l) ? l : []).forEach(function (x) { if (x && x.anahtar) o[x.anahtar] = x.deger; }); return o;
+    });
+  };
+
   // ---------------- villaları yükle ----------------
   function say(x) { var n = parseInt(x, 10); return isNaN(n) ? 0 : n; }
   // Çıkışta depozito iadesi (rezervasyon_mali.depozito_durum / _kesilen / _not / _islem_tarih)

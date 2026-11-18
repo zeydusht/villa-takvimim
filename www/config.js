@@ -11,6 +11,10 @@ window.VILLA_CONFIG = {
   // Uygulama sürümü (Görev 29: tek yer). Ölçüm olaylarında "surum" olarak gider; App Store sürümüyle (MARKETING_VERSION) aynı tutulur.
   surum:       "1.0.0",
 
+  // Görev 30.2: RevenueCat herkese açık SDK anahtarları (App Store / Google Play). Boşken satın alma düğmesi "Yakında" der.
+  RC_IOS_KEY:     "",
+  RC_ANDROID_KEY: "",
+
   // Bildirim açık anahtarı (gizli olan Supabase'de saklanır)
   pushAnahtar: "BJpATauLAOM0hZl3JBe8JclVT8_Fuvjxi9YkKSxguUSjAt4IzLyTf6vha5fK-k0fa_GMllpyRLKYJr--R_jp7I4"
 };

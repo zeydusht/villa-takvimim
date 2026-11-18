@@ -860,6 +860,20 @@
     "Yakında":"Coming soon",
     "Mağaza bağlantısı yakında açılacak.":"Store purchases will be available soon.",
     "Pro ekranını gördü":"Saw the Pro screen",
+    "Pro satın almayı denedi":"Tried to buy Pro",
+    "Satın alımları geri yükledi":"Restored purchases",
+    "Aboneliği başlat":"Start subscription",
+    "Bekleyin…":"Please wait…",
+    "Villa Takvimim Pro açıldı":"Villa Takvimim Pro is on",
+    "Satın alımlarınız geri yüklendi":"Your purchases have been restored",
+    "Bu mağaza hesabında geri yüklenecek bir abonelik bulunamadı.":"No subscription to restore was found for this store account.",
+    "Satın alma alındı. Üyeliğiniz birkaç dakika içinde açılacak; açılmazsa \"Satın alımları geri yükle\"ye dokunun.":
+      "Purchase received. Your membership will be on within a few minutes; if not, tap \"Restore purchases\".",
+    "Mağazaya bağlanılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.":"Could not reach the store. Check your internet connection and try again.",
+    "Bu cihazda satın alma kapalı ya da mağaza şu anda yanıt vermiyor.":"Purchases are turned off on this device or the store is not responding.",
+    "Bu abonelik zaten bu hesapta açık.":"This subscription is already active on this account.",
+    "Ödeme onay bekliyor. Onaylanınca üyeliğiniz açılır.":"The payment is awaiting approval. Your membership will turn on once it is approved.",
+    "Satın alma tamamlanamadı. Biraz sonra tekrar deneyin.":"The purchase could not be completed. Please try again later.",
     // Görev 27
     "Müşterinin istediği *giriş* gününe dokunun.":"Tap the *check-in* day the customer wants.",
     "Şimdi *çıkış* gününe dokunun.":"Now tap the *check-out* day.",
@@ -1193,6 +1207,8 @@
     [/^Çıkışta (.+) depozito iade edilir \(hasar yoksa\)\.$/,
       "$1 deposit is refunded at check-out (if there is no damage)."],
     // Görev 30
+    [/^Sonra aylık (.*\d.*)$/, "Then $1 per month"],
+    [/^Aylık (.*\d.*)$/, "$1 per month"],
     [/^Ücretsiz planda (\d+) villaya kadar ekleyebilirsiniz\. Daha fazla villa için Pro'ya geçin\.$/,
       "On the free plan you can add up to $1 villas. Switch to Pro for more villas."],
     // Görev 27
