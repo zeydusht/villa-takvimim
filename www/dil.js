@@ -1228,7 +1228,19 @@
     "Komisyon":"Commission",
     "Cirodaki payı":"Share of revenue",
     "Dokunun, misafir bilgisini ekleyin":"Tap to add the guest details",
-    "Misafir bilgisi girilmemiş. Ekleyince rezervasyon olarak sayılır; ödeme ve bakıcı takibine girer.":"Guest details are missing. Once added, it counts as a reservation and is tracked for payments and the caretaker."
+    "Misafir bilgisi girilmemiş. Ekleyince rezervasyon olarak sayılır; ödeme ve bakıcı takibine girer.":"Guest details are missing. Once added, it counts as a reservation and is tracked for payments and the caretaker.",
+    "Ajanda":"Agenda",
+    "Son geliş":"Latest visit",
+    "En çok gelen":"Most visits",
+    "En çok ödeyen":"Top paying",
+    "Ad ya da telefon":"Name or phone",
+    "Misafir ara":"Search guests",
+    "İlk kez":"First time",
+    "toplam ödeme":"total paid",
+    "Konaklamalar":"Stays",
+    "Misafir notları":"Guest notes",
+    "Aramaya uyan misafir yok.":"No guests match your search.",
+    "Henüz misafir yok. Rezervasyon girdikçe burada görünür.":"No guests yet. They appear here as you add reservations."
   };
 
   // ---------- kalıplı metinler ----------
@@ -1475,7 +1487,10 @@
     [/^Her satıra bir oda yazın\. Örn:/, "Write one room per line. For example:"],
     [/^Tarihler (.+?)'n?[dt][ae]ki satıştan$/, "Dates come from the $1 booking"],
     [/^(.+): (\d+) satış \(misafir bilgisi girilmemiş\)$/, "$1: $2 sales (guest details missing)"],
-    [/^(.+) satışları$/, "$1 sales"]
+    [/^(.+) satışları$/, "$1 sales"],
+    [/^(\d+) kez geldi$/, "Came $1 times"],
+    [/^Daha önce (\d+) kez geldi$/, "Stayed $1 times before"],
+    [/^(\d+)\. gelişi$/, "Visit no. $1"]
   ];
 
   function bosluksuz(t){ return String(t).replace(/\s+/g, " ").trim(); }

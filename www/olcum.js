@@ -29,7 +29,7 @@
     yazi_boyutu: { deger: ["normal", "buyuk", "cokbuyuk"] }, dil: { deger: ["tr", "en"] },
     bildirim_izni: { verildi: "b" },
     ilk_an: { tur: ["rez", "villa", "teklif"] },
-    kanal_raporu_ac: {},
+    kanal_raporu_ac: {}, misafirler_ac: {}, misafir_detay: {}, tekrar_misafir_goruldu: {},
     cakisma_acildi: {}, cakisma_cozuldu: { nasil: ["ayni_rez", "baska_villa", "dis_iptal", "biz_iptal", "diger"] },
     pro_goster: {}, pro_satin_al: { sonuc: ["tamam", "iptal", "hata"] }, pro_geri_yukle: { sonuc: ["tamam", "yok", "hata"] },
     hata: { tur: "hataTur", yer: "hataYer" }

@@ -1574,6 +1574,26 @@
   .kgSatir{display:flex; align-items:center; flex-wrap:wrap; gap:.5rem 1rem; padding-bottom:.75rem; border-bottom:1px solid var(--line)}
   .kgSatir > div{flex:1 1 8rem}
   .kgSatir .big{flex:1 1 12rem; margin:0}
+  /* 33.7 misafirler */
+  .ajUst{margin-top:.75rem}
+  .crmAraKutu{margin:1rem 0 .75rem}
+  .crmSatir{align-items:center}
+  .crmSatir > .crmMetin{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:.125rem; white-space:normal}
+  .crmAd{overflow-wrap:anywhere}
+  .crmKanallar{display:flex; flex-wrap:wrap; gap:.25rem; margin-top:.25rem}
+  .satirBtn .sag.crmPara{flex:none; max-width:none; font-variant-numeric:tabular-nums; color:var(--ink)}
+  .crmKonak{display:flex; flex-direction:column}
+  .crmKSatir{padding:.625rem 0; border-bottom:1px solid var(--line)}
+  .crmKSatir:last-child{border-bottom:0}
+  .crmKUst{display:flex; flex-wrap:wrap; gap:.25rem .75rem; align-items:baseline}
+  .crmKVilla{flex:1 1 8rem; min-width:0; overflow-wrap:anywhere}
+  .crmKTutar{flex:none; margin-left:auto; font-variant-numeric:tabular-nums}
+  .crmKAlt{display:flex; align-items:center; flex-wrap:wrap; gap:.375rem; margin-top:.25rem; color:var(--muted); font-size:.8823rem}
+  .crmNot{padding:.5rem 0; border-bottom:1px solid var(--line); line-height:1.45}
+  .tekrarYer{margin:-.5rem 0 1rem}
+  .tekrarHap{display:inline-flex; align-items:center; gap:.375rem; min-height:2.875rem; padding:0 .875rem; border-radius:99px;
+    border:1.5px solid #B9A6C4; background:#F3EFF6; color:#7A4B8C; font:inherit; font-size:.9375rem; cursor:pointer}
+  .tekrarHap:active{background:var(--basili-zemin)}
   .komListe{display:flex; flex-direction:column; gap:.5rem}
   .komSatir{display:flex; align-items:center; gap:.75rem; min-height:var(--dokunma-yukseklik)}
   .komAd{flex:1 1 auto; min-width:0; overflow-wrap:anywhere}
@@ -1977,6 +1997,11 @@
   <!-- TAKVİM SEKMESİ: tüm villaların yaklaşan giriş/çıkışları -->
   <div id="ajanda" class="hide sekmeEkran">
     <h1>Takvim</h1>
+    <!-- 33.7: iki parça: Ajanda (giriş / çıkışlar) | Misafirler (bütün villaların misafirleri) -->
+    <div class="seg ajUst" id="ajUst" role="tablist">
+      <button data-u="ajanda" role="tab">Ajanda</button><button data-u="misafir" role="tab">Misafirler</button>
+    </div>
+    <div id="ajandaBolum">
     <!-- 27.1: "Hangi villam boş?" (müsaitlik arama) — giriş/çıkış listesinin üstünde -->
     <div id="maKartYer"></div>
     <!-- 18.19: tek cümle özet -->
@@ -1985,6 +2010,14 @@
       <button data-m="gun">Bugün</button><button data-m="7">7 gün</button><button data-m="30">30 gün</button>
     </div>
     <div id="ajandaListe" style="margin-top:.5rem"></div>
+    </div>
+    <div id="crmBolum" class="hide">
+      <div class="field crmAraKutu"><input id="crmAra" type="search" autocomplete="off" placeholder="Ad ya da telefon" aria-label="Misafir ara"></div>
+      <div class="seg" id="crmSira">
+        <button data-s="son">Son geliş</button><button data-s="sayi">En çok gelen</button><button data-s="para">En çok ödeyen</button>
+      </div>
+      <div id="crmListe" style="margin-top:.75rem"></div>
+    </div>
   </div>
 
   <!-- HESAP SEKMESİ -->
@@ -4718,7 +4751,7 @@
   }
 
   // Takvim sekmesi (6.1): tüm villaların giriş/çıkışları — Bugün / Bu hafta / Bu ay
-  var AJ={mod:"7"};
+  var AJ={mod:"7", ust:"ajanda"};
   var GUN_KISA={tr:["Paz","Pzt","Sal","Çar","Per","Cum","Cmt"], en:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]};
   function gunKisa(d){ return GUN_KISA[(window.DIL&&DIL.ingilizce&&DIL.ingilizce())?"en":"tr"][d.getDay()]; }
   // 18.19: Takvim sekmesi — başlık altında tek cümle özet, büyük gün başlıkları ("Bugün · Pazartesi 16 Kasım"),
@@ -4728,6 +4761,7 @@
   function gunUzun(d){ return GUN_UZUN[(window.DIL&&DIL.ingilizce&&DIL.ingilizce())?"en":"tr"][d.getDay()]; }
   function cizAjanda(){
     goster("ajanda");
+    if(ajUstCiz()) return;
     if(S.yukleniyor){ document.getElementById("ajOzet").textContent=""; document.getElementById("ajandaListe").innerHTML=ajandaIskelet(); return; }
     maKartCiz();
     Array.prototype.forEach.call(document.querySelectorAll("#ajSeg button"),function(b){
@@ -5250,6 +5284,109 @@
   function detayUstte(v,r){
     S.aktif=v.id; MAP=harita(v.rez); S.salt=false; S.ustDetay=true;
     detay(r);
+  }
+  // ---- 33.7 MİSAFİRLER (CRM): bütün villaların rezervasyonlarından; aynı kişi telefonla (rakamlar, başta 0 / +90 farkı yok),
+  // telefon yoksa adla (büyük / küçük harf ve boşluk duyarsız) birleşir. Yeni veri toplanmaz. Tutar yalnız parayı gören villalarda.
+  function ajUstCiz(){
+    var m=AJ.ust==="misafir";
+    Array.prototype.forEach.call(document.querySelectorAll("#ajUst button"),function(b){ var on=b.dataset.u===AJ.ust; b.classList.toggle("on",on); b.setAttribute("aria-selected",String(on)); });
+    document.getElementById("ajandaBolum").classList.toggle("hide",m);
+    document.getElementById("crmBolum").classList.toggle("hide",!m);
+    if(m) cizCrm();
+    return m;
+  }
+  document.getElementById("ajUst").addEventListener("click",function(e){
+    var b=e.target.closest("[data-u]"); if(!b || b.dataset.u===AJ.ust) return;
+    AJ.ust=b.dataset.u; titret("sekme");
+    if(AJ.ust==="misafir") olc("misafirler_ac");
+    cizAjanda();
+  });
+  var CRM={sira:"son", ara:""};
+  function crmAnahtar(r){
+    var t=telNo(r.phone);
+    return t ? "t:"+t : "a:"+String(r.guest||"").toLocaleLowerCase("tr").replace(/\s+/g,"");
+  }
+  function crmListe(){
+    var m={};
+    S.villalar.forEach(function(v){
+      var pg=maParaGor(v);
+      (v.rez||[]).forEach(function(r){
+        if(!String(r.guest||"").trim()) return;
+        var k=crmAnahtar(r), g=m[k]||(m[k]={anahtar:k, ad:r.guest, tel:"", rez:[], kanallar:{}, odenen:0, para:false, son:"", sonV:null});
+        g.rez.push({v:v, r:r});
+        if(r.phone) g.tel=r.phone;
+        if(!g.son || r.start>g.son){ g.son=r.start; g.sonV=v; g.ad=r.guest; }
+        var kk=rezKanal(v,r); if(kk) g.kanallar[kk]=1;
+        if(pg){ g.para=true; g.odenen+=kalemler(v,r).odenen; }
+      });
+    });
+    return Object.keys(m).map(function(k){ m[k].rez.sort(function(a,b){ return a.r.start<b.r.start?-1:1; }); return m[k]; });
+  }
+  function crmBul(k){ return crmListe().filter(function(g){ return g.anahtar===k; })[0]||null; }
+  function crmKezYazi(n){ return n>1 ? cev(n+" kez geldi") : cev("İlk kez"); }
+  function crmKanalHaplari(g){ return KANAL_SIRA.filter(function(k){ return g.kanallar[k]; }).map(function(k){ return kanalHap(k); }).join(""); }
+  function cizCrm(){
+    var paraVar=S.villalar.some(maParaGor);
+    var pb=document.querySelector('#crmSira [data-s="para"]'); if(pb) pb.classList.toggle("hide",!paraVar);
+    if(!paraVar && CRM.sira==="para") CRM.sira="son";
+    Array.prototype.forEach.call(document.querySelectorAll("#crmSira button"),function(b){ b.classList.toggle("on",b.dataset.s===CRM.sira); });
+    var ara=CRM.ara.toLocaleLowerCase("tr").trim(), araRakam=ara.replace(/\D/g,"");
+    var tum=crmListe(), l=tum.filter(function(g){
+      if(!ara) return true;
+      if(String(g.ad).toLocaleLowerCase("tr").indexOf(ara)>=0) return true;
+      return araRakam.length>=3 && String(g.tel).replace(/\D/g,"").indexOf(araRakam.replace(/^0/,""))>=0;
+    });
+    l.sort(function(a,b){
+      if(CRM.sira==="sayi") return b.rez.length-a.rez.length || (a.son<b.son?1:-1);
+      if(CRM.sira==="para") return b.odenen-a.odenen || (a.son<b.son?1:-1);
+      return a.son<b.son?1:(a.son>b.son?-1:0);
+    });
+    var el=document.getElementById("crmListe");
+    if(!tum.length){ el.innerHTML=bosHal("kisiler","Henüz misafir yok. Rezervasyon girdikçe burada görünür."); return; }
+    if(!l.length){ el.innerHTML='<div class="sm muted" style="padding:.75rem 0">'+esc(cev("Aramaya uyan misafir yok."))+"</div>"; return; }
+    el.innerHTML='<div class="grup">'+l.map(function(g){
+      return '<button class="satirBtn crmSatir" data-a="'+esc(g.anahtar)+'"><span class="harfDaire" style="background:#7A4B8C">'+esc(basHarf(g.ad))+"</span>"+
+        '<span class="crmMetin"><span class="crmAd">'+esc(g.ad)+"</span>"+
+          '<span class="satirAlt">'+esc(crmKezYazi(g.rez.length))+" · "+esc(kisa(g.son)+" "+parse(g.son).getFullYear())+" · "+esc(g.sonV?g.sonV.ad:"")+"</span>"+
+          (crmKanalHaplari(g)?'<span class="crmKanallar">'+crmKanalHaplari(g)+"</span>":"")+"</span>"+
+        (g.para?'<span class="sag crmPara">'+para(g.odenen)+"</span>":"")+"</button>";
+    }).join("")+"</div>";
+  }
+  document.getElementById("crmAra").addEventListener("input",function(){ CRM.ara=this.value; cizCrm(); });
+  document.getElementById("crmSira").addEventListener("click",function(e){ var b=e.target.closest("[data-s]"); if(!b) return; CRM.sira=b.dataset.s; titret("secim"); cizCrm(); });
+  document.getElementById("crmListe").addEventListener("click",function(e){
+    var b=e.target.closest("[data-a]"); if(!b) return;
+    var g=crmBul(b.dataset.a); if(g) crmDetay(g);
+  });
+  // misafir detayı; ust=true ise açık formun üstünde ayrı katman (form kapanmaz)
+  function crmDetay(g,ust){
+    olc("misafir_detay");
+    var notlar=[], gor={};
+    g.rez.forEach(function(x){ var n=((x.v.misafirNot||{})[misAnahtar(x.r)]||{}).not; if(n && !gor[x.v.id+n]){ gor[x.v.id+n]=1; notlar.push({v:x.v, n:n}); } });
+    var html='<div class="head"><h2>'+esc(g.ad)+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin-top:.375rem">'+esc(crmKezYazi(g.rez.length))+(g.para?" · "+esc(cev("toplam ödeme"))+" "+para(g.odenen):"")+"</div>"+
+      (g.tel ? telButonlari(g.tel) : '<div class="sm muted" style="margin-top:1rem">'+esc(cev("Telefon kayıtlı değil."))+"</div>")+
+      '<div class="eyebrow" style="margin:1.75rem 0 .5rem">'+esc(cev("Konaklamalar"))+"</div>"+
+      '<div class="crmKonak">'+g.rez.slice().reverse().map(function(x){
+        var r=x.r, k=rezKanal(x.v,r);
+        return '<div class="crmKSatir"><div class="crmKUst"><span class="crmKVilla">'+esc(x.v.ad||"Villa")+"</span>"+
+            (maParaGor(x.v)?'<span class="crmKTutar">'+para(kalemler(x.v,r).konaklama)+"</span>":"")+"</div>"+
+          '<div class="crmKAlt">'+(k?kanalHap(k):"")+"<span>"+esc(aralikMetni(r)+" "+parse(r.start).getFullYear())+" · "+esc(cev(gece(r)+" gece"))+"</span></div></div>";
+      }).join("")+"</div>"+
+      (notlar.length?'<div class="eyebrow" style="margin:1.75rem 0 .5rem">'+esc(cev("Misafir notları"))+"</div>"+
+        notlar.map(function(x){ return '<div class="crmNot"><span class="sm muted">'+esc(x.v.ad||"Villa")+"</span><div>"+esc(x.n)+"</div></div>"; }).join(""):"");
+    if(!ust){ perde(html); return; }
+    var o=document.createElement("div"); o.className="overlay"; o.innerHTML='<div class="sheet">'+html+"</div>";
+    o.addEventListener("click",function(e){ if(e.target===o || e.target.closest("[data-kapat]")) kapatOverlay(o); });
+    document.body.appendChild(o); kilitDenetle();
+    var x=o.querySelector(".x"); if(x) x.onclick=function(){ kapatOverlay(o); };
+    asagiCekKapat(o,o.firstChild); panelKademe(o,null);
+  }
+  // rezervasyonun bu misafir için kaçıncı gelişi (bütün villalarda, girişe göre)
+  function crmGelisSira(r){
+    var g=crmBul(crmAnahtar(r)); if(!g) return 1;
+    for(var i=0;i<g.rez.length;i++) if(g.rez[i].r.id===r.id) return i+1;
+    return 1;
   }
   document.getElementById("ajSeg").addEventListener("click",function(e){
     var b=e.target.closest("[data-m]"); if(!b) return;
@@ -7645,6 +7782,7 @@
       kanalSecHTML("f-kaynak", t.dis ? t.dis.kaynak : ((t.opsiyon && KANAL[t.opsiyon.kaynak]) ? t.opsiyon.kaynak : "direkt"), !!t.dis)+
       kisiStep+
       alan("f-phone","Telefon","İsteğe bağlı","telefon")+
+      '<div id="f-tekrar" class="tekrarYer hide"></div>'+
       kapora+
       '<div style="margin-top:1rem">'+alan("f-note","Not","İsteğe bağlı","text")+"</div>"+
       '<div class="altSabit"><button class="big" data-ik="tik" id="f-kaydet">Rezervasyonu kaydet</button></div>');
@@ -7769,6 +7907,17 @@
     }
     if(!para0 || t.dis) isim.focus();
     kanalSecBagla("f-kaynak");
+    // 33.7: yazılan telefon önceki bir misafirle eşleşirse "Daha önce 2 kez geldi" (dokununca misafir detayı, form açık kalır)
+    var tel0=document.getElementById("f-phone"), tekrar=document.getElementById("f-tekrar");
+    var tekrarYaz=function(){
+      var tn=telNo(tel0.value), g=tn ? crmBul("t:"+tn) : null;
+      if(!g){ tekrar.classList.add("hide"); tekrar.innerHTML=""; return; }
+      var h='<button type="button" class="tekrarHap">'+ikon("kisiler",{boy:16})+"<span>"+esc(cev("Daha önce "+g.rez.length+" kez geldi"))+"</span></button>";
+      if(tekrar._h!==h){ tekrar.innerHTML=h; tekrar._h=h; tekrar.querySelector("button").onclick=function(){ crmDetay(crmBul("t:"+telNo(tel0.value))||g,true); }; }
+      tekrar.classList.remove("hide");
+      if(!tekrar._olc){ tekrar._olc=1; olc("tekrar_misafir_goruldu"); }
+    };
+    tel0.addEventListener("input",tekrarYaz); tekrarYaz();
     rehberAc("rez",REHBER.rez);
     // 33.2: dış satıştan açılan formda bir şey yazıldıysa kapatırken sorulur
     var fo=isim.closest(".overlay");
@@ -7884,7 +8033,7 @@
   function detay(r){
     perde('<div class="head">'+
       '<div class="sm muted" style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem;white-space:nowrap;flex:none">'+
-        '<span class="dot" style="background:'+r.color+'"></span>'+esc(cev(gece(r)+" gece"))+"</div>"+
+        '<span class="dot" style="background:'+r.color+'"></span>'+esc(cev(gece(r)+" gece"))+(crmGelisSira(r)>1?'<span id="d-gelis">· '+esc(cev(crmGelisSira(r)+". gelişi"))+"</span>":"")+"</div>"+
       "<h3>"+esc(r.guest)+"</h3>"+kapatBtn()+"</div>"+
       // 33.4: başlığın altında kanal ("Airbnb'den"), rengiyle
       (rezKanal(aktif(),r)?'<div class="kanalSatir" id="d-kanal">'+kanalHap(rezKanal(aktif(),r))+'<span style="color:'+kanal(rezKanal(aktif(),r)).renk+'">'+esc(cev(kanal(rezKanal(aktif(),r)).den))+"</span></div>":"")+
