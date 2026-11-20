@@ -1549,9 +1549,14 @@
   .cell.ops .fy{opacity:.95}
   .lj-ops{background:repeating-linear-gradient(135deg,#C9D2E3 0 3px,#EEF1F6 3px 6px)}
   /* 32.4 dış takvim blokları: --muted tonunda çapraz çizgi; "kapalı" daha soluk. Üstünde kaynağın kısa adı */
-  .cell.dis{background:repeating-linear-gradient(135deg,rgba(95,106,100,.42) 0 3px,#F1F5F3 3px 8px) !important; color:#2E3833}
-  .cell.dis.disKapali{background:repeating-linear-gradient(135deg,rgba(95,106,100,.18) 0 3px,#F7F9F8 3px 8px) !important}
-  .cell.dis .fy.disAd{font-size:.6875rem; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 2px; color:#2E3833}
+  :root{--dis-cizgi:repeating-linear-gradient(135deg,rgba(95,106,100,.42) 0 3px,#F1F5F3 3px 8px);
+    --dis-cizgi-kapali:repeating-linear-gradient(135deg,rgba(95,106,100,.18) 0 3px,#F7F9F8 3px 8px);
+    --hucre-zemin:#fff}            /* 33.1: yarım günün boş yarısı (takvim kartının zemini) */
+  .cell.dis{background:var(--dis-cizgi) !important; color:#2E3833}
+  .cell.dis.disKapali{background:var(--dis-cizgi-kapali) !important}
+  /* 33.1: giriş günü sağ-alt yarı, çıkış günü sol-üst yarı çizgili (bizim rezervasyonlar gibi); zemin satır içinde */
+  .cell.disY{color:#2E3833}
+  .cell.dis .fy.disAd, .cell.disY .fy.disAd{font-size:.6875rem; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 2px; color:#2E3833}
   .lj-dis{background:repeating-linear-gradient(135deg,rgba(95,106,100,.42) 0 2px,#F1F5F3 2px 5px)}
   .lj-disK{background:repeating-linear-gradient(135deg,rgba(95,106,100,.18) 0 2px,#F7F9F8 2px 5px)}
   .dtEt{display:inline-flex; align-items:center; margin-left:.375rem; padding:.0625rem .5rem; border-radius:99px; background:var(--soft);
@@ -2649,6 +2654,7 @@
     });
     return M;
   }
+  function dtGece(b){ return Math.max(1,Math.round((parse(b.bit)-parse(b.bas))/86400000)); }
   function dtGeceBlok(v,k){ return v ? dtGeceHaritasi(v).get(k)||null : null; }
   // [bas, bit) aralığına denk gelen dış bloklar
   function dtAraliktaki(v,bas,bit,turler){
@@ -5630,13 +5636,27 @@
       if(secBas) rl=!(sa&&onc.aksam&&onc.aksam.id===sa.id)||col===0;
       if(secSon) rr=!(ak&&son.sabah&&son.sabah.id===ak.id)||col===6;
       var opsG=(!sa && !ak && !secIc) ? opsGece(v,k) : null;
-      // 32.4: dış blok (rezervasyon, opsiyon ve seçim yoksa)
+      // 32.4 / 33.1: dış blok bizim rezervasyonlar gibi çizilir: giriş günü akşam yarısı, ara günler tam, çıkış günü sabah yarısı
+      // (gece k'nin bloğu akşamı, önceki gecenin bloğu sabahı doldurur; o yarıda rezervasyon, opsiyon ya da seçim varsa o görünür)
       var disB=(!ak && !opsG && !secIc && !secBas) ? DG.get(k) : null;
-      if(disB){
-        var dOnc=DG.get(fmt(addDays(date,-1))), dSon=DG.get(fmt(addDays(date,1)));
-        rl=!(dOnc && dOnc.id===disB.id)||col===0; rr=!(dSon && dSon.id===disB.id)||col===6;
+      var disS=(!sa && !opsG && !secIc && !secSon) ? DG.get(fmt(addDays(date,-1))) : null;
+      var disTam=!!(disB && (disS ? disS.id===disB.id : (!sa && !secSon && dtGece(disB)===1)));
+      var disCls="";
+      if(disB||disS){
+        var dz=function(b){ return b.tur==="kapali" ? "var(--dis-cizgi-kapali)" : "var(--dis-cizgi)"; };
+        if(disS) rl=col===0;
+        if(disB) rr=col===6;
+        if(disTam) disCls=" dis"+(disB.tur==="kapali"?" disKapali":"");
+        else {
+          disCls=" disY";
+          var yS=disS ? "transparent" : (sa ? rk(sa.color,.38) : (secSon ? SECA : "var(--hucre-zemin)"));
+          var yA=disB ? "transparent" : (ak ? rk(ak.color,tekGece?1:.38) : (secBas ? SECA : "var(--hucre-zemin)"));
+          // iki yarı da doluysa (biri dış, öteki bizim / dış) arada beyaz boşluk
+          var ayri=(disS && disB) || (disS && ak) || (disB && sa);
+          bg=(ayri ? "linear-gradient("+SEAM+","+yS+" 46%,#fff 46%,#fff 54%,"+yA+" 54%)" : "linear-gradient("+SEAM+","+yS+" 49.5%,"+yA+" 50.5%)")+","+dz(disB||disS);
+        }
       }
-      var cls="cell"+((tam||tekGece||secIc)?" full":"")+(opsG?" ops":"")+(disB?" dis"+(disB.tur==="kapali"?" disKapali":""):"")+(k===tk?" today":"")+(tekBas?" sel":"")+
+      var cls="cell"+((tam||tekGece||secIc)?" full":"")+(opsG?" ops":"")+disCls+(k===tk?" today":"")+(tekBas?" sel":"")+
         (secIc?" secIc":"")+(secBas?" secBas":"")+(secSon?" secSon":"")+(k<tk?" gecmis":"");
       var st="background:"+bg+";border-radius:"+(rl?"10px":"0")+" "+(rr?"10px":"0")+" "+(rr?"10px":"0")+" "+(rl?"10px":"0");
       var fi=paraGorur()?v.fiyatlar[k]:0;
@@ -6431,7 +6451,8 @@
     }
     if(k===S.start){ secimBitir(); return; }
     if(k<S.start){
-      if(o.aksam){ S.uyari="O günün akşamı dolu, başka bir gün seçin."; secimCiz(); return; }
+      var dGeri=dtGeceBlok(aktif(),k);
+      if(o.aksam || (dGeri && dGeri.tur!=="kapali")){ S.uyari="O günün akşamı dolu, başka bir gün seçin."; secimCiz(); return; }
       S.start=k; secimCiz(); return;
     }
     // Y > S
