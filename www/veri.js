@@ -440,6 +440,7 @@
               phone: r.telefon || "", people: r.kisi ? String(r.kisi) : "",
               note: r.aciklama || "", color: r.renk || "#0B5B57", kod: r.kod || undefined,
               disKontrol: (r.dis_kontrol === "bekliyor" || r.dis_kontrol === "cakisma") ? r.dis_kontrol : undefined,
+              kaynak: r.kaynak || undefined,
               tutar: say(mm.tutar), ekUcret: say(mm.ek_ucret),
               // depozito_tutar: bu rezervasyonun depozito tutarı (0 da geçerli); tarihli eski kayıtlar uygulamada taşınır
               depozito: (mm.depozito_tutar !== null && mm.depozito_tutar !== undefined) ? { tutar: say(mm.depozito_tutar), tarih: mm.depozito_tarih || undefined } : undefined,
@@ -621,6 +622,7 @@
           phone: r.telefon || "", people: r.kisi ? String(r.kisi) : "",
           note: r.aciklama || "", color: r.renk || "#0B5B57", kod: r.kod || undefined,
               disKontrol: (r.dis_kontrol === "bekliyor" || r.dis_kontrol === "cakisma") ? r.dis_kontrol : undefined,
+              kaynak: r.kaynak || undefined,
           tutar: say((maliHar[r.id] || {}).tutar), ekUcret: say((maliHar[r.id] || {}).ek_ucret),
           depozito: (maliHar[r.id] && maliHar[r.id].depozito_tutar !== null && maliHar[r.id].depozito_tutar !== undefined)
             ? { tutar: say(maliHar[r.id].depozito_tutar), tarih: maliHar[r.id].depozito_tarih || undefined } : undefined,
@@ -653,7 +655,7 @@
     var o = { villa: JSON.stringify([v.ad, v.color, v.bilgi || {}, v.paylasim || null]),
               rez: {}, mali: {}, odeme: {}, fiyat: {}, gider: {}, gelir: {}, foto: {}, not: {} };
     (v.rez || []).forEach(function (r) {
-      o.rez[r.id] = JSON.stringify([r.start, r.end, r.guest, r.phone, r.people, r.note, r.color, r.kod]);
+      o.rez[r.id] = JSON.stringify([r.start, r.end, r.guest, r.phone, r.people, r.note, r.color, r.kod, r.kaynak || null]);
       var di = r.depIade || {};
       o.mali[r.id] = JSON.stringify([r.tutar || 0, r.ekUcret || 0,
         r.depozito ? r.depozito.tutar : null, r.depozito ? r.depozito.tarih : null,
@@ -680,7 +682,7 @@
   function rezSatiri(v, r) {
     return { id: r.id, villa_id: v.id, baslangic: r.start, bitis: r.end, misafir: r.guest,
              telefon: r.phone || null, kisi: parseInt(r.people, 10) || null,
-             aciklama: r.note || null, renk: r.color, kod: r.kod || null,
+             aciklama: r.note || null, renk: r.color, kod: r.kod || null, kaynak: r.kaynak || null,
              guncelleme: new Date().toISOString() };
   }
 

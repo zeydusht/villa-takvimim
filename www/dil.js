@@ -1197,7 +1197,13 @@
     "Takvim sekmesinde tüm villalarınızın giriş-çıkışları, Hesap'ta ayarlar.":"The Calendar tab shows check-ins and check-outs for all your villas; settings are under Account.",
     "Misafirin gireceği güne dokunun":"Tap the guest's check-in day",
     "Şimdi çıkış gününe dokunun":"Now tap the check-out day", "Bu tarihler arasında dolu gün var.":"Some nights between these dates are booked.",
-    "O günün akşamı dolu, başka bir gün seçin.":"That evening is booked, pick another day."
+    "O günün akşamı dolu, başka bir gün seçin.":"That evening is booked, pick another day.",
+    // Görev 33
+    "Misafirin adını yazın":"Type the guest's name",
+    "Nereden geldi?":"Where did it come from?",
+    "Yazdıklarınız kaydedilmedi, çıkılsın mı?":"What you typed hasn't been saved. Leave anyway?",
+    "Yazmaya devam et":"Keep editing",
+    "Çık":"Leave"
   };
 
   // ---------- kalıplı metinler ----------

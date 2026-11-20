@@ -1556,6 +1556,10 @@
   .cell.dis.disKapali{background:var(--dis-cizgi-kapali) !important}
   /* 33.1: giriş günü sağ-alt yarı, çıkış günü sol-üst yarı çizgili (bizim rezervasyonlar gibi); zemin satır içinde */
   .cell.disY{color:#2E3833}
+  /* 33.2: dış satıştan gelen formda site kilitli */
+  .kaynakKilit{display:flex; align-items:center; gap:.5rem; min-height:var(--dokunma-yukseklik); padding:0 1rem; border-radius:var(--kose);
+    background:var(--soft); color:var(--ink); font-weight:600}
+  .kaynakKilit svg.ik{color:var(--muted); flex:none}
   .cell.dis .fy.disAd, .cell.disY .fy.disAd{font-size:.6875rem; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 2px; color:#2E3833}
   .lj-dis{background:repeating-linear-gradient(135deg,rgba(95,106,100,.42) 0 2px,#F1F5F3 2px 5px)}
   .lj-disK{background:repeating-linear-gradient(135deg,rgba(95,106,100,.18) 0 2px,#F7F9F8 2px 5px)}
@@ -2687,25 +2691,24 @@
         '<div class="sm muted" style="margin-top:.5rem;line-height:1.45">'+esc(cev("Bu satış bizde de rezervasyon olarak görünür; ödeme ve bakıcı takibine girer."))+"</div>" : "")+
       '<button class="big ghost" data-kapat style="margin-top:1rem">'+esc(cev("Kapat"))+"</button>");
     var e=document.getElementById("dtMisafirEkle");
-    if(e) e.onclick=function(){ kaydetIs(e,function(){ return dtBlokRez(v,b).then(function(r){ if(r) duzenleSheet(r); }); }); };
+    if(e) e.onclick=function(){ dtMisafirFormu(v,b); };
   }
-  // Dış bloğa bağlı rezervasyon oluştur (sunucu: blok_rez_olustur), uygulamaya al, tarih aynı kaldıkça engel yok
-  function dtBlokRez(v,b){
-    return VT.dt.blokRez(b.id).then(function(id){
-      id=String(id||"").replace(/"/g,"");
-      return VT.villaTekYukle(v.id).then(function(v2){
-        var r=(v2.rez||[]).filter(function(x){ return x.id===id; })[0];
-        if(!r) throw new Error(cev("Rezervasyon oluşturulamadı."));
-        if(!v.rez.some(function(x){ return x.id===id; })){
-          v.rez.push(r);
-          if(v.__anlik && v2.__anlik && v2.__anlik.rez){ v.__anlik.rez[id]=v2.__anlik.rez[id]; if(v2.__anlik.mali) v.__anlik.mali[id]=v2.__anlik.mali[id]; }
-        }
-        b.bagli=id; (DT.cakismalar||[]).forEach(function(c){ if(c.blok_id===b.id) c.durum="ayni_rez"; });
-        DT.cakismalar=(DT.cakismalar||[]).filter(function(c){ return c.durum==="acik"; });
-        store.set(K2,JSON.stringify({villalar:S.villalar}));
-        ciz(); return r;
-      });
-    });
+  // 33.2: "Misafir bilgisi ekle" hiçbir şey kaydetmez; normal rezervasyon formu açılır. Tarihler bloktan, "Nereden geldi?"
+  // sitenin kendisi (ikisi de kilitli). Kaydet'e basınca sunucu bağlı rezervasyonu oluşturur (blok_rez_olustur), diğer alanlar
+  // normal kayıtla yazılır. Vazgeçilirse hiçbir şey değişmez.
+  function dtMisafirFormu(v,b){
+    var t=dtTakvimleri(v.id).filter(function(x){ return x.id===b.takvim; })[0]||{};
+    S.secim=null; S.start=null;
+    S.taslak={start:b.bas, end:b.bit, color:renkSec(v.rez||[],parse(b.bas),parse(b.bit)),
+      dis:{blok:b.id, kaynak:t.kaynak||"diger", ad:dtTakvimAd(v.id,b.takvim)}};
+    form();
+  }
+  // Sunucu bağlı rezervasyonu oluşturunca: blok artık bizim rezervasyonu gösterir, çakışması kapanır
+  function dtBlokBagla(v,blokId,id){
+    var b=(DT.bloklar[v.id]||[]).filter(function(x){ return x.id===blokId; })[0];
+    if(b) b.bagli=id;
+    (DT.cakismalar||[]).forEach(function(c){ if(c.blok_id===blokId) c.durum="ayni_rez"; });
+    DT.cakismalar=(DT.cakismalar||[]).filter(function(c){ return c.durum==="acik"; });
   }
 
   // ---- 32.5 rezervasyon girerken 10 dakikalık ayırma ----
@@ -7449,7 +7452,9 @@
       ucret+
       '<div style="margin-top:1.25rem"></div>'+
       alan("f-guest","Ad soyad","Örn. Ahmet Yılmaz","text")+
-      '<div class="sm warn hide" id="f-guest-hata" style="margin:-.5rem 0 1rem">Misafir adını yazın</div>'+
+      '<div class="sm warn hide" id="f-guest-hata" style="margin:-.5rem 0 1rem">'+esc(cev(t.dis?"Misafirin adını yazın":"Misafir adını yazın"))+"</div>"+
+      (t.dis?'<div class="field" id="f-kaynakKilit"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Nereden geldi?"))+"</div>"+
+        '<div class="kaynakKilit">'+ikon("kilit",{boy:16})+"<span>"+esc(t.dis.ad)+"</span></div></div>":"")+
       kisiStep+
       alan("f-phone","Telefon","İsteğe bağlı","telefon")+
       kapora+
@@ -7574,11 +7579,17 @@
       if(t.opsiyon.tel) document.getElementById("f-phone").value=t.opsiyon.tel;
       if(t.opsiyon.not) document.getElementById("f-note").value=t.opsiyon.not;
     }
-    if(!para0) isim.focus();
+    if(!para0 || t.dis) isim.focus();
     rehberAc("rez",REHBER.rez);
+    // 33.2: dış satıştan açılan formda bir şey yazıldıysa kapatırken sorulur
+    var fo=isim.closest(".overlay");
+    if(t.dis && fo) fo._kapatSor=function(){
+      var od0=document.getElementById("f-odenen");
+      return !!(isim.value.trim() || document.getElementById("f-phone").value.trim() || document.getElementById("f-note").value.trim() || (od0 && sayi(od0.value)));
+    };
     btn.onclick=function(){
-      if(!isim.value.trim()){
-        isimHata.classList.remove("hide"); alanHata(isim); return; }
+      if(t.dis ? isim.value.trim().length<2 : !isim.value.trim()){
+        isimHata.classList.remove("hide"); alanHata(isim); if(t.dis) titret("hata"); return; }
       var yeni={ id:uid(), start:t.start, end:t.end, color:t.color,
         guest:isim.value.trim(),
         people:document.getElementById("f-people").value||"",
@@ -7593,7 +7604,9 @@
       // 32.6: dış takvim özelliği açıksa önce kontrol listesi; sonuç uygunsa bitir() ile kayıt
       var bitir=function(disKontrol){
       if(disKontrol && disKontrol!=="tamam") yeni.disKontrol=disKontrol;
-      v.rez.push(yeni);
+      if(fo) fo._kapatSor=null;
+      var ayni=v.rez.filter(function(x){ return x.id===yeni.id; })[0];   // 33.2: sunucunun oluşturduğu satır yenilemeyle gelmiş olabilir
+      if(ayni) Object.assign(ayni,yeni); else v.rez.push(yeni);
       var ilk=(para0 && kaporaAcik)?sayi(document.getElementById("f-odenen").value):0;
       if(ilk){ yeni.odemeler=[{id:uid(), tarih:fmt(today), tutar:ilk, not:"kapora"}]; yeni.odenen=ilk; }
       S.taslak=null; yeniIsaretle(yeni.id); kapat(); ciz(); kaydet();
@@ -7614,6 +7627,14 @@
       if(t.teklif && window.VT && VT.teklifDurum)
         VT.teklifDurum(t.teklif.kod,"kabul").catch(function(){ bildir(cev("Teklif durumu güncellenemedi.")); });
       };
+      // 33.2: dış satışın misafir bilgisi: rezervasyonu sunucu oluşturur (blok bağlanır), sonra diğer alanlar normal kayıtla
+      if(t.dis){
+        kaydetIs(btn,function(){ return VT.dt.blokRez(t.dis.blok,yeni.guest).then(function(id){
+          id=String(id||"").replace(/"/g,""); if(!id) throw new Error(cev("Rezervasyon oluşturulamadı."));
+          yeni.id=id; yeni.kaynak=t.dis.kaynak; dtBlokBagla(v,t.dis.blok,id); bitir();
+        }); });
+        return;
+      }
       if(dtKontrolGerekli(v)){ dtKaydet(v,yeni,bitir); return; }
       bitir();
     };
@@ -12843,6 +12864,7 @@
   // Paneli kapat: aşağı kayar, arka plan açılır (--hiz-kapa). anlik=true ise hemen kaldırır.
   function kapatOverlay(o,anlik){
     if(!o || o.classList.contains("kapaniyor")) return;
+    if(anlik!==true && o._kapatSor && o._kapatSor()){ cikisSor(o); return; }
     if(anlik || azHareket()){ o.remove(); kilitDenetle(); return; }
     o.classList.remove("geriAciliyor");
     o.classList.add("kapaniyor"); kilitDenetle();
@@ -12883,6 +12905,25 @@
     kilitDenetle();
     if(!acikP && S.ilkBekle) setTimeout(ilkGoster,hiz("kapa"));
   }).observe(document.body,{childList:true}); }catch(e){}
+  // 33.2: "Yazdıklarınız kaydedilmedi, çıkılsın mı?" (formun üstünde ayrı katman; formu kapatmaz)
+  function cikisSor(fo){
+    var sh=fo.querySelector(".sheet"); if(sh) sh.style.transform="";
+    titret("hata");
+    var o=document.createElement("div");
+    o.className="overlay";
+    o.innerHTML='<div class="sheet"><p style="margin:0 0 1.25rem;font-size:1rem;line-height:1.5"></p>'+
+      '<button class="big" type="button" id="csDevam"></button>'+
+      '<button class="big ghost" type="button" id="csCik" style="margin-top:.5rem"></button></div>';
+    o.querySelector("p").textContent=cev("Yazdıklarınız kaydedilmedi, çıkılsın mı?");
+    o.querySelector("#csDevam").textContent=cev("Yazmaya devam et");
+    o.querySelector("#csCik").textContent=cev("Çık");
+    function kapa(){ o.remove(); kilitDenetle(); }
+    o.querySelector("#csDevam").onclick=kapa;
+    o.querySelector("#csCik").onclick=function(){ kapa(); fo._kapatSor=null; kapatOverlay(fo); };
+    o.addEventListener("click",function(e){ if(e.target===o) kapa(); });
+    document.body.appendChild(o);
+    panelKademe(o,null);
+  }
   // Tarayıcının alert() kutusu yerine uygulamanın kendi paneli.
   // Açık bir formun üstüne ayrı katman olarak açılır, formu kapatmaz.
   function uyari(metin){
