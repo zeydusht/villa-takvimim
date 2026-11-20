@@ -126,7 +126,7 @@ export async function uygulamadan(db: Db, uid: string, g: Satir): Promise<Respon
   // "Bağla" öncesi deneme: link kaydedilmeden okunur
   if (g.deneme) {
     if (!y.sahip) return json({ hata: "Takvim bağlamayı yalnız villa sahibi yapabilir." }, 403);
-    const kaynak = ["airbnb", "booking", "vrbo", "villasepeti", "diger"].includes(g.deneme.kaynak) ? g.deneme.kaynak : "diger";
+    const kaynak = SITELER.includes(g.deneme.kaynak) ? g.deneme.kaynak : "diger";
     const t0 = BAG.simdi();
     try {
       const r = await guvenliGetir(String(g.deneme.adres || ""), { getir: BAG.getir, cozumle: BAG.cozumle });
@@ -217,6 +217,48 @@ export async function alarmlar(db: Db) {
 }
 
 // 3 saattir okunamayan takvim: sahibe bildirim (günde en fazla 2: sabah / öğleden sonra)
+// ---------------- 33.8 "Bağlamayı bize bırakın" bildirimleri ----------------
+export const SITELER = ["airbnb", "booking", "vrbo", "villasepeti", "tatilsepeti", "kalkanvilla", "villapaketi", "tatilkentim", "diger"];
+const SITE_AD: Record<string, string> = { airbnb: "Airbnb", booking: "Booking.com", vrbo: "Vrbo", villasepeti: "Villasepeti", tatilsepeti: "Tatilsepeti",
+  kalkanvilla: "Kalkan Villa", villapaketi: "Villa Paketi", tatilkentim: "Tatilkentim", diger: "Diğer site" };
+export const siteAdi = (k: string) => SITE_AD[k] || "Diğer site";
+
+// Bir kez gönder: anahtar bildirim_gonderim'de (hangi gün olursa olsun) varsa o kişiye bir daha gitmez
+async function birKez(db: Db, kisiler: string[], b: Bildirim, anahtar: string) {
+  const hepsi = [...new Set(kisiler.filter(Boolean))];
+  if (!hepsi.length) return 0;
+  const { data } = await db.from("bildirim_gonderim").select("kullanici").eq("anahtar", anahtar).in("kullanici", hepsi);
+  const once = new Set((data || []).map((x: Satir) => x.kullanici));
+  const hedef = hepsi.filter((k) => !once.has(k));
+  if (!hedef.length) return 0;
+  return await BAG.gonder(db, hedef, b, anahtar);
+}
+
+// Yeni talep → bütün yöneticilere; "baglandi" olunca → villa sahibine (talebi açan). İkisi de talep başına bir kez.
+export async function talepBildirimleri(db: Db) {
+  const { data: l, error } = await db.from("baglanti_talepleri").select("id, villa_id, kullanici, site, durum, guncelleme")
+    .in("durum", ["bekliyor", "baglandi"]);
+  if (error || !l || !l.length) return;   // tablo yoksa (SQL uygulanmadıysa) sessizce geç
+  const yeni = l.filter((t: Satir) => t.durum === "bekliyor");
+  let yoneticiler: string[] = [];
+  if (yeni.length) {
+    const { data: y } = await db.from("profiller").select("id").eq("yonetici", true);
+    yoneticiler = (y || []).map((x: Satir) => x.id);
+  }
+  for (const t of yeni) {
+    const ad = await villaAdi(db, t.villa_id);
+    await birKez(db, yoneticiler, { baslik: "Villa Takvimim", metin: "Yeni takvim bağlama talebi: " + ad + " · " + siteAdi(t.site),
+      yol: "/?yonetim=talepler", etiket: "talep-" + t.id }, "talep-" + t.id);
+  }
+  // bağlananlar: son 7 gün içinde güncellenenler (eski talepler her turda taranmasın)
+  const sinir = BAG.simdi() - 7 * 86_400_000;
+  for (const t of l.filter((x: Satir) => x.durum === "baglandi" && (!x.guncelleme || Date.parse(x.guncelleme) >= sinir))) {
+    const ad = await villaAdi(db, t.villa_id);
+    await birKez(db, [t.kullanici], { baslik: "Villa Takvimim", metin: "✓ " + ad + " artık " + siteAdi(t.site) + " takvimiyle bağlı.",
+      yol: "/?villa=" + t.villa_id + "&ayar=takvim", etiket: "talep-bagli-" + t.id }, "talep-bagli-" + t.id);
+  }
+}
+
 export async function ulasilamayanlar(db: Db) {
   const { data: l } = await db.from("dis_takvimler").select("id, villa_id, ad, son_basari, olusturma, hata_sayisi").eq("aktif", true).gt("hata_sayisi", 0);
   for (const t of l || []) {
@@ -246,6 +288,7 @@ export async function zamanlayicidan(db: Db, mod: string): Promise<Response> {
   await bekleyenler(db);
   await alarmlar(db);
   if (mod !== "dakika") await ulasilamayanlar(db);
+  if (mod !== "dakika") await talepBildirimleri(db);
   return json({ mod, okunan: okuma.length, hata: okuma.filter((o) => o.durum === "hata").length });
 }
 

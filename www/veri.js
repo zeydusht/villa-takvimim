@@ -976,6 +976,16 @@
     cakismalar: function () {
       return api("cakismalar?select=id,villa_id,rezervasyon_id,blok_id,takvim_ad,baslangic,bitis,durum,olusturma&durum=eq.acik&order=olusturma");
     },
+    // 33.8 "Bağlamayı bize bırakın": sahip talep açar (yalnız 'bekliyor'), yönetici listeler / günceller
+    talepler: function (villaId) {
+      return api("baglanti_talepleri?select=id,site,sayfa_linki,notu,durum,yonetici_notu,olusturma,guncelleme&villa_id=eq." + villaId + "&order=olusturma.desc");
+    },
+    talepEkle: function (villaId, site, link, not) {
+      return api("baglanti_talepleri", { method: "POST", donus: "return=representation",
+        body: { villa_id: villaId, site: site, sayfa_linki: link || null, notu: not || null } }).then(function (d) { return (d && d[0]) || null; });
+    },
+    tumTalepler: function () { return VT.rpc("tum_talepler"); },
+    talepGuncelle: function (id, durum, not) { return VT.rpc("talep_guncelle", { p_id: id, p_durum: durum, p_not: not == null ? null : not }); },
     cakismaCoz: function (id, durum, not) { return VT.rpc("cakisma_coz", { p_id: id, p_durum: durum, p_not: not || null }); },
     icalAnahtar: function (villaId, yenile) { return VT.rpc("ical_anahtarim", { p_villa: villaId, p_yenile: !!yenile }); },
     icalAdres: function (anahtar) { return URL_ + "/functions/v1/takvim-ver/" + anahtar + ".ics"; },

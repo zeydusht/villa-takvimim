@@ -1240,7 +1240,44 @@
     "Konaklamalar":"Stays",
     "Misafir notları":"Guest notes",
     "Aramaya uyan misafir yok.":"No guests match your search.",
-    "Henüz misafir yok. Rezervasyon girdikçe burada görünür.":"No guests yet. They appear here as you add reservations."
+    "Henüz misafir yok. Rezervasyon girdikçe burada görünür.":"No guests yet. They appear here as you add reservations.",
+    "Önerilen":"Recommended",
+    "Bağlamayı Villa Takvimim ekibine bırakın":"Let the Villa Takvimim team connect it",
+    "Siz yalnız villanızın o sitedeki sayfasının linkini verin; bağlantıyı ekibimiz kurar ve size haber verir.":"Just give us the link to your villa's page on that site; our team sets up the connection and lets you know.",
+    "Linki kendim bağlayacağım":"I'll connect the link myself",
+    "Adım adım yardımla sitenin verdiği takvim linkini kendiniz yapıştırırsınız.":"Paste the calendar link from the site yourself, with step-by-step help.",
+    "Seçenekler":"Options",
+    "Takvimi ekibimiz bağlar. İsterseniz aşağıdakileri yazın; ikisi de isteğe bağlı.":"Our team connects the calendar. Fill in the fields below if you like; both are optional.",
+    "Villanızın o sitedeki sayfasının linki":"Link to your villa's page on that site",
+    "Villanızın sitedeki sayfasını tarayıcıda açıp adres çubuğundaki adresi kopyalayın.":"Open your villa's page on the site in a browser and copy the address from the address bar.",
+    "Bize not":"Note for us",
+    "Örn. Sitedeki yetkili: Ahmet Bey 0532…":"E.g. Contact at the site: Mr Ahmet 0532…",
+    "Talebi gönder":"Send request",
+    "Link geçerli değil. Tarayıcının adres çubuğundaki adresi kopyalayın.":"The link isn't valid. Copy the address from the browser's address bar.",
+    "Not en fazla 500 harf olabilir.":"The note can be at most 500 characters.",
+    "Talebiniz alındı":"Request received",
+    "Talebiniz alındı. Ekibimiz genellikle 24 saat içinde bağlantıyı kurar ve size haber verir.":"Request received. Our team usually sets up the connection within 24 hours and lets you know.",
+    "Bekliyor":"Waiting",
+    "Ekibimiz çalışıyor":"Our team is on it",
+    "Bağlandı ✓":"Connected ✓",
+    "Olmadı":"Didn't work",
+    "ekibimize bırakıldı":"left to our team",
+    "Bağlantı talepleri":"Connection requests",
+    "Talep yok":"No requests",
+    "Talep yok.":"No requests.",
+    "Villa sahiplerinin ekibe bıraktığı takvim bağlantıları.":"Calendar connections villa owners left to the team.",
+    "Sayfa linki":"Page link",
+    "Verilmedi":"Not given",
+    "Durum":"Status",
+    "Çalışılıyor":"In progress",
+    "Bağlandı":"Connected",
+    "Yönetici notu (sahip görür)":"Admin note (owner sees it)",
+    "Örn. Site yetkilisi link vermedi":"E.g. The site contact didn't give a link",
+    "Durumu kaydet":"Save status",
+    "iCal linkini ekle":"Add the iCal link",
+    "Dene ve bağla":"Test and connect",
+    "Talep güncellendi":"Request updated",
+    "Linki kendiniz bağlamak için buraya dokunun. İsterseniz üstteki düğmeyle bağlamayı ekibimize bırakabilirsiniz.":"Tap here to connect the link yourself. Or use the button above to let our team do it."
   };
 
   // ---------- kalıplı metinler ----------
@@ -1490,7 +1527,9 @@
     [/^(.+) satışları$/, "$1 sales"],
     [/^(\d+) kez geldi$/, "Came $1 times"],
     [/^Daha önce (\d+) kez geldi$/, "Stayed $1 times before"],
-    [/^(\d+)\. gelişi$/, "Visit no. $1"]
+    [/^(\d+)\. gelişi$/, "Visit no. $1"],
+    [/^Olmadı: (.+)$/, "Didn't work: $1"],
+    [/^(\d+) bekliyor$/, "$1 waiting"]
   ];
 
   function bosluksuz(t){ return String(t).replace(/\s+/g, " ").trim(); }

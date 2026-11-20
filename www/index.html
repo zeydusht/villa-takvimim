@@ -1594,6 +1594,24 @@
   .tekrarHap{display:inline-flex; align-items:center; gap:.375rem; min-height:2.875rem; padding:0 .875rem; border-radius:99px;
     border:1.5px solid #B9A6C4; background:#F3EFF6; color:#7A4B8C; font:inherit; font-size:.9375rem; cursor:pointer}
   .tekrarHap:active{background:var(--basili-zemin)}
+  /* 33.8 bağlamayı bize bırakın */
+  .dtOneri{display:inline-flex; align-items:center; gap:.375rem; margin:1rem 0 .5rem; color:var(--ok); font-size:.875rem}
+  .dtSecAcik{margin:.5rem 0 0; line-height:1.45}
+  #dtKendim{margin-top:1.5rem}
+  .dtTalepler{margin-top:.75rem}
+  .satirBtn > span.dtRozet:first-child{flex:none}   /* rozet satırın ilk öğesi olunca esnemesin */
+  .dtTalepSatir{cursor:default}
+  .dtTalepSatir::after{display:none}
+  .talepRozet{display:inline-flex; align-items:center; justify-content:center; min-width:1.5rem; height:1.5rem; padding:0 .375rem; border-radius:99px;
+    background:var(--uyari); color:#fff; font-size:.8235rem; font-variant-numeric:tabular-nums}
+  .tlDurum{flex:none; max-width:none}
+  .tlDurum.d-bekliyor{color:var(--uyari)} .tlDurum.d-baglandi{color:var(--ok)}
+  .tlBilgi{margin:.875rem 0 0; line-height:1.45; overflow-wrap:anywhere}
+  .tlBilgi .lab{margin-bottom:.125rem}
+  .tlSite{display:inline-flex; align-items:center; gap:.5rem}
+  .tlLink{display:inline-flex; align-items:center; min-height:3rem; color:var(--lacivert); word-break:break-all}
+  .tlSeg{flex-wrap:wrap}
+  .tlSeg button{flex:1 1 40%}
   .komListe{display:flex; flex-direction:column; gap:.5rem}
   .komSatir{display:flex; align-items:center; gap:.75rem; min-height:var(--dokunma-yukseklik)}
   .komAd{flex:1 1 auto; min-width:0; overflow-wrap:anywhere}
@@ -2721,17 +2739,17 @@
   function kanalSecDeger(id){ var s=document.querySelector("#"+id+" .secili"); return s ? s.dataset.kanal : null; }
   // takvim hücresinde tam ad sığar mı (hap: .6875rem yazı + iki yanda .3125rem boşluk; hücrenin iki yanında 2 px pay)
   // (yazı boyu .cell .fy ile aynı: clamp(11px, .6875rem, 3.1vw); harf aralığı .03em; 1 px pay)
-  var KS={en:0, ctx:null, kok:16, boy:11};
+  var KOLC={en:0, ctx:null, kok:16, boy:11};
   function kanalOlcuHazirla(){
-    var g=document.getElementById("grid"); KS.en=g ? g.clientWidth/7 : 0;
-    KS.kok=parseFloat(getComputedStyle(document.documentElement).fontSize)||16;
-    KS.boy=Math.min(Math.max(11,KS.kok*0.6875),Math.max(11,window.innerWidth*0.031));
-    try{ if(!KS.ctx) KS.ctx=document.createElement("canvas").getContext("2d");
-      KS.ctx.font=KS.boy+"px "+getComputedStyle(g||document.body).fontFamily; }catch(e){ KS.ctx=null; }
+    var g=document.getElementById("grid"); KOLC.en=g ? g.clientWidth/7 : 0;
+    KOLC.kok=parseFloat(getComputedStyle(document.documentElement).fontSize)||16;
+    KOLC.boy=Math.min(Math.max(11,KOLC.kok*0.6875),Math.max(11,window.innerWidth*0.031));
+    try{ if(!KOLC.ctx) KOLC.ctx=document.createElement("canvas").getContext("2d");
+      KOLC.ctx.font=KOLC.boy+"px "+getComputedStyle(g||document.body).fontFamily; }catch(e){ KOLC.ctx=null; }
   }
   function kanalSigar(ad){
-    if(!KS.en || !KS.ctx) return false;
-    return KS.ctx.measureText(ad).width + ad.length*KS.boy*0.03 + KS.kok*0.625 + 4 + 1 <= KS.en;
+    if(!KOLC.en || !KOLC.ctx) return false;
+    return KOLC.ctx.measureText(ad).width + ad.length*KOLC.boy*0.03 + KOLC.kok*0.625 + 4 + 1 <= KOLC.en;
   }
   var DT_KAYNAK={
     airbnb:{ad:"Airbnb", ev:"https://www.airbnb.com/multicalendar",
@@ -3133,6 +3151,7 @@
   function bildirimYolu(yol){
     var q; try{ q=new URL(yol,location.href).searchParams; }catch(e){ return; }
     var vid=q.get("villa"), gn=q.get("gun"), ck=q.get("cakisma");
+    if(q.get("yonetim")==="talepler"){ if(window.VT && VT.yonetici && VT.yonetici()) talepListesiSheet(); return; }
     if(ck){ var c=(DT.cakismalar||[]).filter(function(x){ return x.id===ck; })[0]; if(c){ cakismaCozEkran(c); return; } }
     var v=vid && S.villalar.filter(function(x){ return x.id===vid; })[0]; if(!v) return;
     ac(v.id);
@@ -3145,7 +3164,7 @@
   if(navigator.serviceWorker) navigator.serviceWorker.addEventListener("message",function(e){
     if(e.data && e.data.tur==="git" && e.data.yol){ if(S.yukleniyor) S.bekleyenYol=e.data.yol; else bildirimYolu(e.data.yol); }
   });
-  if(/[?&](villa|cakisma)=/.test(location.search)) S.bekleyenYol=location.search;
+  if(/[?&](villa|cakisma|yonetim)=/.test(location.search)) S.bekleyenYol=location.search;
 
   // ---- 32.8 tazelik ----
   // Takvimin üstünde: "Airbnb, Booking ✓ 2 dk önce kontrol edildi." · 1 saattir okunamayan takvim: kırmızı, dokununca ayar ekranı
@@ -3274,9 +3293,9 @@
   }
   function dtListeCiz(v){
     var ic=document.getElementById("dtIc"); if(!ic) return;
-    Promise.all([VT.dt.takvimler(v.id), VT.dt.icalAnahtar(v.id)]).then(function(r){
+    Promise.all([VT.dt.takvimler(v.id), VT.dt.icalAnahtar(v.id), VT.dt.talepler(v.id).catch(function(){ return []; })]).then(function(r){
       DT.hazir=true;
-      var l=r[0]||[], anahtar=r[1], link=anahtar?VT.dt.icalAdres(anahtar):"";
+      var l=r[0]||[], anahtar=r[1], link=anahtar?VT.dt.icalAdres(anahtar):"", tl=Array.isArray(r[2])?r[2]:[];
       DT.durum[v.id]=l.map(function(t){ return {id:t.id, kaynak:t.kaynak, ad:t.ad, aktif:t.aktif, son_basari:t.son_basari, son_deneme:t.son_deneme, son_hata:t.son_hata, hata_sayisi:t.hata_sayisi}; });
       var h='<div class="eyebrow dtBolum" style="margin-top:1.5rem">'+esc(cev("Sitelerdeki takvimler (bize gelen)"))+"</div>";
       if(l.length) h+='<div class="grup" id="dtListe">'+l.map(function(t){
@@ -3284,7 +3303,14 @@
         return '<button class="satirBtn dtSatir" data-tid="'+esc(t.id)+'">'+dtRozet(t.kaynak)+'<span><span>'+esc(t.ad||dtKisaAd(t.kaynak))+"</span>"+
           '<span class="satirAlt dtDurum '+(d.ok?"ok":"hata")+'">'+(d.ok?ikon("tik",{boy:14,kalinlik:2.5}):ikon("uyari-ucgen",{boy:14}))+"<span>"+esc(d.yazi)+"</span></span></span></button>";
       }).join("")+"</div>";
-      else h+='<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Henüz bir site takvimi bağlamadınız."))+"</div>";
+      else if(!tl.length) h+='<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Henüz bir site takvimi bağlamadınız."))+"</div>";
+      // 33.8: ekibe bırakılan bağlantılar ve durumu
+      if(tl.length) h+='<div class="grup dtTalepler" id="dtTalepler">'+tl.map(function(t){
+        var ok=t.durum==="baglandi", kotu=t.durum==="olmadi";
+        return '<div class="satirBtn dtSatir dtTalepSatir" data-talep="'+esc(t.id)+'">'+dtRozet(t.site)+'<span><span>'+esc(cev(dtKisaAd(t.site)))+" · "+esc(cev("ekibimize bırakıldı"))+"</span>"+
+          '<span class="satirAlt dtDurum '+(ok?"ok":(kotu?"hata":""))+'">'+(ok?"":(kotu?ikon("uyari-ucgen",{boy:14}):ikon("saat",{boy:14})))+
+          "<span>"+esc(talepDurumYazi(t))+"</span></span></span></div>";
+      }).join("")+"</div>";
       h+='<button class="big" data-ik="arti" id="dtEkle">'+esc(cev("Site takvimi bağla"))+"</button>";
       h+='<div class="eyebrow dtBolum">'+esc(cev("Bu villanın takvim linki (sitelere verilecek)"))+"</div>"+
         '<div class="dtLink" id="dtLink">'+esc(link)+"</div>"+
@@ -3363,7 +3389,60 @@
     document.getElementById("dtKaynakGeri").onclick=function(){ dtEkran(v); };
     document.getElementById("dtKaynaklar").onclick=function(e){
       var b=e.target.closest("[data-k]"); if(!b) return;
-      secimParla(b,function(){ rhBildir("dt:kaynak"); dtLinkAdimi(v,b.dataset.k); });
+      secimParla(b,function(){ rhBildir("dt:kaynak"); dtSecenek(v,b.dataset.k); });
+    };
+  }
+  // ---- 33.8 site seçildikten sonra: ekibe bırak (önerilen, üstte) ya da linki kendim bağlarım (bugünkü akış) ----
+  var TALEP_DURUM={bekliyor:"Bekliyor", calisiliyor:"Ekibimiz çalışıyor", baglandi:"Bağlandı ✓", olmadi:"Olmadı"};
+  function talepDurumYazi(t){ return t.durum==="olmadi" ? cev("Olmadı")+(t.yonetici_notu?": "+t.yonetici_notu:"") : cev(TALEP_DURUM[t.durum]||t.durum); }
+  function dtSecenek(v,k){
+    var x=dtKaynak(k);
+    var o=perde('<div class="head"><h2>'+esc(cev(x.ad))+"</h2>"+kapatBtn()+"</div>"+
+      '<button type="button" class="linkBtn maGeri" id="dtGeri">'+ikon("sol",{boy:18})+"<span>"+esc(cev("Site seçimi"))+"</span></button>"+
+      '<div id="dtSecenekler">'+
+        '<div class="dtOneri">'+ikon("yildiz",{boy:16})+"<span>"+esc(cev("Önerilen"))+"</span></div>"+
+        '<button class="big" data-ik="kisiler" id="dtBizeBirak">'+esc(cev("Bağlamayı Villa Takvimim ekibine bırakın"))+"</button>"+
+        '<div class="sm muted dtSecAcik">'+esc(cev("Siz yalnız villanızın o sitedeki sayfasının linkini verin; bağlantıyı ekibimiz kurar ve size haber verir."))+"</div>"+
+        '<button class="big renkli is-gri" data-ik="baglanti" id="dtKendim">'+esc(cev("Linki kendim bağlayacağım"))+"</button>"+
+        '<div class="sm muted dtSecAcik">'+esc(cev("Adım adım yardımla sitenin verdiği takvim linkini kendiniz yapıştırırsınız."))+"</div>"+
+      "</div>");
+    o.querySelector(".sheet").dataset.adim="secenek-"+k;
+    document.getElementById("dtGeri").onclick=function(){ dtBagla(v); };
+    document.getElementById("dtKendim").onclick=function(){ rhBildir("dt:secenek"); dtLinkAdimi(v,k); };
+    document.getElementById("dtBizeBirak").onclick=function(){
+      try{ if(window.Rehber && Rehber.calisiyor && Rehber.calisiyor("dt")) Rehber.kapat(); }catch(e){}
+      dtTalepFormu(v,k);
+    };
+  }
+  function dtTalepFormu(v,k){
+    var x=dtKaynak(k);
+    var o=perde('<div class="head"><h2>'+esc(cev(x.ad))+"</h2>"+kapatBtn()+"</div>"+
+      '<button type="button" class="linkBtn maGeri" id="dtGeri">'+ikon("sol",{boy:18})+"<span>"+esc(cev("Seçenekler"))+"</span></button>"+
+      '<div style="margin:.75rem 0 1rem;line-height:1.5">'+esc(cev("Takvimi ekibimiz bağlar. İsterseniz aşağıdakileri yazın; ikisi de isteğe bağlı."))+"</div>"+
+      alan("dt-sayfa",esc(cev("Villanızın o sitedeki sayfasının linki")),"https://…","url","")+
+      '<div class="sm muted" style="margin:-.5rem 0 1rem;line-height:1.45">'+esc(cev("Villanızın sitedeki sayfasını tarayıcıda açıp adres çubuğundaki adresi kopyalayın."))+"</div>"+
+      alan("dt-talepNot",esc(cev("Bize not")),esc(cev("Örn. Sitedeki yetkili: Ahmet Bey 0532…")),"text","")+
+      '<div class="sm warn hide" id="dtTalepHata" style="margin:-.5rem 0 1rem"></div>'+
+      '<button class="big" data-ik="gonder" id="dtTalepGonder">'+esc(cev("Talebi gönder"))+"</button>");
+    o.querySelector(".sheet").dataset.adim="talep-"+k;
+    var inp=document.getElementById("dt-sayfa"); inp.setAttribute("autocomplete","off"); inp.setAttribute("autocapitalize","off"); inp.setAttribute("spellcheck","false");
+    document.getElementById("dtGeri").onclick=function(){ dtSecenek(v,k); };
+    var btn=document.getElementById("dtTalepGonder");
+    btn.onclick=function(){
+      var h=document.getElementById("dtTalepHata"); h.classList.add("hide");
+      var link=inp.value.trim(), not=document.getElementById("dt-talepNot").value.trim();
+      if(link && !/^https?:\/\//i.test(link)) link="https://"+link;
+      var gecerli=!link || (link.length<=1000 && (function(){ try{ var u=new URL(link); return /^https?:$/.test(u.protocol) && u.hostname.indexOf(".")>0; }catch(e){ return false; } })());
+      if(!gecerli){ h.textContent=cev("Link geçerli değil. Tarayıcının adres çubuğundaki adresi kopyalayın."); h.classList.remove("hide"); alanHata(inp); titret("hata"); return; }
+      if(not.length>500){ h.textContent=cev("Not en fazla 500 harf olabilir."); h.classList.remove("hide"); alanHata(document.getElementById("dt-talepNot")); titret("hata"); return; }
+      kaydetIs(btn,function(){ return VT.dt.talepEkle(v.id,k,link,not).then(function(){
+        perde('<div class="head"><h2>'+esc(cev("Talebiniz alındı"))+"</h2>"+kapatBtn()+"</div>"+
+          '<div class="dtSonuc" role="status" style="margin-top:.75rem">'+ikon("tik-daire",{boy:22})+"<span>"+
+            esc(cev("Talebiniz alındı. Ekibimiz genellikle 24 saat içinde bağlantıyı kurar ve size haber verir."))+"</span></div>"+
+          '<button class="big" data-ik="tik" id="dtTalepTamam">'+esc(cev("Tamam"))+"</button>");
+        titret("kaydedildi");
+        document.getElementById("dtTalepTamam").onclick=function(){ dtEkran(v); };
+      }); });
     };
   }
   function dtLinkAdimi(v,k){
@@ -3383,7 +3462,7 @@
       '<button class="big" data-ik="baglanti" id="dtBaglaBtn">'+esc(cev("Bağla"))+"</button>");
     o.querySelector(".sheet").dataset.adim="link-"+k;
     var inp=document.getElementById("dt-adres"); inp.setAttribute("autocomplete","off"); inp.setAttribute("autocapitalize","off"); inp.setAttribute("spellcheck","false");
-    document.getElementById("dtGeri").onclick=function(){ dtBagla(v); };
+    document.getElementById("dtGeri").onclick=function(){ dtSecenek(v,k); };
     var mk=document.getElementById("dtMesajKopya"); if(mk) mk.onclick=function(){ kopyala(mesaj,cev("Mesaj kopyalandı.")); };
     var yp=document.getElementById("dtYapistir");
     if(!(navigator.clipboard && navigator.clipboard.readText)) yp.classList.add("hide");
@@ -6598,6 +6677,7 @@
       adimlar:[
         {hedef:rhTek("#dtEkle"), metin:RM.dtEkle, bekle:"dokunus"},
         {hedef:rhTek("#dtKaynaklar"), metin:RM.dtKaynak, bekle:"olay", olay:"dt:kaynak"},
+        {hedef:rhTek("#dtKendim"), metin:RM.dtSecenek, bekle:"olay", olay:"dt:secenek"},
         {hedef:rhAlan("#dt-adres"), deger:"#dt-adres", metin:RM.dtAdres, bekle:"deger"},
         {hedef:rhTek("#dtBaglaBtn"), metin:RM.dtBagla, bekle:"olay", olay:"dt:baglandi"}
       ]}; },
@@ -8687,6 +8767,7 @@
   // Hesap sekmesi: buluta bağlı satırlar, dil seçici, destek
   function hesapEkranCiz(){
     var bulut=!!(S.bulut && window.VT && VT.girisli && VT.girisli());
+    if(bulut && VT.yonetici && VT.yonetici() && document.getElementById("talepBtn")) talepSayiYaz();   // 33.8: rozet her açılışta güncel
     document.getElementById("cikisBtn").classList[bulut?"remove":"add"]("hide");
     document.getElementById("hsBildirimBolum").classList[bulut?"remove":"add"]("hide");
     var no=String(DESTEK_WHATSAPP||"").replace(/\D/g,"");
@@ -8959,6 +9040,7 @@
         '<div class="eyebrow" style="margin-bottom:.75rem" data-iki="hesap:ayarlar">'+esc(cev("Yönetim"))+"</div><div class=\"grup\">"+
         (yon?'<button class="satirBtn" id="istatistikBtn" data-ikk="hesap:grafik"><span>'+esc(cev("Özet ve istatistikler"))+"</span></button>":"")+
         '<button class="satirBtn" id="yoneticiBtn" data-ikk="hesap:kisiler"><span id="yoneticiAd"></span><span class="sag" id="yoneticiSayi"></span></button>'+
+        (yon?'<button class="satirBtn hide" id="talepBtn" data-ikk="paylas:baglanti"><span>'+esc(cev("Bağlantı talepleri"))+'</span><span class="sag" id="talepSayi"></span></button>':"")+
         "</div></div>"+
         // 29.6: yalnız yöneticiye: iki adımlı doğrulama
         (yon?'<div id="mfaBolum" style="margin-bottom:1.75rem"><div class="eyebrow" style="margin-bottom:.75rem" data-iki="hesap:kalkan">'+esc(cev("Yönetici güvenliği"))+"</div>"+
@@ -8969,6 +9051,7 @@
         KS.filtre="tum"; kullanicilarSheet();
       };
       var ib=document.getElementById("istatistikBtn"); if(ib) ib.onclick=function(){ istatistikSheet(); };
+      var tb=document.getElementById("talepBtn"); if(tb) tb.onclick=function(){ talepListesiSheet(); };
       var mb=document.getElementById("mfaBtn"); if(mb){ mb.onclick=function(){ mfaSheet(); }; mfaDurumYaz(); }
     }
     return yer;
@@ -8977,6 +9060,7 @@
     if(!yonetimKur()) return;
     var ad=document.getElementById("yoneticiAd");
     if(ad) ad.textContent = VT.yonetici() ? "Kullanıcılar" : "Onay bekleyenler";
+    if(VT.yonetici()) talepSayiYaz();
     if(VT.yonetici()){
       VT.tumKullanicilar().then(function(l){
         var bekleyen=(l||[]).filter(function(u){ return !u.onay && !u.askida; }).length;
@@ -8992,6 +9076,77 @@
   }
 
 
+  // ---- 33.8 yönetici: bağlantı talepleri ----
+  // Bekleyen sayısı "Bağlantı talepleri" satırında rozet. Sunucu hazır değilse (tum_talepler yok) satır gizli kalır.
+  function talepSayiYaz(l){
+    var tb=document.getElementById("talepBtn"), ts=document.getElementById("talepSayi"); if(!tb || !ts) return Promise.resolve();
+    var yaz=function(l){ var n=(l||[]).filter(function(t){ return t.durum==="bekliyor"; }).length;
+      tb.classList.remove("hide"); ts.innerHTML=n?'<span class="talepRozet" aria-label="'+esc(cev(n+" bekliyor"))+'">'+n+"</span>":esc(cev((l||[]).length?"Bekleyen yok":"Talep yok")); };
+    if(l){ yaz(l); return Promise.resolve(); }
+    return VT.dt.tumTalepler().then(yaz,function(){ tb.classList.add("hide"); });
+  }
+  function talepListesiSheet(){
+    perde('<div class="head"><h2>'+esc(cev("Bağlantı talepleri"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 1rem">'+esc(cev("Villa sahiplerinin ekibe bıraktığı takvim bağlantıları."))+"</div>"+
+      '<div id="tl-liste">'+iskelet()+"</div>");
+    var yenile=function(){
+      VT.dt.tumTalepler().then(function(l){
+        var el=document.getElementById("tl-liste"); if(!el) return;
+        l=Array.isArray(l)?l:[]; talepSayiYaz(l);
+        if(!l.length){ el.innerHTML=bosHal("baglanti","Talep yok."); return; }
+        el.innerHTML='<div class="grup">'+l.map(function(t){
+          return '<button class="satirBtn tlSatir" data-tl="'+esc(t.id)+'">'+dtRozet(t.site)+"<span><span>"+esc(t.villa_ad||"Villa")+"</span>"+
+            '<span class="satirAlt">'+esc(cev(dtKisaAd(t.site)))+" · "+esc(t.sahip_eposta||"—")+" · "+esc(oncesi(t.olusturma))+"</span></span>"+
+            '<span class="sag tlDurum d-'+esc(t.durum)+'">'+esc(cev(TALEP_DURUM[t.durum]||t.durum))+"</span></button>";
+        }).join("")+"</div>";
+        el.onclick=function(e){ var b=e.target.closest("[data-tl]"); if(!b) return; var t=l.filter(function(x){ return x.id===b.dataset.tl; })[0]; if(t) talepDetay(t); };
+      },function(e){ yukleHata(document.getElementById("tl-liste"),e,yenile); });
+    };
+    yenile();
+  }
+  function talepDetay(t){
+    var tel=telNormal(t.sahip_telefon), sec=t.durum;
+    var bilgi=function(lab,deger){ return '<div class="tlBilgi"><div class="eyebrow lab">'+esc(cev(lab))+"</div><div>"+deger+"</div></div>"; };
+    perde('<div class="head"><h2>'+esc(t.villa_ad||"Villa")+"</h2>"+kapatBtn()+"</div>"+
+      '<button type="button" class="linkBtn maGeri" id="tlGeri">'+ikon("sol",{boy:18})+"<span>"+esc(cev("Bağlantı talepleri"))+"</span></button>"+
+      bilgi("Site",'<span class="tlSite">'+dtRozet(t.site)+"<span>"+esc(cev(dtKaynak(t.site).ad))+"</span></span>")+
+      bilgi("Villa sahibi",esc(t.sahip_eposta||"—")+(t.sahip_telefon?"<br>"+esc(telGoster(t.sahip_telefon)):""))+
+      (tel?'<a class="big renkli is-wa" data-ik="mesaj" href="https://wa.me/'+esc(tel.slice(1))+'" target="_blank" rel="noopener" style="margin-bottom:1rem">WhatsApp</a>':"")+
+      bilgi("Sayfa linki",t.sayfa_linki?'<a class="tlLink" href="'+esc(t.sayfa_linki)+'" target="_blank" rel="noopener">'+esc(t.sayfa_linki)+"</a>":esc(cev("Verilmedi")))+
+      bilgi("Not",esc(t.notu||"—"))+
+      '<div class="eyebrow" style="margin:1.5rem 0 .5rem">'+esc(cev("Durum"))+"</div>"+
+      '<div class="seg tlSeg" id="tlDurum">'+["bekliyor","calisiliyor","baglandi","olmadi"].map(function(d){
+        return '<button type="button" data-d="'+d+'"'+(d===sec?' class="on"':"")+">"+esc(cev({bekliyor:"Bekliyor",calisiliyor:"Çalışılıyor",baglandi:"Bağlandı",olmadi:"Olmadı"}[d]))+"</button>"; }).join("")+"</div>"+
+      '<div style="margin-top:1rem">'+alan("tl-not",esc(cev("Yönetici notu (sahip görür)")),esc(cev("Örn. Site yetkilisi link vermedi")),"text",esc(t.yonetici_notu||""))+"</div>"+
+      '<button class="big renkli is-gri" data-ik="tik" id="tlKaydet">'+esc(cev("Durumu kaydet"))+"</button>"+
+      '<div class="eyebrow" style="margin:2rem 0 .5rem">'+esc(cev("iCal linkini ekle"))+"</div>"+
+      alan("tl-ical",esc(cev("Takvim linki (.ics)")),"https://…","url","")+
+      '<div id="tlSonuc"></div>'+
+      '<button class="big" data-ik="baglanti" id="tlBagla">'+esc(cev("Dene ve bağla"))+"</button>");
+    document.getElementById("tlGeri").onclick=talepListesiSheet;
+    document.getElementById("tlDurum").onclick=function(e){ var b=e.target.closest("[data-d]"); if(!b) return; sec=b.dataset.d;
+      Array.prototype.forEach.call(this.children,function(x){ x.classList.toggle("on",x===b); }); };
+    var kb=document.getElementById("tlKaydet");
+    kb.onclick=function(){ kaydetIs(kb,function(){ var n=document.getElementById("tl-not").value.trim();
+      return VT.dt.talepGuncelle(t.id,sec,n||null).then(function(){ t.durum=sec; if(n) t.yonetici_notu=n; tamam(cev("Talep güncellendi")); talepSayiYaz(); }); }); };
+    var bb=document.getElementById("tlBagla");
+    bb.onclick=function(){
+      var adres=document.getElementById("tl-ical").value.trim();
+      if(!adres){ alanHata(document.getElementById("tl-ical")); return; }
+      kaydetIs(bb,function(){
+        return VT.dt.esitle({villa_id:t.villa_id, deneme:{adres:adres, kaynak:t.site}}).then(function(c){
+          var d=c && c.deneme; if(!d || !d.ok) throw new Error((d && d.hata) || cev("Takvim okunamadı."));
+          return VT.dt.ekle(t.villa_id,t.site,dtKisaAd(t.site).slice(0,40),adres).then(function(){ return VT.dt.talepGuncelle(t.id,"baglandi",null); }).then(function(){
+            t.durum="baglandi"; sec="baglandi";
+            Array.prototype.forEach.call(document.getElementById("tlDurum").children,function(x){ x.classList.toggle("on",x.dataset.d==="baglandi"); });
+            document.getElementById("tlSonuc").innerHTML='<div class="dtSonuc" role="status">'+ikon("tik-daire",{boy:22})+"<span>"+
+              esc(cev(d.dolu_gun ? "Bağlandı: önümüzdeki 12 ayda "+d.dolu_gun+" dolu gün bulundu." : "Bağlandı: önümüzdeki 12 ayda dolu gün yok."))+"</span></div>";
+            titret("kaydedildi"); talepSayiYaz();
+          });
+        });
+      },function(e){ return dtHataYazi(e); });
+    };
+  }
   // Onaycı: yalnızca bekleyen kayıtları görür ve onaylar
   function onayciSheet(){
     perde('<div class="head"><h2>Onay bekleyenler</h2>'+kapatBtn()+"</div>"+

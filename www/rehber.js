@@ -96,6 +96,7 @@
     // 32.3 dış takvim bağlama
     dtEkle: "Başka sitedeki takvimi bağlamak için ‘Site takvimi bağla’ya dokunun.",
     dtKaynak: "Takvimin geleceği siteye dokunun.",
+    dtSecenek: "Linki kendiniz bağlamak için buraya dokunun. İsterseniz üstteki düğmeyle bağlamayı ekibimize bırakabilirsiniz.",
     dtAdres: "Sitenin verdiği takvim linkini buraya yapıştırın.",
     dtBagla: "‘Bağla’ya dokunun. Link hemen denenir.",
     // paylaş
