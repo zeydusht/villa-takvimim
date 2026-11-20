@@ -1557,6 +1557,23 @@
   /* 33.1: giriş günü sağ-alt yarı, çıkış günü sol-üst yarı çizgili (bizim rezervasyonlar gibi); zemin satır içinde */
   .cell.disY{color:#2E3833}
   /* 33.5 "Nereden geldi?": büyük haplar, yatay kayar; seçili hap kanal renginde çerçeve. Kilitliyken (dış satış) ötekiler soluk */
+  /* 33.6 kanal raporu: Büyük yazıda tutar alt satıra iner, üst üste binmez */
+  .kanalR{display:block; width:100%; text-align:left; padding:.75rem 0; border:0; border-bottom:1px solid var(--line); background:none; color:var(--ink); font:inherit}
+  .kanalR:last-child{border-bottom:0}
+  .kanalRUst{display:flex; align-items:center; flex-wrap:wrap; gap:.25rem .625rem}
+  .kanalRAd{flex:1 1 8rem; min-width:0; overflow-wrap:anywhere}
+  .kanalRCiro{flex:none; margin-left:auto; font-variant-numeric:tabular-nums}
+  .kanalRAlt{margin-top:.25rem; color:var(--muted); font-size:.8823rem; line-height:1.45}
+  .kanalRNet{color:var(--ok)}
+  .kanalRCubuk{height:.375rem; margin-top:.5rem; border-radius:99px; background:var(--soft); overflow:hidden}
+  .kanalRCubuk i{display:block; height:100%; border-radius:99px}
+  .kanalRGir{cursor:pointer; min-height:var(--dokunma-yukseklik)}
+  .kanalRGir .kanalRAlt{color:var(--uyari)}
+  .kanalHap.belirsiz{background:#fff; color:var(--muted); box-shadow:inset 0 0 0 1.5px var(--cizgi)}
+  .kgListe{display:flex; flex-direction:column; gap:.75rem}
+  .kgSatir{display:flex; align-items:center; flex-wrap:wrap; gap:.5rem 1rem; padding-bottom:.75rem; border-bottom:1px solid var(--line)}
+  .kgSatir > div{flex:1 1 8rem}
+  .kgSatir .big{flex:1 1 12rem; margin:0}
   .komListe{display:flex; flex-direction:column; gap:.5rem}
   .komSatir{display:flex; align-items:center; gap:.75rem; min-height:var(--dokunma-yukseklik)}
   .komAd{flex:1 1 auto; min-width:0; overflow-wrap:anywhere}
@@ -2370,6 +2387,11 @@
       <input type="file" id="fisInput" accept="image/*" style="display:none; width:auto">
     </div>
 
+    <!-- 33.6: satış kanalları (yalnız sahip; Ay / Yıl / Tümü seçimine uyar) -->
+    <div class="section hide" id="kKanalBol">
+      <div class="bolumSatir" style="margin-bottom:.5rem"><div class="eyebrow" data-iki="para:yuzde">Satış kanalları</div></div>
+      <div id="kanalRapor"></div>
+    </div>
     <details class="section dahaFazla" id="kDaha">
       <summary><span data-iki="hesap:grafik" class="eyebrow">Daha fazla istatistik</span></summary>
       <div id="grafikBolum" style="margin-top:1rem">
@@ -7784,6 +7806,7 @@
       var ilk=(para0 && kaporaAcik)?sayi(document.getElementById("f-odenen").value):0;
       if(ilk){ yeni.odemeler=[{id:uid(), tarih:fmt(today), tutar:ilk, not:"kapora"}]; yeni.odenen=ilk; }
       S.taslak=null; yeniIsaretle(yeni.id); kapat(); ciz(); kaydet();
+      if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
       olc("rez_ekle",{gece:Math.round((parse(yeni.end)-parse(yeni.start))/86400000), kisi:sayi(yeni.people)});
       // takvimde yeni rezervasyonun günleri bir kez parlasın
       for(var d=parse(yeni.start); d<parse(yeni.end); d=addDays(d,1)){
@@ -10101,7 +10124,7 @@
   document.getElementById("kasaBtn").onclick=function(){
     if(!aktif()) return;
     S.yil=today.getFullYear(); S.kasaAy=new Date(today.getFullYear(),today.getMonth(),1);
-    S.kasaMod="yil"; S.grafikYil=null;
+    S.kasaMod="yil"; S.grafikYil=null; S.kasaAcilis=Date.now();
     goster("kasa"); cizKasa();
     try{ window.scrollTo(0,0); }catch(e){} };
   document.getElementById("kGiderEkle").onclick=function(){ if(aktif()) hareketSheet("gider"); };
@@ -10190,6 +10213,7 @@
       ? cev(buDon+" "+para(rzT)+" rezervasyon var; "+para(rzA)+"'si alındı, "+para(h.gider)+" gider çıktı.")
       : cev(buDon+" rezervasyon yok"+(h.gider?", "+para(h.gider)+" gider çıktı.":"."));
     kasaListeleri(v,a,don);
+    kanalRaporCiz(v,a);
     grafikCiz(v,a);
 
     sezonCiz(v);
@@ -10232,6 +10256,79 @@
     document.getElementById("gelirListe").innerHTML=gelirL.length?kisaListe("gelirListe",gelirL).join(""):'<div class="sm muted">'+esc(cev("Bu dönemde başka gelir yok."))+"</div>";
   }
 
+  // ---- 33.6 kanal raporu: kanal başına rezervasyon, gece, ciro, komisyon ve net, cirodaki payı. Dönem: giriş günü.
+  // Bilgisi girilmemiş dış satışlar (rezervasyon türü, bizde bağlı rezervasyonu yok) ayrı satırda; ciro "—", dokununca liste.
+  function kanalRaporHesap(v,a){
+    var kom=komisyonlar(v), m={}, toplam=0;
+    var al=function(k){ return m[k]||(m[k]={k:k, rez:0, gece:0, ciro:0}); };
+    (v.rez||[]).forEach(function(r){
+      if(!icinde(a,gunK(r.start))) return;
+      var x=al(rezKanal(v,r)||"belirsiz"); x.rez++; x.gece+=gece(r); x.ciro+=kalemler(v,r).konaklama;
+    });
+    var rz={}; (v.rez||[]).forEach(function(r){ rz[r.id]=1; });
+    var gir={};
+    (DT.bloklar[v.id]||[]).forEach(function(b){
+      if(b.tur!=="rezervasyon" || (b.bagli && rz[b.bagli]) || !icinde(a,gunK(b.bas))) return;
+      var k=dtTakvimKanal(v.id,b.takvim), y=gir[k]||(gir[k]={k:k, satis:0, gece:0, bloklar:[]});
+      y.satis++; y.gece+=dtGece(b); y.bloklar.push(b);
+    });
+    var l=Object.keys(m).map(function(k){ var x=m[k]; toplam+=x.ciro;
+      var y=+kom[k]>0 ? +kom[k] : 0; x.oran=y; x.komisyon=y?Math.round(x.ciro*y/100):0; x.net=x.ciro-x.komisyon; return x; });
+    l.sort(function(p,q){ return q.ciro-p.ciro || q.rez-p.rez || KANAL_SIRA.indexOf(p.k)-KANAL_SIRA.indexOf(q.k); });
+    var g=KANAL_SIRA.filter(function(k){ return gir[k]; }).map(function(k){ return gir[k]; });
+    return {l:l, girilmemis:g, toplam:toplam};
+  }
+  function kanalRaporCiz(v,a){
+    var bol=document.getElementById("kKanalBol"), el=document.getElementById("kanalRapor"); if(!bol || !el) return;
+    if(!sahipMi() || !paraGorur()){ bol.classList.add("hide"); return; }
+    var R=kanalRaporHesap(v,a);
+    bol.classList.toggle("hide",!R.l.length && !R.girilmemis.length);
+    var oranYaz=function(n){ return String(n).replace(".",","); };
+    var h=R.l.map(function(x){
+      var bilinmez=x.k==="belirsiz", kn=bilinmez?null:KANAL[x.k], pay=R.toplam>0?Math.round(x.ciro/R.toplam*100):0;
+      return '<div class="kanalR" data-kanal="'+x.k+'">'+
+        '<div class="kanalRUst">'+(bilinmez?'<span class="kanalHap belirsiz" aria-hidden="true">?</span>':kanalHap(x.k))+
+          '<span class="kanalRAd">'+esc(cev(bilinmez?"Belirtilmemiş":kn.ad))+"</span>"+
+          '<span class="kanalRCiro">'+para(x.ciro)+"</span></div>"+
+        '<div class="kanalRAlt">'+esc(cev(x.rez+" rezervasyon"))+" · "+esc(cev(x.gece+" gece"))+
+          (x.oran?' · <span class="nw">'+esc(cev("Komisyon"))+" %"+oranYaz(x.oran)+": "+para(x.komisyon)+'</span> · <span class="nw kanalRNet">'+esc(cev("Net"))+" "+para(x.net)+"</span>":"")+"</div>"+
+        '<div class="kanalRCubuk" role="img" aria-label="'+esc(cev("Cirodaki payı"))+" %"+pay+'"><i style="width:'+pay+"%;background:"+(bilinmez?"var(--cizgi)":kn.renk)+'"></i></div>'+
+        "</div>";
+    }).join("")+R.girilmemis.map(function(y){
+      var kn=KANAL[y.k];
+      return '<button type="button" class="kanalR kanalRGir" data-gir="'+y.k+'">'+
+        '<div class="kanalRUst">'+kanalHap(y.k)+'<span class="kanalRAd">'+esc(cev(kn.ad+": "+y.satis+" satış (misafir bilgisi girilmemiş)"))+"</span>"+
+          '<span class="kanalRCiro muted">—</span></div>'+
+        '<div class="kanalRAlt">'+esc(cev(y.gece+" gece"))+" · "+esc(cev("Dokunun, misafir bilgisini ekleyin"))+"</div></button>";
+    }).join("");
+    el.innerHTML=h;
+    Array.prototype.forEach.call(el.querySelectorAll("[data-gir]"),function(b){
+      b.onclick=function(){ var y=R.girilmemis.filter(function(x){ return x.k===b.dataset.gir; })[0]; if(y) kanalGirilmemisSheet(v,y); };
+    });
+    kanalRaporOlc(bol);
+  }
+  // misafir bilgisi girilmemiş dış satışlar: her birinde "Misafir bilgisi ekle"
+  function kanalGirilmemisSheet(v,y){
+    var ad=KANAL[y.k].ad;
+    perde('<div class="head"><h2>'+esc(cev(ad+" satışları"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.25rem 0 1rem;line-height:1.45">'+esc(cev("Misafir bilgisi girilmemiş. Ekleyince rezervasyon olarak sayılır; ödeme ve bakıcı takibine girer."))+"</div>"+
+      '<div class="kgListe">'+y.bloklar.slice().sort(function(p,q){ return p.bas<q.bas?-1:1; }).map(function(b){
+        return '<div class="kgSatir"><div><div>'+esc(aralikYazi({b:b.bas,s:b.bit}))+'</div><div class="sm muted">'+esc(cev(dtGece(b)+" gece"))+"</div></div>"+
+          '<button type="button" class="big renkli is-rez" data-ik="kisi-arti" data-blok="'+esc(String(b.id))+'">'+esc(cev("Misafir bilgisi ekle"))+"</button></div>"; }).join("")+"</div>");
+    Array.prototype.forEach.call(document.querySelectorAll(".kgListe [data-blok]"),function(bt){
+      bt.onclick=function(){ var b=y.bloklar.filter(function(x){ return String(x.id)===bt.dataset.blok; })[0]; if(b) dtMisafirFormu(v,b); };
+    });
+  }
+  // ölçüm: bölüm ekrana girince, Gelir & gider her açılışında bir kez
+  var KANAL_OLC=null;
+  function kanalRaporOlc(bol){
+    if(bol.classList.contains("hide") || KANAL_OLC===S.kasaAcilis) return;
+    var gonder=function(){ if(KANAL_OLC===S.kasaAcilis) return; KANAL_OLC=S.kasaAcilis; olc("kanal_raporu_ac"); };
+    if(!("IntersectionObserver" in window)){ gonder(); return; }
+    if(bol._io) bol._io.disconnect();
+    bol._io=new IntersectionObserver(function(e){ if(e.some(function(x){ return x.isIntersecting; })){ bol._io.disconnect(); gonder(); } });
+    bol._io.observe(bol);
+  }
   // 16.6: listede ilk 4 öğe; fazlası başlıktaki "Tümünü gör" ile açılır
   var LISTE_SINIR=4;
   function kisaListe(id,l){

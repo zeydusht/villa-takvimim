@@ -1222,7 +1222,13 @@
     "Sitenin aldığı komisyon yüzdesini yazın. Gelir & gider'deki kanal raporunda net tutar buna göre hesaplanır.":"Enter the commission percentage each site takes. The channel report under Income & expenses calculates the net amount from it.",
     "komisyon yüzdesi":"commission percentage",
     "Yüzde 0 ile 100 arasında olmalı.":"The percentage must be between 0 and 100.",
-    "Komisyonlar kaydedildi":"Commissions saved"
+    "Komisyonlar kaydedildi":"Commissions saved",
+    "Satış kanalları":"Sales channels",
+    "Belirtilmemiş":"Not specified",
+    "Komisyon":"Commission",
+    "Cirodaki payı":"Share of revenue",
+    "Dokunun, misafir bilgisini ekleyin":"Tap to add the guest details",
+    "Misafir bilgisi girilmemiş. Ekleyince rezervasyon olarak sayılır; ödeme ve bakıcı takibine girer.":"Guest details are missing. Once added, it counts as a reservation and is tracked for payments and the caretaker."
   };
 
   // ---------- kalıplı metinler ----------
@@ -1467,7 +1473,9 @@
     [/^Boş güne dokunup tarih seçin\. Dolu güne dokununca rezervasyon açılır\. Giriş (\d+:\d+), çıkış (\d+:\d+)\.$/,
       "Tap a free day to pick dates. Tap a booked day to open the reservation. Check-in $1, check-out $2."],
     [/^Her satıra bir oda yazın\. Örn:/, "Write one room per line. For example:"],
-    [/^Tarihler (.+?)'n?[dt][ae]ki satıştan$/, "Dates come from the $1 booking"]
+    [/^Tarihler (.+?)'n?[dt][ae]ki satıştan$/, "Dates come from the $1 booking"],
+    [/^(.+): (\d+) satış \(misafir bilgisi girilmemiş\)$/, "$1: $2 sales (guest details missing)"],
+    [/^(.+) satışları$/, "$1 sales"]
   ];
 
   function bosluksuz(t){ return String(t).replace(/\s+/g, " ").trim(); }
