@@ -1556,10 +1556,22 @@
   .cell.dis.disKapali{background:var(--dis-cizgi-kapali) !important}
   /* 33.1: giriş günü sağ-alt yarı, çıkış günü sol-üst yarı çizgili (bizim rezervasyonlar gibi); zemin satır içinde */
   .cell.disY{color:#2E3833}
-  /* 33.2: dış satıştan gelen formda site kilitli */
-  .kaynakKilit{display:flex; align-items:center; gap:.5rem; min-height:var(--dokunma-yukseklik); padding:0 1rem; border-radius:var(--kose);
-    background:var(--soft); color:var(--ink); font-weight:600}
-  .kaynakKilit svg.ik{color:var(--muted); flex:none}
+  /* 33.5 "Nereden geldi?": büyük haplar, yatay kayar; seçili hap kanal renginde çerçeve. Kilitliyken (dış satış) ötekiler soluk */
+  .komListe{display:flex; flex-direction:column; gap:.5rem}
+  .komSatir{display:flex; align-items:center; gap:.75rem; min-height:var(--dokunma-yukseklik)}
+  .komAd{flex:1 1 auto; min-width:0; overflow-wrap:anywhere}
+  .komGir{flex:none; display:flex; align-items:center; gap:.25rem; color:var(--muted)}
+  .komGir input{width:4.5rem; text-align:right}
+  .kanalBaslik{display:flex; align-items:center; gap:.375rem; margin-bottom:.375rem}
+  .kanalBaslik svg.ik{color:var(--muted)}
+  .kanalKaydir{display:flex; gap:.5rem; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none; margin:0; padding:.125rem 0 .25rem; -webkit-overflow-scrolling:touch}
+  .kanalKaydir::-webkit-scrollbar{display:none}
+  .kanalSec{flex:none; display:inline-flex; align-items:center; gap:.5rem; min-height:var(--dokunma-yukseklik); padding:0 1rem 0 .625rem;
+    border-radius:99px; border:var(--cerceve-kalinlik) solid var(--cizgi); background:#fff; color:var(--ink); font:inherit; font-size:.9375rem;
+    white-space:nowrap; cursor:pointer; transition:background-color var(--hiz-bas), border-color var(--hiz-bas)}
+  .kanalSec.secili{border-color:var(--kanal, var(--ok)); background:var(--soft); box-shadow:inset 0 0 0 1px var(--kanal, var(--ok))}
+  .kanalSec:disabled{opacity:.4; cursor:default}
+  .kanalKaydir.kilitli .kanalSec.secili{cursor:default}
   /* 33.4 kanal hapı (kısa etiket, kanal renginde; renkler KANAL listesinde) */
   .kanalHap{flex:none; display:inline-flex; align-items:center; justify-content:center; min-width:1.75rem; height:1.25rem; padding:0 .3125rem;
     border-radius:99px; color:#fff; font-size:.6875rem; letter-spacing:.03em; line-height:1; white-space:nowrap}
@@ -2161,6 +2173,10 @@
       <button class="satirBtn hide" id="dtBtn" data-ikk="paylas:baglanti">
         <span><span>Airbnb, Booking ve diğer siteler</span><span class="satirAlt" id="dtOzet">Takvim bağlantıları</span></span>
       </button>
+      <!-- 33.5: satış kanalları ve komisyon (yalnız sahip) -->
+      <button class="satirBtn hide" id="kanalBtn" data-ikk="para:yuzde">
+        <span><span>Satış kanalları ve komisyon</span><span class="satirAlt" id="kanalOzet"></span></span>
+      </button>
       <button class="satirBtn hide" id="giderlerimBtn" data-ikk="para:fis">
         <span>Giderlerim</span>
         <span class="sag" id="giderlerimOzet"></span>
@@ -2608,6 +2624,7 @@
     var t=dtTakvimleri(villaId).filter(function(x){ return x.id===takvimId; })[0];
     return t && KANAL[t.kaynak] ? t.kaynak : "diger";
   }
+  function dtBagliMi(v,r){ return !!(v && r && (DT.bloklar[v.id]||[]).some(function(x){ return x.bagli===r.id; })); }
   // rezervasyonun kanalı: kaynak alanı; boşsa ve bir dış satışa bağlıysa o sitenin kanalı; yoksa null (belirtilmemiş)
   function rezKanal(v,r){
     if(!r) return null;
@@ -2615,6 +2632,38 @@
     var b=v ? (DT.bloklar[v.id]||[]).filter(function(x){ return x.bagli===r.id; })[0] : null;
     return b ? dtTakvimKanal(v.id,b.takvim) : null;
   }
+  // 33.5 "Nereden geldi?": büyük haplar, yatay kayar. Direkt / WhatsApp hep başta; ötekiler sahibin en çok kullandığına göre
+  // (eşitse bu sıra). Kilitliyse (dış satış) yalnız seçili hap etkin.
+  var KANAL_FORM=["direkt","airbnb","booking","villasepeti","tatilsepeti","kalkanvilla","villapaketi","tatilkentim","tavsiye","vrbo","diger"];
+  function kanalSirasi(){
+    var say={};
+    (S.villalar||[]).forEach(function(v){ (v.rez||[]).forEach(function(r){ if(r.kaynak) say[r.kaynak]=(say[r.kaynak]||0)+1; }); });
+    return ["direkt"].concat(KANAL_FORM.slice(1).map(function(k,i){ return {k:k, i:i}; })
+      .sort(function(a,b){ return (say[b.k]||0)-(say[a.k]||0) || a.i-b.i; }).map(function(x){ return x.k; }));
+  }
+  function kanalSecHTML(id,secili,kilitli){
+    return '<div class="field kanalAlan" id="'+id+'-alan"><div class="eyebrow kanalBaslik">'+esc(cev("Nereden geldi?"))+
+        (kilitli?ikon("kilit",{boy:14}):"")+"</div>"+
+      '<div class="kanalKaydir'+(kilitli?" kilitli":"")+'" id="'+id+'" role="radiogroup" aria-label="'+esc(cev("Nereden geldi?"))+'">'+
+      kanalSirasi().map(function(k){ var s=k===secili;
+        return '<button type="button" class="kanalSec'+(s?" secili":"")+'" data-kanal="'+k+'" role="radio" aria-checked="'+s+'"'+
+          (kilitli && !s?' disabled':"")+(s?' style="--kanal:'+KANAL[k].renk+'"':"")+">"+kanalHap(k)+"<span>"+esc(cev(KANAL[k].ad))+"</span></button>"; }).join("")+
+      "</div></div>";
+  }
+  function kanalSecBagla(id){
+    var el=document.getElementById(id); if(!el) return;
+    // seçili hap görünmüyorsa kaydırılır (görünüyorsa sıra yerinde kalır)
+    var s=el.querySelector(".secili");
+    if(s) try{ var sx=s.getBoundingClientRect(), ex=el.getBoundingClientRect(); if(sx.right>ex.right-8) el.scrollLeft+=sx.right-ex.right+24; }catch(e){}
+    if(el.classList.contains("kilitli")) return;
+    el.addEventListener("click",function(e){
+      var b=e.target.closest("[data-kanal]"); if(!b) return;
+      Array.prototype.forEach.call(el.querySelectorAll(".kanalSec"),function(x){ var on=x===b; x.classList.toggle("secili",on); x.setAttribute("aria-checked",String(on));
+        if(on) x.style.setProperty("--kanal",KANAL[x.dataset.kanal].renk); else x.style.removeProperty("--kanal"); });
+      titret("secim");
+    });
+  }
+  function kanalSecDeger(id){ var s=document.querySelector("#"+id+" .secili"); return s ? s.dataset.kanal : null; }
   // takvim hücresinde tam ad sığar mı (hap: .6875rem yazı + iki yanda .3125rem boşluk; hücrenin iki yanında 2 px pay)
   // (yazı boyu .cell .fy ile aynı: clamp(11px, .6875rem, 3.1vw); harf aralığı .03em; 1 px pay)
   var KS={en:0, ctx:null, kok:16, boy:11};
@@ -2716,6 +2765,35 @@
     el.textContent = !dtHazir() ? cev("Takvim bağlantıları") : (l.length ? l.map(function(t){ return t.ad||dtKisaAd(t.kaynak); }).join(", ") : cev("Bağlı takvim yok"));
   }
   document.getElementById("dtBtn").onclick=function(){ var v=aktif(); if(v) dtEkran(v); };
+  document.getElementById("kanalBtn").onclick=function(){ var v=aktif(); if(v && sahipMi()) komisyonSheet(v); };
+  // 33.5: kanal başına komisyon yüzdesi: villalar.bilgi.komisyon = {airbnb:15, …} (veritabanı değişikliği yok)
+  function komisyonlar(v){ var k=(v && v.bilgi && v.bilgi.komisyon) || {}; return (k && typeof k==="object") ? k : {}; }
+  function komisyonOzet(v){
+    var k=komisyonlar(v), l=KANAL_SIRA.filter(function(x){ return +k[x]>0; });
+    return l.length ? l.map(function(x){ return cev(KANAL[x].ad)+" %"+String(+k[x]).replace(".",","); }).join(", ") : cev("Komisyon girilmedi");
+  }
+  function komisyonSheet(v){
+    var k=komisyonlar(v);
+    perde('<div class="head"><h2>'+esc(cev("Satış kanalları ve komisyon"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.25rem 0 1rem;line-height:1.45">'+esc(cev("Sitenin aldığı komisyon yüzdesini yazın. Gelir & gider'deki kanal raporunda net tutar buna göre hesaplanır."))+"</div>"+
+      '<div class="komListe">'+KANAL_SIRA.filter(function(x){ return x!=="direkt"; }).map(function(x){
+        return '<label class="komSatir">'+kanalHap(x)+'<span class="komAd">'+esc(cev(KANAL[x].ad))+"</span>"+
+          '<span class="komGir"><span>%</span><input type="text" inputmode="decimal" autocomplete="off" maxlength="5" data-kom="'+x+'" value="'+(+k[x]>0?String(+k[x]).replace(".",","):"")+'" placeholder="0" aria-label="'+esc(cev(KANAL[x].ad)+" "+cev("komisyon yüzdesi"))+'"></span></label>'; }).join("")+"</div>"+
+      '<div class="sm warn hide" id="komHata" style="margin-top:.5rem"></div>'+
+      '<button class="big" data-ik="tik" id="komKaydet" style="margin-top:1rem">'+esc(cev("Kaydet"))+"</button>");
+    document.getElementById("komKaydet").onclick=function(){
+      var y={}, hata="";
+      Array.prototype.forEach.call(document.querySelectorAll("[data-kom]"),function(inp){
+        var s=inp.value.trim().replace(",","."); if(!s) return;
+        var n=+s; if(!(n>=0 && n<=100)){ hata=cev("Yüzde 0 ile 100 arasında olmalı."); alanHata(inp); return; }
+        if(n>0) y[inp.dataset.kom]=Math.round(n*10)/10;
+      });
+      var h=document.getElementById("komHata");
+      if(hata){ h.textContent=hata; h.classList.remove("hide"); titret("hata"); return; }
+      v.bilgi=v.bilgi||{}; v.bilgi.komisyon=y;
+      kaydet(); kapat(); ciz(); tamam(cev("Komisyonlar kaydedildi"));
+    };
+  }
 
   // ---- 32.4 takvimde dış bloklar ----
   // Bir gecenin dış bloğu (bizdeki bir rezervasyona bağlı olanlar sayılmaz; o rezervasyon normal görünür)
@@ -5899,6 +5977,8 @@
     document.getElementById("bakiciBtn").classList[(S.bulut&&sahip&&!S.destek)?"remove":"add"]("hide");
     document.getElementById("dtBtn").classList[(S.bulut&&sahip&&!S.destek&&DT.hazir!==false)?"remove":"add"]("hide");
     dtOzetYaz(v); dtTazelikCiz(v);
+    document.getElementById("kanalBtn").classList[(sahip&&duz&&!S.destek)?"remove":"add"]("hide");
+    document.getElementById("kanalOzet").textContent=komisyonOzet(v);
     // 16.6: villa ekranında Teklifler bölümü görünüyorsa "Teklifler" satırı tekrarlanmaz
     var tkVar=!!(S.tkOn && S.tkOn[v.id] && S.tkOn[v.id].l && S.tkOn[v.id].l.length && teklifVerebilir());
     document.getElementById("teklifBtn").classList[(S.bulut&&sahip&&kurulu()&&!S.destek&&!tkVar)?"remove":"add"]("hide");
@@ -6789,18 +6869,20 @@
         (function(){ if(!paraGorur()) return ""; var k=konaklamaHesap(v,ar.start,ar.end); return k.eksik?"":" · "+para(k.toplam); })()+"</div>"+
       alan("op-ad",esc(cev("Misafir adı")),esc(cev("Örn. Ali Kaya")),"text")+
       '<div class="sm warn hide" id="op-adHata" style="margin:-.5rem 0 1rem">'+esc(cev("Misafir adını yazın"))+"</div>"+
+      kanalSecHTML("op-kaynak","direkt",false)+
       alan("op-tel",esc(cev("Telefon")),esc(cev("İsteğe bağlı")),"telefon")+
       '<div class="eyebrow" style="margin:.25rem 0 .5rem">'+esc(cev("Son geçerlilik"))+"</div>"+gecerlilikSec("op-gec")+
       '<div style="margin-top:1rem">'+alan("op-not",esc(cev("Not")),esc(cev("İsteğe bağlı")),"text")+"</div>"+
       '<button class="big" data-ik="saat" id="op-kaydet">'+esc(cev("Opsiyonu kaydet"))+"</button>");
     var son=gecerlilikBagla("op-gec","2");
+    kanalSecBagla("op-kaynak");
     document.getElementById("op-kaydet").onclick=function(){
       var ad=document.getElementById("op-ad").value.trim();
       if(!ad){ document.getElementById("op-adHata").classList.remove("hide"); alanHata(document.getElementById("op-ad")); return; }
       var s2=son(); if(!s2) return uyari(cev("Opsiyonun biteceği günü seçin."));
       v.bilgi=v.bilgi||{}; v.bilgi.opsiyonlar=(v.bilgi.opsiyonlar||[]).filter(opsGorunur);
       v.bilgi.opsiyonlar.push({id:uid(), start:ar.start, end:ar.end, ad:ad, tel:document.getElementById("op-tel").value.trim(),
-        son:s2, not:document.getElementById("op-not").value.trim(), olusturma:fmt(today)});
+        son:s2, not:document.getElementById("op-not").value.trim(), kaynak:kanalSecDeger("op-kaynak")||"direkt", olusturma:fmt(today)});
       kaydet(); kapat(); ciz(); rhBildir("kaydedildi:ops"); tamam(cev("Opsiyon kondu"));
     };
     rehberAc("ops",REHBER.ops);
@@ -6819,7 +6901,7 @@
     document.getElementById("od-cevir").onclick=function(){
       var hd=dogrula(parse(o.start),parse(o.end));
       if(hd) return uyari(cev("Bu tarihler artık uygun değil.")+" "+cev(hd));
-      S.taslak={start:o.start, end:o.end, color:renkSec(v.rez,parse(o.start),parse(o.end)), opsiyon:{id:o.id, ad:o.ad, tel:o.tel, not:o.not}};
+      S.taslak={start:o.start, end:o.end, color:renkSec(v.rez,parse(o.start),parse(o.end)), opsiyon:{id:o.id, ad:o.ad, tel:o.tel, not:o.not, kaynak:o.kaynak}};
       form();
     };
     document.getElementById("od-uzat").onclick=function(){
@@ -7538,8 +7620,7 @@
       '<div style="margin-top:1.25rem"></div>'+
       alan("f-guest","Ad soyad","Örn. Ahmet Yılmaz","text")+
       '<div class="sm warn hide" id="f-guest-hata" style="margin:-.5rem 0 1rem">'+esc(cev(t.dis?"Misafirin adını yazın":"Misafir adını yazın"))+"</div>"+
-      (t.dis?'<div class="field" id="f-kaynakKilit"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Nereden geldi?"))+"</div>"+
-        '<div class="kaynakKilit">'+ikon("kilit",{boy:16})+"<span>"+esc(t.dis.ad)+"</span></div></div>":"")+
+      kanalSecHTML("f-kaynak", t.dis ? t.dis.kaynak : ((t.opsiyon && KANAL[t.opsiyon.kaynak]) ? t.opsiyon.kaynak : "direkt"), !!t.dis)+
       kisiStep+
       alan("f-phone","Telefon","İsteğe bağlı","telefon")+
       kapora+
@@ -7665,6 +7746,7 @@
       if(t.opsiyon.not) document.getElementById("f-note").value=t.opsiyon.not;
     }
     if(!para0 || t.dis) isim.focus();
+    kanalSecBagla("f-kaynak");
     rehberAc("rez",REHBER.rez);
     // 33.2: dış satıştan açılan formda bir şey yazıldıysa kapatırken sorulur
     var fo=isim.closest(".overlay");
@@ -7689,6 +7771,7 @@
         // Bakıcı tutar göndermez; tutarı veritabanı gecelik fiyatlardan hesaplar
         tutar:para0?U.geceler:0,
         ekUcret:para0?U.ek:0,
+        kaynak:kanalSecDeger("f-kaynak")||"direkt",
         odenen:0, odemeler:[] };
       // depozito bu rezervasyon için sabitlenir (villa ayarı sonra değişse de)
       if(para0) yeni.depozito={tutar:U.dep};
@@ -8064,6 +8147,7 @@
         tarihInput("dz-bit",r.end)+"</div>"+
       "</div>"+
       alan("dz-guest","Ad soyad","","text",r.guest)+
+      kanalSecHTML("dz-kaynak",rezKanal(v,r),dtBagliMi(v,r))+
       alan("dz-people","Kaç kişi","2","number",r.people)+
       alan("dz-phone","Telefon","İsteğe bağlı","telefon",r.phone)+
       alan("dz-note","Not","İsteğe bağlı","text",r.note)+
@@ -8076,6 +8160,7 @@
       '<button class="big" data-ik="tik" id="dz-kaydet">Değişiklikleri kaydet</button>');
 
     ["dz-tutar","dz-ek","dz-dep"].forEach(function(id){ var e=document.getElementById(id); if(e) sayiBicimle(e); });
+    kanalSecBagla("dz-kaynak");
     document.getElementById("dz-kaydet").onclick=function(){
       var b1=document.getElementById("dz-bas").value;
       var b2=document.getElementById("dz-bit").value;
@@ -8091,6 +8176,7 @@
       r.people=document.getElementById("dz-people").value||"";
       r.phone=document.getElementById("dz-phone").value.trim();
       r.note=document.getElementById("dz-note").value.trim();
+      var dzK=kanalSecDeger("dz-kaynak"); if(dzK) r.kaynak=dzK;
       if(paraGorur()){
         var yeniGece=Math.round((parse(b2)-parse(b1))/86400000);
         r.tutar=sayi(document.getElementById("dz-tutar").value);

@@ -24,5 +24,6 @@ ad / telefon / not alanları, kişi sayacı, kapora anahtarı, Kaydet düğmesi;
 | iPhone 15 · Normal | 0 |
 | iPhone 15 · Büyük | 0 |
 
-Tek fark "Nereden geldi?" satırı: dış satış formunda site kilitli olarak görünür (Normal yazıda 101 px, Büyük'te 114 px); altındaki
-her şey bu kadar aşağıda, kendi arasında birebir aynı. Normal forma "Nereden geldi?" 33.5'te eklenir; o zaman bu fark da kalkar.
+33.5'ten sonra iki formda da adın altında aynı "Nereden geldi?" satırı var (dış satış formunda site seçili ve kilitli); satır aynı
+yerde, aynı boyda. Satırın içindeki haplar karşılaştırmaya katılmaz: Büyük yazıda seçili site ekranın dışında kalıyorsa satır onu
+gösterecek kadar kayar. Görüntüler 33.5'ten sonraki koddan.

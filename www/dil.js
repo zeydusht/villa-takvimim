@@ -1216,7 +1216,13 @@
     "Villa Paketi'nden":"From Villa Paketi",
     "Tatilkentim'den":"From Tatilkentim",
     "Tavsiyeyle":"By referral",
-    "Diğer kanaldan":"From another channel"
+    "Diğer kanaldan":"From another channel",
+    "Satış kanalları ve komisyon":"Sales channels and commission",
+    "Komisyon girilmedi":"No commission entered",
+    "Sitenin aldığı komisyon yüzdesini yazın. Gelir & gider'deki kanal raporunda net tutar buna göre hesaplanır.":"Enter the commission percentage each site takes. The channel report under Income & expenses calculates the net amount from it.",
+    "komisyon yüzdesi":"commission percentage",
+    "Yüzde 0 ile 100 arasında olmalı.":"The percentage must be between 0 and 100.",
+    "Komisyonlar kaydedildi":"Commissions saved"
   };
 
   // ---------- kalıplı metinler ----------
