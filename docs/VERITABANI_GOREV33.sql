@@ -1,5 +1,5 @@
 -- VERITABANI_GOREV33.sql — Rezervasyon kaynağı (kanal), yeni siteler, "Bağlamayı bize bırakın" talepleri
--- Ürün yöneticisi Zeyd'in onayıyla uygular. Claude Code ÇALIŞTIRMAZ, sadece adları kullanır.
+-- UYGULANDI: 2026-11-20 (Zeyd onayıyla). Claude Code ÇALIŞTIRMAZ, sadece adları kullanır.
 
 -- 1) Kanal listesi (rezervasyon nereden geldi)
 --    direkt = WhatsApp / telefon / kendi müşterisi, tavsiye = tanıdık tavsiyesi

@@ -1,5 +1,5 @@
 -- VERITABANI_GOREV32.sql — Dış takvim eşitleme (iCal), 10 dk ayırma, çakışma alarmı
--- Ürün yöneticisi Zeyd'in onayıyla uygular. Claude Code ÇALIŞTIRMAZ, sadece adları kullanır.
+-- UYGULANDI: 2026-11-20 (Zeyd onayıyla). Claude Code ÇALIŞTIRMAZ, sadece adları kullanır.
 -- Tarih kuralı: baslangic = giriş günü, bitis = çıkış günü (o gece dahil değil). iCal DTEND ile aynı.
 -- Çakışma: a.baslangic < b.bitis and b.baslangic < a.bitis
 
