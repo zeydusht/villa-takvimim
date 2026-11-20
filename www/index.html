@@ -1612,6 +1612,11 @@
   .tutmaHap{display:inline-flex; align-items:center; gap:.375rem; margin:0 0 .75rem; padding:.375rem .875rem; border-radius:99px;
     background:var(--basili-zemin); color:var(--ok); font-size:.9375rem; line-height:1.3}
   .tutmaHap.bitti{background:var(--soft); color:var(--muted)}
+  .tutmaHap.kilitHap{background:var(--soft); color:var(--ink)}   /* 33.3: dış satış formu: tarihler kilitli */
+  .tutmaHap.kilitHap svg.ik{color:var(--muted)}
+  .tutmaHap .hapIc{display:grid}
+  .tutmaHap .hapIc > span{grid-area:1/1; align-self:center}
+  .tutmaHap .hapOlcu{visibility:hidden}
   .disSerit{display:flex; flex-direction:column; gap:.625rem; margin:0 0 1rem; padding:.875rem 1rem; border-radius:var(--kose);
     background:#FBEFF2; border:var(--cerceve-kalinlik) solid var(--uyari); color:var(--uyari); font-size:1rem; line-height:1.45}
   .disSerit .big{margin:0}
@@ -7583,6 +7588,12 @@
     rehberAc("rez",REHBER.rez);
     // 33.2: dış satıştan açılan formda bir şey yazıldıysa kapatırken sorulur
     var fo=isim.closest(".overlay");
+    if(t.dis && fo){
+      var kh=document.createElement("div"); kh.className="tutmaHap kilitHap"; kh.id="f-tarihKilit";
+      kh.innerHTML=ikon("kilit",{boy:16})+'<span class="hapIc"><span>'+esc(cev("Tarihler "+ekDe(t.dis.ad)+"ki satıştan"))+"</span>"+
+        '<span class="hapOlcu" aria-hidden="true">'+esc(cev("Bu tarihler 10 dk sizin için ayrıldı"))+" · 9:59</span></span>";
+      fo.querySelector(".sheet .head").insertAdjacentElement("afterend",kh);
+    }
     if(t.dis && fo) fo._kapatSor=function(){
       var od0=document.getElementById("f-odenen");
       return !!(isim.value.trim() || document.getElementById("f-phone").value.trim() || document.getElementById("f-note").value.trim() || (od0 && sayi(od0.value)));

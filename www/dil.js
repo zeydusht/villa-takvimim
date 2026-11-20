@@ -1447,7 +1447,8 @@
     [/^(\d+)% · (\d+) \/ (\d+) gece$/, "$1% · $2 of $3 nights"],
     [/^Boş güne dokunup tarih seçin\. Dolu güne dokununca rezervasyon açılır\. Giriş (\d+:\d+), çıkış (\d+:\d+)\.$/,
       "Tap a free day to pick dates. Tap a booked day to open the reservation. Check-in $1, check-out $2."],
-    [/^Her satıra bir oda yazın\. Örn:/, "Write one room per line. For example:"]
+    [/^Her satıra bir oda yazın\. Örn:/, "Write one room per line. For example:"],
+    [/^Tarihler (.+?)'n?[dt][ae]ki satıştan$/, "Dates come from the $1 booking"]
   ];
 
   function bosluksuz(t){ return String(t).replace(/\s+/g, " ").trim(); }
