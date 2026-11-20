@@ -1203,7 +1203,20 @@
     "Nereden geldi?":"Where did it come from?",
     "Yazdıklarınız kaydedilmedi, çıkılsın mı?":"What you typed hasn't been saved. Leave anyway?",
     "Yazmaya devam et":"Keep editing",
-    "Çık":"Leave"
+    "Çık":"Leave",
+    "Direkt / WhatsApp":"Direct / WhatsApp",
+    "Booking.com":"Booking.com",
+    "Tavsiye":"Referral",
+    "Airbnb'den":"From Airbnb",
+    "Booking.com'dan":"From Booking.com",
+    "Vrbo'dan":"From Vrbo",
+    "Villasepeti'nden":"From Villasepeti",
+    "Tatilsepeti'nden":"From Tatilsepeti",
+    "Kalkan Villa'dan":"From Kalkan Villa",
+    "Villa Paketi'nden":"From Villa Paketi",
+    "Tatilkentim'den":"From Tatilkentim",
+    "Tavsiyeyle":"By referral",
+    "Diğer kanaldan":"From another channel"
   };
 
   // ---------- kalıplı metinler ----------

@@ -1560,6 +1560,18 @@
   .kaynakKilit{display:flex; align-items:center; gap:.5rem; min-height:var(--dokunma-yukseklik); padding:0 1rem; border-radius:var(--kose);
     background:var(--soft); color:var(--ink); font-weight:600}
   .kaynakKilit svg.ik{color:var(--muted); flex:none}
+  /* 33.4 kanal hapı (kısa etiket, kanal renginde; renkler KANAL listesinde) */
+  .kanalHap{flex:none; display:inline-flex; align-items:center; justify-content:center; min-width:1.75rem; height:1.25rem; padding:0 .3125rem;
+    border-radius:99px; color:#fff; font-size:.6875rem; letter-spacing:.03em; line-height:1; white-space:nowrap}
+  .cell .fy.kanalEt{opacity:1; color:#fff; border-radius:99px; padding:0 .3125rem; max-width:calc(100% - 4px); overflow:hidden; letter-spacing:.03em}
+  .cell .rzKanal{position:absolute; top:2px; right:2px; padding:0 .1875rem; border-radius:99px; color:#fff; font-size:.5625rem; line-height:.8125rem;
+    letter-spacing:.02em; box-shadow:0 0 0 1px #fff; pointer-events:none}
+  .cell .rzKanal.ikili{right:1.125rem}
+  .ljKanallar{display:contents}
+  .lejant .ljKanal{gap:.375rem}
+  .lejant .ljKanal .kanalHap{height:1.125rem; min-width:1.625rem}
+  .rkKanal{margin-left:.375rem; vertical-align:middle}
+  .kanalSatir{display:flex; align-items:center; gap:.5rem; margin:.5rem 0 .75rem; font-size:.9375rem}
   .cell.dis .fy.disAd, .cell.disY .fy.disAd{font-size:.6875rem; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 2px; color:#2E3833}
   .lj-dis{background:repeating-linear-gradient(135deg,rgba(95,106,100,.42) 0 2px,#F1F5F3 2px 5px)}
   .lj-disK{background:repeating-linear-gradient(135deg,rgba(95,106,100,.18) 0 2px,#F7F9F8 2px 5px)}
@@ -2098,6 +2110,7 @@
       <span><i class="lj-ops"></i>Opsiyonlu</span>
       <span class="ljDis hide"><i class="lj-dis"></i>Diğer sitelerde dolu</span>
       <span class="ljDis hide"><i class="lj-disK"></i>Diğer sitelerde kapalı</span>
+      <span class="ljKanallar" id="ljKanallar"></span>
       <span class="lj-gecmis"><i style="background:#fff;box-shadow:inset 0 0 0 1.5px var(--cerceve)"></i>Geçmiş gün</span>
       <span><b class="lj-harf" style="font-weight:400">AY</b>Misafirin baş harfleri</span>
     </div>
@@ -2569,19 +2582,70 @@
   // ================= 32 DIŞ TAKVİMLER (Airbnb, Booking, Vrbo, Villasepeti, diğer) =================
   // Sunucu tarafı (VERITABANI_GOREV32.sql + takvim-esitle / takvim-ver) yoksa DT.hazir=false: satır ve bölümler gizli kalır.
   var DT={hazir:null, bloklar:{}, durum:{}, cakismalar:[], son:{}};
+  // ---- 33.4 KANALLAR (rezervasyon nereden geldi): ad, kısa etiket, renk TEK YERDE. Renkler PALET'ten ve STIL.md'deki
+  // işlem renklerinden, her kanal farklı. Site logoları kullanılmaz. "den": rezervasyon detayındaki satır ("Airbnb'den").
+  var KANAL_SIRA=["direkt","airbnb","booking","vrbo","villasepeti","tatilsepeti","kalkanvilla","villapaketi","tatilkentim","tavsiye","diger"];
+  var KANAL={
+    direkt:{ad:"Direkt / WhatsApp", et:"DR", renk:"#0B5B57", den:"Direkt / WhatsApp"},
+    airbnb:{ad:"Airbnb", et:"AB", renk:"#9B2C4A", den:"Airbnb'den"},
+    booking:{ad:"Booking.com", et:"BK", renk:"#3C4E8C", den:"Booking.com'dan"},
+    vrbo:{ad:"Vrbo", et:"VR", renk:"#2E6E8E", den:"Vrbo'dan"},
+    villasepeti:{ad:"Villasepeti", et:"VS", renk:"#4F6B22", den:"Villasepeti'nden"},
+    tatilsepeti:{ad:"Tatilsepeti", et:"TS", renk:"#8C3A5E", den:"Tatilsepeti'nden"},
+    kalkanvilla:{ad:"Kalkan Villa", et:"KV", renk:"#7A4B8C", den:"Kalkan Villa'dan"},
+    villapaketi:{ad:"Villa Paketi", et:"VP", renk:"#4A5A7A", den:"Villa Paketi'nden"},
+    tatilkentim:{ad:"Tatilkentim", et:"TK", renk:"#2E3833", den:"Tatilkentim'den"},
+    tavsiye:{ad:"Tavsiye", et:"TV", renk:"#084743", den:"Tavsiyeyle"},
+    diger:{ad:"Diğer", et:"··", renk:"#5F6A64", den:"Diğer kanaldan"}
+  };
+  function kanal(k){ return KANAL[k]||null; }
+  function kanalHap(k,sinif){
+    var x=kanal(k)||KANAL.diger;
+    return '<span class="kanalHap'+(sinif?" "+sinif:"")+'" style="background:'+x.renk+'" title="'+esc(cev(x.ad))+'">'+esc(x.et)+"</span>";
+  }
+  // bir dış takvimin kanalı (takvim satırındaki kaynak)
+  function dtTakvimKanal(villaId,takvimId){
+    var t=dtTakvimleri(villaId).filter(function(x){ return x.id===takvimId; })[0];
+    return t && KANAL[t.kaynak] ? t.kaynak : "diger";
+  }
+  // rezervasyonun kanalı: kaynak alanı; boşsa ve bir dış satışa bağlıysa o sitenin kanalı; yoksa null (belirtilmemiş)
+  function rezKanal(v,r){
+    if(!r) return null;
+    if(r.kaynak && KANAL[r.kaynak]) return r.kaynak;
+    var b=v ? (DT.bloklar[v.id]||[]).filter(function(x){ return x.bagli===r.id; })[0] : null;
+    return b ? dtTakvimKanal(v.id,b.takvim) : null;
+  }
+  // takvim hücresinde tam ad sığar mı (hap: .6875rem yazı + iki yanda .3125rem boşluk; hücrenin iki yanında 2 px pay)
+  // (yazı boyu .cell .fy ile aynı: clamp(11px, .6875rem, 3.1vw); harf aralığı .03em; 1 px pay)
+  var KS={en:0, ctx:null, kok:16, boy:11};
+  function kanalOlcuHazirla(){
+    var g=document.getElementById("grid"); KS.en=g ? g.clientWidth/7 : 0;
+    KS.kok=parseFloat(getComputedStyle(document.documentElement).fontSize)||16;
+    KS.boy=Math.min(Math.max(11,KS.kok*0.6875),Math.max(11,window.innerWidth*0.031));
+    try{ if(!KS.ctx) KS.ctx=document.createElement("canvas").getContext("2d");
+      KS.ctx.font=KS.boy+"px "+getComputedStyle(g||document.body).fontFamily; }catch(e){ KS.ctx=null; }
+  }
+  function kanalSigar(ad){
+    if(!KS.en || !KS.ctx) return false;
+    return KS.ctx.measureText(ad).width + ad.length*KS.boy*0.03 + KS.kok*0.625 + 4 + 1 <= KS.en;
+  }
   var DT_KAYNAK={
-    airbnb:{ad:"Airbnb", harf:"A", renk:"#9B2C4A", ev:"https://www.airbnb.com/multicalendar",
+    airbnb:{ad:"Airbnb", ev:"https://www.airbnb.com/multicalendar",
       adimlar:["Airbnb'de “Takvim”i açın ve villanızı seçin.","“Müsaitlik” bölümünde “Takvimleri bağla”ya dokunun.",
                "“Başka bir web sitesine bağla”yı seçin.","Airbnb'nin verdiği linki kopyalayıp aşağıya yapıştırın."]},
-    booking:{ad:"Booking.com", kisa:"Booking", harf:"B", renk:"#3C4E8C", ev:"https://admin.booking.com/",
+    booking:{ad:"Booking.com", kisa:"Booking", ev:"https://admin.booking.com/",
       adimlar:["Booking.com ekstranetine (admin.booking.com) girin.","“Fiyatlar ve Müsaitlik” içinde “Takvimleri senkronize et”i açın.",
                "“Takvimi dışa aktar”ı seçin; seçenek sorulursa “Yalnız rezerve edilen günler”i seçin.","Verilen linki kopyalayıp aşağıya yapıştırın."]},
-    vrbo:{ad:"Vrbo", harf:"V", renk:"#2E6E8E", ev:"https://www.vrbo.com/p/calendar",
+    vrbo:{ad:"Vrbo", ev:"https://www.vrbo.com/p/calendar",
       adimlar:["Vrbo'da “Takvim”i açın ve villanızı seçin.","“İçe / dışa aktar” bölümünde “Takvimi dışa aktar”ı seçin.",
                "Verilen linki kopyalayıp aşağıya yapıştırın."]},
-    villasepeti:{ad:"Villasepeti", harf:"VS", renk:"#4F6B22", yerel:true},
-    diger:{ad:"Diğer site", kisa:"Diğer site", harf:"•", renk:"#5F6A64", yerel:true}
+    villasepeti:{ad:"Villasepeti", yerel:true},
+    tatilsepeti:{yerel:true}, kalkanvilla:{yerel:true}, villapaketi:{yerel:true}, tatilkentim:{yerel:true},
+    diger:{ad:"Diğer site", kisa:"Diğer site", yerel:true}
   };
+  // 33.4: sitelerin adı, kısa etiketi ve rengi kanal listesinden
+  Object.keys(DT_KAYNAK).forEach(function(k){ var x=KANAL[k]; DT_KAYNAK[k].ad=DT_KAYNAK[k].ad||x.ad; DT_KAYNAK[k].harf=x.et; DT_KAYNAK[k].renk=x.renk; });
+  var DT_SITELER=["airbnb","booking","vrbo","villasepeti","tatilsepeti","kalkanvilla","villapaketi","tatilkentim","diger"];
   function dtKaynak(k){ return DT_KAYNAK[k]||DT_KAYNAK.diger; }
   function dtKisaAd(k){ var x=dtKaynak(k); return x.kisa||x.ad; }
   function dtRozet(k){ var x=dtKaynak(k); return '<span class="dtRozet" style="background:'+x.renk+'" aria-hidden="true">'+esc(x.harf)+"</span>"; }
@@ -2669,11 +2733,6 @@
   function dtAraliktaki(v,bas,bit,turler){
     var rz={}; (v.rez||[]).forEach(function(r){ rz[r.id]=1; });
     return (DT.bloklar[v.id]||[]).filter(function(b){ return !(b.bagli && rz[b.bagli]) && b.bas<bit && bas<b.bit && (!turler || turler.indexOf(b.tur)>=0); });
-  }
-  // bizdeki rezervasyon bir dış bloğa bağlıysa sitenin adı ("Airbnb")
-  function dtRezKaynak(v,r){
-    var b=(DT.bloklar[v.id]||[]).filter(function(x){ return x.bagli===r.id; })[0];
-    return b ? dtTakvimAd(v.id,b.takvim) : "";
   }
   // "Airbnb'de", "Vrbo'da", "Booking'de" (bulunma eki)
   function ekDe(ad){
@@ -3164,7 +3223,7 @@
   function dtBagla(v){
     var o=perde('<div class="head"><h2>'+esc(cev("Site takvimi bağla"))+"</h2>"+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Takvim hangi siteden gelecek?"))+"</div>"+
-      '<div class="dtKaynaklar" id="dtKaynaklar">'+["airbnb","booking","vrbo","villasepeti","diger"].map(function(k){
+      '<div class="dtKaynaklar" id="dtKaynaklar">'+DT_SITELER.map(function(k){
         return '<button class="dtKaynakBtn" data-k="'+k+'">'+dtRozet(k)+"<span>"+esc(cev(dtKaynak(k).ad))+"</span></button>"; }).join("")+"</div>"+
       '<button class="big ghost" id="dtKaynakGeri" style="margin-top:1.25rem">'+esc(cev("Vazgeç"))+"</button>");
     o.querySelector(".sheet").dataset.adim="kaynak";
@@ -5532,7 +5591,7 @@
                          :'<span class="tarihIk">'+ikon("giris",{boy:15,sinif:"gir"})+esc(kisa(r.start))+'<span class="fiil">'+esc(cev("girecek"))+"</span></span> ")+
                  '<span class="tarihIk">'+ikon("cikis",{boy:15,sinif:"cik"})+esc(kisa(r.end))+'<span class="fiil">'+esc(cev("çıkacak"))+"</span></span>";
     return '<button class="row rezKart'+(dtCakisanRez(r.id)?" cakisma":"")+(yeniOlabilir?yeniCls(r.id):"")+'" data-id="'+r.id+'">'+harfDaire(r)+
-      '<span class="rkMetin"><span class="rkAd">'+esc(r.guest)+(dtRezKaynak(v,r)?'<span class="dtEt">'+esc(dtRezKaynak(v,r))+"</span>":"")+
+      '<span class="rkMetin"><span class="rkAd">'+esc(r.guest)+((rezKanal(v,r)||"direkt")!=="direkt"?kanalHap(rezKanal(v,r),"rkKanal"):"")+
         (dtCakisanRez(r.id)?'<span class="rkUyari" title="'+esc(cev("Çift satış riski"))+'">'+ikon("uyari-ucgen",{boy:15})+"</span>":"")+
         (r.disKontrol==="bekliyor"?'<span class="rkSaat" title="'+esc(cev("Diğer siteler kontrol ediliyor"))+'">'+ikon("saat",{boy:15})+"</span>":"")+'</span><span class="rkAlt">'+tarihler+
       (tutarYok?' <span class="eksikYazi">'+esc(cev("· tutar girilmedi"))+"</span>":"")+
@@ -5613,6 +5672,7 @@
     var lead=(new Date(y,m,1).getDay()+6)%7;
     var tk=fmt(today);
     var h="", hucreler=[], DG=dtGeceHaritasi(v);
+    kanalOlcuHazirla();
     for(var j=0;j<lead;j++) h+="<div></div>";
     for(var d=1; d<=adet; d++){
       var date=new Date(y,m,d), k=fmt(date), o2=gun(k);
@@ -5673,14 +5733,18 @@
       if(ckR) cls+=" cakisma";
       var ckIk = (ak && ak.start===k && dtCakisanRez(ak.id)) ? '<span class="rzUyari">'+ikon("uyari-ucgen",{boy:12,kalinlik:2.25})+"</span>" : "";
       var saatIk = ckIk+((ak && ak.start===k && ak.disKontrol==="bekliyor") ? '<span class="rzSaat" aria-label="'+esc(cev("Diğer siteler kontrol ediliyor"))+'">'+ikon("saat",{boy:12,kalinlik:2.25})+"</span>" : "");
+      // 33.4: bizdeki rezervasyonun giriş gününün köşesinde kanal hapı (direkt değilse)
+      var rzK=(ak && ak.start===k) ? rezKanal(v,ak) : null;
+      if(rzK && rzK!=="direkt") saatIk+='<span class="rzKanal'+(saatIk?" ikili":"")+'" style="background:'+kanal(rzK).renk+'" title="'+esc(cev(kanal(rzK).ad))+'">'+esc(kanal(rzK).et)+"</span>";
       var etiket = saatIk+(ak ? '<span class="fy bh">'+esc(basHarf(ak.guest))+"</span>"
-                 : (disB ? '<span class="fy disAd">'+((rl||k===disB.bas)?esc(disB.tur==="kapali"?cev("kapalı"):dtTakvimAd(v.id,disB.takvim)):"")+"</span>"
+                 : (disB ? dtHucreEt(v,disB,k,rl)
                  : '<span class="fy">'+(fi?kisaFiyat(fi):"")+"</span>"));
       h+='<button class="'+cls+'" data-k="'+k+'" style="'+st+'"><span class="gn">'+d+"</span>"+etiket+"</button>";
       hucreler.push({k:k, cls:cls, st:st, ic:'<span class="gn">'+d+"</span>"+etiket});
     }
     izgaraYaz(h,hucreler,lead);
     Array.prototype.forEach.call(document.querySelectorAll(".lejant .ljDis"),function(x){ x.classList.toggle("hide",!(DT.bloklar[v.id]||[]).length); });
+    ljKanalCiz(v,fmt(new Date(y,m,1)),fmt(new Date(y,m+1,1)));
 
     var hint=document.getElementById("hint");
     // 26.1: ipucu yalnız değişince yazılır (aynı yazıyı her dokunuşta yeniden yazmak sayfanın yerleşimini bozuyordu)
@@ -5693,6 +5757,22 @@
     // 18.3: seçim işlemleri altta (başparmak bölgesi), alt menünün hemen üstünde kayan panel
     document.getElementById("adimSerit").classList.add("hide");
     secPanelCiz(v);
+  }
+  // 33.4: dış bloğun etiketi: satış ise kanal renginde kısa etiket (bloğun ilk günü, hücre yetiyorsa tam ad); kapalı ise "kapalı"
+  function dtHucreEt(v,b,k,satirBasi){
+    if(!(satirBasi || k===b.bas)) return '<span class="fy"></span>';
+    if(b.tur==="kapali") return '<span class="fy disAd">'+esc(cev("kapalı"))+"</span>";
+    var x=kanal(dtTakvimKanal(v.id,b.takvim)), ad=dtTakvimAd(v.id,b.takvim), tam=k===b.bas && kanalSigar(ad);
+    return '<span class="fy kanalEt'+(tam?" tam":"")+'" style="background:'+x.renk+'" title="'+esc(ad)+'">'+esc(tam?ad:x.et)+"</span>";
+  }
+  // 33.4: göstergede yalnız bu ay takvimde görünen kanallar
+  function ljKanalCiz(v,ayBas,ayBit){
+    var el=document.getElementById("ljKanallar"); if(!el) return;
+    var var0={}, rz={};
+    (v.rez||[]).forEach(function(r){ rz[r.id]=1; var k=rezKanal(v,r); if(k && k!=="direkt" && r.start<ayBit && ayBas<r.end) var0[k]=1; });
+    (DT.bloklar[v.id]||[]).forEach(function(b){ if(b.tur!=="kapali" && !(b.bagli && rz[b.bagli]) && b.bas<ayBit && ayBas<b.bit) var0[dtTakvimKanal(v.id,b.takvim)]=1; });
+    var h=KANAL_SIRA.filter(function(k){ return var0[k]; }).map(function(k){ return '<span class="ljKanal">'+kanalHap(k)+esc(cev(KANAL[k].ad))+"</span>"; }).join("");
+    if(el._h!==h){ el.innerHTML=h; el._h=h; }
   }
   // 26.1: gün seçiminde ızgara baştan kurulmaz; aynı ay çiziliyse yalnız sınıfı / zemini / içeriği değişen hücreler
   // güncellenir (eskiden her dokunuşta 30+ düğme silinip yeniden oluşturuluyor, sonra yerleşim zorla hesaplanıyordu)
@@ -7698,8 +7778,10 @@
   function detay(r){
     perde('<div class="head">'+
       '<div class="sm muted" style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem;white-space:nowrap;flex:none">'+
-        '<span class="dot" style="background:'+r.color+'"></span>'+esc(cev(gece(r)+" gece"))+(dtRezKaynak(aktif(),r)?'<span class="dtEt">'+esc(dtRezKaynak(aktif(),r))+"</span>":"")+"</div>"+
+        '<span class="dot" style="background:'+r.color+'"></span>'+esc(cev(gece(r)+" gece"))+"</div>"+
       "<h3>"+esc(r.guest)+"</h3>"+kapatBtn()+"</div>"+
+      // 33.4: başlığın altında kanal ("Airbnb'den"), rengiyle
+      (rezKanal(aktif(),r)?'<div class="kanalSatir" id="d-kanal">'+kanalHap(rezKanal(aktif(),r))+'<span style="color:'+kanal(rezKanal(aktif(),r)).renk+'">'+esc(cev(kanal(rezKanal(aktif(),r)).den))+"</span></div>":"")+
       // 17.4: en üstte "Ödemeyi al ve misafiri yerleştir" / "Misafir çıktı mı?"
       akisBlok(aktif(),r)+
       '<div class="cols">'+
