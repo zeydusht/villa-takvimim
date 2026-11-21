@@ -7,13 +7,13 @@
 <script>try{var vtY={buyuk:"119.53125%",cokbuyuk:"132.8125%"}[localStorage.getItem("vt-yazi")];if(vtY)document.documentElement.style.fontSize=vtY;}catch(e){}</script>
 <meta name="theme-color" content="#10180D" data-normal="#0B5B57">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Villa Takvim</title>
+<title>Villa Takvimim</title>
 <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
 <meta name="color-scheme" content="light only">
 <meta name="supported-color-schemes" content="light">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Villa Takvim">
+<meta name="apple-mobile-web-app-title" content="Villa Takvimim">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <!-- 24.4: ana ekrandan açılan web uygulamasında sayfa yüklenene kadar iPhone bu görseli gösterir (beyaz kare olmasın). Logo
@@ -90,6 +90,10 @@
     --egri-gecis:cubic-bezier(0.65, 0, 0.35, 1);   /* yer değiştirme: yavaş başla, hızlan, yavaşlayarak dur */
     --egri-giris:cubic-bezier(0.22, 1, 0.36, 1);   /* belirme / giriş: hızlı gelir, yumuşakça oturur */
     --egri-cekmece:cubic-bezier(.32, .72, 0, 1);    /* 31.1: alttan açılan panel (iOS çekmecesi gibi) */
+    --hiz-baslik:150ms;           /* 34.2: üst çubukta küçük başlığın belirmesi */
+    --hiz-morf-ac:380ms;          /* 34.1: kart → arama paneli büyümesi */
+    --hiz-morf-kapa:260ms;        /* 34.1: panel → kart küçülmesi (açılıştan hızlı) */
+    --morf-bulanik:12px;          /* 34.1: arama açıkken arka planın bulanıklığı */
     --olcek-gelis:.96;
     /* 31.2: panel içeriği her açılışta kademeli gelir: öğe 8 pt aşağıdan + saydamdan 240 ms, öğeler arası 40 ms, ilk öğe panel
        açılmaya başladıktan 60 ms sonra, en fazla 6 kademe. "Hareketi azalt"ta yalnız 150 ms saydamlık. */
@@ -134,6 +138,16 @@
   .barGeri{flex:none; color:#fff; width:3rem; height:3rem; margin:-.5rem 0 -.5rem -.75rem;
     display:flex; align-items:center; justify-content:center; line-height:0}
   .barGeri:active{opacity:.6}
+  /* 34.2: kayarken küçülen başlık (iOS büyük başlık). Ekranın büyük başlığı üst çubuğun altına girince marka yazısı solar,
+     aynı başlık üst çubuğun ortasında küçük olarak belirir; yukarı dönünce tersi. */
+  .appBarIc{position:relative}
+  .barMarka, .barLogo{transition:opacity var(--hiz-baslik) var(--egri-gecis)}
+  .barBaslik{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); max-width:60%; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap; font-family:var(--sans); font-size:1rem; font-weight:600; letter-spacing:0;
+    opacity:0; pointer-events:none; transition:opacity var(--hiz-baslik) var(--egri-giris)}
+  .appBar.baslikli .barBaslik{opacity:1}
+  .appBar.baslikli .barMarka, .appBar.baslikli .barLogo{opacity:0}
+  .appBar.baslikli{box-shadow:0 1px 0 rgba(255,255,255,.14)}
   .wrap{width:100%; max-width:28rem; padding:2rem 1.25rem calc(2.5rem + env(safe-area-inset-bottom))}
   .hide{display:none !important}
   .muted{color:var(--muted)}
@@ -294,7 +308,10 @@
   .ipDugmeler .ipBtn{margin-top:0}
   .ipKapat{display:inline-flex; align-items:center; gap:.25rem; height:3rem; padding:0 1rem 0 .75rem; border-radius:999px;
     border:var(--cerceve-kalinlik) solid var(--line); background:#fff; color:var(--ink); font-size:.875rem; font-weight:500}
-  .kurKart{flex-wrap:wrap}
+  .kurKart{flex-wrap:wrap; padding:.875rem 1rem}
+  /* 34: metin ikonun yanında tam satırı alır, düğmeler alt satıra iner (büyük yazıda harf harf kırılmasın) */
+  .kurMetin{flex:1 1 calc(100% - 3.25rem); padding-right:0}
+  .kurBtn{margin-left:3.25rem; min-height:3rem}
   .kurKapat{margin-left:auto; height:3rem; padding:0 .75rem; gap:.25rem; font-size:.875rem; line-height:1;
     color:var(--muted); display:flex; align-items:center; justify-content:center}
   .adim{display:flex; gap:.75rem; align-items:flex-start; margin-bottom:1rem}
@@ -817,6 +834,13 @@
     .overlay > .sheet{animation-name:perdeOrtaAc; animation-timing-function:var(--egri-giris)}
     .overlay.kapaniyor > .sheet{animation-name:perdeOrtaKapa}
   }
+  /* 34.1: "Hangi villam boş?" dokunulan karttan büyüyerek açılır (Airbnb araması gibi): panel kartın dikdörtgeninden
+     tam boyuna büyür (clip-path), arka plan bulanıklaşıp kararır, içerik büyümeden sonra solarak gelir; kapanışta kartın
+     yerine küçülerek döner. Animasyonu JS sürer (morfAc / morfKapat); CSS'teki alttan kayma bu panelde kapalı. */
+  .overlay.morf > .sheet, .overlay.morf.kapaniyor > .sheet{animation:none}
+  .overlay.morf{-webkit-backdrop-filter:blur(var(--morf-bulanik)); backdrop-filter:blur(var(--morf-bulanik))}
+  .overlay.morf.kapaniyor{-webkit-backdrop-filter:blur(0); backdrop-filter:blur(0);
+    transition:backdrop-filter var(--hiz-morf-kapa) var(--egri-gecis), -webkit-backdrop-filter var(--hiz-morf-kapa) var(--egri-gecis)}
   @keyframes perdeOrtaAc{from{opacity:0; transform:scale(var(--olcek-gelis))}}
   @keyframes perdeOrtaKapa{to{opacity:0; transform:scale(var(--olcek-gelis))}}
   /* 9.3 / 31.1 bildirim: 8 pt aşağıdan 300 ms'de gelir, 200 ms'de solar. Geçiş (transition) olduğu için yenisi gelince
@@ -1905,7 +1929,8 @@
       <button class="barGeri hide" id="barGeri" aria-label="Geri" data-ik="sol" data-ik-boy="22">
       </button>
       <svg class="barLogo" viewBox="184 191 656 640" aria-hidden="true" focusable="false" width="22" height="22"><mask id="vtSemBar" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024"><rect x="0" y="0" width="1024" height="1024" fill="black"/><g fill="white"><rect x="629" y="201" width="97" height="190" rx="12"/><rect x="250" y="400" width="522" height="430" rx="62"/><polyline points="218.5,449 512,226 805.5,449" fill="none" stroke="white" stroke-width="69" stroke-linecap="round" stroke-linejoin="round"/><polygon points="250,425 512,226 772,425 772,520 250,520"/></g><g fill="black"><path d="M512 280 L606 352 L606 398 Q606 411 593 411 L431 411 Q418 411 418 398 L418 352 Z"/><rect x="360" y="382" width="44" height="104" rx="22"/><rect x="619" y="382" width="44" height="104" rx="22"/><rect x="312" y="542" width="101" height="96" rx="20"/><rect x="460" y="542" width="103" height="96" rx="20"/><rect x="609" y="542" width="102" height="96" rx="20"/><rect x="312" y="673" width="101" height="96" rx="20"/><rect x="460" y="673" width="103" height="96" rx="20"/></g></mask><rect x="0" y="0" width="1024" height="1024" fill="currentColor" mask="url(#vtSemBar)"/></svg>
-      <span>Villa Takvim</span>
+      <span class="barMarka">Villa Takvimim</span>
+      <span class="barBaslik" id="barBaslik" aria-hidden="true"></span>
     </div>
   </div>
 
@@ -1917,7 +1942,7 @@
   <!-- GİRİŞ -->
   <div id="giris" class="hide">
     <svg class="mark" viewBox="184 191 656 640" aria-hidden="true" focusable="false"><mask id="vtSemGiris" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024"><rect x="0" y="0" width="1024" height="1024" fill="black"/><g fill="white"><rect x="629" y="201" width="97" height="190" rx="12"/><rect x="250" y="400" width="522" height="430" rx="62"/><polyline points="218.5,449 512,226 805.5,449" fill="none" stroke="white" stroke-width="69" stroke-linecap="round" stroke-linejoin="round"/><polygon points="250,425 512,226 772,425 772,520 250,520"/></g><g fill="black"><path d="M512 280 L606 352 L606 398 Q606 411 593 411 L431 411 Q418 411 418 398 L418 352 Z"/><rect x="360" y="382" width="44" height="104" rx="22"/><rect x="619" y="382" width="44" height="104" rx="22"/><rect x="312" y="542" width="101" height="96" rx="20"/><rect x="460" y="542" width="103" height="96" rx="20"/><rect x="609" y="542" width="102" height="96" rx="20"/><rect x="312" y="673" width="101" height="96" rx="20"/><rect x="460" y="673" width="103" height="96" rx="20"/></g></mask><rect x="0" y="0" width="1024" height="1024" fill="currentColor" mask="url(#vtSemGiris)"/></svg>
-    <h1 style="text-align:center">Villa Takvim</h1>
+    <h1 style="text-align:center">Villa Takvimim</h1>
     <div class="sm muted" id="girisAlt" style="text-align:center;margin-top:.5rem">
       Villalarınızı ve rezervasyonlarınızı tek yerden yönetin
     </div>
@@ -4629,7 +4654,35 @@
     // ekranı çağıran kod içeriği hemen ardından çizer; çizimden sonra konumu bir kez daha uygula
     if(hedef) requestAnimationFrame(function(){ if(!document.getElementById(id).classList.contains("hide")) sayfayaKaydir(hedef); });
     kademeli(id);
+    requestAnimationFrame(baslikGuncelle);   // 34.2
   }
+
+  // ================= 34.2 KAYARKEN KÜÇÜLEN BAŞLIK =================
+  // Görünen ekranın büyük başlığı (h1), kaydırmayla birebir orantılı olarak hafifçe yukarı kayıp solar (zamanlayıcı yok,
+  // kaydırma konumu belirler). Üst çubuğun altına tamamen girince üst çubukta küçük başlık belirir. Tek dinleyici, rAF.
+  var BASLIK={kare:0, h1:null};
+  function gorunenBaslik(){
+    var l=document.querySelectorAll(".wrap > section:not(.hide) h1, .wrap > div[id]:not(.hide) > .anaBas h1, .wrap > div[id]:not(.hide) h1");
+    for(var i=0;i<l.length;i++){ if(l[i].offsetParent!==null) return l[i]; }
+    return null;
+  }
+  function baslikGuncelle(){
+    BASLIK.kare=0;
+    var bar=document.getElementById("appBar"), bb=document.getElementById("barBaslik"); if(!bar || !bb || bar.classList.contains("hide")) return;
+    var h=gorunenBaslik();
+    if(BASLIK.h1 && BASLIK.h1!==h){ BASLIK.h1.style.opacity=""; BASLIK.h1.style.transform=""; }
+    BASLIK.h1=h;
+    if(!h){ bar.classList.remove("baslikli"); return; }
+    var alt=bar.getBoundingClientRect().bottom, r=h.getBoundingClientRect();
+    var ilerleme=Math.max(0,Math.min(1,(alt-r.top+r.height*.25)/(r.height*1.25)));
+    if(!azHareket()){ h.style.opacity=String(1-ilerleme*.85); h.style.transform=ilerleme?"translateY("+(-ilerleme*6)+"px)":""; }
+    var metin=h.textContent.trim();
+    if(bb.textContent!==metin) bb.textContent=metin;
+    bar.classList[r.bottom<=alt+2 ? "add" : "remove"]("baslikli");
+  }
+  function baslikIste(){ if(!BASLIK.kare) BASLIK.kare=requestAnimationFrame(baslikGuncelle); }
+  window.addEventListener("scroll",baslikIste,{passive:true});
+  window.addEventListener("resize",baslikIste);
 
   // ================= 26.3 KADEMELİ GİRİŞ / 26.4 KAYDIRINCA BELİRME =================
   // Ekran (bu oturumda) ilk açıldığında görünen içerik yukarıdan aşağı sırayla gelir: her öğe 10 pt aşağıdan + saydamdan,
@@ -4772,6 +4825,8 @@
   document.getElementById("sekmeler").addEventListener("click",function(e){
     var b=e.target.closest("[data-sekme]"); if(!b) return;
     if(Date.now()<KB.tikEngel) return;
+    // 34.5: dokunulan sekmenin ikonu hafifçe zıplar (.85 → 1, yaylı), seçim titreşimi
+    var ik=b.querySelector("svg"); if(ik && ik.animate && !azHareket()){ try{ ik.animate([{transform:"scale(.85)"},{transform:"scale(1)"}],{duration:300, easing:"cubic-bezier(.34,1.56,.64,1)"}); }catch(e2){} }
     sekmeGit(b.dataset.sekme);
   });
   // 17.5: her sekme kendi gezinme yığınını hatırlar (iPhone alışkanlığı).
@@ -4946,6 +5001,43 @@
   }
   // 28.2: panel her açılışta temiz başlar (seçim yok, kişi sayısı boş, sıralama "Benim sıram"). Önceki arama MA.son'da
   // saklanır; altta "Son arama: … · tekrar ara" ile geri getirilir (rehber bu bağlantıyı vurgulamaz).
+  // 34.1: son dokunulan düğme (panelin hangi karttan büyüyeceğini bilmek için)
+  var SON_DOKUNULAN={el:null,t:0};
+  document.addEventListener("pointerdown",function(e){ var b=e.target && e.target.closest && e.target.closest("button,a,[role=button]");
+    if(b){ SON_DOKUNULAN.el=b; SON_DOKUNULAN.t=performance.now(); } },true);
+  function sonKaynak(){ var b=SON_DOKUNULAN.el; return (b && document.contains(b) && performance.now()-SON_DOKUNULAN.t<1500 && !b.closest(".overlay")) ? b : null; }
+  // 34.1: panel, kaynak düğmenin dikdörtgeninden büyüyerek açılır; kapanınca oraya küçülerek döner (yarıda kesilebilir)
+  function morfKirp(sh,r,yaricap){
+    var s=sh.getBoundingClientRect();
+    var t=Math.max(0,r.top-s.top), l=Math.max(0,r.left-s.left), b=Math.max(0,s.bottom-r.bottom), rr=Math.max(0,s.right-r.right);
+    return "inset("+t+"px "+rr+"px "+b+"px "+l+"px round "+yaricap+"px)";
+  }
+  function morfAc(o,kaynak){
+    var sh=o.querySelector(".sheet"); if(!sh || !kaynak || azHareket() || !sh.animate) return;
+    var r=kaynak.getBoundingClientRect(); if(!r.width) return;
+    o.classList.add("morf"); o._morfKaynak=kaynak;
+    var yr=parseFloat(getComputedStyle(kaynak).borderTopLeftRadius)||14, ac=hiz("morf-ac");
+    try{
+      sh.animate([{clipPath:morfKirp(sh,r,yr)},{clipPath:"inset(0px 0px 0px 0px round 16px)"}],{duration:ac, easing:egriAl("cekmece"), olcekli:1});
+      Array.prototype.forEach.call(sh.children,function(c,i){
+        c.animate([{opacity:0},{opacity:1}],{duration:200, delay:120+Math.min(i,5)*40, easing:egriAl("giris"), fill:"backwards", olcekli:1});
+      });
+    }catch(e){}
+    o._morfKapat=function(){
+      var k=o._morfKaynak; if(!k || !document.contains(k) || azHareket()) return false;
+      var kr=k.getBoundingClientRect(); if(!kr.width) return false;
+      var yr2=parseFloat(getComputedStyle(k).borderTopLeftRadius)||14, kp=hiz("morf-kapa");
+      o.classList.add("kapaniyor"); kilitDenetle();
+      try{
+        sh.getAnimations().forEach(function(a){ try{ a.cancel(); }catch(e){} });
+        var a=sh.animate([{clipPath:"inset(0px 0px 0px 0px round 16px)", opacity:1},{clipPath:morfKirp(sh,kr,yr2), opacity:.2}],{duration:kp, easing:egriAl("gecis"), fill:"forwards", olcekli:1});
+        o._morfAnim=a;
+      }catch(e){}
+      clearTimeout(o._kapaT);
+      o._kapaT=setTimeout(function(){ if(o.parentNode && o.classList.contains("kapaniyor")) o.remove(); },Math.max(kp,hiz("karar-kapa"))+10);
+      return true;
+    };
+  }
   function musaitAc(){
     if(!S.villalar.length) return;
     villaSirala();
@@ -4953,7 +5045,9 @@
     MA.bas=null; MA.bit=null; MA.kisi=0; MA.hap=""; MA.sira="benim"; MA.kismenAcik=false;
     if(MA.son && MA.son.bas<fmt(today)) MA.son=null;
     MA.imlec=new Date(today.getFullYear(),today.getMonth(),1);
-    maPerde();
+    var kaynak=sonKaynak();
+    var o=maPerde();
+    morfAc(o,kaynak);
     rehberAc("musait",REHBER.musait);   // 27.6: Yardımlı modda rehberle; her durumda başlıkta "?"
   }
   function maPerde(){
@@ -8758,7 +8852,7 @@
   };
   document.getElementById("destekBtn").onclick=function(){
     var no=String(DESTEK_WHATSAPP||"").replace(/\D/g,"");
-    if(no){ window.open("https://wa.me/"+no+"?text="+encodeURIComponent(cev("Merhaba, Villa Takvim hakkında bir sorum var.")),"_blank"); return; }
+    if(no){ window.open("https://wa.me/"+no+"?text="+encodeURIComponent(cev("Merhaba, Villa Takvimim hakkında bir sorum var.")),"_blank"); return; }
     perde('<div class="head"><h2>'+esc(cev("Bize ulaşın"))+"</h2>"+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Destek hattımız çok yakında burada olacak. O zamana kadar \"Sık sorulan sorular\"a göz atabilirsiniz."))+"</div>"+
       '<button class="big renkli is-rez" data-ik="bilgi-i" id="dsSss" style="margin-top:1.25rem">'+esc(cev("Sık sorulan sorular"))+"</button>");
@@ -12120,7 +12214,7 @@
     var fy=H-96;
     cizgi(fy-34,SX,W-78);
     yaz(v.ad||"Villa",SX,fy,19,INK,"600");
-    yaz("Villa Takvim ile hazırlanmıştır.",SX,fy+28,16,MUT);
+    yaz("Villa Takvimim ile hazırlanmıştır.",SX,fy+28,16,MUT);
     sag("Net: "+para(h.gelir-h.gider),W-78,fy,20,OK,"600");
     return c;
   }
@@ -13446,6 +13540,7 @@
     if(!o || o.classList.contains("kapaniyor")) return;
     if(anlik!==true && o._kapatSor && o._kapatSor()){ cikisSor(o); return; }
     if(anlik || azHareket()){ o.remove(); kilitDenetle(); return; }
+    if(o._morfKapat && !o.classList.contains("geriAciliyor") && o._morfKapat()) return;   // 34.1: karta küçülerek döner
     o.classList.remove("geriAciliyor");
     o.classList.add("kapaniyor"); kilitDenetle();
     clearTimeout(o._kapaT);
@@ -13456,6 +13551,7 @@
     if(!o || !o.classList.contains("kapaniyor")) return;
     clearTimeout(o._kapaT);
     var sh=o.querySelector(".sheet"), cs=sh?getComputedStyle(sh):null, tr=cs?cs.transform:"none", op=cs?cs.opacity:"1", bg=getComputedStyle(o).backgroundColor;
+    if(o._morfAnim){ try{ o._morfAnim.cancel(); }catch(e){} o._morfAnim=null; }
     o.classList.remove("kapaniyor"); o.classList.add("geriAciliyor"); kilitDenetle();
     if(sh) sh.style.transform="";   // aşağı çekilerek kapandıysa parmağın bıraktığı yer silinir
     try{
@@ -13642,7 +13738,7 @@
     var wa=document.getElementById("onayWhatsapp");
     var no=String(DESTEK_WHATSAPP||"").replace(/\D/g,"");
     if(no && !askida){
-      wa.href="https://wa.me/"+no+"?text="+encodeURIComponent("Merhaba, Villa Takvim hesabımın onaylanmasını bekliyorum.");
+      wa.href="https://wa.me/"+no+"?text="+encodeURIComponent("Merhaba, Villa Takvimim hesabımın onaylanmasını bekliyorum.");
       wa.classList.remove("hide");
     } else wa.classList.add("hide");
   }
