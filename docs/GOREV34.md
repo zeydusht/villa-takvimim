@@ -1,13 +1,16 @@
 # GÖREV 34 — Airbnb kalitesinde geçişler, 3D görseller, ad ve iletişim bilgisi
 
 > **DURUM (21 Kasım, ürün yöneticisi):** Bilgisayar donduğu için bazı adımları ürün yöneticisi bulutta yaptı ve push etti. **Önce `git pull`.**
-> - ✅ 34.1'in büyüme kısmı yapıldı: `morfAc` / `morfKapat`, `--hiz-morf-ac`, `--hiz-morf-kapa`, `--morf-bulanik`. **Kalan:** akordeon adımlar ("Ne zaman?" özete küçülür, "Kaç kişi?" açılır).
+> - ✅ 34.1 tamam: büyüme (`morfAc` / `morfKapat`) ve akordeon (`.akKart`, `maAkAc`, `--hiz-akordeon`).
 > - ✅ 34.2 yapıldı: `baslikGuncelle`, `#barBaslik`, `.appBar.baslikli`.
 > - ✅ 34.5 yapıldı: ikon zıplaması. Dolu ikon zaten vardı.
 > - ✅ 34.8 yapıldı. Sunucu fonksiyonlarında eski ad yoktu.
 > - ✅ 34.9 yapıldı. E-posta "yakında eklenecek" olarak duruyor, domain gelince eklenecek.
 > - ✅ Ek: "Ana ekrana ekleyin" kartı büyük yazıda harf harf kırılıyordu, düzeltildi.
-> - **Kalan:** 34.1 akordeon, 34.3, 34.4, 34.6, 34.7 (3D görseller), 34.10. Bunlardan önce Görev 33.9 (testler) bitirilmeli.
+> - ✅ 34.3 yapıldı: `secKart` / `secKartBagla`; ilk kullanım takvim bağlamada "ekibe bırak / kendim". Sihirbaz ve Pro ekranında da aynı bileşen kullanılabilir.
+> - ✅ 34.4 yapıldı: `yiginDenetle`, `body.yigin`.
+> - ✅ 34.6 yapıldı: `iskeletBitir` çapraz solma.
+> - **Kalan:** 34.7 (3D görselleri Codex ile çizdir; `secKart` görselleri `img/3d/<ad>-256.webp` olarak zaten arıyor) ve 34.10 (videolar). Bunlardan önce Görev 33.9 (testler) bitirilmeli.
 
 
 Zeyd, Airbnb uygulamasının ekran kaydını kare kare inceletti. Beğendiği şeyler: her yerde anlaşılır görseller, arama kutusunun büyüyerek ekrana dönüşmesi, adımların akordeon gibi açılıp kapanması, kayarken küçülen başlıklar. **Airbnb'yi kopyalamıyoruz** (görselleri, renkleri ve ikonları onlarındır). Aldığımız şey, hareketlerin mantığı.

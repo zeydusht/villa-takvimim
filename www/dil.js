@@ -152,6 +152,7 @@
     "Yeni rezervasyon":"New reservation", "Rezervasyonu kaydet":"Save reservation",
     "Rezervasyonu düzenle":"Edit reservation", "Rezervasyonu sil":"Delete reservation",
     "Ad soyad":"Full name", "Kaç kişi":"Number of guests", "Telefon":"Phone",
+    "Ne zaman":"When", "Ne zaman?":"When?", "Kaç kişi?":"How many guests?", "Tarih seçin":"Pick dates",
     "Not":"Note", "İsteğe bağlı":"Optional", "Kim gelecek?":"Who is coming?",
     "Konaklama tutarı (₺)":"Accommodation total (₺)", "İndirim (₺)":"Discount (₺)",
     "Ön ödeme (%)":"Prepayment (%)", "Ön ödeme (₺)":"Prepayment (₺)",
@@ -1277,7 +1278,7 @@
     "iCal linkini ekle":"Add the iCal link",
     "Dene ve bağla":"Test and connect",
     "Talep güncellendi":"Request updated",
-    "Linki kendiniz bağlamak için buraya dokunun. İsterseniz üstteki düğmeyle bağlamayı ekibimize bırakabilirsiniz.":"Tap here to connect the link yourself. Or use the button above to let our team do it."
+    "Linki kendiniz bağlamak için bu karta dokunun. İsterseniz üstteki kartla bağlamayı ekibimize bırakabilirsiniz.":"Tap this card to connect the link yourself. Or use the card above to let our team do it."
   };
 
   // ---------- kalıplı metinler ----------

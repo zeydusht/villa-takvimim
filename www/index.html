@@ -90,6 +90,8 @@
     --egri-gecis:cubic-bezier(0.65, 0, 0.35, 1);   /* yer değiştirme: yavaş başla, hızlan, yavaşlayarak dur */
     --egri-giris:cubic-bezier(0.22, 1, 0.36, 1);   /* belirme / giriş: hızlı gelir, yumuşakça oturur */
     --egri-cekmece:cubic-bezier(.32, .72, 0, 1);    /* 31.1: alttan açılan panel (iOS çekmecesi gibi) */
+    --iskelet-gecis:200ms;        /* 34.6: iskeletten içeriğe çapraz solma */
+    --hiz-akordeon:300ms;         /* 34.1: arama adımları (Ne zaman → Kaç kişi) açılıp kapanma */
     --hiz-baslik:150ms;           /* 34.2: üst çubukta küçük başlığın belirmesi */
     --hiz-morf-ac:380ms;          /* 34.1: kart → arama paneli büyümesi */
     --hiz-morf-kapa:260ms;        /* 34.1: panel → kart küçülmesi (açılıştan hızlı) */
@@ -149,6 +151,10 @@
   .appBar.baslikli .barMarka, .appBar.baslikli .barLogo{opacity:0}
   .appBar.baslikli{box-shadow:0 1px 0 rgba(255,255,255,.14)}
   .wrap{width:100%; max-width:28rem; padding:2rem 1.25rem calc(2.5rem + env(safe-area-inset-bottom))}
+  /* 34.4: kart yığını: büyük panel açıkken arkadaki sayfa küçülür ve yuvarlanır */
+  .wrap{transition:transform var(--hiz-ac) var(--egri-cekmece), border-radius var(--hiz-ac) var(--egri-cekmece)}
+  html:has(body.yigin), html body.yigin{background:#101613 !important}
+  body.yigin .wrap{transform:scale(.94); border-radius:12px; overflow:hidden; background:#fff}
   .hide{display:none !important}
   .muted{color:var(--muted)}
   .sm{font-size:.875rem}
@@ -1068,6 +1074,41 @@
   .sheet.maSheet::before{display:none}
   @media(min-width:640px){ .sheet.maSheet{border-radius:0; margin:0 auto} }
   .maIc{flex:1 1 auto; display:flex; flex-direction:column}
+  /* 34.1: akordeon adımlar (Airbnb araması gibi). Açık kart büyük başlıklı; kapalı kart tek satır özet ("Ne zaman · 17 → 21 Kasım").
+     Açılıp kapanma grid-template-rows 0fr ↔ 1fr ile, --hiz-akordeon. */
+  .akKart{border:var(--cerceve-kalinlik) solid var(--line); border-radius:1rem; margin-top:.75rem; background:#fff;
+    transition:box-shadow var(--hiz-akordeon) var(--egri-gecis)}
+  .akKart.acik{box-shadow:0 6px 24px rgba(16,22,19,.10); border-color:transparent}
+  .akOzet{display:flex; width:100%; align-items:center; justify-content:space-between; gap:.75rem; min-height:3.25rem;
+    padding:0 1rem; text-align:left; font-size:.9375rem; color:var(--muted); transition:opacity var(--hiz-akordeon) var(--egri-gecis)}
+  .akOzet .akDeger{color:var(--ink); font-weight:500; font-variant-numeric:tabular-nums}
+  .akKart.acik > .akOzet{height:0; min-height:0; padding:0; opacity:0; overflow:hidden; pointer-events:none}
+  .akIc{display:grid; grid-template-rows:0fr; transition:grid-template-rows var(--hiz-akordeon) var(--egri-cekmece)}
+  .akKart.acik > .akIc{grid-template-rows:1fr}
+  .akIcIc{overflow:hidden; min-height:0; padding:0 1rem}
+  .akKart.acik .akIcIc{padding-bottom:1rem}
+  .akBas{font-family:var(--serif); font-size:1.5rem; font-weight:400; margin:1rem 0 0; letter-spacing:var(--harf-serif)}
+  .akKart .maHaplar{margin-top:.75rem}
+  .akKart .maKisiYer .maKisi{margin:.75rem 0 0; border:0; padding:0}
+  @media (prefers-reduced-motion: reduce){ .akIc, .akOzet, .akKart{transition:none} }
+  /* 34.3: görselli seçim kartları (solda başlık + tek satır açıklama, sağda 64 pt görsel). Seçilince 2 px koyu çerçeve. */
+  .secKartlar{display:flex; flex-direction:column; gap:.75rem; margin-top:1rem}
+  .secKart{display:flex; align-items:center; gap:1rem; width:100%; text-align:left; padding:1rem 1rem 1rem 1.125rem;
+    border:var(--cerceve-kalinlik) solid var(--line); border-radius:1rem; background:#fff; min-height:5.5rem;
+    transition:transform var(--hiz-bas) var(--egri-giris), border-color var(--hiz-bas), box-shadow var(--hiz-bas)}
+  .secKart:active{transform:scale(.98)}
+  .secKart.on{border-color:var(--ink); box-shadow:inset 0 0 0 1px var(--ink)}
+  .secKartMetin{flex:1; min-width:0; display:flex; flex-direction:column; gap:.25rem}
+  .secKartBas{font-size:1.0625rem; font-weight:500; line-height:1.3}
+  .secKartAlt{font-size:.875rem; color:var(--muted); line-height:1.4}
+  .secKartRozet{align-self:flex-start; font-size:.8125rem; color:var(--ok); background:var(--basili-zemin); border-radius:99px; padding:.125rem .5rem}
+  .secKartGorsel{flex:none; width:4rem; height:4rem; display:flex; align-items:center; justify-content:center; color:var(--ok)}
+  .secKartGorsel img{width:100%; height:100%; object-fit:contain}
+  .secKartGorsel > .ik{display:none}
+  .secKartGorsel.yok{background:var(--soft); border-radius:1rem}
+  .secKartGorsel.yok > .ik{display:block}
+  #dtIleri{transition:background-color 200ms var(--egri-giris), opacity 200ms}
+  #dtIleri:disabled{background:#C9D1CC; color:#fff; opacity:1}
   .maTakvim{margin-top:1rem}
   .maTakvim .dow{margin:.75rem 0 .25rem}
   .maTakvim .nav button:disabled{opacity:.3}
@@ -3417,6 +3458,27 @@
       secimParla(b,function(){ rhBildir("dt:kaynak"); dtSecenek(v,b.dataset.k); });
     };
   }
+  // ---- 34.3 görselli seçim kartı ----
+  // Görsel www/img/3d/<ad>-256.webp; yoksa (henüz çizilmediyse) Lucide ikonu gösterilir.
+  function secKart(id,bas,alt,gorsel,ikonAd,rozet){
+    return '<button type="button" class="secKart" role="radio" aria-checked="false" data-sec="'+id+'">'+
+      '<span class="secKartMetin">'+(rozet?'<span class="secKartRozet">'+esc(rozet)+"</span>":"")+
+        '<span class="secKartBas">'+esc(bas)+'</span><span class="secKartAlt">'+esc(alt)+"</span></span>"+
+      '<span class="secKartGorsel"><img src="img/3d/'+gorsel+'-256.webp" alt="" loading="lazy" decoding="async" '+
+        'onerror="this.parentNode.classList.add(\'yok\');this.remove()">'+ikon(ikonAd,{boy:28})+"</span></button>";
+  }
+  function secKartBagla(o,ileri,ileriId){
+    var sec=null, btn=document.getElementById(ileriId), kap=o.querySelector(".secKartlar");
+    kap.addEventListener("click",function(e){
+      var b=e.target.closest(".secKart"); if(!b) return;
+      sec=b.dataset.sec; titret("secim");
+      Array.prototype.forEach.call(kap.querySelectorAll(".secKart"),function(x){ var on=x===b; x.classList[on?"add":"remove"]("on"); x.setAttribute("aria-checked",String(on)); });
+      if(btn) btn.disabled=false;
+      // rehber bu adımı gösteriyorsa (karta dokun) seçim doğrudan ilerler; rehber takılmasın
+      try{ if(window.Rehber && Rehber.calisiyor && Rehber.calisiyor("dt")){ ileri(sec); } }catch(e2){}
+    });
+    if(btn) btn.onclick=function(){ if(sec) ileri(sec); };
+  }
   // ---- 33.8 site seçildikten sonra: ekibe bırak (önerilen, üstte) ya da linki kendim bağlarım (bugünkü akış) ----
   var TALEP_DURUM={bekliyor:"Bekliyor", calisiliyor:"Ekibimiz çalışıyor", baglandi:"Bağlandı ✓", olmadi:"Olmadı"};
   function talepDurumYazi(t){ return t.durum==="olmadi" ? cev("Olmadı")+(t.yonetici_notu?": "+t.yonetici_notu:"") : cev(TALEP_DURUM[t.durum]||t.durum); }
@@ -3424,16 +3486,18 @@
     var x=dtKaynak(k);
     var o=perde('<div class="head"><h2>'+esc(cev(x.ad))+"</h2>"+kapatBtn()+"</div>"+
       '<button type="button" class="linkBtn maGeri" id="dtGeri">'+ikon("sol",{boy:18})+"<span>"+esc(cev("Site seçimi"))+"</span></button>"+
-      '<div id="dtSecenekler">'+
-        '<div class="dtOneri">'+ikon("yildiz",{boy:16})+"<span>"+esc(cev("Önerilen"))+"</span></div>"+
-        '<button class="big" data-ik="kisiler" id="dtBizeBirak">'+esc(cev("Bağlamayı Villa Takvimim ekibine bırakın"))+"</button>"+
-        '<div class="sm muted dtSecAcik">'+esc(cev("Siz yalnız villanızın o sitedeki sayfasının linkini verin; bağlantıyı ekibimiz kurar ve size haber verir."))+"</div>"+
-        '<button class="big renkli is-gri" data-ik="baglanti" id="dtKendim">'+esc(cev("Linki kendim bağlayacağım"))+"</button>"+
-        '<div class="sm muted dtSecAcik">'+esc(cev("Adım adım yardımla sitenin verdiği takvim linkini kendiniz yapıştırırsınız."))+"</div>"+
-      "</div>");
+      // 34.3: görselli seçim kartları; seçilince kalın çerçeve, alttaki "İleri" koyulaşır
+      '<div id="dtSecenekler" class="secKartlar" role="radiogroup">'+
+        secKart("bize",cev("Bağlamayı Villa Takvimim ekibine bırakın"),cev("Siz yalnız villanızın o sitedeki sayfasının linkini verin; bağlantıyı ekibimiz kurar ve size haber verir."),"bize-birak","kisiler",cev("Önerilen"))+
+        secKart("kendim",cev("Linki kendim bağlayacağım"),cev("Adım adım yardımla sitenin verdiği takvim linkini kendiniz yapıştırırsınız."),"baglanti","baglanti")+
+      "</div>"+
+      '<button class="big" id="dtIleri" disabled style="margin-top:1.25rem">'+esc(cev("İleri"))+"</button>"+
+      // eski kimlikler (rehber ve testler bunlara bakıyor): görünmez kısayollar
+      '<button id="dtBizeBirak" class="hide" type="button"></button><button id="dtKendim" class="hide" type="button"></button>');
     o.querySelector(".sheet").dataset.adim="secenek-"+k;
     document.getElementById("dtGeri").onclick=function(){ dtBagla(v); };
     document.getElementById("dtKendim").onclick=function(){ rhBildir("dt:secenek"); dtLinkAdimi(v,k); };
+    secKartBagla(o,function(sec){ document.getElementById(sec==="bize"?"dtBizeBirak":"dtKendim").click(); },"dtIleri");
     document.getElementById("dtBizeBirak").onclick=function(){
       try{ if(window.Rehber && Rehber.calisiyor && Rehber.calisiyor("dt")) Rehber.kapat(); }catch(e){}
       dtTalepFormu(v,k);
@@ -3641,8 +3705,12 @@
   function iskeletBasla(){ ISKELET.t0=performance.now(); }
   function iskeletBitir(fn){
     var g=performance.now()-ISKELET.t0, gec=hiz("--iskelet-gecikme"), az=hiz("--iskelet-en-az");
-    if(!ISKELET.t0 || g<gec || g-gec>=az){ ISKELET.t0=0; fn(); return; }
-    ISKELET.t0=0; setTimeout(fn,az-(g-gec));
+    // 34.6: iskelet göründüyse gerçek içerik birden "patlamaz", 200 ms çapraz solmayla gelir (yerleşim aynı, kayma yok)
+    var gorundu=!!ISKELET.t0 && g>=gec;
+    var bitir=function(){ fn(); if(gorundu && !azHareket()) ["villalar","anaHap","ozet"].forEach(function(id){
+      var el=document.getElementById(id); if(el && el.animate && el.offsetHeight) try{ el.animate([{opacity:0},{opacity:1}],{duration:hiz("--iskelet-gecis")||200, easing:egriAl("giris"), olcekli:1}); }catch(e){} }); };
+    if(!ISKELET.t0 || g<gec || g-gec>=az){ ISKELET.t0=0; bitir(); return; }
+    ISKELET.t0=0; setTimeout(bitir,az-(g-gec));
   }
   // Villalarım iskeleti: gerçek kart sınıflarıyla. Son açılışta listenin ekrandaki yeri ve kartların boyu cihazda saklanır
   // (vt-isk-ana); iskelet aynı yerleşimle çizilir: listenin üstündeki bölümler (Bugün ve yarın vb.) için aynı boyda gri blok,
@@ -5041,7 +5109,7 @@
   function musaitAc(){
     if(!S.villalar.length) return;
     villaSirala();
-    MA.adim="tarih"; MA.secMod=false; MA.donus=false; MA.secili={};
+    MA.adim="tarih"; MA.secMod=false; MA.donus=false; MA.secili={}; MA.akAdim="zaman"; MA._tamOnce=false;
     MA.bas=null; MA.bit=null; MA.kisi=0; MA.hap=""; MA.sira="benim"; MA.kismenAcik=false;
     if(MA.son && MA.son.bas<fmt(today)) MA.son=null;
     MA.imlec=new Date(today.getFullYear(),today.getMonth(),1);
@@ -5063,18 +5131,37 @@
   function maTarihCiz(){
     var ic=document.getElementById("maIc"); if(!ic) return;
     var gn=(window.DIL && DIL.KISAGUN && DIL.KISAGUN[DIL.dil]) || ["Pt","Sa","Ça","Pe","Cu","Ct","Pz"];
-    ic.innerHTML=maUstEk()+
+    var zamanAcik=(MA.akAdim||"zaman")==="zaman";
+    ic.innerHTML=
+      // 34.1: akordeon adımlar: "Ne zaman?" açık kart; tarih seçilince tek satıra küçülür ve "Kaç kişi?" açılır
+      '<div class="akKart'+(zamanAcik?" acik":"")+'" data-ak="zaman">'+
+        '<button type="button" class="akOzet" data-ak-ac="zaman"><span class="akEt">'+esc(cev("Ne zaman"))+'</span><span class="akDeger" id="akZamanDeger"></span></button>'+
+        '<div class="akIc"><div class="akIcIc"><h3 class="akBas">'+esc(cev("Ne zaman?"))+"</h3>"+maUstEk()+
       '<div id="maTakvim" class="maTakvim">'+
         '<div class="monthbar"><div class="m" id="maAy"></div><div class="nav">'+
           '<button id="maOnce" type="button" aria-label="'+esc(cev("Önceki ay"))+'">'+ikon("sol",{boy:22})+"</button>"+
           '<button id="maSonra" type="button" aria-label="'+esc(cev("Sonraki ay"))+'">'+ikon("sag",{boy:22})+"</button></div></div>"+
         '<div class="dow">'+gn.map(function(x){ return "<div>"+esc(x)+"</div>"; }).join("")+"</div>"+
         '<div class="grid" id="maGrid"></div></div>'+
-      '<div class="maKisiYer" id="maKisiYer"></div>'+
+        "</div></div></div>"+
+      '<div class="akKart'+(zamanAcik?"":" acik")+'" data-ak="kisi">'+
+        '<button type="button" class="akOzet" data-ak-ac="kisi"><span class="akEt">'+esc(cev("Kaç kişi"))+'</span><span class="akDeger" id="akKisiDeger"></span></button>'+
+        '<div class="akIc"><div class="akIcIc"><h3 class="akBas">'+esc(cev("Kaç kişi?"))+"</h3>"+
+        '<div class="maKisiYer" id="maKisiYer"></div></div></div></div>'+
       (MA.son ? '<button type="button" class="linkBtn maSonArama" id="maSonArama">'+ikon("takvim-aralik",{boy:18})+"<span>"+
         esc(cev("Son arama: "+aralikYazi({b:MA.son.bas,s:MA.son.bit})+(MA.son.kisi?" · "+cev(MA.son.kisi+" kişi"):"")+" · tekrar ara"))+"</span></button>" : "")+
       '<div class="altSabit maAlt" id="maAlt"></div>';
     maIzgaraCiz(); maAltCiz();
+  }
+  function maAkOzet(){
+    var zd=document.getElementById("akZamanDeger"), kd=document.getElementById("akKisiDeger");
+    if(zd) zd.textContent=(MA.bas&&MA.bit)?maTarihOk(MA.bas,MA.bit):cev("Tarih seçin");
+    if(kd) kd.textContent=MA.kisi?cev(MA.kisi+" kişi"):cev("İsteğe bağlı");
+  }
+  function maAkAc(ad){
+    MA.akAdim=ad;
+    Array.prototype.forEach.call(document.querySelectorAll("#maIc .akKart"),function(k){ k.classList[k.dataset.ak===ad?"add":"remove"]("acik"); });
+    titret("secim");
   }
   function maUstEk(){
     return '<div class="maHaplar" id="maHaplar">'+
@@ -5136,9 +5223,14 @@
         ? '<span class="maOzetBas">'+esc(maTarihOk(a,z)+" · "+cev(gc+" gece"))+"</span>"
         : '<span class="maOzetIpucu">'+esc(cev(a?"Çıkış gününe dokunun":"Giriş gününe dokunun"))+"</span>"+
           (a?'<span class="maOzetAlt">'+esc(cev("Giriş: "+gunAdli(a)+" · "+GIRIS))+"</span>":""))+"</div>"+
-      (kisa?"":maKisiHTML())+
       '<button type="button" class="big" id="maGoster"'+((a&&z)?"":" disabled")+">"+ikon("arama",{boy:20})+"<span>"+esc(cev("Boş villaları göster"))+"</span></button>";
-    var ky=document.getElementById("maKisiYer"); if(ky) ky.innerHTML=kisa?maKisiHTML():"";
+    var ky=document.getElementById("maKisiYer"); if(ky) ky.innerHTML=maKisiHTML();
+    maAkOzet();
+    // 34.1: aralık yeni tamamlandıysa "Ne zaman?" özete küçülür, "Kaç kişi?" açılır (kısa bir bekleyişle: seçim görünsün)
+    var tam=!!(a&&z);
+    if(tam && !MA._tamOnce && (MA.akAdim||"zaman")==="zaman"){ clearTimeout(MA._akT); MA._akT=setTimeout(function(){ if(MA.bas&&MA.bit) maAkAc("kisi"); },280); }
+    if(!tam) clearTimeout(MA._akT);
+    MA._tamOnce=tam;
   }
   // kısa ekranda (ekran yüksekliği 44 satır yazıdan az: küçük telefon ya da büyük yazı) kişi sayısı sabit satırdan çıkar,
   // takvimin altında akar; sabit satırda yalnız tarih özeti ve "Boş villaları göster" kalır (takvim görünür kalsın)
@@ -5170,6 +5262,7 @@
     }
     if(t.classList.contains("cell") && t.closest("#maGrid")){ maGunSec(t.dataset.k); return; }
     if(t.dataset.h){ maHizli(t.dataset.h); return; }
+    if(t.dataset.akAc){ if(MA.akAdim!==t.dataset.akAc) maAkAc(t.dataset.akAc); return; }
     if(t.id==="maKisiAz"){ if(MA.kisi>0){ MA.kisi--; titret("secim"); maAltCiz(); } return; }
     if(t.id==="maKisiCok"){ if(MA.kisi<40){ MA.kisi++; titret("secim"); maAltCiz(); } return; }
     if(t.id==="maGoster"){
@@ -6771,7 +6864,7 @@
       adimlar:[
         {hedef:rhTek("#dtEkle"), metin:RM.dtEkle, bekle:"dokunus"},
         {hedef:rhTek("#dtKaynaklar"), metin:RM.dtKaynak, bekle:"olay", olay:"dt:kaynak"},
-        {hedef:rhTek("#dtKendim"), metin:RM.dtSecenek, bekle:"olay", olay:"dt:secenek"},
+        {hedef:rhTek(".secKart[data-sec=\"kendim\"]"), metin:RM.dtSecenek, bekle:"olay", olay:"dt:secenek"},
         {hedef:rhAlan("#dt-adres"), deger:"#dt-adres", metin:RM.dtAdres, bekle:"deger"},
         {hedef:rhTek("#dtBaglaBtn"), metin:RM.dtBagla, bekle:"olay", olay:"dt:baglandi"}
       ]}; },
@@ -13258,7 +13351,18 @@
     var b=document.body.style; b.position=""; b.top=""; b.left=""; b.right=""; b.width="";
     try{ window.scrollTo(0,KILIT.y); }catch(e){}
   }
-  function kilitDenetle(){ if(document.querySelector(".overlay:not(.kapaniyor)")) sayfaKilitle(); else sayfaKilitAc(); }
+  function kilitDenetle(){ if(document.querySelector(".overlay:not(.kapaniyor)")) sayfaKilitle(); else sayfaKilitAc(); yiginDenetle(); }
+  // 34.4: ekranın neredeyse tamamını kaplayan panel açıkken arkadaki sayfa %94'e küçülür, köşeleri yuvarlanır (iPhone'daki
+  // kart yığını). Küçük paneller (seçim paneli, onay soruları) etkilemez. Küçülme görünen alanın üstüne göre yapılır.
+  function yiginDenetle(){
+    var w=document.querySelector(".wrap"); if(!w) return;
+    var l=document.querySelectorAll(".overlay:not(.kapaniyor)"), buyuk=false;
+    for(var i=0;i<l.length;i++){ var sh=l[i].querySelector(".sheet");
+      if(sh && !l[i].classList.contains("gorucu") && (l[i].classList.contains("buyukPanel") || sh.offsetHeight>innerHeight*.72)){ l[i].classList.add("buyukPanel"); buyuk=true; } }
+    if(buyuk && azHareket()) buyuk=false;
+    if(buyuk){ w.style.transformOrigin="50% "+((KILIT.acik?KILIT.y:(window.scrollY||0))+innerHeight*.06)+"px"; }
+    document.body.classList[buyuk?"add":"remove"]("yigin");
+  }
   // kilitliyken sayfanın "kaydırma konumu" saklanan değerdir (ekran değişirse yeni konum kilit açılınca uygulanır)
   function sayfaY(){ return KILIT.acik ? KILIT.y : (window.scrollY||0); }
   function sayfayaKaydir(y){ if(KILIT.acik) KILIT.y=y; else { try{ window.scrollTo(0,y); }catch(e){} } }
