@@ -1,5 +1,5 @@
 /* ============================================================
-   Villa Takvim — dil katmanı
+   Villa Takvimim — dil katmanı
    Uygulama Türkçe yazıldı; bu dosya arayüzü İngilizceye çevirir.
    ============================================================ */
 (function () {
@@ -209,7 +209,7 @@
     "Dönem raporunu indir (PDF)":"Download period report (PDF)",
     "GELİR VE GİDER RAPORU":"INCOME AND EXPENSE REPORT",
     "Toplam tahsil edilen":"Total collected",
-    "Villa Takvim ile hazırlanmıştır.":"Prepared with Villa Takvim.",
+    "Villa Takvimim ile hazırlanmıştır.":"Prepared with Villa Takvimim.",
     "Rapor oluşturulamadı.":"Could not create the report.",
     "Henüz veri yok.":"No data yet.",
 
@@ -1141,7 +1141,7 @@
     "Villa ekranında adım adım":"Step by step on the villa screen",
     "Sık sorulan sorular":"Frequently asked questions",
     "Tur için önce bir villa ekleyin.":"Add a villa first to see the tour.",
-    "Merhaba, Villa Takvim hakkında bir sorum var.":"Hello, I have a question about Villa Takvim.",
+    "Merhaba, Villa Takvimim hakkında bir sorum var.":"Hello, I have a question about Villa Takvimim.",
     "Destek hattımız çok yakında burada olacak. O zamana kadar \"Sık sorulan sorular\"a göz atabilirsiniz.":"Our support line will be here very soon. Until then, have a look at the frequently asked questions.",
     "Rezervasyon nasıl girilir?":"How do I enter a reservation?",
     "Villayı açın. Takvimde misafirin gireceği güne, sonra çıkacağı güne dokunun. Alttaki panelde \"Rezervasyon\"a dokunun, misafirin adını yazıp kaydedin.":"Open the villa. On the calendar, tap the guest's check-in day, then the check-out day. Tap \"Reservation\" in the panel below, enter the guest's name and save.",

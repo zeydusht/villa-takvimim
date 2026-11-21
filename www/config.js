@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------
-   Villa Takvim — paylaşım ayarları (dolduruldu, dokunmana gerek yok)
+   Villa Takvimim — paylaşım ayarları (dolduruldu, dokunmana gerek yok)
    Villa sahiplerinin hiçbir hesap açmasına gerek yoktur.
 ---------------------------------------------------------------- */
 

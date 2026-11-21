@@ -1,4 +1,4 @@
-/* Villa Takvim — bildirim servisi
+/* Villa Takvimim — bildirim servisi
    Uygulama kapalıyken bile bildirimleri karşılar ve ekrana getirir. */
 
 // Sürüm: her yayında artırılır. Dosya değişince telefonlar yeni servisi kurar;
@@ -19,7 +19,7 @@ self.addEventListener("activate", function (e) {
 });
 
 self.addEventListener("push", function (e) {
-  var d = { baslik: "Villa Takvim", metin: "", yol: "/" };
+  var d = { baslik: "Villa Takvimim", metin: "", yol: "/" };
   try {
     if (e.data) {
       var g = e.data.json();
