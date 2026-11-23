@@ -4899,9 +4899,10 @@
   document.getElementById("sekmeler").addEventListener("click",function(e){
     var b=e.target.closest("[data-sekme]"); if(!b) return;
     if(Date.now()<KB.tikEngel) return;
-    // 34.5: dokunulan sekmenin ikonu hafifçe zıplar (.85 → 1, yaylı), seçim titreşimi
-    var ik=b.querySelector("svg"); if(ik && ik.animate && !azHareket()){ try{ ik.animate([{transform:"scale(.85)"},{transform:"scale(1)"}],{duration:300, easing:"cubic-bezier(.34,1.56,.64,1)"}); }catch(e2){} }
     sekmeGit(b.dataset.sekme);
+    // 34.5: dokunulan sekmenin ikonu hafifçe zıplar (.85 → 1, yaylı), seçim titreşimi. Sekme değişince goster() ikonu dolu olanla
+    // değiştirir; zıplama bu yüzden sekme değiştikten sonra, yeni ikona uygulanır (eskisi DOM'dan çıkmış olur).
+    var ik=b.querySelector("svg"); if(ik && ik.animate && !azHareket()){ try{ ik.animate([{transform:"scale(.85)"},{transform:"scale(1)"}],{duration:300, easing:"cubic-bezier(.34,1.56,.64,1)"}); }catch(e2){} }
   });
   // 17.5: her sekme kendi gezinme yığınını hatırlar (iPhone alışkanlığı).
   //  · Villalar → Villa Salta → (Hesap) → Villalar: Villa Salta açık döner, kaydırma konumu da aynı.

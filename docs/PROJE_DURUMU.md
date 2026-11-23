@@ -719,6 +719,9 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       kanal etiketleri ve renkleri, komisyon), Gelir & gider'de kanal raporu, Misafirler (CRM), "Bağlamayı bize bırakın" (talep +
       yönetim paneli) · Claude Code (20–23 Kasım). 33.1–33.9 ayrı commit; Netlify'a yüklenmedi. Testler: `docs/qa/gorev33/README.md`.
       ÖNCE (ürün yöneticisi): `takvim-esitle` yeniden deploy (talep bildirimleri, yeni yerel siteler). Veritabanı uygulandı.
+- [x] Görev 34 — Airbnb kalitesinde geçişler, 3D görseller, ad ("Villa Takvimim"), gizlilikte iletişim · 34.1–34.9 ürün yöneticisi
+      (bulut), 34.10 videolar Claude Code (23 Kasım). Rapor ve videolar: `docs/qa/gorev34/README.md`. 3D görsellerin PNG'leri
+      repoda değil (yalnız webp). GERÇEK İPHONE'DA BAKILACAK: arama açılışındaki bulanıklık (şu an ilk karede tam) ve kaydırma akıcılığı.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
