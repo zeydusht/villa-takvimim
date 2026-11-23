@@ -252,6 +252,18 @@ ile işaretlenir (iki kez çarpılmasın).
   - 3D görseller dekupe (şeffaf webp) ve kendi gölgeleri var. Arkalarında hiçbir hâlde (gece modu, büyük yazı, dokunma, seçili kart)
     renk, daire, kare, kenarlık ya da ikinci gölge (`drop-shadow`) olmaz; uygulama ve misafir sayfası hep açık zeminde (Görev 36.2).
     Tek istisna: görsel yüklenemeyince çıkan ikonlu yedek hâl (`.bosGorsel.yok`, `.secKartGorsel.yok`), orada `--soft` zemin kalır.
+  - Boyutlar tek yerden, `:root` (Görev 36.3). Başka yerde rem/px yazılmaz:
+
+    | Değişken | Yer | Boyut |
+    |---|---|---|
+    | `--g3d-baslik` / `--g3d-baslik-kucuk` | Villalarım / Takvim / Hesap başlığı | 88 pt; 380 pt ve altı ekranda, büyük yazıda 64 pt |
+    | `--g3d-bolum` | bölüm başlıkları (liste doluyken) | 56 pt |
+    | `--g3d-kart` | seçim kartları (`.secKart`) | 64 pt |
+    | `--g3d-bos` | boş hâl, sihirbaz | 160 pt |
+    | `--g3d-misafir` (g.html) | misafir sayfası | 80 pt |
+
+  - Dosyalar: `-256.webp` kenarları kırpılmış kare; `-512.webp` tam kare (boş hâl, sihirbaz). Başlık görsellerinin (`baslik-*`)
+    `-512`'si de kırpılmış, `srcset` ile 3x ekranda o seçilir; 88 pt altındaki yerlerde `-256` yeter.
 - **Yükleniyor (Görev 31.7):** dönen çark yerine iskelet (gri kutu, yazı yerine yuvarlak çizgiler).
   - Yalnız veri 300 ms'de gelmezse görünür (`--iskelet-gecikme`); göründüyse en az 400 ms kalır (`--iskelet-en-az`, `iskeletBitir`).
   - Üstünde 1,6 sn'lik yavaş, doğrusal parlama dolaşır (`--iskelet-parlama`); "Hareketi azalt"ta sabit.

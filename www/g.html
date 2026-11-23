@@ -15,6 +15,7 @@
 <style>
   :root{--bugun:#E5484D;--ink:#12232B;--muted:#5B6A72;--line:#E3E9EC;--soft:#F4F7F8;--dolu:#DDE4E7;--dip:#A3B0B6;
     --yes:#0B5B57;--yesKoyu:#084842;
+    --g3d-misafir:80px; /* 36.3 3D görsellerin boyu (bölüm başlıkları, "Kaç kişi", iletişim, teklif şeridi) */
     --serif:ui-serif,Georgia,"Times New Roman",serif;
     --egri-gecis:cubic-bezier(0.65, 0, 0.35, 1); --egri-giris:cubic-bezier(0.22, 1, 0.36, 1);
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
@@ -270,9 +271,9 @@
   .ornek.bugunOrnek{background:#fff;box-shadow:inset 0 0 0 2.5px var(--bugun)}
   .uyari{font-size:.8125rem;color:#9B2C4A;margin-top:.75rem;min-height:1.25rem}
   /* 35.6 / 36.1 3D görseller (80 pt). Sayfa hep açık zeminde; görselin arkasında daire, renk yok (şeffaf webp) */
-  .g3d{display:block;width:5rem;height:5rem;object-fit:contain;flex:none;pointer-events:none}
+  .g3d{display:block;width:var(--g3d-misafir);height:var(--g3d-misafir);object-fit:contain;flex:none;pointer-events:none}
   /* başlık satırı görselsiz başlıkla aynı yükseklikte kalır (25 px): görsel üstüne ve altına taşar */
-  h2.bBasG .g3d{margin:-1.75rem 0 -1.75rem auto}
+  h2.bBasG .g3d{margin:calc(var(--g3d-misafir) / -2 + .75rem) 0 calc(var(--g3d-misafir) / -2 + .75rem) auto}
   .g3dOnay{margin:-.25rem auto .5rem}
   .g3dDip{margin:1.25rem auto 0}
   .g3dDip + .dipTel{margin-top:.5rem}
