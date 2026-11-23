@@ -139,6 +139,7 @@
     musaitGiris: "Müşterinin istediği *giriş* gününe dokunun.",
     musaitCikis: "Şimdi *çıkış* gününe dokunun.",
     musaitCikisGiris: "Giriş: {g} · şimdi *çıkış* gününe dokunun.",
+    musaitKisi: "Kaç kişi gelecek? *+* ile seçin. Kapasitesi yetmeyen villalar gösterilmez. Bilmiyorsanız *İleri*.",
     musaitGoster: "‘Boş villaları göster’e dokunun.",
     musaitSonuc: "Boş villalar ve toplam fiyatları burada. Göndermek için ‘Seç ve gönder’.",
     musaitSonucSade: "Bu tarihlerde boş olan villalar burada.",

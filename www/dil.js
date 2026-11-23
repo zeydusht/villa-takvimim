@@ -152,6 +152,7 @@
     "Yeni rezervasyon":"New reservation", "Rezervasyonu kaydet":"Save reservation",
     "Rezervasyonu düzenle":"Edit reservation", "Rezervasyonu sil":"Delete reservation",
     "Ad soyad":"Full name", "Kaç kişi":"Number of guests", "Telefon":"Phone",
+    "Kaç kişi gelecek? *+* ile seçin. Kapasitesi yetmeyen villalar gösterilmez. Bilmiyorsanız *İleri*.":"How many guests? Tap *+*. Villas that are too small are hidden. Not sure? Tap *Next*.",
     "Ne zaman":"When", "Ne zaman?":"When?", "Kaç kişi?":"How many guests?", "Tarih seçin":"Pick dates",
     "Not":"Note", "İsteğe bağlı":"Optional", "Kim gelecek?":"Who is coming?",
     "Konaklama tutarı (₺)":"Accommodation total (₺)", "İndirim (₺)":"Discount (₺)",

@@ -6945,6 +6945,11 @@
          metin:function(){ return MA.bas ? RM.musaitCikisGiris.replace("{g}",kisa(MA.bas)) : RM.musaitCikis; },
          atla_eger:function(){ return !tarihte() || !MA.bas || !!MA.bit; }, hazirla:function(){ dar(true); }, cikis:function(){ dar(false); },
          geri:function(){ MA.bas=null; MA.bit=null; MA.hap=""; maIzgaraCiz(); maAltCiz(); }},
+        // 35: tarih seçilince kişi sayısı adımı atlanmasın: "Kaç kişi?" kartı açılır, + ile seçilir ya da "İleri" ile geçilir.
+        // Kişi seçilirse kapasitesi yetmeyen villalar sonuçta gösterilmez (5 kişilik villa 2 kişiye çıkar, 2 kişilik villa 5 kişiye çıkmaz).
+        {id:"maKisi", hedef:rhTek("#maKisiYer"), metin:RM.musaitKisi, bekle:"ileri", serbest:serbest, donus:{"ma:temiz":"ma1"},
+         hazirla:function(){ if(MA.akAdim!=="kisi") maAkAc("kisi"); },
+         atla_eger:function(){ return MA.adim==="sonuc" || !(MA.bas && MA.bit); }},
         // seçili aralığın son satırı alttaki sabit satırın ve baloncuğun üstünde görünsün (değiştirmek isteyen görsün, dokunabilsin)
         {id:"ma3", hedef:rhTek("#maGoster"), metin:RM.musaitGoster, bekle:"olay", olay:"ma:sonuc", donus:{"ma:temiz":"ma1"}, serbest:serbest,
          hazirla:function(){ requestAnimationFrame(function(){
@@ -12422,7 +12427,7 @@
   }
   function sbYaz(yol,govde,tip,cb){
     var u=S.cfg.url+"/storage/v1/object/"+KOVA+"/"+yol;
-    var h=sbBaslik(); h["Content-Type"]=tip; h["x-upsert"]="true"; h["cache-control"]="3600";
+    var h=sbBaslik(); h["Content-Type"]=tip; h["x-upsert"]="true"; h["cache-control"]=/\.json$/.test(yol)?"30":"3600";   // 35: villa sayfası verisi 30 sn önbellekte kalır (misafir güncel görsün); fotoğraflar 1 saat
     fetch(u,{method:"POST",headers:h,body:govde}).then(function(r){
       if(r.ok) return cb(null);
       r.text().then(function(t){ cb(sbHata(r.status,t)); });
