@@ -948,6 +948,12 @@
   .bosHal{display:flex; flex-direction:column; align-items:center; text-align:center; gap:.75rem; padding:1.5rem .25rem 1rem}
   .bosHal .bosIkon{width:5.5rem; height:5.5rem; border-radius:99px; background:var(--soft); color:var(--ok);
     display:flex; align-items:center; justify-content:center; flex:none}
+  /* 34.7: 3D görsel 160 pt, ortada; yoksa yumuşak zeminli ikon dairesi */
+  .bosHal .bosGorsel{width:10rem; height:10rem; display:flex; align-items:center; justify-content:center; color:var(--ok); flex:none}
+  .bosHal .bosGorsel img{width:100%; height:100%; object-fit:contain}
+  .bosHal .bosGorsel > .ik{display:none}
+  .bosHal .bosGorsel.yok{width:5.5rem; height:5.5rem; border-radius:99px; background:var(--soft)}
+  .bosHal .bosGorsel.yok > .ik{display:block}
   .bosHal .bosYazi{font-size:1.0625rem; line-height:1.45; color:var(--ink); max-width:22rem}
   .bosHal .bosAlt{font-size:.9375rem; line-height:1.45; color:var(--muted); max-width:22rem; margin-top:-.375rem}
   .bosHal .big{margin-top:.25rem}
@@ -6050,8 +6056,15 @@
     var b=document.querySelector('#villaHap [data-is="rez"]'); if(b) b.click();
   });
   // 31.8: boş hâl — ikon, tek cümle, (varsa) kısa açıklama, tek ana düğme
+  // 34.7: boş hâllerde ikon yerine 3D görsel (www/img/3d). Görsel yüklenemezse ikon kalır.
+  var BOS_3D={ev:"villa-bos", "takvim-tik":"ajanda-bos", "takvim-x":"arama", kisiler:"misafirler-bos", takvim:"takvim-bos",
+    "rozet-yuzde":"teklif", banknot:"para-bos", fis:"para-bos", "kisi-arti":"bakici", baglanti:"baglanti"};
   function bosHal(ik,cumle,dugme,alt,ek){
-    return '<div class="bosHal" role="status"><span class="bosIkon" aria-hidden="true">'+ikon(ik,{boy:48,kalinlik:1.75})+"</span>"+
+    var g=BOS_3D[ik];
+    var gorsel=g ? '<span class="bosGorsel" aria-hidden="true"><img src="img/3d/'+g+'-512.webp" alt="" width="512" height="512" decoding="async" '+
+        'onerror="this.parentNode.classList.add(\'yok\');this.remove()">'+ikon(ik,{boy:48,kalinlik:1.75})+"</span>"
+      : '<span class="bosIkon" aria-hidden="true">'+ikon(ik,{boy:48,kalinlik:1.75})+"</span>";
+    return '<div class="bosHal" role="status">'+gorsel+
       '<div class="bosYazi">'+esc(cev(cumle))+"</div>"+(alt?'<div class="bosAlt">'+esc(cev(alt))+"</div>":"")+(dugme||"")+(ek||"")+"</div>";
   }
   function cizimImg(ad){ return '<img class="cizim" src="img/'+ad+'.webp" alt="" aria-hidden="true" width="800" height="800" decoding="async">'; }

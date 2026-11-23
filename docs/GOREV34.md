@@ -10,7 +10,8 @@
 > - ✅ 34.3 yapıldı: `secKart` / `secKartBagla`; ilk kullanım takvim bağlamada "ekibe bırak / kendim". Sihirbaz ve Pro ekranında da aynı bileşen kullanılabilir.
 > - ✅ 34.4 yapıldı: `yiginDenetle`, `body.yigin`.
 > - ✅ 34.6 yapıldı: `iskeletBitir` çapraz solma.
-> - **Kalan:** 34.7 (3D görselleri Codex ile çizdir; `secKart` görselleri `img/3d/<ad>-256.webp` olarak zaten arıyor) ve 34.10 (videolar). Bunlardan önce Görev 33.9 (testler) bitirilmeli.
+> - ✅ 34.7 yapıldı. Codex'in çizdiği 16 görselin webp'leri `www/img/3d/` içinde (512: boş hâller; 256: kartlar, kenarları kırpılmış). Boş hâller `bosHal` → `BOS_3D` eşlemesiyle 3D görsel gösteriyor. **Yeniden çizme.** PNG'ler yerelde kalabilir, repoya ekleme (13 MB). Sihirbaz adımlarına dokunulmadı: 5 adımın 3D karşılığı yok, karışık stil olmasın diye düz çizimler kaldı.
+> - **Kalan:** Görev 33.9 (testler) ve 34.10 (videolar).
 
 
 Zeyd, Airbnb uygulamasının ekran kaydını kare kare inceletti. Beğendiği şeyler: her yerde anlaşılır görseller, arama kutusunun büyüyerek ekrana dönüşmesi, adımların akordeon gibi açılıp kapanması, kayarken küçülen başlıklar. **Airbnb'yi kopyalamıyoruz** (görselleri, renkleri ve ikonları onlarındır). Aldığımız şey, hareketlerin mantığı.
