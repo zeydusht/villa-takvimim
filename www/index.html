@@ -6932,7 +6932,9 @@
       var tarihte=function(){ return MA.adim==="tarih" && !!pq("#maGrid"); };
       var dar=function(ac2){ var sh=pq(".maSheet"); if(sh) sh.classList[ac2?"add":"remove"]("maRhTarih"); };
       // 28.2: seçim değişebilecek her adımda takvim, hızlı seçimler ve kişi sayısı dokunulabilir: rehber kullanıcıyı kilitlemez
-      var serbest=function(){ return [pq("#maTakvim"), pq("#maHaplar"), pq("#maKisiYer"), pq("#maAlt .maKisi")].filter(Boolean); };
+      // 34.1 akordeon: adım özetleri ("Ne zaman", "Kaç kişi") de serbest: rehber "Ara" adımındayken tarih değiştirilebilsin
+      var serbest=function(){ return [pq("#maTakvim"), pq("#maHaplar"), pq("#maKisiYer"), pq("#maAlt .maKisi")]
+        .concat(Array.prototype.slice.call(document.querySelectorAll(".overlay.maPerde:not(.kapaniyor) .akOzet"))).filter(Boolean); };
       return {ad:"musait", bastan:true,
       adimlar:[
         // seçim yok → giriş; yalnız giriş → çıkış (metinde giriş günü); aralık → "Boş villaları göster". Seçim kalkınca 1. adıma.

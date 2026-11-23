@@ -1,6 +1,6 @@
 # Villa Takvim — Proje Durumu
 
-_Son güncelleme: 18 Kasım 2026_
+_Son güncelleme: 23 Kasım 2026_
 
 ## Ne bu?
 Villa Takvim'in (villatakvim.netlify.app) iPhone/Android uygulaması. App adı: **Villa Takvimim**.
@@ -715,6 +715,10 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Sunucu: `supabase/functions/takvim-esitle` (okuma, SSRF koruması, bekleyen onayı, çakışma ve ulaşılamıyor bildirimleri),
       `supabase/functions/takvim-ver` (bizden dışarıya .ics; misafir bilgisi yok). Ortak: `supabase/functions/_shared`.
       GERÇEK HESAPLARLA DENENECEK: Airbnb / Booking / Vrbo'nun gerçek linkleri ve bizim linkin o sitelere yapıştırılması.
+- [x] Görev 33 — Dış satış düzeltmeleri (yarım gün, "Misafir bilgisi ekle" önce form), rezervasyon kaynağı ("Nereden geldi?",
+      kanal etiketleri ve renkleri, komisyon), Gelir & gider'de kanal raporu, Misafirler (CRM), "Bağlamayı bize bırakın" (talep +
+      yönetim paneli) · Claude Code (20–23 Kasım). 33.1–33.9 ayrı commit; Netlify'a yüklenmedi. Testler: `docs/qa/gorev33/README.md`.
+      ÖNCE (ürün yöneticisi): `takvim-esitle` yeniden deploy (talep bildirimleri, yeni yerel siteler). Veritabanı uygulandı.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
