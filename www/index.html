@@ -98,7 +98,7 @@
     --g3d-baslik-boy:max(var(--g3d-baslik-kucuk), calc(var(--g3d-baslik) - (1rem - 17px) * 8));   /* yazı büyüdükçe 88 → 64 */
     --g3d-bolum:56px;             /* bölüm başlıkları (liste doluyken boş hâl görselinin küçüğü) */
     --g3d-kart:64px;              /* seçim kartları (.secKart) */
-    --g3d-bos:192px;              /* boş hâl (37.3); kısa ekranda (yükseklik 640 pt altı) 144 pt */
+    --g3d-bos:192px;              /* boş hâl (37.3); 760 pt'den kısa ekranda yazı büyüdükçe küçülür, 640 pt altında 144 pt */
     --g3d-sihirbaz:160px;         /* sihirbaz çizimleri */
     --hiz-baslik:150ms;           /* 34.2: üst çubukta küçük başlığın belirmesi */
     --hiz-morf-ac:380ms;          /* 34.1: kart → arama paneli büyümesi */
@@ -965,7 +965,9 @@
   .bosHal .bosGorsel.yok > .ik{display:block}
   /* 37.3 boş hâl: görsel ortada (192 pt), altında 16 pt, sonra kalın başlık, açıklama, düğme; hepsi ortalı */
   .bosHal .bosGorsel:not(.yok){margin-bottom:calc(16px - .75rem)}
-  @media (max-height:639.98px){ :root{--g3d-bos:144px} .bosHal{padding-top:.5rem} }   /* kısa ekran: düğme ilk ekranda */
+  /* kısa ekranda düğme ilk ekranda kalsın: büyük yazıda görsel küçülür, 640 pt altında 144 pt */
+  @media (max-height:759.98px){ :root{--g3d-bos:max(112px, calc(192px - (1rem - 17px) * 36))} }
+  @media (max-height:639.98px){ :root{--g3d-bos:max(96px, calc(144px - (1rem - 17px) * 24))} .bosHal{padding-top:.5rem} }
   .bosHal .bosYazi{font-size:1.125rem; font-weight:600; line-height:1.4; color:var(--ink); max-width:22rem}
   .bosHal .bosAlt{font-size:.9375rem; line-height:1.45; color:var(--muted); max-width:22rem; margin-top:-.375rem}
   .bosHal .big{margin-top:.25rem}
@@ -1457,6 +1459,7 @@
   @media (max-width:380px){ :root{--g3d-baslik-boy:var(--g3d-baslik-kucuk)} }
   /* 37.2 "+ Villa ekle" solda, dolu / boş etiketleri aynı satırın sağ ucunda, dikey ortalı. Sığmazsa etiketler alt satıra iner
      ve sola yaslanır (sol kenarı "Villa ekle" ile aynı); hiçbir genişlikte sağda tek başına durmaz */
+  .anaBas h1.h1G:has(> .baslikGK){flex:1 1 auto; min-width:0}   /* 37.1: başlık satır genişliğinde kalır, görsel ondan küçülür */
   .anaBas h1.h1G:has(> .baslikGK){margin-bottom:max(1rem, calc(var(--g3d-baslik-boy) * (.5 - var(--alt, 0)) - 1.125rem + 8px))}
   .anaSatir{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.5rem; min-height:3rem}
   .anaSatir > #anaHap{flex:none; margin:0; padding:0; overflow:visible}
