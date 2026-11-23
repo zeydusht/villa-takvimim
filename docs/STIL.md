@@ -249,6 +249,9 @@ ile işaretlenir (iki kez çarpılmasın).
     ödeme yok → ana iş üstteki "Ödemeyi kaydet".
   - Süzgeç boş kalırsa kısa not.
   - Çizimler 3D (`img/3d/<ad>-512.webp`, Görev 34–35); eski düz çizimler (`img/bos-*`, `img/sihirbaz-*`) kaldırıldı.
+  - Düzen (Görev 37.3): görsel ortada, altında 16 pt; sonra kalın başlık, açıklama, düğme; hepsi ortalı. Kısa ekranda düğme ilk ekranda.
+  - Ekranda büyük boş hâl görseli varken sekme başlığının görseli gizlenir (aynı ekranda tek 3D görsel); veri gelince yumuşakça
+    (`--hiz-ac`) geri gelir.
   - 3D görseller dekupe (şeffaf webp) ve kendi gölgeleri var. Arkalarında hiçbir hâlde (gece modu, büyük yazı, dokunma, seçili kart)
     renk, daire, kare, kenarlık ya da ikinci gölge (`drop-shadow`) olmaz; uygulama ve misafir sayfası hep açık zeminde (Görev 36.2).
     Tek istisna: görsel yüklenemeyince çıkan ikonlu yedek hâl (`.bosGorsel.yok`, `.secKartGorsel.yok`), orada `--soft` zemin kalır.
@@ -259,7 +262,8 @@ ile işaretlenir (iki kez çarpılmasın).
     | `--g3d-baslik` / `--g3d-baslik-kucuk` | Villalarım / Takvim / Hesap başlığı | 88 pt; 380 pt ve altı ekranda, büyük yazıda 64 pt |
     | `--g3d-bolum` | bölüm başlıkları (liste doluyken) | 56 pt |
     | `--g3d-kart` | seçim kartları (`.secKart`) | 64 pt |
-    | `--g3d-bos` | boş hâl, sihirbaz | 160 pt |
+    | `--g3d-bos` | boş hâl (Görev 37.3) | 192 pt; kısa ekranda (yükseklik 640 pt altı) 144 pt |
+    | `--g3d-sihirbaz` | sihirbaz | 160 pt |
     | `--g3d-misafir` (g.html) | misafir sayfası | 80 pt |
 
   - Dosyalar: `-256.webp` kenarları kırpılmış kare; `-512.webp` tam kare (boş hâl, sihirbaz). Başlık görsellerinin (`baslik-*`)

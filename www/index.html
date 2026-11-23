@@ -98,7 +98,8 @@
     --g3d-baslik-boy:max(var(--g3d-baslik-kucuk), calc(var(--g3d-baslik) - (1rem - 17px) * 8));   /* yazı büyüdükçe 88 → 64 */
     --g3d-bolum:56px;             /* bölüm başlıkları (liste doluyken boş hâl görselinin küçüğü) */
     --g3d-kart:64px;              /* seçim kartları (.secKart) */
-    --g3d-bos:160px;              /* boş hâl ve sihirbaz çizimleri */
+    --g3d-bos:192px;              /* boş hâl (37.3); kısa ekranda (yükseklik 640 pt altı) 144 pt */
+    --g3d-sihirbaz:160px;         /* sihirbaz çizimleri */
     --hiz-baslik:150ms;           /* 34.2: üst çubukta küçük başlığın belirmesi */
     --hiz-morf-ac:380ms;          /* 34.1: kart → arama paneli büyümesi */
     --hiz-morf-kapa:260ms;        /* 34.1: panel → kart küçülmesi (açılıştan hızlı) */
@@ -552,7 +553,7 @@
   /* 11.9 çizimler: en fazla ekranın %60'ı, ortada, altında mevcut metin */
   .cizim{display:block; width:60%; max-width:60vw; height:auto; aspect-ratio:1/1; margin:0 auto .75rem}
   .shSon .cizim{margin-bottom:0}
-  .cizim.cizim3d{width:var(--g3d-bos); max-width:50vw}   /* 35.2: 3D görsel, boş hâllerle aynı boy */
+  .cizim.cizim3d{width:var(--g3d-sihirbaz); max-width:50vw}   /* 35.2: sihirbazın 3D görseli */
   .shSon{text-align:center; padding-top:2rem}
   .shEmoji{font-size:3.5rem; line-height:1}
   .shSon h1{margin-top:.75rem}
@@ -962,7 +963,10 @@
   .bosHal .bosGorsel > .ik{display:none}
   .bosHal .bosGorsel.yok{width:5.5rem; height:5.5rem; border-radius:99px; background:var(--soft)}
   .bosHal .bosGorsel.yok > .ik{display:block}
-  .bosHal .bosYazi{font-size:1.0625rem; line-height:1.45; color:var(--ink); max-width:22rem}
+  /* 37.3 boş hâl: görsel ortada (192 pt), altında 16 pt, sonra kalın başlık, açıklama, düğme; hepsi ortalı */
+  .bosHal .bosGorsel:not(.yok){margin-bottom:calc(16px - .75rem)}
+  @media (max-height:639.98px){ :root{--g3d-bos:144px} .bosHal{padding-top:.5rem} }   /* kısa ekran: düğme ilk ekranda */
+  .bosHal .bosYazi{font-size:1.125rem; font-weight:600; line-height:1.4; color:var(--ink); max-width:22rem}
   .bosHal .bosAlt{font-size:.9375rem; line-height:1.45; color:var(--muted); max-width:22rem; margin-top:-.375rem}
   .bosHal .big{margin-top:.25rem}
   .bosHal .bakiciLink{margin-top:.25rem}
@@ -1441,6 +1445,13 @@
   .baslikG{flex:none; display:block; object-fit:contain; width:var(--g3d-baslik-boy); max-width:calc(100% - var(--ara));
     height:auto; aspect-ratio:1/1; pointer-events:none}
   @container (max-width:57.9px){ .baslikG{display:none} }
+  /* 37.3 ekranda büyük boş hâl görseli varken başlık görseli gizlenir (aynı ekranda iki 3D görsel olmaz); yazı yumuşakça sola kayar.
+     İlk villa eklenince görsel aynı yumuşaklıkla geri gelir */
+  .baslikGK{transition:flex-basis var(--hiz-ac) var(--egri-gecis), opacity var(--hiz-ac) var(--egri-gecis)}
+  h1.h1G:has(> .baslikGK){transition:margin-bottom var(--hiz-ac) var(--egri-gecis)}
+  .sekmeEkran:has(.bosHal:not(.hide *) .bosGorsel:not(.yok)) .baslikGK{flex-basis:0; opacity:0}
+  .sekmeEkran:has(.bosHal:not(.hide *) .bosGorsel:not(.yok)) h1.h1G:has(> .baslikGK){margin-bottom:.25rem}
+  @media (prefers-reduced-motion: reduce){ .baslikGK, h1.h1G:has(> .baslikGK){transition-duration:var(--hiz-azalt)} }
   /* görselin dolu (şeffaf olmayan) kısmı ile alttaki öğe arasında en az 8 pt: --alt görselin alttaki şeffaf payı */
   h1.h1G:has(> .baslikGK){margin-bottom:max(0px, calc(var(--g3d-baslik-boy) * (.5 - var(--alt, 0)) - 1.125rem + 8px))}
   @media (max-width:380px){ :root{--g3d-baslik-boy:var(--g3d-baslik-kucuk)} }
@@ -1449,6 +1460,7 @@
   .anaBas h1.h1G:has(> .baslikGK){margin-bottom:max(1rem, calc(var(--g3d-baslik-boy) * (.5 - var(--alt, 0)) - 1.125rem + 8px))}
   .anaSatir{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.5rem; min-height:3rem}
   .anaSatir > #anaHap{flex:none; margin:0; padding:0; overflow:visible}
+  .anaSatir:has(> #anaHap.hide){min-height:0}   /* villa yokken yalnız alt yazı */
   .anaSatir > #ozet{flex:none; max-width:100%; margin:0}
   .anaSatir .ozetEt .durumEt{min-height:3rem}
   /* 18.16: villayı basılı tutup sürükleyerek sırala */
