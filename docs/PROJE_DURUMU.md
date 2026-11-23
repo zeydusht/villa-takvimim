@@ -725,6 +725,10 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
 - [x] Görev 35 — 3D görseller her yerde (2. set: sihirbaz, sekme başlıkları, misafir sayfası; liste dolunca küçük görsel), misafir
       sayfasında canlı doluluk (`villa_doluluk`: dış satışlar ve bakıcının rezervasyonları dahil, 60 sn'de bir) · Claude Code
       (23 Kasım). 35.1–35.7 ayrı commit; Netlify'a yüklenmedi. Rapor: `docs/qa/gorev35/README.md`. Eski düz çizimler silindi.
+- [x] Görev 36 — 3D görsel cilası: görsellerin arkasında hiçbir hâlde daire / zemin / gölge yok (misafir sayfasında da), boyutlar
+      `:root`'ta tek tabloda (`--g3d-*`), başlık görselleri 3x ekranda 512 px, görseller başlık satırını itmiyor ve yazıyı bölmüyor
+      (yer yoksa küçülüp kayboluyor), kaydırınca yarım kesik kalmıyor · Claude Code (23 Kasım). 36.1–36.6 ayrı commit; Netlify'a
+      yüklenmedi. Rapor: `docs/qa/gorev36/README.md` (köşe + kenar ortası piksel denetimi, 320 / 390 / 430 × açık / gece × yazı boyutu).
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
