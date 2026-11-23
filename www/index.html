@@ -95,6 +95,7 @@
     /* 36.3 3D görsel boyutları (hepsi buradan; 88 pt ve üstünde -512.webp, küçüklerde -256.webp) */
     --g3d-baslik:88px;            /* Villalarım / Takvim / Hesap başlığı */
     --g3d-baslik-kucuk:64px;      /* aynı başlık: dar ekranda (380 pt ve altı) ve büyük yazıda */
+    --g3d-baslik-boy:max(var(--g3d-baslik-kucuk), calc(var(--g3d-baslik) - (1rem - 17px) * 8));   /* yazı büyüdükçe 88 → 64 */
     --g3d-bolum:56px;             /* bölüm başlıkları (liste doluyken boş hâl görselinin küçüğü) */
     --g3d-kart:64px;              /* seçim kartları (.secKart) */
     --g3d-bos:160px;              /* boş hâl ve sihirbaz çizimleri */
@@ -1413,18 +1414,33 @@
   .anaBas{display:flex; align-items:center; flex-wrap:wrap; gap:.5rem}
   .anaBas h1{margin:0; flex:none}
   /* 35.4 bölüm başlığının sağında küçük 3D görsel (56 pt). Uygulama hep açık zeminde: görselin arkasında daire yok (şeffaf PNG) */
-  .bolumGorsel{flex:none; display:inline-flex; width:var(--g3d-bolum); height:var(--g3d-bolum); align-self:center;
-    margin:calc(var(--g3d-bolum) / -4) auto calc(var(--g3d-bolum) / -4) 0}
-  .bolumGorsel img{width:100%; height:100%; object-fit:contain}
-  .head > .bolumGorsel{margin:0 0 0 .5rem}
-  h1.h1G > .bolumGorsel{margin:-.25rem 0}
+  /* 36.4 satır yüksekliğine en çok 1.5rem katar (yazı satırından az): satır itilmez, görsel üstüne/altına taşar.
+     Yazıyla arasındaki boşluk (--ara, satırın gap'i) kutunun içinde: yer daralırsa önce görsel daralır, yazı bölünmez;
+     36 pt'nin altına inerse görünmez, boşluğu da yer kaplamaz */
+  .bolumGorsel{--ara:.75rem; --yukari:4px; flex:0 1 calc(var(--g3d-bolum) + var(--ara)); min-width:0; display:inline-flex; justify-content:flex-end;
+    height:var(--g3d-bolum); align-self:center; container-type:inline-size; contain-intrinsic-inline-size:calc(var(--g3d-bolum) + var(--ara)); pointer-events:none;
+    margin:calc(var(--g3d-bolum) / -2 + .75rem - var(--yukari)) auto calc(var(--g3d-bolum) / -2 + .75rem + var(--yukari)) calc(-1 * var(--ara))}
+  .bolumSatir > .bolumGorsel{--yukari:10px}   /* altında hemen kart var, üstünde bölüm boşluğu: görsel yukarı taşar */
+  .bolumGorsel img{flex:none; width:var(--g3d-bolum); max-width:calc(100% - var(--ara)); height:100%; object-fit:contain}
+  @container (max-width:44px){ .bolumGorsel img{display:none} }
+  .bolumSatir:has(> .bolumGorsel) > .eyebrow, h1.h1G > span:not(.bolumGorsel){flex-shrink:0; max-width:100%}
+  .bolumSatir:has(> .tumuLink:not(.hide)) > .eyebrow{flex-shrink:1}   /* "Tümünü gör" varken yazı yine kırılabilir */
+  .bolumSatir > .bolumGorsel ~ *{flex-shrink:0}
+  .head > .bolumGorsel{margin-right:0}
+  h1.h1G > .bolumGorsel{--ara:.5rem; margin-right:0}
   /* 35.3 başlık + 3D görsel aynı satırda, görsel dikey ortalı. Yazı büyüdükçe (kök 17 px'ten büyük) ve dar ekranda 48 pt */
   h1.h1G{display:flex; align-items:center; gap:.5rem}
-  .baslikG{flex:none; display:block; object-fit:contain; margin:-1rem 0;
-    width:max(var(--g3d-baslik-kucuk), calc(var(--g3d-baslik) - (1rem - 17px) * 8)); height:auto; aspect-ratio:1/1}
-  @media (max-width:380px){ .baslikG{width:var(--g3d-baslik-kucuk)} }
+  /* 36.4 görsel satıra en çok 2rem katar (başlık satırı 2.25rem): satır itilmez, görsel üstüne/altına taşar
+     (altındaki düğmelere değmesin diye 4 pt yukarıda) */
+  .baslikG{flex:none; display:block; object-fit:contain;
+    margin:calc(var(--g3d-baslik-boy) / -2 + 1rem - 4px) 0 calc(var(--g3d-baslik-boy) / -2 + 1rem + 4px);
+    width:var(--g3d-baslik-boy); height:auto; aspect-ratio:1/1; pointer-events:none}
+  @media (max-width:380px){ :root{--g3d-baslik-boy:var(--g3d-baslik-kucuk)} }
   .anaBas #ozet{margin:0 0 0 auto; justify-content:flex-end}
   .anaBas #ozet.sm{margin:.25rem 0 0; flex-basis:100%}
+  /* 36.4 Villalarım: 88 pt görselle dolu / boş etiketleri hiçbir genişlikte başlık satırına sığmaz; hep alt satırda,
+     görselin taşan alt kısmının altında */
+  .anaBas:has(.baslikG) #ozet{flex-basis:100%; margin:max(0px, calc(var(--g3d-baslik-boy) / 2 - 1.125rem - .5rem - 4px)) 0 0}
   .anaBas .ozetEt .durumEt{min-height:3rem}
   /* 18.16: villayı basılı tutup sürükleyerek sırala */
   .kartlar .kart{-webkit-touch-callout:none; -webkit-user-select:none; user-select:none}
@@ -4766,12 +4782,15 @@
     BASLIK.kare=0;
     var bar=document.getElementById("appBar"), bb=document.getElementById("barBaslik"); if(!bar || !bb || bar.classList.contains("hide")) return;
     var h=gorunenBaslik();
-    if(BASLIK.h1 && BASLIK.h1!==h){ BASLIK.h1.style.opacity=""; BASLIK.h1.style.transform=""; }
+    if(BASLIK.h1 && BASLIK.h1!==h){ BASLIK.h1.style.opacity=""; BASLIK.h1.style.transform=""; var g0=BASLIK.h1.querySelector(".baslikG"); if(g0) g0.style.opacity=""; }
     BASLIK.h1=h;
     if(!h){ bar.classList.remove("baslikli"); return; }
     var alt=bar.getBoundingClientRect().bottom, r=h.getBoundingClientRect();
     var ilerleme=Math.max(0,Math.min(1,(alt-r.top+r.height*.25)/(r.height*1.25)));
     if(!azHareket()){ h.style.opacity=String(1-ilerleme*.85); h.style.transform=ilerleme?"translateY("+(-ilerleme*6)+"px)":""; }
+    // 36.4: 3D görsel üst çubuğa değmeye başlayınca söner, yarısı çubuğun altına girdiğinde hiç görünmez (yarım kesik kalmaz)
+    var g=h.querySelector(".baslikG");
+    if(g){ var gr=g.getBoundingClientRect(), gs=Math.max(0,Math.min(1,(alt-gr.top)/(gr.height*.5))); g.style.opacity=gs?String(1-gs):""; }
     var metin=h.textContent.trim();
     if(bb.textContent!==metin) bb.textContent=metin;
     bar.classList[r.bottom<=alt+2 ? "add" : "remove"]("baslikli");

@@ -264,6 +264,10 @@ ile işaretlenir (iki kez çarpılmasın).
 
   - Dosyalar: `-256.webp` kenarları kırpılmış kare; `-512.webp` tam kare (boş hâl, sihirbaz). Başlık görsellerinin (`baslik-*`)
     `-512`'si de kırpılmış, `srcset` ile 3x ekranda o seçilir; 88 pt altındaki yerlerde `-256` yeter.
+  - Hiza (Görev 36.4): görsel yazıyla dikey ortalı, arada en az 8 pt; satıra yazı satırından fazla yükseklik katmaz (negatif margin),
+    üstüne / altına taşar. Altında hemen düğme ya da kart varsa birkaç pt yukarı kayar (başlıkta 4, bölüm satırında 10 pt).
+    Yer daralırsa önce görsel küçülür, yazı bölünmez; 36 pt'nin altına inince görünmez. Villalarım'da dolu / boş etiketleri hep alt satırda.
+    Kaydırınca başlık görseli üst çubuğa değdiği anda söner, yarısı çubuğun altına girince görünmez.
 - **Yükleniyor (Görev 31.7):** dönen çark yerine iskelet (gri kutu, yazı yerine yuvarlak çizgiler).
   - Yalnız veri 300 ms'de gelmezse görünür (`--iskelet-gecikme`); göründüyse en az 400 ms kalır (`--iskelet-en-az`, `iskeletBitir`).
   - Üstünde 1,6 sn'lik yavaş, doğrusal parlama dolaşır (`--iskelet-parlama`); "Hareketi azalt"ta sabit.
