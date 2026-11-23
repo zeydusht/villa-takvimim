@@ -2,7 +2,7 @@
 
 Zeyd 3D görselleri çok beğendi ("buradaki gibi uygulamanın içinde de olsun"). Ayrıca misafir sayfasının (paylaşılan villa linki) **her zaman güncel** olmasını istiyor.
 
-**Veritabanı `docs/VERITABANI_GOREV35.sql`. Ürün yöneticisi uygular, sen çalıştırma.** Kullanacağın fonksiyon:
+**Veritabanı `docs/VERITABANI_GOREV35.sql` UYGULANDI (canlıda çalışıyor). Sen çalıştırma.** Kullanacağın fonksiyon:
 - `villa_doluluk(p_ad text)` → `{zaman, dolu:[[bas,bit],…], opsiyon:[{b,s,son}]}`
 - Herkese açık (anon). Sadece tarihler döner. Bitiş günü dahil değil (çıkış günü).
 

@@ -1,5 +1,5 @@
 -- VERITABANI_GOREV35.sql — Misafir sayfası canlı doluluk
--- Ürün yöneticisi Zeyd'in onayıyla uygular. Claude Code ÇALIŞTIRMAZ, sadece adı kullanır.
+-- UYGULANDI: 2026-11-23 (Zeyd onayıyla). Claude Code ÇALIŞTIRMAZ, sadece adı kullanır.
 --
 -- Sorun: misafir sayfası (g.html) doluluğu, sahibin uygulaması açıkken yüklenen <ad>.json'dan okuyor.
 --   · bakıcının girdiği rezervasyon, sahip uygulamayı açana kadar sayfaya geçmiyor;
