@@ -729,6 +729,10 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       `:root`'ta tek tabloda (`--g3d-*`), başlık görselleri 3x ekranda 512 px, görseller başlık satırını itmiyor ve yazıyı bölmüyor
       (yer yoksa küçülüp kayboluyor), kaydırınca yarım kesik kalmıyor · Claude Code (23 Kasım). 36.1–36.6 ayrı commit; Netlify'a
       yüklenmedi. Rapor: `docs/qa/gorev36/README.md` (köşe + kenar ortası piksel denetimi, 320 / 390 / 430 × açık / gece × yazı boyutu).
+- [x] Görev 37 — Sekme başlıklarında önce görsel sonra yazı (yazı hiç bölünmez; görsel alttaki öğeden en az 8 pt uzak, 36.7),
+      dolu / boş etiketleri "Villa ekle" satırında (sığmazsa alt satırda sola yaslı), boş ekranda tek ve büyük (192 pt) görsel
+      · Claude Code (23 Kasım). 37.1–37.5 ayrı commit; Netlify'a yüklenmedi. Rapor: `docs/qa/gorev37/README.md`.
+      Sınır: 320 pt genişlik + çok büyük yazıda boş Villalarım'ın "Villa ekle" düğmesi ilk ekrana sığmıyor (kaydırınca görünür).
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
