@@ -248,7 +248,7 @@ ile işaretlenir (iki kez çarpılmasın).
     müsaitlik sonuç yok → [Tarihleri değiştir] + en yakın boşluk; villanın rezervasyonu yok → [Rezervasyon ekle];
     ödeme yok → ana iş üstteki "Ödemeyi kaydet".
   - Süzgeç boş kalırsa kısa not.
-  - Çizimler (`img/*.webp`) yalnız villa ekleme sihirbazında kalır.
+  - Çizimler 3D (`img/3d/<ad>-512.webp`, Görev 34–35); eski düz çizimler (`img/bos-*`, `img/sihirbaz-*`) kaldırıldı.
 - **Yükleniyor (Görev 31.7):** dönen çark yerine iskelet (gri kutu, yazı yerine yuvarlak çizgiler).
   - Yalnız veri 300 ms'de gelmezse görünür (`--iskelet-gecikme`); göründüyse en az 400 ms kalır (`--iskelet-en-az`, `iskeletBitir`).
   - Üstünde 1,6 sn'lik yavaş, doğrusal parlama dolaşır (`--iskelet-parlama`); "Hareketi azalt"ta sabit.

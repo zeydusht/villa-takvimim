@@ -545,6 +545,7 @@
   /* 11.9 çizimler: en fazla ekranın %60'ı, ortada, altında mevcut metin */
   .cizim{display:block; width:60%; max-width:60vw; height:auto; aspect-ratio:1/1; margin:0 auto .75rem}
   .shSon .cizim{margin-bottom:0}
+  .cizim.cizim3d{width:9.5rem; max-width:50vw}   /* 35.2: 3D görsel 160 pt (boş hâllerle aynı) */
   .shSon{text-align:center; padding-top:2rem}
   .shEmoji{font-size:3.5rem; line-height:1}
   .shSon h1{margin-top:.75rem}
@@ -2326,7 +2327,7 @@
 
     <div class="section">
       <div id="fotoBas"><span class="eyebrow">Fotoğraflar</span></div>
-      <img class="cizim hide" id="fotoCizim" src="img/bos-foto.webp" alt="" aria-hidden="true" width="800" height="800" decoding="async" loading="lazy">
+      <img class="cizim cizim3d hide" id="fotoCizim" src="img/3d/sh-foto-512.webp" alt="" aria-hidden="true" width="512" height="512" decoding="async" loading="lazy" onerror="this.style.visibility='hidden'">
       <div class="fotolar" id="fotolar"></div>
       <input type="file" id="fotoInput" accept="image/*" multiple style="display:none; width:auto">
     </div>
@@ -6068,7 +6069,9 @@
     return '<div class="bosHal" role="status">'+gorsel+
       '<div class="bosYazi">'+esc(cev(cumle))+"</div>"+(alt?'<div class="bosAlt">'+esc(cev(alt))+"</div>":"")+(dugme||"")+(ek||"")+"</div>";
   }
-  function cizimImg(ad){ return '<img class="cizim" src="img/'+ad+'.webp" alt="" aria-hidden="true" width="800" height="800" decoding="async">'; }
+  function cizim3d(ad){
+    return '<img class="cizim cizim3d" src="img/3d/'+ad+'-512.webp" alt="" aria-hidden="true" width="512" height="512" decoding="async" onerror="this.remove()">';
+  }
 
   // Kurulum sihirbazının 6 adımı (villa ekranındaki kurulum kartı ve "Villa bilgileri" satırı da kullanır)
   // 18.11: 7 adım (sihirbaz başlıkları) ve villa ekranındaki kurulum kartının satırları
@@ -11403,7 +11406,7 @@
   function ozDegis(x,on){ x.classList[on?"add":"remove"]("on"); x.setAttribute("aria-pressed",String(on)); }
   function shCipler(liste,secili,grup){ return ozDugmeler(liste,secili,grup); }
   // 18.11: her adımın çizimi (18.12)
-  var SH_CIZIM=["sihirbaz-hosgeldin","sihirbaz-kapasite","sihirbaz-ozellikler","sihirbaz-fiyat","bos-foto","sihirbaz-iletisim","sihirbaz-sayfa"];
+  var SH_CIZIM=["hosgeldin","sh-kapasite","sh-ozellikler","sh-fiyat","sh-foto","sh-iletisim","sh-sayfa"];   // 35.2: 3D görseller
   // 18.11: büyük ikonlu sayaç kartı (Kişi · Yatak odası · Banyo)
   function shKart(id,lab,ik,deger){
     return '<div class="shKart"><span class="shKartIk">'+ikon(ik,{boy:30})+"</span>"+
@@ -11434,12 +11437,12 @@
     document.getElementById("shGeri").classList[a===1?"add":"remove"]("gizli");
     document.getElementById("shIleri").textContent=cev(a===SH_ADIM?"Bitir":"İleri");
     if(bitti){
-      h='<div class="shSon">'+cizimImg("sihirbaz-hazir")+"<h1>"+esc(cev("Villanız hazır!"))+"</h1>"+
+      h='<div class="shSon">'+cizim3d("hazir")+"<h1>"+esc(cev("Villanız hazır!"))+"</h1>"+
         '<div class="sm muted" style="margin-top:.5rem">'+esc(cev("Eksik kalan bir şey olursa villa ekranındaki kart size hatırlatır."))+"</div>"+
         '<button class="big" data-ik="takvim" id="shTakvim">'+esc(cev("Takvime git"))+"</button></div>";
     } else {
       if(Rehber.gerekli("villa")) h+=Rehber.ipucuHTML(RM["villa"+a]);
-      h+=cizimImg(SH_CIZIM[a-1]);
+      h+=cizim3d(SH_CIZIM[a-1]);
       h+='<h1 class="shBaslik">'+esc(cev(SH_BASLIK[a-1]))+"</h1>";
       if(a===1){
         h+=alan("sh-ad","Villa adı","Örn. Villa Salta","text",esc(v.ad||""))+
