@@ -1951,6 +1951,10 @@
   @media (prefers-reduced-motion: reduce){ .cell.turNabiz::after{animation:none} }
   /* 11.8 alt menü: seçili sekmede dolu ikon */
   .sekmeler button svg.ik{width:22px; height:22px}
+  /* 36.2 3D görseller dekupe (şeffaf webp), kendi gölgeleri var: hiçbir hâlde (gece modu, büyük yazı, dokunma, seçili kart)
+     arkalarında renk, daire, kare, kenarlık ya da ikinci gölge olmaz. İstisna: görsel yüklenemeyince ikonlu yedek hâl (.yok) */
+  .baslikG, .bolumGorsel, .bolumGorsel img, .bosGorsel:not(.yok), .bosGorsel img, .secKartGorsel:not(.yok), .secKartGorsel img, .cizim3d{
+    background:none; border:0; border-radius:0; box-shadow:none; filter:none; outline:0}
 </style>
 </head>
 <body>
