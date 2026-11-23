@@ -92,8 +92,8 @@
     --egri-cekmece:cubic-bezier(.32, .72, 0, 1);    /* 31.1: alttan açılan panel (iOS çekmecesi gibi) */
     --iskelet-gecis:200ms;        /* 34.6: iskeletten içeriğe çapraz solma */
     --hiz-akordeon:300ms;
-    --baslik-gorsel:64px;         /* 35.3 ana sekme başlığının yanındaki 3D görsel; Büyük yazıda ve dar ekranda 48 pt */
-    --baslik-gorsel-kucuk:48px;         /* 34.1: arama adımları (Ne zaman → Kaç kişi) açılıp kapanma */
+    --baslik-gorsel:88px;         /* 35.3 ana sekme başlığının yanındaki 3D görsel; Büyük yazıda ve dar ekranda 48 pt */
+    --baslik-gorsel-kucuk:64px;         /* 34.1: arama adımları (Ne zaman → Kaç kişi) açılıp kapanma */
     --hiz-baslik:150ms;           /* 34.2: üst çubukta küçük başlığın belirmesi */
     --hiz-morf-ac:380ms;          /* 34.1: kart → arama paneli büyümesi */
     --hiz-morf-kapa:260ms;        /* 34.1: panel → kart küçülmesi (açılıştan hızlı) */
@@ -1408,18 +1408,16 @@
   /* 28.1: başlıkla dolu/boş etiketleri arası .5rem (360'ta tek haneli sayılarla aynı satıra sığsın) */
   .anaBas{display:flex; align-items:center; flex-wrap:wrap; gap:.5rem}
   .anaBas h1{margin:0; flex:none}
-  /* 35.4 bölüm başlığının sağında küçük 3D görsel (40 pt) */
-  .bolumGorsel{flex:none; display:inline-flex; width:2.375rem; height:2.375rem; align-self:center; margin:-.5rem auto -.5rem 0}
+  /* 35.4 bölüm başlığının sağında küçük 3D görsel (56 pt). Uygulama hep açık zeminde: görselin arkasında daire yok (şeffaf PNG) */
+  .bolumGorsel{flex:none; display:inline-flex; width:3.5rem; height:3.5rem; align-self:center; margin:-.875rem auto -.875rem 0}
   .bolumGorsel img{width:100%; height:100%; object-fit:contain}
   .head > .bolumGorsel{margin:0 0 0 .5rem}
   h1.h1G > .bolumGorsel{margin:-.25rem 0}
-  @media (prefers-color-scheme: dark){ .bolumGorsel{background:var(--soft); border-radius:99px} }
   /* 35.3 başlık + 3D görsel aynı satırda, görsel dikey ortalı. Yazı büyüdükçe (kök 17 px'ten büyük) ve dar ekranda 48 pt */
   h1.h1G{display:flex; align-items:center; gap:.5rem}
-  .baslikG{flex:none; display:block; object-fit:contain; margin:-.5rem 0;
+  .baslikG{flex:none; display:block; object-fit:contain; margin:-1rem 0;
     width:max(var(--baslik-gorsel-kucuk), calc(var(--baslik-gorsel) - (1rem - 17px) * 8)); height:auto; aspect-ratio:1/1}
   @media (max-width:380px){ .baslikG{width:var(--baslik-gorsel-kucuk)} }
-  @media (prefers-color-scheme: dark){ .baslikG{background:var(--soft); border-radius:99px; padding:.25rem; box-sizing:border-box} }
   .anaBas #ozet{margin:0 0 0 auto; justify-content:flex-end}
   .anaBas #ozet.sm{margin:.25rem 0 0; flex-basis:100%}
   .anaBas .ozetEt .durumEt{min-height:3rem}
