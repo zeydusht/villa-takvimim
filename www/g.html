@@ -269,6 +269,11 @@
     box-shadow:inset 0 0 0 2.5px var(--bugun),inset 0 0 0 3.5px #fff,0 0 0 1px #fff}
   .ornek.bugunOrnek{background:#fff;box-shadow:inset 0 0 0 2.5px var(--bugun)}
   .uyari{font-size:.8125rem;color:#9B2C4A;margin-top:.75rem;min-height:1.25rem}
+  /* 35.5 canlı doluluk */
+  .canliSatir{display:flex;align-items:center;gap:.375rem;margin-top:.5rem;font-size:.8125rem;color:var(--muted)}
+  .canliSatir::before{content:"";width:.5rem;height:.5rem;border-radius:99px;background:#1F8A5B;flex:none}
+  .canliSatir.gizli{display:none}
+  .canliUyari{background:#FBF1F4;color:#9B2C4A;border-bottom:1px solid #E8C6D1;padding:.625rem 1rem;font-size:.875rem;text-align:center}
   .aciklik{display:flex;gap:1rem;margin-top:1rem;font-size:.8125rem;color:var(--muted);
     align-items:center;flex-wrap:wrap}
   .ornek{width:1rem;height:1rem;border-radius:5px;display:inline-block;vertical-align:-3px;margin-right:.375rem}
@@ -360,7 +365,9 @@
     "Ev kuralları":"House rules","Bilmeniz gerekenler":"Good to know","İptal ve iade":"Cancellation and refunds","Opsiyonlu":"On hold","Bu tarihler şu an opsiyonlu.":"These dates are currently on hold.","Bu tarihler arasında dolu gün var.":"Some nights between these dates are booked.","Bu güne giriş yapılamıyor, dolu.":"Check-in is not possible on this day, it is booked.","Haritayı büyüt":"Enlarge map","Evin yaklaşık bölgesi gösteriliyor.":"The approximate area of the house is shown.","Takvim":"Calendar","Giriş ve çıkış gününe dokunun":"Tap your check-in and check-out days","Fiyat":"Price","Size özel teklif":"A special offer for you","size özel":"special price",
     "Bu teklif artık geçerli değil. Güncel fiyatlar aşağıda.":"This offer is no longer valid. Current prices are below.",
     "Bu teklifin süresi doldu. Güncel fiyatlar aşağıda.":"This offer has expired. Current prices are below.",
-    "Bu tarihler artık dolu, lütfen başka tarih seçin.":"These dates are no longer available, please choose other dates.","Yakınlarda ne var?":"What's nearby?","Haritada göster":"Show on map","Haritada aç":"Open in maps",
+    "Bu tarihler artık dolu, lütfen başka tarih seçin.":"These dates are no longer available, please choose other dates.",
+    "Seçtiğiniz tarihlerin bir kısmı az önce doldu.":"Some of the dates you picked were just booked.","Bu tarihler artık müsait değil":"These dates are no longer available",
+    "Uygunluk canlı":"Live availability","az önce güncellendi":"updated just now","Yakınlarda ne var?":"What's nearby?","Haritada göster":"Show on map","Haritada aç":"Open in maps",
     "Uygun":"Available","Dolu":"Booked","Temizle":"Clear","Kapat":"Close","Bugün":"Today",
     "Rezervasyon isteği oluştur":"Send a booking request","Tarih seçin":"Select dates",
     "Giriş gününü seçin":"Select check-in day","Çıkış gününü seçin":"Select check-out day",
@@ -562,6 +569,7 @@
        '<span><i class="ornek bugunOrnek"></i>'+esc(CEV("Bugün"))+"</span>"+
        ((D.opsiyon||[]).length?'<span><i class="ornek opsOrnek"></i>Opsiyonlu</span>':"")+
        '<span style="color:var(--muted)">Giriş 16:00 · Çıkış 10:00</span></div>'+
+       '<div class="canliSatir gizli" id="canliSatir" aria-live="polite"></div>'+
        '<div id="secimAlan"></div>',"takvim",CEV("Giriş ve çıkış gününe dokunun"));
 
     // ---- ev hakkında ----
@@ -687,6 +695,75 @@
     belirKur();
     if(teklifKod) teklifGetir(); else tarihParam();
     if(D.harita && document.getElementById("haritaMini")) haritaKur();
+    canliBasla();
+  }
+
+  // ---- 35.5 canlı doluluk ----
+  // Sayfa açılınca, açıkken her 60 sn'de ve sekme yeniden görünür olunca villa_doluluk okunur. Gelen [giriş, çıkış) aralıkları
+  // uygulamadaki kuralla günlere çevrilir: giriş günü öğleden sonra (yarım), çıkış günü sabah (yarım), aradaki günler tam.
+  // Değişiklik varsa takvim yeniden çizilir, seçim korunur; seçili aralık dolduysa kırmızı uyarı ve seçim temizlenir.
+  // Fonksiyon yoksa / hata verirse JSON'daki doluluk kalır, "canlı" satırı görünmez.
+  var CANLI={son:0, t:null, imza:"", yaz:null, calisiyor:false};
+  var CANLI_SURE=60000;
+  function dolulukCevir(l){
+    var M={}, koy=function(k,y){ (M[k]=M[k]||{})[y]=1; };
+    (l||[]).forEach(function(x){
+      if(!x || !x[0] || !x[1] || x[1]<=x[0]) return;
+      var d=new Date(+x[0].slice(0,4),+x[0].slice(5,7)-1,+x[0].slice(8,10)), son=x[1];
+      koy(x[0],"a");
+      for(d.setDate(d.getDate()+1); fmt(d)<son; d.setDate(d.getDate()+1)){ koy(fmt(d),"s"); koy(fmt(d),"a"); }
+      koy(son,"s");
+    });
+    var dolu=[], yarim=[];
+    Object.keys(M).sort().forEach(function(k){ var o=M[k]; if(o.s && o.a) dolu.push(k); else yarim.push(k+":"+(o.a?"a":"s")); });
+    return {dolu:dolu, yarim:yarim};
+  }
+  function canliGetir(){
+    if(CANLI.calisiyor || !C.supabaseKey) return;
+    CANLI.calisiyor=true;
+    fetch(C.supabaseUrl.replace(/\/+$/,"")+"/rest/v1/rpc/villa_doluluk",{
+      method:"POST", cache:"no-store",
+      headers:{ "apikey":C.supabaseKey, "Authorization":"Bearer "+C.supabaseKey, "Content-Type":"application/json" },
+      body:JSON.stringify({p_ad:jeton})
+    }).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(c){
+      CANLI.calisiyor=false;
+      if(!c || !Array.isArray(c.dolu)) throw 0;
+      var g=dolulukCevir(c.dolu), ops=(Array.isArray(c.opsiyon)?c.opsiyon:[]).filter(function(o){ return o && o.b && o.s; });
+      CANLI.son=Date.now(); canliSatir();
+      var imza=JSON.stringify([g.dolu,g.yarim,ops]);
+      if(imza===CANLI.imza) return;
+      var ilk=!CANLI.imza; CANLI.imza=imza;
+      D.dolu=g.dolu; D.yarim=g.yarim; D.opsiyon=ops;
+      canliUygula(ilk);
+    }).catch(function(){ CANLI.calisiyor=false; });
+  }
+  function canliUygula(ilk){
+    var secTam=sec.bas && sec.bit, doldu=false;
+    if(secTam && (!girisUygun(sec.bas) || !cikisUygun(sec.bit) || !araBos(sec.bas,sec.bit))) doldu=true;
+    else if(sec.bas && !sec.bit && !girisUygun(sec.bas)) doldu=true;
+    if(doldu){
+      var tkAktif=teklifAktif();
+      sec={bas:null,bit:null};
+      uyariMetin=CEV("Seçtiğiniz tarihlerin bir kısmı az önce doldu.");
+      CANLI.uyari=uyariMetin;
+      if(TK && tkAktif) serit("gri",esc(CEV("Bu tarihler artık müsait değil")));
+      else if(TK && ilk) serit("gri",esc(CEV("Bu tarihler artık müsait değil")));
+    } else if(TK && (!girisUygun(TK.giris) || !cikisUygun(TK.cikis) || !araBos(TK.giris,TK.cikis))) {
+      serit("gri",esc(CEV("Bu tarihler artık müsait değil")));
+    }
+    takvimCiz(); altCiz(); if(typeof secimKutusu==="function") secimKutusu();
+  }
+  function canliSatir(){
+    var el=document.getElementById("canliSatir"); if(!el || !CANLI.son) return;
+    var dk=Math.floor((Date.now()-CANLI.son)/60000);
+    el.textContent=CEV("Uygunluk canlı")+" · "+(dk<1 ? CEV("az önce güncellendi") : (EN ? dk+" min ago" : dk+" dk önce güncellendi"));
+    el.classList.remove("gizli");
+  }
+  function canliBasla(){
+    canliGetir();
+    clearInterval(CANLI.t); CANLI.t=setInterval(function(){ if(!document.hidden) canliGetir(); },CANLI_SURE);
+    clearInterval(CANLI.yaz); CANLI.yaz=setInterval(canliSatir,15000);
+    document.addEventListener("visibilitychange",function(){ if(!document.hidden) canliGetir(); });
   }
 
   // ---- 26.4 kaydırınca belirme ----
@@ -1007,7 +1084,7 @@
   //  · sadece giriş S → Y > S: S–Y (arada dolu gece varsa Y yeni giriş + uyarı); Y < S: Y yeni giriş; Y = S: seçim kalkar
   //  · aralık seçiliyken herhangi bir güne dokunmak seçimi kaldırır (yeni seçim başlamaz)
   function gunTikla(k){
-    uyariMetin="";
+    uyariMetin=""; if(CANLI.uyari){ CANLI.uyari=""; altCiz(); }
     if(k<fmt(bugun)) return;
     if(sec.bas && sec.bit){ secimTemizle(); return; }
     var girisOlur=function(){ return girisUygun(k) && !opsGece(k); };
@@ -1097,7 +1174,7 @@
     var b=D.bilgi||{}, tel=telNo(b.whatsapp);
 
     if(!sec.bas || !sec.bit){
-      bar.innerHTML='<div class="ic">'+
+      bar.innerHTML=(CANLI.uyari?'<div class="canliUyari" role="alert">'+esc(CANLI.uyari)+"</div>":"")+'<div class="ic">'+
         (sec.bas?'<div class="altozet"><span>Giriş '+tarihKisa(sec.bas)+'</span><span>Çıkış gününü seçin</span></div>':"")+
         (tel?'<a href="https://wa.me/'+tel+'?text='+encodeURIComponent((D.ad||"Villa")+" için bilgi almak istiyorum.")+'" target="_blank" rel="noopener">WhatsApp\'tan bilgi al</a>'
             :'<a class="pasif">Takvimden tarih seçin</a>')+"</div>";
