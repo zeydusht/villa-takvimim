@@ -1408,6 +1408,12 @@
   /* 28.1: başlıkla dolu/boş etiketleri arası .5rem (360'ta tek haneli sayılarla aynı satıra sığsın) */
   .anaBas{display:flex; align-items:center; flex-wrap:wrap; gap:.5rem}
   .anaBas h1{margin:0; flex:none}
+  /* 35.4 bölüm başlığının sağında küçük 3D görsel (40 pt) */
+  .bolumGorsel{flex:none; display:inline-flex; width:2.375rem; height:2.375rem; align-self:center; margin:-.5rem auto -.5rem 0}
+  .bolumGorsel img{width:100%; height:100%; object-fit:contain}
+  .head > .bolumGorsel{margin:0 0 0 .5rem}
+  h1.h1G > .bolumGorsel{margin:-.25rem 0}
+  @media (prefers-color-scheme: dark){ .bolumGorsel{background:var(--soft); border-radius:99px} }
   /* 35.3 başlık + 3D görsel aynı satırda, görsel dikey ortalı. Yazı büyüdükçe (kök 17 px'ten büyük) ve dar ekranda 48 pt */
   h1.h1G{display:flex; align-items:center; gap:.5rem}
   .baslikG{flex:none; display:block; object-fit:contain; margin:-.5rem 0;
@@ -2445,7 +2451,7 @@
         <span id="misGeriAd">Villa</span>
       </button>
     </div>
-    <h1 style="font-size:1.875rem">Misafirler</h1>
+    <h1 class="h1G" style="font-size:1.875rem"><span>Misafirler</span></h1>
     <div class="sm muted" id="misOzet" style="margin-top:.25rem"></div>
     <button class="big renkli is-misafir secBtn" data-ik="liste-tik" id="misSecModu">Birden fazla seç</button>
     <div class="field" style="margin-top:1.25rem">
@@ -2469,7 +2475,7 @@
         <span id="kasaGeriAd">Villa</span>
       </button>
     </div>
-    <h1 style="font-size:1.875rem">Gelir &amp; gider</h1>
+    <h1 class="h1G" style="font-size:1.875rem"><span>Gelir &amp; gider</span></h1>
     <div class="sm muted" id="kasaAlt" style="margin-top:.25rem"></div>
     <div class="seg" id="kasaMod" style="margin-top:1rem">
       <button data-m="ay">Ay</button><button data-m="yil">Yıl</button><button data-m="tum">Tümü</button>
@@ -6069,6 +6075,16 @@
   // 34.7: boş hâllerde ikon yerine 3D görsel (www/img/3d). Görsel yüklenemezse ikon kalır.
   var BOS_3D={ev:"villa-bos", "takvim-tik":"ajanda-bos", "takvim-x":"arama", kisiler:"misafirler-bos", takvim:"takvim-bos",
     "rozet-yuzde":"teklif", banknot:"para-bos", fis:"para-bos", "kisi-arti":"bakici", baglanti:"baglanti"};
+  // 35.4: liste doluyken başlığın (ilk öğesinin) hemen sağında küçük 3D görsel; boşken kaldırılır (boş hâlin büyük görseli görünür)
+  function bolum3d(el,ik,dolu){
+    if(!el) return;
+    var g=BOS_3D[ik], var0=el.querySelector(".bolumGorsel");
+    if(!dolu || !g){ if(var0) var0.remove(); return; }
+    if(var0 && var0.dataset.g===g) return;
+    if(var0) var0.remove();
+    var ic=el.tagName==="H1", ilk=ic ? el : (el.querySelector("h1, h2, h3, .eyebrow")||el.firstElementChild); if(!ilk) return;
+    ilk.insertAdjacentHTML(ic?"beforeend":"afterend",'<span class="bolumGorsel" data-g="'+g+'" aria-hidden="true"><img src="img/3d/'+g+'-256.webp" alt="" width="256" height="256" loading="lazy" decoding="async" onerror="this.parentNode.remove()"></span>');
+  }
   function bosHal(ik,cumle,dugme,alt,ek){
     var g=BOS_3D[ik];
     var gorsel=g ? '<span class="bosGorsel" aria-hidden="true"><img src="img/3d/'+g+'-512.webp" alt="" width="512" height="512" decoding="async" '+
@@ -6398,6 +6414,7 @@
     if(!tumYak.length) lh=bosHal("takvim","Henüz rezervasyon yok.",duzenlenebilir()?'<button class="big" data-ik="takvim-arti" id="rezBosEkle">'+esc(cev("Rezervasyon ekle"))+"</button>":"",
       "Takvimden tarih aralığı seçerek başlayın.");
     else yak.forEach(function(r){ lh+=rezKartHTML(v,r,true); });
+    bolum3d(document.getElementById("listeBas"),"takvim",tumYak.length>0);
     // 16.6: "Tümünü gör" alttaki buton yerine başlıkta
     document.querySelector('#listeBas [data-tumu="rez"]').classList[kalanlar.length>6?"remove":"add"]("hide");
     document.getElementById("listeBas").classList[(sir && !kalanlar.length)?"add":"remove"]("hide");
@@ -7267,6 +7284,7 @@
     var l=on.l||[];
     bol.classList[l.length?"remove":"add"]("hide");
     if(l.length) satir.classList.add("hide");   // bölüm varken "Teklifler" satırı tekrarlanmaz
+    bolum3d(bol.querySelector(".bolumSatir"),"rozet-yuzde",l.length>0);
     document.getElementById("tkListe").innerHTML=!l.length?"":'<div class="grup">'+l.slice(0,3).map(function(t){
       var d=teklifDurumu(t);
       return '<button class="satirBtn tkSatir" data-kod="'+esc(t.kod)+'"><span class="ikKutu is-para">'+ikon("rozet-yuzde",{boy:20})+"</span>"+
@@ -7581,6 +7599,7 @@
     VT.teklifler(v.id).then(function(l){
       var el=document.getElementById("tl-liste"); if(!el) return;
       l=Array.isArray(l)?l:[];
+      bolum3d(el.closest(".sheet").querySelector(".head"),"rozet-yuzde",l.length>0);
       if(!l.length){ el.innerHTML=bosHal("rozet-yuzde","Henüz teklif göndermediniz.","",
         "Teklif, misafire özel fiyatlı bir bağlantıdır; misafir fiyatı ve tarihleri görüp size yazar."); return; }
       el.innerHTML='<div class="grup">'+l.map(function(t){
@@ -8684,7 +8703,8 @@
       "</div>"+
       alan("o-not","Not","Örn. kapora, nakit, havale","text")+
       '<button class="big" data-ik="cuzdan" id="o-ekle">Ödemeyi kaydet</button>'+
-      (gecmis.length?'<div class="eyebrow" style="margin:2.25rem 0 .25rem">Alınan ödemeler</div><div class="grup">'+
+      (gecmis.length?'<div class="bolumSatir" style="margin:2.25rem 0 .25rem"><div class="eyebrow">Alınan ödemeler</div>'+
+          '<span class="bolumGorsel" data-g="para-bos" aria-hidden="true"><img src="img/3d/para-bos-256.webp" alt="" width="256" height="256" loading="lazy" decoding="async" onerror="this.parentNode.remove()"></span></div><div class="grup">'+
         gecmis.map(function(o){
           return '<button class="satirBtn" data-oid="'+o.id+'" data-ikk="para:banknot"><span>'+para(o.tutar)+
             (o.not?'<span class="satirAlt">'+esc(o.not)+"</span>":"")+"</span>"+
@@ -10191,6 +10211,7 @@
           h+='<div class="row"><span class="name">'+esc(u.eposta||"—")+
              '<span class="muted" style="font-size:.8235rem"><br>Villa sahibi</span></span></div>';
         });
+        bolum3d(el.closest(".sheet").querySelector(".head"),"kisi-arti",bakicilar.length>0);
         if(!bakicilar.length) h+=bosHal("kisi-arti","Henüz bakıcı yok.","","Bakıcı takvimi ve misafir bilgilerini görür; ödemeleri ve tutarları göremez.");
         else bakicilar.forEach(function(u){
           h+='<div class="row"><span class="name">'+esc(u.eposta||"—")+
@@ -10370,6 +10391,7 @@
     var hicYok=!hepsi.length;
     ["misSecModu","misFiltre"].forEach(function(id){ document.getElementById(id).classList.toggle("hide",hicYok); });
     var ara=document.getElementById("misAra"); if(ara) ara.closest(".field").classList.toggle("hide",hicYok);
+    bolum3d(document.querySelector("#misafirler h1"),"kisiler",!hicYok);
     if(hicYok) h=bosHal("kisiler","Henüz misafiriniz yok.",
       duzenlenebilir()?'<button class="big" data-ik="takvim-arti" id="misRezEkle">'+esc(cev("Rezervasyon ekle"))+"</button>":"",
       "İlk rezervasyonu girince misafir burada görünür.");
@@ -10695,6 +10717,7 @@
     var kb=document.getElementById("kasaBos"); if(!kb) return;
     ["kAlinacakBol","kAlinanBol","hareket"].forEach(function(id){ var e=document.getElementById(id); if(e) e.classList.toggle("hide",bos); });
     kb.classList.toggle("hide",!bos);
+    bolum3d(document.querySelector("#kasa h1"),"fis",!bos);
     kb.innerHTML=bos?bosHal("fis","Bu dönemde kayıt yok.",'<button class="big" data-ik="arti" id="kBosGider">'+esc(cev("Gider ekle"))+"</button>"):"";
     var g=document.getElementById("kBosGider"); if(g) g.onclick=function(){ if(aktif()) hareketSheet("gider"); };
   }
