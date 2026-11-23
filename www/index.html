@@ -91,7 +91,9 @@
     --egri-giris:cubic-bezier(0.22, 1, 0.36, 1);   /* belirme / giriş: hızlı gelir, yumuşakça oturur */
     --egri-cekmece:cubic-bezier(.32, .72, 0, 1);    /* 31.1: alttan açılan panel (iOS çekmecesi gibi) */
     --iskelet-gecis:200ms;        /* 34.6: iskeletten içeriğe çapraz solma */
-    --hiz-akordeon:300ms;         /* 34.1: arama adımları (Ne zaman → Kaç kişi) açılıp kapanma */
+    --hiz-akordeon:300ms;
+    --baslik-gorsel:64px;         /* 35.3 ana sekme başlığının yanındaki 3D görsel; Büyük yazıda ve dar ekranda 48 pt */
+    --baslik-gorsel-kucuk:48px;         /* 34.1: arama adımları (Ne zaman → Kaç kişi) açılıp kapanma */
     --hiz-baslik:150ms;           /* 34.2: üst çubukta küçük başlığın belirmesi */
     --hiz-morf-ac:380ms;          /* 34.1: kart → arama paneli büyümesi */
     --hiz-morf-kapa:260ms;        /* 34.1: panel → kart küçülmesi (açılıştan hızlı) */
@@ -1406,6 +1408,12 @@
   /* 28.1: başlıkla dolu/boş etiketleri arası .5rem (360'ta tek haneli sayılarla aynı satıra sığsın) */
   .anaBas{display:flex; align-items:center; flex-wrap:wrap; gap:.5rem}
   .anaBas h1{margin:0; flex:none}
+  /* 35.3 başlık + 3D görsel aynı satırda, görsel dikey ortalı. Yazı büyüdükçe (kök 17 px'ten büyük) ve dar ekranda 48 pt */
+  h1.h1G{display:flex; align-items:center; gap:.5rem}
+  .baslikG{flex:none; display:block; object-fit:contain; margin:-.5rem 0;
+    width:max(var(--baslik-gorsel-kucuk), calc(var(--baslik-gorsel) - (1rem - 17px) * 8)); height:auto; aspect-ratio:1/1}
+  @media (max-width:380px){ .baslikG{width:var(--baslik-gorsel-kucuk)} }
+  @media (prefers-color-scheme: dark){ .baslikG{background:var(--soft); border-radius:99px; padding:.25rem; box-sizing:border-box} }
   .anaBas #ozet{margin:0 0 0 auto; justify-content:flex-end}
   .anaBas #ozet.sm{margin:.25rem 0 0; flex-basis:100%}
   .anaBas .ozetEt .durumEt{min-height:3rem}
@@ -2060,7 +2068,7 @@
     <!-- 32.7: çift satış riski (kapatılamaz; çözülünce kalkar) -->
     <div id="cakismaKartlar" class="hide"></div>
     <!-- 18.15: başlığın sağında dolu / boş etiketleri (dar ekranda alta iner); altında yalnız "+ Villa ekle" -->
-    <div class="anaBas"><h1>Villalarım</h1><div class="sm muted" id="ozet"></div></div>
+    <div class="anaBas"><h1 class="h1G"><span>Villalarım</span><img class="baslikG" src="img/3d/baslik-villalar-256.webp" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></h1><div class="sm muted" id="ozet"></div></div>
     <div class="hapSira hide" id="anaHap" role="toolbar"></div>
     <div class="siraIpucu hide" id="siraIpucu"></div>
     <div class="ipucu hide" id="ipucu"></div>
@@ -2087,7 +2095,7 @@
 
   <!-- TAKVİM SEKMESİ: tüm villaların yaklaşan giriş/çıkışları -->
   <div id="ajanda" class="hide sekmeEkran">
-    <h1>Takvim</h1>
+    <h1 class="h1G"><span>Takvim</span><img class="baslikG" src="img/3d/baslik-takvim-256.webp" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></h1>
     <!-- 33.7: iki parça: Ajanda (giriş / çıkışlar) | Misafirler (bütün villaların misafirleri) -->
     <div class="seg ajUst" id="ajUst" role="tablist">
       <button data-u="ajanda" role="tab">Ajanda</button><button data-u="misafir" role="tab">Misafirler</button>
@@ -2113,7 +2121,7 @@
 
   <!-- HESAP SEKMESİ -->
   <div id="hesapEkran" class="hide sekmeEkran">
-    <h1>Hesap</h1>
+    <h1 class="h1G"><span>Hesap</span><img class="baslikG" src="img/3d/baslik-hesap-256.webp" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></h1>
     <div style="margin-top:1.25rem">
     <!-- 29.3: Yönetim bölümü yalnız yöneticiye / onaycıya JavaScript ile eklenir (diğer kullanıcılarda DOM'da hiç yok) -->
     <div id="yonetimYer"></div>
