@@ -4788,9 +4788,10 @@
     var alt=bar.getBoundingClientRect().bottom, r=h.getBoundingClientRect();
     var ilerleme=Math.max(0,Math.min(1,(alt-r.top+r.height*.25)/(r.height*1.25)));
     if(!azHareket()){ h.style.opacity=String(1-ilerleme*.85); h.style.transform=ilerleme?"translateY("+(-ilerleme*6)+"px)":""; }
-    // 36.4: 3D görsel üst çubuğa değmeye başlayınca söner, yarısı çubuğun altına girdiğinde hiç görünmez (yarım kesik kalmaz)
+    // 36.4: 3D görsel üst çubuğa girdikçe söner, yarısı çubuğun altına girdiğinde hiç görünmez (yarım kesik kalmaz).
+    // Görselin üst %10'u şeffaf kenar: oraya kadar sönmez (sayfa en üstteyken tam görünür)
     var g=h.querySelector(".baslikG");
-    if(g){ var gr=g.getBoundingClientRect(), gs=Math.max(0,Math.min(1,(alt-gr.top)/(gr.height*.5))); g.style.opacity=gs?String(1-gs):""; }
+    if(g){ var gr=g.getBoundingClientRect(), gs=Math.max(0,Math.min(1,(alt-gr.top-gr.height*.1)/(gr.height*.4))); g.style.opacity=gs?String(1-gs):""; }
     var metin=h.textContent.trim();
     if(bb.textContent!==metin) bb.textContent=metin;
     bar.classList[r.bottom<=alt+2 ? "add" : "remove"]("baslikli");
