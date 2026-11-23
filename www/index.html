@@ -1423,24 +1423,32 @@
   .bolumSatir > .bolumGorsel{--yukari:10px}   /* altında hemen kart var, üstünde bölüm boşluğu: görsel yukarı taşar */
   .bolumGorsel img{flex:none; width:var(--g3d-bolum); max-width:calc(100% - var(--ara)); height:100%; object-fit:contain}
   @container (max-width:44px){ .bolumGorsel img{display:none} }
-  .bolumSatir:has(> .bolumGorsel) > .eyebrow, h1.h1G > span:not(.bolumGorsel){flex-shrink:0; max-width:100%}
+  .bolumSatir:has(> .bolumGorsel) > .eyebrow, h1.h1G > span:not(.bolumGorsel):not(.baslikGK){flex-shrink:0; max-width:100%}
   .bolumSatir:has(> .tumuLink:not(.hide)) > .eyebrow{flex-shrink:1}   /* "Tümünü gör" varken yazı yine kırılabilir */
   .bolumSatir > .bolumGorsel ~ *{flex-shrink:0}
   .head > .bolumGorsel{margin-right:0}
   h1.h1G > .bolumGorsel{--ara:.5rem; margin-right:0}
   /* 35.3 başlık + 3D görsel aynı satırda, görsel dikey ortalı. Yazı büyüdükçe (kök 17 px'ten büyük) ve dar ekranda 48 pt */
   h1.h1G{display:flex; align-items:center; gap:.5rem}
-  /* 36.4 görsel satıra en çok 2rem katar (başlık satırı 2.25rem): satır itilmez, görsel üstüne/altına taşar
-     (altındaki düğmelere değmesin diye 4 pt yukarıda) */
-  .baslikG{flex:none; display:block; object-fit:contain;
-    margin:calc(var(--g3d-baslik-boy) / -2 + 1rem - 4px) 0 calc(var(--g3d-baslik-boy) / -2 + 1rem + 4px);
-    width:var(--g3d-baslik-boy); height:auto; aspect-ratio:1/1; pointer-events:none}
+  /* 37.1 Villalarım / Takvim / Hesap: önce görsel (sola yaslı), sonra yazı; dikey ortalı, arada 10 pt (--ara, kutunun içinde).
+     Kutu satıra tam başlık satırı kadar yükseklik katar (2.25rem): satır itilmez, görsel üstüne / altına taşar.
+     Yazı tek satır; yer yoksa önce görsel küçülür (en az 48 pt), daha da yoksa gizlenir */
+  h1.h1G:has(> .baslikGK){gap:0}
+  h1.h1G > .baslikGK + span{flex:0 0 auto; white-space:nowrap}
+  .baslikGK{--ara:10px; flex:0 1 calc(var(--g3d-baslik-boy) + var(--ara)); min-width:0; display:flex; align-items:center;
+    height:var(--g3d-baslik-boy); margin:calc(var(--g3d-baslik-boy) / -2 + 1.125rem) 0; pointer-events:none;
+    container-type:inline-size; contain-intrinsic-inline-size:calc(var(--g3d-baslik-boy) + var(--ara))}
+  .baslikG{flex:none; display:block; object-fit:contain; width:var(--g3d-baslik-boy); max-width:calc(100% - var(--ara));
+    height:auto; aspect-ratio:1/1; pointer-events:none}
+  @container (max-width:57.9px){ .baslikG{display:none} }
+  /* görselin dolu (şeffaf olmayan) kısmı ile alttaki öğe arasında en az 8 pt: --alt görselin alttaki şeffaf payı */
+  h1.h1G:has(> .baslikGK){margin-bottom:max(0px, calc(var(--g3d-baslik-boy) * (.5 - var(--alt, 0)) - 1.125rem + 8px))}
   @media (max-width:380px){ :root{--g3d-baslik-boy:var(--g3d-baslik-kucuk)} }
   .anaBas #ozet{margin:0 0 0 auto; justify-content:flex-end}
   .anaBas #ozet.sm{margin:.25rem 0 0; flex-basis:100%}
   /* 36.4 Villalarım: 88 pt görselle dolu / boş etiketleri hiçbir genişlikte başlık satırına sığmaz; hep alt satırda,
      görselin taşan alt kısmının altında */
-  .anaBas:has(.baslikG) #ozet{flex-basis:100%; margin:max(0px, calc(var(--g3d-baslik-boy) / 2 - 1.125rem - .5rem - 4px)) 0 0}
+  .anaBas:has(.baslikG) #ozet{flex-basis:100%; margin:0}
   .anaBas .ozetEt .durumEt{min-height:3rem}
   /* 18.16: villayı basılı tutup sürükleyerek sırala */
   .kartlar .kart{-webkit-touch-callout:none; -webkit-user-select:none; user-select:none}
@@ -2097,7 +2105,7 @@
     <!-- 32.7: çift satış riski (kapatılamaz; çözülünce kalkar) -->
     <div id="cakismaKartlar" class="hide"></div>
     <!-- 18.15: başlığın sağında dolu / boş etiketleri (dar ekranda alta iner); altında yalnız "+ Villa ekle" -->
-    <div class="anaBas"><h1 class="h1G"><span>Villalarım</span><img class="baslikG" src="img/3d/baslik-villalar-512.webp" srcset="img/3d/baslik-villalar-256.webp 256w, img/3d/baslik-villalar-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></h1><div class="sm muted" id="ozet"></div></div>
+    <div class="anaBas"><h1 class="h1G" style="--alt:.098"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-villalar-512.webp" srcset="img/3d/baslik-villalar-256.webp 256w, img/3d/baslik-villalar-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Villalarım</span></h1><div class="sm muted" id="ozet"></div></div>
     <div class="hapSira hide" id="anaHap" role="toolbar"></div>
     <div class="siraIpucu hide" id="siraIpucu"></div>
     <div class="ipucu hide" id="ipucu"></div>
@@ -2124,7 +2132,7 @@
 
   <!-- TAKVİM SEKMESİ: tüm villaların yaklaşan giriş/çıkışları -->
   <div id="ajanda" class="hide sekmeEkran">
-    <h1 class="h1G"><span>Takvim</span><img class="baslikG" src="img/3d/baslik-takvim-512.webp" srcset="img/3d/baslik-takvim-256.webp 256w, img/3d/baslik-takvim-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></h1>
+    <h1 class="h1G" style="--alt:.115"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-takvim-512.webp" srcset="img/3d/baslik-takvim-256.webp 256w, img/3d/baslik-takvim-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Takvim</span></h1>
     <!-- 33.7: iki parça: Ajanda (giriş / çıkışlar) | Misafirler (bütün villaların misafirleri) -->
     <div class="seg ajUst" id="ajUst" role="tablist">
       <button data-u="ajanda" role="tab">Ajanda</button><button data-u="misafir" role="tab">Misafirler</button>
@@ -2150,7 +2158,7 @@
 
   <!-- HESAP SEKMESİ -->
   <div id="hesapEkran" class="hide sekmeEkran">
-    <h1 class="h1G"><span>Hesap</span><img class="baslikG" src="img/3d/baslik-hesap-512.webp" srcset="img/3d/baslik-hesap-256.webp 256w, img/3d/baslik-hesap-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></h1>
+    <h1 class="h1G" style="--alt:0"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-hesap-512.webp" srcset="img/3d/baslik-hesap-256.webp 256w, img/3d/baslik-hesap-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Hesap</span></h1>
     <div style="margin-top:1.25rem">
     <!-- 29.3: Yönetim bölümü yalnız yöneticiye / onaycıya JavaScript ile eklenir (diğer kullanıcılarda DOM'da hiç yok) -->
     <div id="yonetimYer"></div>
