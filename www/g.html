@@ -269,6 +269,14 @@
     box-shadow:inset 0 0 0 2.5px var(--bugun),inset 0 0 0 3.5px #fff,0 0 0 1px #fff}
   .ornek.bugunOrnek{background:#fff;box-shadow:inset 0 0 0 2.5px var(--bugun)}
   .uyari{font-size:.8125rem;color:#9B2C4A;margin-top:.75rem;min-height:1.25rem}
+  /* 35.6 3D görseller (64 pt) */
+  .g3d{display:block;width:4rem;height:4rem;object-fit:contain;flex:none}
+  h2.bBasG .g3d{margin:-.75rem 0 -.75rem auto}
+  .g3dOnay{margin:-.25rem auto .5rem}
+  .g3dDip{margin:1.25rem auto 0}
+  .g3dDip + .dipTel{margin-top:.5rem}
+  .g3dTeklif{float:right;margin:-.25rem 0 .25rem .75rem}
+  @media (prefers-color-scheme: dark){ .g3d{background:var(--soft);border-radius:99px} }
   /* 35.5 canlı doluluk */
   .canliSatir{display:flex;align-items:center;gap:.375rem;margin-top:.5rem;font-size:.8125rem;color:var(--muted)}
   .canliSatir::before{content:"";width:.5rem;height:.5rem;border-radius:99px;background:#1F8A5B;flex:none}
@@ -570,7 +578,7 @@
        ((D.opsiyon||[]).length?'<span><i class="ornek opsOrnek"></i>Opsiyonlu</span>':"")+
        '<span style="color:var(--muted)">Giriş 16:00 · Çıkış 10:00</span></div>'+
        '<div class="canliSatir gizli" id="canliSatir" aria-live="polite"></div>'+
-       '<div id="secimAlan"></div>',"takvim",CEV("Giriş ve çıkış gününe dokunun"));
+       '<div id="secimAlan"></div>',"takvim",CEV("Giriş ve çıkış gününe dokunun"),"misafir-uygunluk");
 
     // ---- ev hakkında ----
     if(b.aciklama) h+=bolum(CEV("Ev hakkında"),'<p>'+esc(b.aciklama)+"</p>","metin");
@@ -677,7 +685,7 @@
       '<div class="dipAd">'+esc(D.ad||"Villa")+"</div>"+
       (b.konum?'<div class="dipKonum">'+esc(b.konum)+"</div>":"")+
       '<div class="dipNot">Giriş 16:00 · Çıkış 10:00 · Takvimden tarih seçip rezervasyon isteği gönderebilirsiniz.</div>'+
-      (tel0?'<a class="dipTel" href="https://wa.me/'+tel0+'" target="_blank" rel="noopener">'+
+      (tel0?g3d("misafir-iletisim","g3dDip")+'<a class="dipTel" href="https://wa.me/'+tel0+'" target="_blank" rel="noopener">'+
         ik("mesaj",18)+"<span>Soru sormak için yazın</span></a>":"")+
       // 15.7 turizm izin belge numarası
       (String(b.belgeNo||"").trim()?'<div class="belgeNo">'+ik("rozet-tik",18)+"<span>"+
@@ -894,7 +902,7 @@
       var hit=hitapG(TK.ad), gc=geceSay();
       var bas=hit ? (EN ? "A special offer for "+hit : hit+", size özel teklif") : CEV("Size özel teklif");
       var fiyatH=(TK.normal && TK.normal!==TK.konaklama ? "<s>"+nf.format(TK.normal)+" ₺</s> " : "")+'<span class="tsFiyat">'+nf.format(TK.konaklama)+" ₺</span>";
-      serit("yesil",'<div class="tsBas">'+esc(bas)+"</div>"+
+      serit("yesil",g3d("misafir-teklif","g3dTeklif")+'<div class="tsBas">'+esc(bas)+"</div>"+
         '<div class="tsAlt">'+esc(tarihMetni()+" · "+gc+" "+(EN?(gc===1?"night":"nights"):"gece"))+" · "+fiyatH+
         (TK.son?" · "+esc(gecerliYaz(TK.son)):"")+"</div>");
     }).catch(function(){});
@@ -1010,7 +1018,12 @@
   // Görev 14: uygulamadaki Lucide ikonları (ikonlar.js)
   function ik(ad,boy){ return window.ikon ? window.ikon(ad,{boy:boy||20}) : ""; }
   // 14.3: her bölüm başlığının solunda 22px yeşil ikon (renk: "lac" = lacivert)
-  function bolum(baslik,ic,ikAd,alt){
+  function g3d(ad,sinif){
+    return '<img class="g3d'+(sinif?" "+sinif:"")+'" src="img/3d/'+ad+'-256.webp" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()">';
+  }
+  function bolum(baslik,ic,ikAd,alt,gorsel){
+    if(gorsel) return '<div class="bolum"><div class="pad"><h2 class="bBas bBasG">'+(ikAd?ik(ikAd,22):"")+"<span>"+baslik+"</span>"+g3d(gorsel)+"</h2>"+
+      (alt?'<div class="bAlt">'+alt+"</div>":"")+ic+"</div></div>";
     return '<div class="bolum"><div class="pad"><h2 class="bBas">'+(ikAd?ik(ikAd,22):"")+"<span>"+baslik+"</span></h2>"+
       (alt?'<div class="bAlt">'+alt+"</div>":"")+ic+"</div></div>";
   }
@@ -1204,7 +1217,7 @@
         kisiMetin()+" ile rezervasyon yapmak istiyorum. Uygunluk ve fiyat için bilgi alabilir miyim?"+
         (depTutar()?" "+nf.format(depTutar())+" ₺ hasar depozitosunun girişte alınıp çıkışta iade edileceğini biliyorum.":"")+
         (teklifAktif()?" Teklif kodu: "+TK.kod:"");
-      o.innerHTML='<div class="onaykutu"><h3>Kaç kişi geliyorsunuz?</h3>'+
+      o.innerHTML='<div class="onaykutu">'+g3d("misafir-iletisim","g3dOnay")+'<h3>Kaç kişi geliyorsunuz?</h3>'+
         '<div style="color:var(--muted);font-size:.875rem;margin:.375rem 0 1rem">'+
           esc(D.ad||"Villa")+" · "+tarihMetni()+" · "+gc+" "+(EN?"nights":"gece")+"</div>"+
         '<div class="kisiler" id="onay-sayac">'+sayaclar(mx,b.evcil,"o")+"</div>"+
