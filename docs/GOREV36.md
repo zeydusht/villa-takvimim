@@ -98,3 +98,23 @@ Görüntüleri `docs/qa/gorev36/` klasörüne koy.
 - `docs/PROJE_DURUMU.md` dosyasına Görev 36'yı ekle.
 - Mesajının en altına çok kısa bir özet yaz: ne değişti, 2–3 madde.
 - Özetin altına test linkini koy: https://zeydusht.github.io/villa-takvimim/
+
+---
+
+## 36.7 — Ekran görüntülerinde gördüğüm iki küçük kusur (PM kontrolü)
+
+`docs/qa/gorev36/uygulama/*-390-*` görüntülerine baktım. Daire yok, boyutlar iyi. İki şey kaldı:
+
+1. **Villalarım: "1 dolu / 4 boş" etiketleri sağa kaymış.**
+   - Başlığın altında sağda duruyorlar, boşlukta asılı gibi görünüyorlar.
+   - Sola yaslı olsunlar: sol kenarları "Villalarım" yazısı ve "Villa ekle" düğmesiyle aynı hizada.
+   - 320 ve büyük yazıda da öyle.
+2. **Görsel alttaki öğeye değiyor.**
+   - Takvim sekmesinde takvim görselinin alt kenarı "Ajanda" düğmesine biniyor.
+   - Hesap sekmesinde anahtar görseli "Hesabım" kartının üst çizgisine biniyor.
+   - Görsel yukarı taşabilir, ama görselin dolu (şeffaf olmayan) kısmı ile altındaki öğe arasında en az 8 pt boşluk kalsın.
+   - Gerekirse görseli biraz yukarı al. Başlık satırı yine itilmesin.
+
+**Test:** 36.5 testine bir kural daha ekle. Her 3D görselin şeffaf olmayan kısmının kutusu (`alfa36.json` ile hesaplanır), hemen altındaki görünür öğenin kutusuyla kesişmesin. Arada en az 8 pt boşluk olsun. Değiyorsa test kırmızı olsun.
+
+Bitince yine en altta çok kısa özet + test linki.
