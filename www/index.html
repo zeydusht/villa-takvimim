@@ -2335,25 +2335,25 @@
     <div class="hint" id="hint"></div>
 
     <div class="section">
-      <div class="bolumSatir" id="listeBas"><div class="eyebrow" data-iki="rez:takvim">Yaklaşan rezervasyonlar</div>
+      <div class="bolumSatir" id="listeBas"><div class="eyebrow" data-iki="rez:takvim" data-g3d="takvim-bos">Yaklaşan rezervasyonlar</div>
         <button class="tumuLink hide" data-tumu="rez">Tümünü gör</button></div>
       <div id="liste"></div>
     </div>
 
     <div class="section hide" id="tkBolum">
-      <div class="bolumSatir"><div class="eyebrow" data-iki="para:rozet-yuzde">Teklifler</div>
+      <div class="bolumSatir"><div class="eyebrow" data-iki="para:rozet-yuzde" data-g3d="teklif">Teklifler</div>
         <button class="tumuLink" data-tumu="teklif">Tümünü gör</button></div>
       <div id="tkListe"></div>
     </div>
 
     <div class="section hide" id="opsBolum">
-      <div class="eyebrow" data-iki="ops:saat" style="margin-bottom:.5rem">Opsiyonlar</div>
+      <div class="eyebrow" data-iki="ops:saat" data-g3d="bolum-opsiyon" style="margin-bottom:.5rem">Opsiyonlar</div>
       <div id="opsListe"></div>
     </div>
 
 
     <div class="section">
-      <div class="eyebrow" data-iki="bilgi:ev">Villa yönetimi</div>
+      <div class="eyebrow" data-iki="bilgi:ev" data-g3d="bolum-yonetim">Villa yönetimi</div>
       <div class="grup">
       <button class="satirBtn" id="bilgiBtn" data-ikk="bilgi:ev">
         <span><span>Villa bilgileri</span><span class="satirAlt hide" id="bilgiAlt"></span></span>
@@ -2551,24 +2551,24 @@
     <div id="kasaBos" class="hide"></div>
 
     <div class="section" id="kAlinacakBol">
-      <div class="bolumSatir" style="margin-bottom:.5rem"><div class="eyebrow" data-iki="sil:saat">Alınacak ödemeler</div>
+      <div class="bolumSatir" style="margin-bottom:.5rem"><div class="eyebrow" data-iki="sil:saat" data-g3d="bolum-alinacak">Alınacak ödemeler</div>
         <button class="tumuLink hide" data-tumu="alinacakListe">Tümünü gör</button></div>
       <div id="alinacakListe"></div>
     </div>
     <div class="section" id="kAlinanBol">
-      <div class="bolumSatir" style="margin-bottom:.5rem"><div class="eyebrow" data-iki="rez:tik-daire">Alınan ödemeler</div>
+      <div class="bolumSatir" style="margin-bottom:.5rem"><div class="eyebrow" data-iki="rez:tik-daire" data-g3d="bolum-alinan">Alınan ödemeler</div>
         <button class="tumuLink hide" data-tumu="alinanListe">Tümünü gör</button></div>
       <div id="alinanListe"></div>
     </div>
     <div id="hareket">
       <div class="section" id="kGiderBol">
-        <div class="bolumSatir kBas"><div class="eyebrow" data-iki="hesap:fis">Giderler</div>
+        <div class="bolumSatir kBas"><div class="eyebrow" data-iki="hesap:fis" data-g3d="bolum-gider">Giderler</div>
           <span class="bsSag"><button class="tumuLink hide" data-tumu="giderListe">Tümünü gör</button>
           <button class="big renkli is-gri kEkle" id="kGiderEkle" data-ik="arti" data-ik-boy="18">Gider ekle</button></span></div>
         <div id="giderListe"></div>
       </div>
       <div class="section" id="kGelirBol">
-        <div class="bolumSatir kBas"><div class="eyebrow" data-iki="para:banknot">Diğer gelirler</div>
+        <div class="bolumSatir kBas"><div class="eyebrow" data-iki="para:banknot" data-g3d="bolum-gelir">Diğer gelirler</div>
           <span class="bsSag"><button class="tumuLink hide" data-tumu="gelirListe">Tümünü gör</button>
           <button class="big renkli is-para kEkle" id="kGelirEkle" data-ik="arti" data-ik-boy="18">Gelir ekle</button></span></div>
         <div id="gelirListe"></div>
@@ -2578,7 +2578,7 @@
 
     <!-- 33.6: satış kanalları (yalnız sahip; Ay / Yıl / Tümü seçimine uyar) -->
     <div class="section hide" id="kKanalBol">
-      <div class="bolumSatir" style="margin-bottom:.5rem"><div class="eyebrow" data-iki="para:yuzde">Satış kanalları</div></div>
+      <div class="bolumSatir" style="margin-bottom:.5rem"><div class="eyebrow" data-iki="para:yuzde" data-g3d="bolum-kanal">Satış kanalları</div></div>
       <div id="kanalRapor"></div>
     </div>
     <details class="section dahaFazla" id="kDaha">
@@ -3882,6 +3882,8 @@
   //   data-ik="ikon"         → butonun soluna 20px ikon
   //   data-ikk="iş:ikon"     → satırın soluna 36×36 renkli ikon kutusu
   //   data-iki="iş:ikon"     → bölüm başlığının başına 18px renkli ikon
+  //   data-g3d="ad"          → (39.1) içerik bölümü başlığı: çizgi ikonun yerinde img/3d/<ad>-256.webp (Görev 39). Yalnız içerik
+  //                            bölümlerinde: villa sayfası, Gelir & gider, misafir kartı. Hesap'taki ayar başlıkları ve form etiketleri çizgi ikonla kalır
   function ikonlariYerlestir(kok){
     if(!window.ikon || !kok || kok.nodeType!==1) return;
     var hepsi=function(sel){
@@ -5755,14 +5757,14 @@
     var html='<div class="head"><h2>'+esc(g.ad)+"</h2>"+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin-top:.375rem">'+esc(crmKezYazi(g.rez.length))+(g.para?" · "+esc(cev("toplam ödeme"))+" "+para(g.odenen):"")+"</div>"+
       (g.tel ? telButonlari(g.tel) : '<div class="sm muted" style="margin-top:1rem">'+esc(cev("Telefon kayıtlı değil."))+"</div>")+
-      '<div class="eyebrow" style="margin:1.75rem 0 .5rem">'+esc(cev("Konaklamalar"))+"</div>"+
+      '<div class="eyebrow" style="margin:1.75rem 0 .5rem" data-iki="misafir:kisiler" data-g3d="misafirler-bos">'+esc(cev("Konaklamalar"))+"</div>"+
       '<div class="crmKonak">'+g.rez.slice().reverse().map(function(x){
         var r=x.r, k=rezKanal(x.v,r);
         return '<div class="crmKSatir"><div class="crmKUst"><span class="crmKVilla">'+esc(x.v.ad||"Villa")+"</span>"+
             (maParaGor(x.v)?'<span class="crmKTutar">'+para(kalemler(x.v,r).konaklama)+"</span>":"")+"</div>"+
           '<div class="crmKAlt">'+(k?kanalHap(k):"")+"<span>"+esc(aralikMetni(r)+" "+parse(r.start).getFullYear())+" · "+esc(cev(gece(r)+" gece"))+"</span></div></div>";
       }).join("")+"</div>"+
-      (notlar.length?'<div class="eyebrow" style="margin:1.75rem 0 .5rem">'+esc(cev("Misafir notları"))+"</div>"+
+      (notlar.length?'<div class="eyebrow" style="margin:1.75rem 0 .5rem" data-iki="hesap:metin" data-g3d="bolum-not">'+esc(cev("Misafir notları"))+"</div>"+
         notlar.map(function(x){ return '<div class="crmNot"><span class="sm muted">'+esc(x.v.ad||"Villa")+"</span><div>"+esc(x.n)+"</div></div>"; }).join(""):"");
     if(!ust){ perde(html); return; }
     var o=document.createElement("div"); o.className="overlay"; o.innerHTML='<div class="sheet">'+html+"</div>";
@@ -6569,7 +6571,7 @@
     }
     fe.innerHTML=fh;
     document.getElementById("fotoCizim").classList[fl.length?"add":"remove"]("hide");
-    document.getElementById("fotoBas").innerHTML='<span class="eyebrow" data-iki="foto:resimler">'+
+    document.getElementById("fotoBas").innerHTML='<span class="eyebrow" data-iki="foto:resimler" data-g3d="sh-foto">'+
       (fl.length<4 ? esc(cev("En az 4 fotoğraf ekleyin"))+" · "+fl.length+"/4" : esc(cev("Fotoğraflar"))+" · "+fl.length)+"</span>"+
       (fl.length?'<button class="tumu" id="fotoTumu">'+esc(cev("Tümünü gör"))+"</button>":"");
     var ftu=document.getElementById("fotoTumu"); if(ftu) ftu.onclick=function(){ fotoEkranAc(); };
@@ -10584,7 +10586,7 @@
       '<div class="sm muted" style="margin-top:.375rem">'+g.sayi+" konaklama · "+g.gece+" gece"+
         (paraGorur()?" · toplam "+para(g.odenen):"")+"</div>"+
       telButonlari(g.tel)+
-      '<div class="eyebrow" style="margin:2rem 0 .5rem">Konaklamalar</div>'+
+      '<div class="eyebrow" style="margin:2rem 0 .5rem" data-iki="misafir:kisiler" data-g3d="misafirler-bos">Konaklamalar</div>'+
       g.rez.slice().sort(function(a,b){return a.start<b.start?1:-1}).map(function(r){
         return '<div class="row"><span class="name">'+aralikMetni(r)+" "+parse(r.start).getFullYear()+
           '<span class="muted" style="font-size:.8235rem"> · '+gece(r)+" gece</span></span>"+
