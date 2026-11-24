@@ -4867,6 +4867,9 @@
   var BASLIK_RS=0;
   window.addEventListener("resize",function(){ if(!BASLIK_RS) BASLIK_RS=requestAnimationFrame(function(){ BASLIK_RS=0; baslikYenile(); }); });
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ try{ baslikYenile(); }catch(e){} });
+  // yazının genişliği çizim olmadan değişirse de (dil değişimi, yazı tipi geç yüklenmesi) yeniden ölçülür
+  if(window.ResizeObserver){ var BASLIK_RO=new ResizeObserver(function(){ if(!BASLIK_RS) BASLIK_RS=requestAnimationFrame(function(){ BASLIK_RS=0; baslikYenile(); }); });
+    Array.prototype.forEach.call(document.querySelectorAll("h1.h1G > .baslikGK + span"),function(t){ BASLIK_RO.observe(t); }); }
 
   // ================= 26.3 KADEMELİ GİRİŞ / 26.4 KAYDIRINCA BELİRME =================
   // Ekran (bu oturumda) ilk açıldığında görünen içerik yukarıdan aşağı sırayla gelir: her öğe 10 pt aşağıdan + saydamdan,
