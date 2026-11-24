@@ -270,8 +270,9 @@ ile işaretlenir (iki kez çarpılmasın).
     `-512`'si de kırpılmış, `srcset` ile 3x ekranda o seçilir; 88 pt altındaki yerlerde `-256` yeter.
   - Hiza (Görev 36.4): görsel yazıyla dikey ortalı, arada en az 8 pt; satıra yazı satırından fazla yükseklik katmaz (negatif margin),
     üstüne / altına taşar. Bölüm satırında altında hemen kart olduğu için 10 pt yukarıda.
-  - Sekme başlıkları (Görev 37.1): önce görsel (sola yaslı), sonra yazı; arada 10 pt, dikey ortalı. Yazı hiç bölünmez: yer yoksa
-    görsel önce küçülür (en az 48 pt), sonra gizlenir. Görselin dolu kısmı ile alttaki öğe arasında en az 8 pt (`--alt`: görselin
+  - Sekme başlıkları (Görev 37.1, 38.2): yazı sayfanın tam ortasında, görsel hemen solunda; arada 10 pt, dikey ortalı. Üç sütun
+    (`1fr · yazı · 1fr`): görsel ortalamaya dahil değil, gelip gidince yazı kımıldamaz. Yazı hiç bölünmez, kesilmez: sol sütun
+    darsa görsel önce küçülür (en az 48 pt), sonra gizlenir. Alt satırdaki etiketler ve "+ Villa ekle" sola yaslı kalır. Görselin dolu kısmı ile alttaki öğe arasında en az 8 pt (`--alt`: görselin
     alttaki şeffaf payı; başlığın alt boşluğu buna göre).
     Görsel görünür mü kararını JS verir (Görev 38.1, `baslikGorselDurum` → `h1.gorselGizli`): ekranda büyük boş hâl görseli
     gerçekten görünüyorsa ya da görsele 48 pt yer kalmıyorsa gizlenir. CSS `:has()` / container sorgusu kullanılmaz; sonuç

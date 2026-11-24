@@ -1436,23 +1436,25 @@
   h1.h1G > .bolumGorsel{--ara:.5rem; margin-right:0}
   /* 35.3 başlık + 3D görsel aynı satırda, görsel dikey ortalı. Yazı büyüdükçe (kök 17 px'ten büyük) ve dar ekranda 48 pt */
   h1.h1G{display:flex; align-items:center; gap:.5rem}
-  /* 37.1 Villalarım / Takvim / Hesap: önce görsel (sola yaslı), sonra yazı; dikey ortalı, arada 10 pt (--ara, kutunun içinde).
+  /* 37.1 Villalarım / Takvim / Hesap: önce görsel, sonra yazı; dikey ortalı, arada 10 pt (--ara, kutunun iç boşluğu).
      Kutu satıra tam başlık satırı kadar yükseklik katar (2.25rem): satır itilmez, görsel üstüne / altına taşar.
-     Yazı tek satır; yer yoksa önce görsel küçülür (en az 48 pt), daha da yoksa gizlenir */
-  h1.h1G:has(> .baslikGK){gap:0}
-  h1.h1G > .baslikGK + span{flex:0 0 auto; white-space:nowrap}
-  .baslikGK{--ara:10px; flex:0 1 calc(var(--g3d-baslik-boy) + var(--ara)); min-width:0; display:flex; align-items:center;
+     38.2: yazı sayfanın tam ortasında (üç sütun: 1fr · yazı · 1fr), görsel 1. sütunda yazının hemen solunda. Görsel ortalamaya
+     dahil değil: gelip gidince yazı kımıldamaz. Sol sütun dar kalırsa görsel küçülür (88 → en az 48 pt); ona da yer yoksa
+     baslikGorselDurum gizler. Yazı tek satır, kesilmez */
+  h1.h1G:has(> .baslikGK){display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); justify-content:center; gap:0}
+  h1.h1G > .baslikGK + span{grid-column:2; white-space:nowrap; max-width:none}
+  .baslikGK{--ara:10px; grid-column:1; min-width:0; display:flex; align-items:center; justify-content:flex-end; padding-right:var(--ara);
     height:var(--g3d-baslik-boy); margin:calc(var(--g3d-baslik-boy) / -2 + 1.125rem) 0; pointer-events:none}
-  .baslikG{flex:none; display:block; object-fit:contain; width:var(--g3d-baslik-boy); max-width:calc(100% - var(--ara));
+  .baslikG{flex:none; display:block; object-fit:contain; width:var(--g3d-baslik-boy); max-width:100%;
     height:auto; aspect-ratio:1/1; pointer-events:none}
-  /* 37.3 ekranda büyük boş hâl görseli varken başlık görseli gizlenir (aynı ekranda iki 3D görsel olmaz); yazı yumuşakça sola kayar.
-     İlk villa eklenince görsel aynı yumuşaklıkla geri gelir.
+  /* 37.3 ekranda büyük boş hâl görseli varken başlık görseli gizlenir (aynı ekranda iki 3D görsel olmaz). İlk villa eklenince
+     görsel yumuşakça geri gelir (38.2: yalnız saydamlık; yazı yerinde kalır).
      38.1: karar JS'te (baslikGorselDurum → h1.gorselGizli; boş hâl yüzündense ayrıca .gorselBos). Eskiden :has(.bosHal…) ve
      container sorgusuydu; görsel display:none iken baslikGuncelle yüksekliği 0 ölçüp görsele kalıcı opacity:0 yazıyordu */
-  .baslikGK{transition:flex-basis var(--hiz-ac) var(--egri-gecis), opacity var(--hiz-ac) var(--egri-gecis), visibility 0s linear 0s}
+  .baslikGK{transition:opacity var(--hiz-ac) var(--egri-gecis), visibility 0s linear 0s}
   h1.h1G:has(> .baslikGK){transition:margin-bottom var(--hiz-ac) var(--egri-gecis)}
-  h1.gorselGizli .baslikGK{flex-basis:0; opacity:0; visibility:hidden;
-    transition:flex-basis var(--hiz-ac) var(--egri-gecis), opacity var(--hiz-ac) var(--egri-gecis), visibility 0s linear var(--hiz-ac)}
+  h1.gorselGizli .baslikGK{opacity:0; visibility:hidden;
+    transition:opacity var(--hiz-ac) var(--egri-gecis), visibility 0s linear var(--hiz-ac)}
   h1.h1G.gorselBos:has(> .baslikGK), .anaBas h1.h1G.gorselBos:has(> .baslikGK){margin-bottom:.25rem}
   @media (prefers-reduced-motion: reduce){ .baslikGK, h1.h1G:has(> .baslikGK){transition-duration:var(--hiz-azalt)} }
   /* görselin dolu (şeffaf olmayan) kısmı ile alttaki öğe arasında en az 8 pt: --alt görselin alttaki şeffaf payı */
@@ -1460,7 +1462,7 @@
   @media (max-width:380px){ :root{--g3d-baslik-boy:var(--g3d-baslik-kucuk)} }
   /* 37.2 "+ Villa ekle" solda, dolu / boş etiketleri aynı satırın sağ ucunda, dikey ortalı. Sığmazsa etiketler alt satıra iner
      ve sola yaslanır (sol kenarı "Villa ekle" ile aynı); hiçbir genişlikte sağda tek başına durmaz */
-  .anaBas h1.h1G:has(> .baslikGK){flex:1 1 auto; min-width:0}   /* 37.1: başlık satır genişliğinde kalır, görsel ondan küçülür */
+  .anaBas h1.h1G:has(> .baslikGK){flex:1 1 auto; min-width:0}   /* 37.1: başlık satır genişliğinde kalır (38.2: ortası sayfanın ortası) */
   .anaBas h1.h1G:has(> .baslikGK){margin-bottom:max(1rem, calc(var(--g3d-baslik-boy) * (.5 - var(--alt, 0)) - 1.125rem + 8px))}
   .anaSatir{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.5rem; min-height:3rem}
   .anaSatir > #anaHap{flex:none; margin:0; padding:0; overflow:visible}
@@ -4844,8 +4846,9 @@
       if(e.offsetParent!==null && e.getClientRects().length) bos=true; });
     var t=k.nextElementSibling, g=k.querySelector(".baslikG");
     var ara=parseFloat(getComputedStyle(k).getPropertyValue("--ara"))||10;
-    // görsele kalan yer: başlık genişliği − yazı − ara (görselin şu anki durumundan bağımsız)
-    var yer=h.clientWidth-(t?t.getBoundingClientRect().width:0)-ara;
+    // görsele kalan yer (38.2): yazı ortada, görsel sol sütunda → (başlık genişliği − yazı) / 2 − ara.
+    // Görselin şu anki durumundan bağımsız: gizliyken de aynı ölçülür
+    var yer=(h.clientWidth-(t?t.getBoundingClientRect().width:0))/2-ara;
     var gizli=bos || !g || yer<BASLIK_EN_AZ;
     h.classList[gizli?"add":"remove"]("gorselGizli");
     h.classList[bos?"add":"remove"]("gorselBos");
