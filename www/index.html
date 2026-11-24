@@ -867,6 +867,16 @@
   .overlay{position:fixed; inset:0; background:rgba(16,22,19,.35); display:flex; z-index:50;
     align-items:flex-start; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch;
     overscroll-behavior:contain}
+  /* 41.4 alttan açılan pencere dışarı kaymaz:
+     - yatay: overflow-y:auto yüzünden overflow-x da "auto" oluyordu (iOS'ta pencere parmakla sağa sola kayabiliyordu). Yatay kaydırma
+       kapalı, parmak yalnız dikey kaydırır (kendi yatay kaydırıcısı olan şeritler — kanal hapları, takvim — kendi içinde kayar).
+       İçerik pencereyi genişletemez: .sheet overflow-x:clip (hidden olsaydı yapışkan "Kaydet" çubuğu bozulurdu).
+     - dikey: iOS'taki lastik etkisi yok (overscroll-behavior:none; iOS 16+), arkadaki sayfa kaymaz (body kilidi, sayfaKilitle).
+       Daha eski iOS'ta lastik etkisi açılsa da pencerenin altı beyaz görünür: .sheet'in altında beyaz uzantı (box-shadow; kaydırma
+       alanını büyütmez). Geniş ekranda pencere ortada durduğu için uzantı yok. */
+  .overlay{overflow-x:hidden; overscroll-behavior:none; touch-action:pan-y}
+  .overlay:not(.gorucu) > .sheet{overflow-x:clip; box-shadow:0 25vh 0 #fff, 0 50vh 0 #fff, 0 75vh 0 #fff}
+  @media(min-width:640px){ .overlay:not(.gorucu) > .sheet{box-shadow:none} }
   /* 24.1: panel ekranın tamamını kaplar; klavye payı panelin kendi beyaz alt dolgusudur (--klavye). Klavye kapanırken arkadaki
      sayfa görünmez, panel kendi yerine 300 ms'de iner. */
   /* 19B.4: klavye açıkken sayfadaki (panel dışı) alanlar da klavyenin üstüne kaydırılabilsin */

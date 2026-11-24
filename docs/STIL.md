@@ -323,6 +323,10 @@ ile işaretlenir (iki kez çarpılmasın).
   gösterirken kapanmaz. Formlarda (`formTakip`: yeni / düzenlenen rezervasyon, ödeme al / gir / düzenle, gelir-gider, opsiyon,
   özel teklif, yeni villa) kullanıcı bir alanı değiştirdiyse önce sorulur: "Değişiklikler kaydedilmedi. Çıkılsın mı?" · Çık /
   Devam et.
+- **Pencere dışarı kaymaz (Görev 41.4):** `.overlay` yatayda kaymaz (`overflow-x:hidden`, `touch-action:pan-y`; eskiden
+  `overflow-y:auto` yüzünden yatay da "auto" oluyordu), içerik pencereyi genişletemez (`.sheet` `overflow-x:clip`; hidden yapışkan
+  "Kaydet"i bozardı). iOS lastik etkisi kapalı (`overscroll-behavior:none`, iOS 16+); eski iOS'ta açılsa da pencerenin altı beyaz
+  (`.sheet` altında beyaz `box-shadow` uzantısı, kaydırma alanını büyütmez; geniş ekranda yok). Arka sayfa body kilidiyle sabit.
 - **Giriş / çıkış renkleri (Görev 40.5):** giriş yeşil (`--giris-renk` #0B5B57, zemin `--giris-zemin`), çıkış kırmızı
   (`--cikis-renk` = uyarı kırmızısı #9B2C4A, zemin `--cikis-zemin`, çerçeve `--cikis-cerceve`). Rezervasyon detayında Giriş satırı
   (ikon, başlık, tarih, saat) yeşil, Çıkış satırı kırmızı; Ajanda'da "Giriş 16:00" / "Çıkış 10:00" etiketleri aynı renkte. Tarih
