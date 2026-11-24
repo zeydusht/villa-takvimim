@@ -210,8 +210,14 @@ ile işaretlenir (iki kez çarpılmasın).
 
 **Mekânsal tutarlılık ve kesilebilirlik (Görev 31.12):**
 - İleri giden ekran sağdan gelir, geri dönen sola gider. Alttan açılan panel aşağı kaydırılarak kapanır.
-- Aşağı çekme: mesafe 90 pt'yi (`--cek-mesafe`) geçerse ya da parmak hızı 0,11 px/ms'yi (`--cek-hiz-esigi`) geçerse kapanır.
-- Panelin üst sınırından yukarı çekilirse lastik etkisi: panel parmağı izler ama mesafe uzadıkça daha az gider; bırakınca yerine döner.
+- Aşağı çekme (Görev 41.5, iOS gibi): içerik en üstteyken pencerenin **her yerinden** aşağı çekilir; pencere parmağı izler, arka
+  plan açılır. Bırakınca pencere yüksekliğinin %25'inden (`--cek-oran`) fazla çekildiyse ya da hızlı fiske attıysa (0,5 px/ms,
+  `--cek-hiz-esigi`; en az `--cek-fiske-en-az` 24 pt) "Kapat" ile aynı şekilde kapanır; değilse çekmece eğrisiyle yerine döner.
+  İçerik aşağı kaydırılmışken önce içerik kayar, en üste gelince çekme pencereyi indirir. Yalnız dikey, aşağı doğru hareket sayılır
+  (ilk 6 pt'de yatay giden hareket — takvim şeridi, kanal hapları — hiç karışmaz). Yazı alanında, sıralama tutamağında, iç
+  kaydırıcısı en üstte olmayan alanda başlayan hareket sayılmaz. Kaydedilmemiş değişiklik varsa önce sorulur (40.6 sorusu); rehber
+  adım gösterirken ve zorunlu pencerede çalışmaz. Hareket azaltılmışsa pencere parmağı izlemez, eşik geçilince anında kapanır.
+  Eski "yukarı çekince lastik" kalktı: yukarı hareket içeriği kaydırır.
 - Hiçbir animasyon sırasında `pointer-events:none` kalmaz. Kapanmakta olan panele dokunulursa kapanış durur, panel olduğu yerden
   çekmece eğrisiyle geri açılır (`geriAc`).
 

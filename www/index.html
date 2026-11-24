@@ -75,8 +75,10 @@
     --iskelet-parlama:1600ms;     /* iskelette dolaşan yavaş parlama (doğrusal) */
     --iskelet-zemin:#ECEFED;
     --iskelet-isik:#F7F9F8;
-    --cek-hiz-esigi:.11;          /* 31.12: aşağı çekme hızı (px/ms) bunu geçerse mesafe yetmese de panel kapanır */
-    --cek-mesafe:90px;            /* aşağı çekme mesafesi eşiği */
+    --cek-hiz-esigi:.5;           /* 41.5 fiske: aşağı çekme hızı (px/ms) bunu geçerse mesafe yetmese de pencere kapanır (31.12'de .11; artık
+                                     pencerenin her yerinden çekiliyor, yavaş kaydırma kapatmasın) */
+    --cek-fiske-en-az:24px;       /* fiskenin sayılması için en az çekme */
+    --cek-oran:.25;               /* 41.5 pencere yüksekliğinin %25'inden fazla çekilirse kapanır */
     --kontrol-en-az:600ms;        /* 32.6: kontrol listesi en az bu kadar görünür (çok hızlı biterse yanıp sönmesin) */
     --kontrol-kademe:40ms;        /* her site satırı sonucu geldiği an, 40 ms kademeli işaretlenir */
     --tazele-araligi:60000ms;     /* 32.8: aynı villa için uygulamadan en sık yenileme (sunucu da 20 sn sınırlar) */
@@ -910,6 +912,8 @@
     margin-left:-1.125rem; border-radius:99px; background:#D3DAD6}
   @media(min-width:640px){ .sheet::before{display:none} }
   .sheet.cekiliyor{transition:none}
+  /* 41.5 bırakınca yerine yaylanarak döner (çekmece eğrisi) */
+  .sheet.donuyor{transition:transform var(--hiz-ac) var(--egri-cekmece)}
   /* 9.5 Paneller: aşağıdan kayarak açılır, arka plan %40 kararır; kapanışta tersi */
   .overlay{background:rgba(16,22,19,.4)}
   /* 31.1: panel 340 ms --egri-cekmece ile açılır, 220 ms --egri-gecis ile kapanır; kararma 240 / 200 ms, yalnız saydamlık */
@@ -14135,36 +14139,77 @@
     panelKademe(o,eskiOzet);
     return o;
   }
-  // Panelin üst kısmından (tutamaç / başlık) aşağı çekince kapanır.
-  // 31.12: hız eşiği: parmak 0,11 px/ms'den hızlı aşağı gidiyorsa mesafe yetmese de kapanır. Yukarı çekince lastik etkisi:
-  // panel parmağı izler ama mesafe uzadıkça daha az gider (iOS gibi), bırakınca yerine döner.
+  // 41.5 aşağı çekip kapatma (iOS gibi). Pencerenin içeriği en üstteyken parmakla aşağı çekilirse pencere parmağı izleyerek iner,
+  // arka plan açılır. Bırakınca: pencere yüksekliğinin %25'inden (--cek-oran) fazla çekildiyse ya da hızlı fiske attıysa
+  // (--cek-hiz-esigi) "Kapat" ile aynı şekilde kapanır; değilse yaylanarak yerine döner.
+  // - İçerik aşağı kaydırılmışken önce içerik kayar; en üste gelince (aynı hareketin devamında) çekme pencereyi indirir.
+  // - Yalnız dikey, aşağı doğru hareket sayılır: ilk 6 px'te yatay giden hareket (takvim şeridi, kanal hapları) hiç karışmaz.
+  // - Yazı alanı, sıralama tutamağı ve iç kaydırıcısı en üstte olmayan alanda başlayan hareket çekme sayılmaz.
+  // - Kaydedilmemiş değişiklik varsa önce sorulur (40.6 ile aynı soru); rehber adım gösterirken ve zorunlu pencerede çalışmaz.
+  // - Hareket azaltılmışsa (prefers-reduced-motion) pencere parmağı izlemez; eşik geçilince anında kapanır.
+  // 31.12'deki lastik (yukarı çekince) artık yok: yukarı hareket içeriği kaydırır.
   function lastik(x,boy){ return (1-1/((x*0.55/boy)+1))*boy; }
+  function icKaydirici(t,sh){
+    for(var e=t; e && e!==sh && e.nodeType===1; e=e.parentNode){
+      if(e.scrollHeight>e.clientHeight+1){ var oy=getComputedStyle(e).overflowY; if(oy==="auto"||oy==="scroll") return e; }
+    }
+    return null;
+  }
   function asagiCekKapat(o,sh){
-    var y0=null, dy=0, iz=[];
+    var d=null;
+    var engel=function(){ return o.classList.contains("mfaZorunlu") || o.classList.contains("kapaniyor") || o.classList.contains("gorucu") ||
+      !!(window.Rehber && Rehber.aktif && Rehber.aktif()) || (typeof SURUKLE!=="undefined" && !!SURUKLE.aktif); };
+    var sifirla=function(gecis){
+      if(gecis) sh.classList.add("donuyor");
+      sh.style.transform=""; o.style.backgroundColor="";
+      if(gecis) setTimeout(function(){ sh.classList.remove("donuyor"); },hiz("ac")+20);
+    };
     sh.addEventListener("touchstart",function(e){
-      if(o.classList.contains("mfaZorunlu") || o.scrollTop>0 || e.touches.length!==1) return;   // 29.6: zorunlu panel aşağı çekilip kapanmaz
-      if(o.classList.contains("kapaniyor")) return;
-      var ust=sh.getBoundingClientRect().top;
-      if(e.touches[0].clientY-ust>72 || e.target.closest("input,textarea,select")) return;
-      y0=e.touches[0].clientY; dy=0; iz=[{y:y0,t:e.timeStamp||performance.now()}]; sh.classList.add("cekiliyor");
+      d=null;
+      if(e.touches.length!==1 || engel()) return;
+      var t=e.target;
+      if(t.closest && t.closest("input,textarea,select,[contenteditable],.kuralTut,[data-cekme-yok]")) return;
+      d={x0:e.touches[0].clientX, y0:e.touches[0].clientY, son:e.touches[0].clientY, yon:null, cek:false, bas:0, dy:0, iz:[], ic:icKaydirici(t,sh)};
     },{passive:true});
     sh.addEventListener("touchmove",function(e){
-      if(y0===null) return;
-      var y=e.touches[0].clientY, ham=y-y0;
-      iz.push({y:y,t:e.timeStamp||performance.now()}); if(iz.length>6) iz.shift();
-      dy=ham;
-      var g=ham>=0 ? ham : -lastik(-ham,window.innerHeight);
-      sh.style.transform="translateY("+g+"px)";
-    },{passive:true});
+      if(!d || e.touches.length!==1) return;
+      var x=e.touches[0].clientX, y=e.touches[0].clientY, z=e.timeStamp||performance.now();
+      if(!d.yon){
+        var ax=Math.abs(x-d.x0), ay=Math.abs(y-d.y0);
+        if(ax<6 && ay<6) return;
+        d.yon = ax>ay ? "yatay" : "dikey";
+      }
+      if(d.yon==="yatay"){ d=null; return; }
+      var onceki=d.son, asagi=y>onceki; d.son=y;
+      if(!d.cek){
+        // içerik (pencere ve varsa iç kaydırıcı) en üstte ve parmak aşağı gidiyor → çekme başlar (bir önceki konumdan)
+        if(!asagi || o.scrollTop>0 || (d.ic && d.ic.scrollTop>0) || engel()) return;
+        d.cek=true; d.bas=onceki; d.iz=[{y:onceki,t:z-1}]; sh.classList.add("cekiliyor");
+      }
+      if(e.cancelable) e.preventDefault();
+      d.dy=y-d.bas;
+      d.iz.push({y:y,t:z}); if(d.iz.length>6) d.iz.shift();
+      if(d.dy<=0){ d.cek=false; sh.classList.remove("cekiliyor"); sifirla(false); return; }   // geri yukarı: pencere yerinde, içerik kayar
+      if(azHareket()) return;   // hareket azaltılmış: pencere parmağı izlemez
+      var boy=Math.min(sh.offsetHeight,window.innerHeight)||1;
+      sh.style.transform="translateY("+d.dy+"px)";
+      o.style.backgroundColor="rgba(16,22,19,"+(0.4*Math.max(0,1-d.dy/boy)).toFixed(3)+")";
+    },{passive:false});
     var birak=function(){
-      if(y0===null) return;
-      y0=null; sh.classList.remove("cekiliyor");
+      if(!d) return;
+      var c=d; d=null;
+      if(!c.cek) return;
+      sh.classList.remove("cekiliyor");
       // son ~100 ms'deki hız (px/ms, aşağı +)
-      var son=iz[iz.length-1], ilk=iz[0], hz0=0;
-      for(var i=iz.length-1;i>=0;i--){ if(son.t-iz[i].t<=100) ilk=iz[i]; else break; }
+      var son=c.iz[c.iz.length-1], ilk=c.iz[0], hz0=0;
+      for(var i=c.iz.length-1;i>=0;i--){ if(son.t-c.iz[i].t<=100) ilk=c.iz[i]; else break; }
       if(son && ilk && son.t>ilk.t) hz0=(son.y-ilk.y)/(son.t-ilk.t);
-      if(dy>hiz("--cek-mesafe") || (dy>8 && hz0>hiz("--cek-hiz-esigi"))){ if(o.parentNode) kapatOverlay(o); }
-      else sh.style.transform="";
+      var boy=Math.min(sh.offsetHeight,window.innerHeight)||1;
+      var kapan = c.dy>boy*hiz("--cek-oran") || (c.dy>hiz("--cek-fiske-en-az") && hz0>hiz("--cek-hiz-esigi"));
+      if(!kapan || !o.parentNode){ sifirla(true); return; }
+      if(formDegisti(o)){ sifirla(true); cikisSor(o,{metin:"Değişiklikler kaydedilmedi. Çıkılsın mı?", devam:"Devam et"}); return; }
+      o.style.backgroundColor="";
+      kapatOverlay(o);
     };
     sh.addEventListener("touchend",birak);
     sh.addEventListener("touchcancel",birak);
