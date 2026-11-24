@@ -1,6 +1,6 @@
 # Villa Takvim — Proje Durumu
 
-_Son güncelleme: 24 Kasım 2026_
+_Son güncelleme: 25 Kasım 2026_
 
 ## Ne bu?
 Villa Takvim'in (villatakvim.netlify.app) iPhone/Android uygulaması. App adı: **Villa Takvimim**.
@@ -748,6 +748,12 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       yeni Ödemeler ekranı (Alınacak · Alınan · Kalan, ödeme listesi), hizalı tutar satırları · Claude Code (24 Kasım).
       40.1–40.9 ayrı commit; Netlify'a yüklenmedi. Rapor: `docs/qa/gorev40/README.md`. "Fazla alındı" turuncu yerine lacivert
       (sıcak renk yasağı). ÖNCE (ürün yöneticisi): `docs/VERITABANI_GOREV40.sql` (giriş bildirimleri) henüz uygulanmadı.
+- [x] Görev 41 — Ödemeler tek bakışta (tam / eksik / fazla / hiç; fazla ödemede "tamamı alındı" yok), Sıradaki kartının rengi
+      ödeme ve yerleştirme durumunu söylüyor (bekliyor amber, tam yeşil, eksik / fazla kırmızı, çıkış nötr; Ajanda da aynı), detayda
+      "Nasıl?" yok, alttan açılan pencereler sağa sola ve aşağı kaymıyor, içerik en üstteyken aşağı çekince pencere kapanıyor,
+      "Yerleştirildi · 11:45" / "Çıktı" satırında "Geri al" yerine "Düzenle" (saat değiştir / geri al) · Claude Code (24–25 Kasım).
+      41.1–41.7 ayrı commit; Netlify'a yüklenmedi. Rapor: `docs/qa/gorev41/README.md`. Amber yalnız Sıradaki "bekliyor" hâlinde
+      (STIL.md'de sarı yasağının tek istisnası).
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
