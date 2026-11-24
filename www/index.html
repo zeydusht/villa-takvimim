@@ -100,6 +100,11 @@
     --g3d-bolum-bas:56px;         /* 39.3 içerik bölümü başlığının başındaki görsel (çizgi ikonun yerinde) */
     --g3d-bolum-bas-kucuk:40px;   /* aynı görsel: dar ekranda (380 pt ve altı) ve büyük yazıda */
     --g3d-bolum-bas-boy:max(var(--g3d-bolum-bas-kucuk), calc(var(--g3d-bolum-bas) - (1rem - 17px) * 8));   /* yazı büyüdükçe 56 → 40 */
+    --giris-renk:#0B5B57;         /* 40.5 giriş yeşili (Giriş satırı, "Giriş 16:00" etiketleri, Bugün etiketi zemini) */
+    --giris-zemin:#E3EFEC;        /* açık yeşil (Giriş etiketi zemini, "Yarın") */
+    --cikis-renk:#9B2C4A;         /* 40.5 çıkış kırmızısı = uyarı kırmızısı (--uyari) */
+    --cikis-zemin:#FBF1F4;        /* açık kırmızı (Çıkış etiketi zemini, "Yarın") */
+    --cikis-cerceve:#C4718A;      /* Çıkış etiketi çerçevesi */
     --baslik-ust-pay:12.5px;      /* 40.3 sekme başlık görselinin dolu üstü ile üst çubuk arasında en az 12 pt (+ yuvarlama payı) */
     --vb-foto:43%;                /* 40.1 villa kartının sağındaki kare fotoğraf: kartın iç genişliğinin %43'ü ≈ kartın %38'i (390 pt'de ≈ 130 pt) */
     --vb-foto-kucuk:96px;         /* aynı fotoğraf: villa adı sığmazsa (dar ekran / büyük yazı) */
@@ -574,8 +579,9 @@
   /* tutar asla kesilmez */
   .ajSatir .sag{flex:none; max-width:none; overflow:visible}
   .ajEt{flex:none; display:inline-block; font-size:.8235rem; padding:.125rem .5rem; border-radius:99px; border:2px solid; white-space:nowrap; margin-top:.0625rem}
-  .ajEt.giris{border-color:var(--ok); color:#0B5B57; background:#E3EFEC}
-  .ajEt.cikis{border-color:#9AA49F; color:#4A544F; background:#fff}
+  /* 40.5: giriş yeşil, çıkış kırmızı (rezervasyon detayıyla aynı renkler) */
+  .ajEt.giris{border-color:var(--giris-renk); color:var(--giris-renk); background:var(--giris-zemin)}
+  .ajEt.cikis{border-color:var(--cikis-cerceve); color:var(--cikis-renk); background:var(--cikis-zemin)}
   .ajEt.kirmizi{border-color:#C4718A; color:#9B2C4A; background:#FBF1F4}
   .ajEt.lacivert{border-color:var(--lacivert-cerceve); color:var(--lacivert); background:var(--lacivert-zemin)}
   .ajEt.gri{border-color:#C9D1CC; color:#5F6A64; background:#fff}
@@ -1662,6 +1668,16 @@
   .bilgiSat{display:flex; align-items:flex-start; gap:.625rem; padding:.375rem 0}
   .bilgiSat > .ik{margin-top:.125rem; color:var(--muted)}
   .bilgiSat > .ik.gir{color:var(--ok)}
+  /* 40.5 rezervasyon detayı: Giriş satırı (ikon, başlık, tarih, saat) yeşil, Çıkış satırı kırmızı. Renk tek başına anlam taşımaz:
+     ikon ve yazı aynen durur. Bugünse dolu, yarınsa açık "Bugün" / "Yarın" etiketi */
+  .bilgiSat.girSat, .bilgiSat.girSat > .ik, .bilgiSat.girSat .lab{color:var(--giris-renk)}
+  .bilgiSat.cikSat, .bilgiSat.cikSat > .ik, .bilgiSat.cikSat .lab{color:var(--cikis-renk)}
+  .gunEt{display:inline-block; margin-left:.375rem; padding:.0625rem .5rem; border-radius:99px; font-size:.8125rem; font-weight:500;
+    line-height:1.4; white-space:nowrap; vertical-align:1px; border:1.5px solid}
+  .gunEt.giris.bugun{background:var(--giris-renk); border-color:var(--giris-renk); color:#fff}
+  .gunEt.giris.yarin{background:var(--giris-zemin); border-color:var(--giris-zemin); color:var(--giris-renk)}
+  .gunEt.cikis.bugun{background:var(--cikis-renk); border-color:var(--cikis-renk); color:#fff}
+  .gunEt.cikis.yarin{background:var(--cikis-zemin); border-color:var(--cikis-cerceve); color:var(--cikis-renk)}
   .alinacakBuyuk, .alindiTamam{display:flex; align-items:center; gap:.5rem}
   .alinacakBuyuk > .ik{color:var(--lacivert)}
   .alindiTamam > .ik{color:var(--ok)}
@@ -8596,6 +8612,12 @@
     if(duzenlenebilir()) l.push(e("button","is-rez","kalem","Düzenle",'type="button" id="d-duzenle"'));
     return l.length?'<div class="eylemSira">'+l.join("")+"</div>":"";
   }
+  // 40.5: tarih bugünse dolu "Bugün", yarınsa açık "Yarın" etiketi (tur: giris yeşil / cikis kırmızı)
+  function gunEt(k,tur){
+    var b=trSimdi().k, y=fmt(addDays(parse(b),1));
+    if(k!==b && k!==y) return "";
+    return '<span class="gunEt '+tur+" "+(k===b?"bugun":"yarin")+'">'+esc(cev(k===b?"Bugün":"Yarın"))+"</span>";
+  }
   function detay(r){
     perde('<div class="head">'+
       '<div class="sm muted" style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem;white-space:nowrap;flex:none">'+
@@ -8606,10 +8628,11 @@
       // 17.4: en üstte "Ödemeyi al ve misafiri yerleştir" / "Misafir çıktı mı?"
       akisBlok(aktif(),r)+
       '<div class="cols">'+
-        '<div class="bilgiSat">'+ikon("giris",{boy:20,sinif:"gir"})+'<div><div class="eyebrow lab" style="margin-bottom:.25rem">Giriş</div><div>'+kisa(r.start)+
-          '</div><div style="color:'+r.color+'">'+GIRIS+"</div></div></div>"+
-        '<div class="bilgiSat">'+ikon("cikis",{boy:20})+'<div><div class="eyebrow lab" style="margin-bottom:.25rem">Çıkış</div><div>'+kisa(r.end)+
-          '</div><div style="color:'+r.color+'">'+CIKIS+"</div></div></div>"+
+        // 40.5: giriş yeşil, çıkış kırmızı; bugün / yarın etiketi
+        '<div class="bilgiSat girSat" id="d-giris">'+ikon("giris",{boy:20,sinif:"gir"})+'<div><div class="eyebrow lab" style="margin-bottom:.25rem">Giriş</div><div>'+kisa(r.start)+
+          gunEt(r.start,"giris")+"</div><div>"+GIRIS+"</div></div></div>"+
+        '<div class="bilgiSat cikSat" id="d-cikis">'+ikon("cikis",{boy:20})+'<div><div class="eyebrow lab" style="margin-bottom:.25rem">Çıkış</div><div>'+kisa(r.end)+
+          gunEt(r.end,"cikis")+"</div><div>"+CIKIS+"</div></div></div>"+
       "</div>"+
       '<div class="bilgiSat">'+ikon("kisiler",{boy:20})+"<div>"+esc(cev((r.people||"—")+" kişi"))+"</div></div>"+
       (telNormal(r.phone)?'<div class="bilgiSat">'+ikon("telefon",{boy:20})+"<div>"+esc(telGoster(r.phone))+"</div></div>":"")+

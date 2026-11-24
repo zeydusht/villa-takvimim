@@ -292,6 +292,10 @@ ile işaretlenir (iki kez çarpılmasın).
     kaydırmaya bağlı kalmaz. Gizlenip gelmesi `--hiz-ac`.
     Yer daralırsa önce görsel küçülür, yazı bölünmez; 36 pt'nin altına inince görünmez. Villalarım'da dolu / boş etiketleri "+ Villa ekle" ile aynı satırın sağ ucunda; sığmazsa alt satırda, sola yaslı (Görev 37.2).
     Kaydırınca başlık görseli üst çubuğa girdikçe söner (üst %10'u şeffaf kenar, oraya kadar tam), yarısı girince görünmez.
+- **Giriş / çıkış renkleri (Görev 40.5):** giriş yeşil (`--giris-renk` #0B5B57, zemin `--giris-zemin`), çıkış kırmızı
+  (`--cikis-renk` = uyarı kırmızısı #9B2C4A, zemin `--cikis-zemin`, çerçeve `--cikis-cerceve`). Rezervasyon detayında Giriş satırı
+  (ikon, başlık, tarih, saat) yeşil, Çıkış satırı kırmızı; Ajanda'da "Giriş 16:00" / "Çıkış 10:00" etiketleri aynı renkte. Tarih
+  bugünse dolu "Bugün", yarınsa açık "Yarın" etiketi (`gunEt`). Renk tek başına anlam taşımaz: ikon ve yazı aynen durur.
 - **Villalarım arama (Görev 40.4):** "Bugün ve yarın" kartı kalktı (bilgi Takvim → Ajanda'da ve villanın "Sıradaki" kartında).
   "+ Villa ekle" ve dolu / boş satırının altında arama kutusu: solda büyüteç, doluyken sağda ×, 48 pt. Yalnız 4 ve üstü villada.
   Ad ve konumda arar; Türkçe harf ve büyük / küçük farkı yok (`araNorm`: ı/i, ş/s, ç/c, ğ/g, ö/o, ü/u). Dolu / boş etiketleri
