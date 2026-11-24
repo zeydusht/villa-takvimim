@@ -733,6 +733,11 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       dolu / boş etiketleri "Villa ekle" satırında (sığmazsa alt satırda sola yaslı), boş ekranda tek ve büyük (192 pt) görsel
       · Claude Code (23 Kasım). 37.1–37.5 ayrı commit; Netlify'a yüklenmedi. Rapor: `docs/qa/gorev37/README.md`.
       Sınır: 320 pt genişlik + çok büyük yazıda boş Villalarım'ın "Villa ekle" düğmesi ilk ekrana sığmıyor (kaydırınca görünür).
+- [x] Görev 38 — Başlık görseli kaybolma hatası düzeltildi, Villalarım / Takvim / Hesap başlığı sayfanın tam ortasında (görsel solunda)
+      · Claude Code (24 Kasım). 38.1–38.4 ayrı commit; Netlify'a yüklenmedi. Rapor: `docs/qa/gorev38/README.md`.
+      Gerçek sebep: boş hâlde görsel gizliyken `baslikGuncelle()` yüksekliğini 0 ölçüp görsele kalıcı `opacity:0` yazıyordu;
+      ancak kaydırınca siliniyordu (WebKit ve Chromium'da aynı). Artık görselin görünüp görünmeyeceğine JS karar veriyor
+      (`baslikGorselDurum` → `h1.gorselGizli`), CSS `:has()` / container sorgusu yok. Testler webkit + chromium.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
