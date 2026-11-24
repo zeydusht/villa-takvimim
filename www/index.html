@@ -1524,6 +1524,8 @@
   /* 40.3: görsel sol sütunda sola yaslı (sol kenarı sayfanın sol iç kenarında, "+ Villa ekle" ile aynı hizada); yazının yeri değişmez */
   .baslikGK{--ara:10px; grid-column:1; min-width:0; display:flex; align-items:center; justify-content:flex-start; padding-right:var(--ara);
     height:var(--g3d-baslik-boy); margin:calc(var(--g3d-baslik-boy) / -2 + 1.125rem) 0; pointer-events:none}
+  /* 40.3: --sol = görselin soldaki şeffaf payı; dolu kısmın sol kenarı "+ Villa ekle" ile aynı hizada (anahtarlık 12,5% içeride başlıyor) */
+  .baslikG{translate:calc(-100% * var(--sol, 0)) 0}   /* görsel küçülse de payı kadar (kendi genişliğinin yüzdesi) */
   .baslikG{flex:none; display:block; object-fit:contain; width:var(--g3d-baslik-boy); max-width:100%;
     height:auto; aspect-ratio:1/1; pointer-events:none}
   /* 37.3 ekranda büyük boş hâl görseli varken başlık görseli gizlenir (aynı ekranda iki 3D görsel olmaz). İlk villa eklenince
@@ -2305,7 +2307,7 @@
 
   <!-- HESAP SEKMESİ -->
   <div id="hesapEkran" class="hide sekmeEkran">
-    <h1 class="h1G" style="--ust:.104; --alt:.105"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-hesap-512.webp" srcset="img/3d/baslik-hesap-256.webp 256w, img/3d/baslik-hesap-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Hesap</span></h1>
+    <h1 class="h1G" style="--ust:.104; --alt:.105; --sol:.125"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-hesap-512.webp" srcset="img/3d/baslik-hesap-256.webp 256w, img/3d/baslik-hesap-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Hesap</span></h1>
     <div style="margin-top:1.25rem">
     <!-- 29.3: Yönetim bölümü yalnız yöneticiye / onaycıya JavaScript ile eklenir (diğer kullanıcılarda DOM'da hiç yok) -->
     <div id="yonetimYer"></div>
