@@ -600,6 +600,8 @@
     "Villa ara":"Search villas", "Aramayı temizle":"Clear search",
     // Görev 40.6: gri alana dokununca, kaydedilmemiş değişiklik varsa
     "Değişiklikler kaydedilmedi. Çıkılsın mı?":"Your changes aren't saved. Leave anyway?",
+    // Görev 40.7: Ödemeler ekranı
+    "Yeni ödeme":"New payment", "Ek ödeme ekle":"Add another payment", "Fazla alındı":"Overpaid",
     "Kayıt ve uyarılarda telefon hafifçe titresin":"Vibrate gently on saves and warnings",
     "Kapak":"Cover", "Kapak yap":"Make cover", "Kapak fotoğrafı":"Cover photo", "Tümünü gör":"See all",
     "Fotoğraf seçin":"Select photos", "Henüz fotoğraf yok.":"No photos yet.",
@@ -722,6 +724,7 @@
     "Tutarı yazın.":"Type the amount.",
     "Tamamını aldıysanız bu düğmeye dokunun. Farklıysa tutarı yazın.":"If you received the full amount, tap this button. Otherwise type the amount.",
     "Alınan tutarı yazın.":"Type the amount received.",
+    "Kalan tutar hazır yazılı. Farklı bir tutar aldıysanız değiştirin.":"The balance is already filled in. If you received a different amount, change it.",
     "Kaydetmek için dokunun.":"Tap to save.",
     "Rezervasyonu kaydetmek için dokunun.":"Tap to save the reservation.",
     "İndirim yapmak için %5, %10 ya da %15'e dokunun ya da fiyatı yazın.":"Tap 5%, 10% or 15% for a discount, or type the price.",

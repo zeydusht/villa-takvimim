@@ -624,6 +624,21 @@
   .altSabit{position:sticky; bottom:0; background:#fff; padding:.75rem 0 .25rem; margin-top:.5rem; z-index:2}
   .altSabit .big{margin-top:0}
   .hazirOdeme{display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:.75rem}
+  /* 40.7 Ödemeler: Alınacak (siyah) · Alınan (yeşil) · Kalan (kırmızı) / Fazla alındı (lacivert; sıcak renk yok). Kutular yan yana,
+     tutar hiç kesilmez: sığmazsa kutu alt satıra iner (flex-wrap, tutar tek satır) */
+  .odOzet{display:flex; flex-wrap:wrap; gap:.5rem}
+  .odKutu{flex:1 1 auto; min-width:0; background:var(--soft); border-radius:var(--kose); padding:.625rem .75rem}
+  .odKutu .lab{font-size:.8235rem; line-height:1.3; color:var(--muted)}
+  .odKutu .val{font-size:1.125rem; margin-top:.25rem; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--ink)}
+  .odKutu.alinan .val{color:var(--giris-renk)}
+  .odKutu.kalan .val{color:var(--cikis-renk)}
+  .odKutu.kalan.sifir .val{color:var(--ink)}
+  .odKutu.fazla{background:var(--lacivert-zemin)}
+  .odKutu.fazla .lab, .odKutu.fazla .val{color:var(--lacivert)}
+  .odSatir .odTutar{display:block; font-variant-numeric:tabular-nums; white-space:nowrap}
+  .odTamam{margin-top:1.5rem}
+  .odTamam .alindiTamam{color:var(--giris-renk); margin-bottom:.25rem}
+  .odYeni{margin-top:1.5rem}
   .hazirOdeme .big{width:auto; flex:1 1 auto; margin:0; min-height:3rem; padding:.5rem .75rem; font-size:.9375rem}
   .odemeOzet{font-size:.9375rem; background:var(--soft); border-radius:.75rem; padding:.75rem .875rem; margin-bottom:1.25rem}
   .tarihKutu{position:relative; border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose);
@@ -7191,7 +7206,7 @@
     odemeGir:function(){ return {ad:"odeme", basari:"Ödeme kaydedildi", bitis_olayi:"kaydedildi:odeme",
       adimlar:[
         {hedef:function(){ var t=pq("#o-tutar"); return [pq(".hazirOdeme"), t && t.closest(".field")]; }, bekle:"ileri",
-         metin:function(){ return pq(".hazirOdeme [data-hz]") ? RM.odemeTutar : RM.odemeTutarYaz; }},
+         metin:function(){ return RM.odemeYeni || RM.odemeTutarYaz; }},   // 40.7: "Yeni ödeme" kalanla hazır gelir
         rhKaydet("#o-ekle","kaydedildi:odeme")
       ]}; },
     // 19.9 Gider ekle
@@ -8960,40 +8975,48 @@
     var v=aktif();
     var kk=kalemler(v,r);
     var gecmis=(r.odemeler||[]).slice().sort(function(x,y){return x.tarih<y.tarih?1:-1});
-    // Kalan depozito DAHİL; hazır tutar düğmeleri
-    var kTop=kk.toplam, kKal=kk.kalan, hz=[];
-    if(kKal>0) hz.push('<button class="big renkli is-para" data-ik="cuzdan" data-hz="'+kKal+'">'+esc(cev("Kalanın tamamı"))+" · "+para(kKal)+
-      (kk.kalanDep>0?'<span class="hzAlt">'+esc(cev("("+para(kk.kalanDep)+" depozito dahil)"))+"</span>":"")+"</button>");
+    // 40.7: ödemeler eklenerek tutulur (13.000 alınmışken 15.000 yazılırsa toplam 28.000). Ekran bunu anlatır: en üstte
+    // Alınacak · Alınan (yeşil) · Kalan (kırmızı) ya da Fazla alındı (lacivert); altında alınan ödemeler (dokununca düzenle / sil);
+    // en altta "Yeni ödeme" (kalan hazır yazılı). Kalan 0 ise kutu yok: "Ödemenin tamamı alındı" + "Ek ödeme ekle".
+    // Kalan depozito DAHİL
+    var kTop=kk.toplam, kKal=kk.kalan, fazla=Math.max(0,kk.odenen-kTop), hz=[];
     if(!kk.odenen && kk.kapora>0 && kk.kapora<kKal) hz.push('<button class="big renkli is-para" data-ik="cuzdan" data-hz="'+kk.kapora+'">'+esc(cev("Önerilen kapora"))+" · "+para(kk.kapora)+"</button>");
-    perde('<div class="head"><h2>'+esc(cev("Alınan ödemeyi gir"))+"</h2>"+kapatBtn()+"</div>"+
+    var kutuOd=function(sinif,lab,val){ return '<div class="odKutu '+sinif+'"><div class="lab">'+esc(cev(lab))+'</div><div class="val">'+val+"</div></div>"; };
+    perde('<div class="head"><h2>'+esc(cev("Ödemeler"))+"</h2>"+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 1.25rem">'+esc(r.guest)+" · "+aralikMetni(r)+"</div>"+
-      '<div class="ayOzet" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:0 0 .5rem">'+
-        '<div class="okutu"><div class="lab">'+esc(cev("Toplam"))+'</div><div class="val">'+para(kTop)+"</div></div>"+
-        '<div class="okutu"><div class="lab">'+esc(cev("Alınan"))+'</div><div class="val">'+para(kk.odenen)+"</div></div>"+
-        '<div class="okutu"><div class="lab">'+esc(cev("Kalan"))+'</div><div class="val"'+(kKal>0?' style="color:#9B2C4A"':"")+">"+para(kKal)+"</div></div></div>"+
-      '<div style="height:.75rem"></div>'+
-      (hz.length?'<div class="hazirOdeme">'+hz.join("")+"</div>":"")+
-      '<div class="ikili">'+
-        alan("o-tutar","Alınan tutar (₺)","","tel")+
-        '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Tarih</div>'+
-        tarihInput("o-tarih",fmt(today))+"</div>"+
+      '<div class="odOzet" id="o-ozet">'+
+        kutuOd("alinacak","Alınacak",para(kTop))+
+        kutuOd("alinan","Alınan",para(kk.odenen))+
+        (fazla>0 ? kutuOd("fazla","Fazla alındı",para(fazla)) : kutuOd("kalan"+(kKal>0?"":" sifir"),"Kalan",para(kKal)))+
       "</div>"+
-      alan("o-not","Not","Örn. kapora, nakit, havale","text")+
-      '<button class="big" data-ik="cuzdan" id="o-ekle">Ödemeyi kaydet</button>'+
-      (gecmis.length?'<div class="bolumSatir" style="margin:2.25rem 0 .25rem"><div class="eyebrow">Alınan ödemeler</div>'+
-          '<span class="bolumGorsel" data-g="para-bos" aria-hidden="true"><img src="img/3d/para-bos-256.webp" alt="" width="256" height="256" loading="lazy" decoding="async" onerror="this.parentNode.remove()"></span></div><div class="grup">'+
+      '<div class="eyebrow" style="margin:1.75rem 0 .5rem">'+esc(cev("Alınan ödemeler"))+"</div>"+
+      (gecmis.length ? '<div class="grup" id="o-liste">'+
         gecmis.map(function(o){
-          return '<button class="satirBtn" data-oid="'+o.id+'" data-ikk="para:banknot"><span>'+para(o.tutar)+
-            (o.not?'<span class="satirAlt">'+esc(o.not)+"</span>":"")+"</span>"+
-            '<span class="sag">'+kisa(o.tarih)+"</span></button>";
-        }).join("")+"</div>":'<div class="eyebrow" style="margin:2.25rem 0 .25rem">'+esc(cev("Alınan ödemeler"))+"</div>"+
-          bosHal("banknot","Henüz ödeme alınmadı.","","Aldığınız tutarı yukarıya yazıp kaydedin."))+
-      '<button class="big renkli is-para" data-ik="kalem" id="o-toplam" style="margin-top:1rem">Toplam tutarı düzenle</button>');
+          return '<button class="satirBtn odSatir" data-oid="'+o.id+'"><span><span class="odTutar">'+para(o.tutar)+"</span>"+
+            '<span class="satirAlt">'+esc(kisa(o.tarih)+" "+parse(o.tarih).getFullYear())+(o.not?" · "+esc(o.not):"")+"</span></span></button>";
+        }).join("")+"</div>"
+        : '<div class="sm muted" id="o-liste">'+esc(cev("Henüz ödeme alınmadı."))+"</div>")+
+      '<div id="o-tamam" class="odTamam'+(kKal>0?" hide":"")+'">'+
+        '<div class="alindiTamam">'+ikon("tik-daire",{boy:22})+"<span>"+esc(cev("Ödemenin tamamı alındı"))+"</span></div>"+
+        '<button type="button" class="linkBtn" id="o-ekAc">'+esc(cev("Ek ödeme ekle"))+"</button></div>"+
+      '<div id="o-yeni" class="odYeni'+(kKal>0?"":" hide")+'">'+
+        (hz.length?'<div class="hazirOdeme">'+hz.join("")+"</div>":"")+
+        '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Yeni ödeme"))+"</div>"+
+          '<div class="buyukSayi kucuk"><input id="o-tutar" type="text" inputmode="numeric" autocomplete="off" placeholder="0" value="'+(kKal>0?binlik(kKal):"")+'" aria-label="'+esc(cev("Yeni ödeme"))+'"><span>₺</span></div></div>'+
+        '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">Tarih</div>'+tarihInput("o-tarih",fmt(today))+"</div>"+
+        alan("o-not","Not","Örn. kapora, nakit, havale","text")+
+        '<button class="big" data-ik="cuzdan" id="o-ekle">Ödemeyi kaydet</button>'+
+      "</div>"+
+      '<button class="big renkli is-para" data-ik="kalem" id="o-toplam" style="margin-top:1.5rem">Toplam tutarı düzenle</button>');
     formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
+    document.getElementById("o-ekAc").onclick=function(){
+      document.getElementById("o-tamam").classList.add("hide"); document.getElementById("o-yeni").classList.remove("hide");
+      var t0=document.getElementById("o-tutar"); t0.value=""; t0.focus();
+    };
 
     var oT=document.getElementById("o-tutar");
     sayiBicimle(oT);
-    if(!secenek.rehbersiz) rehberAc("odeme",REHBER.odemeGir);
+    if(!secenek.rehbersiz && kKal>0) rehberAc("odeme",REHBER.odemeGir);
     Array.prototype.forEach.call(document.querySelectorAll("[data-hz]"),function(b){
       b.onclick=function(){ oT.value=binlik(+b.dataset.hz); };
     });
@@ -9033,7 +9056,7 @@
         '<button class="big" data-ik="tik" id="os-kaydet">'+esc(cev("Kaydet"))+"</button>"+
         '<button class="big ghost" id="os-vaz" style="margin-top:.5rem">Vazgeç</button>'+
         '<button class="big tehlike" data-ik="cop" id="os-sil" style="margin-top:2rem">Bu ödemeyi sil</button>');
-    formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
+      formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
       sayiBicimle(document.getElementById("os-tutar"));
       document.getElementById("os-vaz").onclick=function(){ kapat(); odemeSheet(r,{rehbersiz:true}); };
       document.getElementById("os-kaydet").onclick=function(){

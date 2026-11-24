@@ -78,6 +78,7 @@
     tutarYaz: "Tutarı yazın.",
     odemeTutar: "Tamamını aldıysanız bu düğmeye dokunun. Farklıysa tutarı yazın.",
     odemeTutarYaz: "Alınan tutarı yazın.",
+    odemeYeni: "Kalan tutar hazır yazılı. Farklı bir tutar aldıysanız değiştirin.",   // Görev 40.7
     // kaydet
     kaydet: "Kaydetmek için dokunun.",
     rezKaydet: "Rezervasyonu kaydetmek için dokunun.",
