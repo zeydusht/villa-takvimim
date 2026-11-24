@@ -292,6 +292,11 @@ ile işaretlenir (iki kez çarpılmasın).
     kaydırmaya bağlı kalmaz. Gizlenip gelmesi `--hiz-ac`.
     Yer daralırsa önce görsel küçülür, yazı bölünmez; 36 pt'nin altına inince görünmez. Villalarım'da dolu / boş etiketleri "+ Villa ekle" ile aynı satırın sağ ucunda; sığmazsa alt satırda, sola yaslı (Görev 37.2).
     Kaydırınca başlık görseli üst çubuğa girdikçe söner (üst %10'u şeffaf kenar, oraya kadar tam), yarısı girince görünmez.
+- **Villalarım arama (Görev 40.4):** "Bugün ve yarın" kartı kalktı (bilgi Takvim → Ajanda'da ve villanın "Sıradaki" kartında).
+  "+ Villa ekle" ve dolu / boş satırının altında arama kutusu: solda büyüteç, doluyken sağda ×, 48 pt. Yalnız 4 ve üstü villada.
+  Ad ve konumda arar; Türkçe harf ve büyük / küçük farkı yok (`araNorm`: ı/i, ş/s, ç/c, ğ/g, ö/o, ü/u). Dolu / boş etiketleri
+  süzgeç, aramayla birlikte çalışır. Sonuç yoksa "‘xyz’ adında villa yok" + "Aramayı temizle". Arama ve süzgeç bellekte: villaya
+  girip dönünce yerinde, uygulama kapanınca sıfır. Arama / süzgeç varken sürükleyerek sıralama kapalı.
 - **Villa sayfası üst kartı (Görev 40.1):** solda villa adı, konum, Boş/Dolu etiketi; sağda büyük kare kapak fotoğrafı
   (`--vb-foto`), içerikle dikey ortalı. Fotoğrafa dokununca tam ekran galeri açılır. Fotoğraf yoksa yerinde `villa-bos` görseli
   ve "Fotoğraf ekle" (dokununca fotoğraf ekleme; düzenleyemeyen kullanıcıda yalnız görsel). Kartta alt satır yok: sıradaki

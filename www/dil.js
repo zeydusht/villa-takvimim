@@ -596,6 +596,8 @@
     "Göster":"Show", "Villa kurulumu":"Villa setup", "Eksik":"Incomplete", "İsimsiz villa":"Unnamed villa",
     "Tüm villa bilgileri":"All villa details", "Rezervasyonlarınızı villa villa takip edin":"Track your bookings villa by villa",
     "Bugün dolu villa yok.":"No villa is booked today.", "Bugün boş villa yok.":"No villa is free today.",
+    // Görev 40.4: Villalarım arama
+    "Villa ara":"Search villas", "Aramayı temizle":"Clear search",
     "Kayıt ve uyarılarda telefon hafifçe titresin":"Vibrate gently on saves and warnings",
     "Kapak":"Cover", "Kapak yap":"Make cover", "Kapak fotoğrafı":"Cover photo", "Tümünü gör":"See all",
     "Fotoğraf seçin":"Select photos", "Henüz fotoğraf yok.":"No photos yet.",
@@ -1308,6 +1310,8 @@
     [/^Teklif · (.+)$/, "Offer · $1"],
     [/^(.+) → (.+) · (\d+) gece(?: · (.+))?$/, function (_, a, b, n, t) { return a + " → " + b + " · " + n + " nights" + (t ? " · " + t : ""); }],
     // Görev 17: saate göre durum, yerleştirme, ödeme
+    // Görev 40.4: "‘xyz’ adında villa yok" (süzgeç seçiliyse "dolu villa" / "boş villa")
+    [/^‘(.+)’ adında (dolu |boş )?villa yok$/, function (_, q, t) { return "No " + (t === "dolu " ? "booked " : t === "boş " ? "free " : "") + "villa matches ‘" + q + "’"; }],
     [/^Bugün (\d+:\d+)'(?:da|de|ta|te) (.+) girecek$/, "$2 checks in today at $1"],
     [/^Bugün (\d+:\d+)'(?:da|de|ta|te) giriş yaptı$/, "Checked in today at $1"],
     [/^Bugün (\d+:\d+)'(?:da|de|ta|te) çıkış$/, "Check-out today at $1"],

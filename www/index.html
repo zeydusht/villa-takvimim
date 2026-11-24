@@ -287,14 +287,7 @@
   .mark{display:block; width:2.75rem; height:2.75rem; margin:0 auto .875rem; color:#163300}
   .barLogo{color:#9FE870; flex:none}
   .sekmeEkran h1{font-size:1.875rem}
-  .hatirlat{margin-top:1.5rem; border:1px solid var(--line); border-radius:.875rem; overflow:hidden}
-  .hatirlat .hBas{background:var(--soft); padding:.75rem 1rem; font-size:.8235rem;
-    text-transform:uppercase; letter-spacing:.14em; color:var(--muted)}
-  .hSatir{display:flex; align-items:flex-start; gap:.625rem; padding:.75rem 1rem;
-    border-top:1px solid var(--line); font-size:.875rem; line-height:1.45; width:100%; text-align:left}
   .hNokta{width:.5rem; height:.5rem; border-radius:99px; margin-top:.375rem; flex:none}
-  .hSatir b{font-weight:500}
-  .hSatir .hVilla{color:var(--muted); font-size:.8235rem}
   .kurKart{display:flex; align-items:center; gap:.75rem; background:var(--soft);
     border-radius:.875rem; padding:.875rem 2.75rem .875rem 1rem; margin-top:1.5rem; position:relative}
   .kurIkon{width:2.5rem; height:2.5rem; flex:none}
@@ -1398,7 +1391,6 @@
   .eyebrow.lab{font-family:var(--sans); font-size:.875rem; letter-spacing:0; color:var(--muted)}
   .section{margin-top:2.75rem}
   .gunBas{font-family:var(--serif); font-size:1.125rem; text-transform:none; letter-spacing:-.01em; color:var(--ink); margin:2rem 0 .25rem}
-  .hatirlat .hBas{font-size:1rem; text-transform:none; letter-spacing:0; color:var(--ink)}
   .bolumSatir{display:flex; align-items:baseline; justify-content:space-between; gap:.75rem; margin-bottom:.25rem}
   .bolumNot{font-size:.875rem; color:var(--muted); flex:none}
   .eksikYazi{color:var(--lacivert)}
@@ -1515,10 +1507,20 @@
     background:var(--soft); color:var(--muted); font-size:.9375rem}
   .siraIpucu span{flex:1; min-width:0}
   .siraIpucu button{flex:none; width:3rem; height:3rem; display:flex; align-items:center; justify-content:center; border-radius:99px; color:var(--muted)}
-  /* 18.17: "Bugün ve yarın" en fazla 4 satır */
-  .hDaha{display:flex; align-items:center; justify-content:space-between; gap:.5rem; width:100%; min-height:3rem; padding:.5rem 1rem;
-    border-top:1px solid var(--line); color:var(--ok); font-size:.9375rem; text-align:left}
-  .hDaha:active{background:var(--basili-zemin)}
+  /* 40.4 Villalarım arama kutusu: solda büyüteç, doluyken sağda ×; 48 pt yükseklik, giriş alanlarıyla aynı çerçeve */
+  .anaAra{position:relative; display:flex; align-items:center; margin-top:.75rem; min-height:3rem;
+    border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose); background:#fff;
+    transition:border-color var(--gecis), box-shadow var(--gecis)}
+  .anaAra:focus-within{border-color:var(--ok); box-shadow:0 0 0 1px var(--ok)}
+  .anaAraIk{flex:none; display:inline-flex; padding:0 .25rem 0 .875rem; color:var(--muted); pointer-events:none}
+  .anaAra input{flex:1 1 auto; min-width:0; min-height:3rem; padding:.5rem .5rem; font-size:1rem}
+  .anaAra input::placeholder{color:var(--muted); opacity:1}
+  .anaAraSil{flex:none; width:3rem; height:3rem; display:inline-flex; align-items:center; justify-content:center; color:var(--muted);
+    border-radius:var(--kose); touch-action:manipulation}
+  .anaAraSil:active{background:var(--basili-zemin)}
+  .anaAraYok{padding:1.5rem 0 .5rem; text-align:center}
+  .anaAraYok .bosYazi{font-size:1rem; line-height:1.45; overflow-wrap:anywhere}
+  .anaAraYok .big{margin-top:1rem}
   .ozetEt .durumEt{min-height:2.75rem; padding:.375rem 1rem; touch-action:manipulation;
     transition:opacity var(--hiz-bas), box-shadow var(--hiz-bas), transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
   .ozetEt .durumEt.dolu{border-color:var(--ok)}
@@ -2185,9 +2187,12 @@
     <div class="anaBas"><h1 class="h1G" style="--ust:.098; --alt:.1"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-villalar-512.webp" srcset="img/3d/baslik-villalar-256.webp 256w, img/3d/baslik-villalar-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Villalarım</span></h1></div>
     <!-- 37.2: "+ Villa ekle" solda, dolu / boş etiketleri aynı satırın sağ ucunda -->
     <div class="anaSatir"><div class="hapSira hide" id="anaHap" role="toolbar"></div><div class="sm muted" id="ozet"></div></div>
+    <!-- 40.4: "Bugün ve yarın" kartı yerine villa arama (4 ve üstü villada) -->
+    <div class="anaAra hide" id="anaAra" role="search"><span class="anaAraIk" data-ik="arama" aria-hidden="true"></span>
+      <input id="anaAraGir" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Villa ara" aria-label="Villa ara">
+      <button type="button" class="anaAraSil hide" id="anaAraSil" aria-label="Aramayı temizle" data-ik="x"></button></div>
     <div class="siraIpucu hide" id="siraIpucu"></div>
     <div class="ipucu hide" id="ipucu"></div>
-    <div class="hatirlat hide" id="hatirlat"></div>
     <div class="kurKart hide" id="kurKart">
       <div class="kurIkon">
         <img src="icon-180.png" alt="" aria-hidden="true">
@@ -3848,7 +3853,7 @@
   var ISK_ANA="vt-isk-ana";
   function anaYerlesimSakla(){
     requestAnimationFrame(function(){
-      var ana=document.getElementById("ana"), l=document.querySelectorAll("#villalar > .kart");
+      var ana=document.getElementById("ana"), l=document.querySelectorAll("#villalar > .kart:not(.hide)");
       if(!ana || ana.classList.contains("hide") || !l.length) return;
       var a=ana.getBoundingClientRect().top;
       try{ localStorage.setItem(ISK_ANA,JSON.stringify({ust:+(l[0].getBoundingClientRect().top-a).toFixed(2),
@@ -4497,13 +4502,11 @@
     if(S.yigin) S.yigin.ana=null;   // 17.5: Villalar sekmesinin kökündeyiz, saklı villa yığını geçersiz
     villaSirala();
     goster("ana");
-    var doluSayisi=0, h="", suz=S.anaSuz||null, gorunen=0;
+    var doluSayisi=0, h="", suz=S.anaSuz||null;
     S.villalar.forEach(function(v){ if(icerideki(v)) doluSayisi++; });
+    // 40.4: süzgeç ve arama kartları çizdikten sonra (anaListeSuz) gizler; böylece yazdıkça yeniden çizilmez
     S.villalar.forEach(function(v){
       var M=harita(v.rez), bm=bugunMetni(M), ic=icerideki(v);
-      if(suz==="dolu" && !ic) return;
-      if(suz==="bos" && ic) return;
-      gorunen++;
       var tk0=fmt(today);
       var sonraki=v.rez.filter(function(r){return r.start>tk0})
         .sort(function(a,b){return a.start<b.start?-1:1})[0];
@@ -4516,7 +4519,7 @@
       var kapak = foto
         ? '<span class="kapak" style="background-image:url('+foto+')"></span>'
         : '<span class="harf" style="background:'+v.color+'">'+harf+"</span>";
-      h+='<button class="kart" data-id="'+v.id+'">'+kapak+
+      h+='<button class="kart" data-id="'+v.id+'" data-dolu="'+(ic?1:0)+'" data-ara="'+esc(araNorm((v.ad||"")+" "+((v.bilgi&&v.bilgi.konum)||"")))+'">'+kapak+
          '<span class="kartAlt"><span class="kad">'+esc(v.ad||cev("Villa"))+"</span>"+
          durumEtiket(!!ic, ic&&ic.guest)+
          (alt?'<span class="kalt">'+esc(alt)+"</span>":"")+"</span></button>";
@@ -4525,8 +4528,9 @@
       "Villanızı ekleyin, gecelik fiyatları girin, rezervasyonları takvime işleyin.",
       (S.bulut && window.VT && VT.girisli && VT.girisli())?'<button class="bakiciLink" id="karsilamaDavet">'+esc(cev("Bakıcı mısınız? Davet koduyla katılın"))+"</button>":"");
     cakismaKartCiz();
-    if(S.villalar.length && !gorunen) h='<div class="sm muted" style="padding:.5rem 0">'+esc(cev(suz==="dolu"?"Bugün dolu villa yok.":"Bugün boş villa yok."))+"</div>";
+    if(S.villalar.length) h+='<div class="anaSuzYok hide" id="anaSuzYok"></div>';
     document.getElementById("villalar").innerHTML=h;
+    anaAraKur();
     // 18.15: başlığın altında yalnız "+ Villa ekle" (Takvim ve Teklifler hapları kalktı)
     var ah=[hapHTML("villa","ana","arti","Villa ekle")];
     var anaHap=document.getElementById("anaHap");
@@ -4536,10 +4540,9 @@
     var ke=document.getElementById("karsilamaEkle"); if(ke) ke.onclick=function(){ document.getElementById("villaEkle").click(); };
     var kd=document.getElementById("karsilamaDavet"); if(kd) kd.onclick=function(){ davetGirSheet(); };
     kurKartKontrol();
-    hatirlatCiz();
     ipucuCiz();
     var si=document.getElementById("siraIpucu"), siraGor=false;
-    try{ siraGor=S.villalar.length>=2 && !localStorage.getItem(SIRA_IPUCU) && !S.anaSuz; }catch(e){ siraGor=false; }
+    try{ siraGor=S.villalar.length>=2 && !localStorage.getItem(SIRA_IPUCU) && !S.anaSuz && !S.anaAra; }catch(e){ siraGor=false; }
     si.classList[siraGor?"remove":"add"]("hide");
     if(siraGor){
       si.innerHTML=ikon("surukle",{boy:18})+"<span>"+esc(cev("Sırayı değiştirmek için villaya basılı tutup sürükleyin."))+"</span>"+
@@ -4746,57 +4749,55 @@
     }
     return null;
   }
-  function hatirlatCiz(){
-    var el=document.getElementById("hatirlat"); if(!el) return;
-    var an=trSimdi(), bugunK=an.k, yarinK=fmt(addDays(parse(bugunK),1));
-    var sat=[];
-    S.villalar.forEach(function(v){
-      var villaAdi=S.villalar.length>1 ? (v.ad||"") : "";
-      (v.rez||[]).forEach(function(r){
-        // 17.2: saat geçtiyse / onay verildiyse "giriş yaptı", "çıktı"
-        if(r.start===bugunK) sat.push({o:1,renk:"#0B5B57",
-          m: !girdiMi(r,an) ? "<b>Bugün "+GIRIS+"</b> · "+esc(r.guest)+" giriş yapıyor"+(r.people?" ("+esc(r.people)+" kişi)":"")
-            : (r.girisOnay ? "<b>"+esc(trSaat(r.girisOnay))+"</b> · "+esc(r.guest)+" yerleştirildi"
-                           : "<b>Bugün "+GIRIS+"</b> · "+esc(r.guest)+" giriş yaptı"), v:villaAdi, r:r, vid:v.id});
-        if(r.end===bugunK) sat.push({o:2,renk:"#5F6A64",
-          m: !ciktiMi(r,an) ? "<b>Bugün "+CIKIS+"</b> · "+esc(r.guest)+" çıkış yapıyor"
-            : (r.cikisOnay ? "<b>"+esc(trSaat(r.cikisOnay))+"</b> · "+esc(r.guest)+" çıktı"
-                           : "<b>Bugün "+CIKIS+"</b> · "+esc(r.guest)+" çıktı"), v:villaAdi, r:r, vid:v.id});
-        if(r.start===yarinK) sat.push({o:3,renk:"#3C4E8C",
-          m:"<b>Yarın "+GIRIS+"</b> · "+esc(r.guest)+" giriş yapacak", v:villaAdi, r:r, vid:v.id});
-        if(r.end===yarinK) sat.push({o:4,renk:"#3C4E8C",
-          m:"<b>Yarın "+CIKIS+"</b> · "+esc(r.guest)+" çıkış yapacak", v:villaAdi, r:r, vid:v.id});
-      });
-      // 15.4: "Opsiyon yarın bitiyor · Ali Kaya · Villa Salta"
-      if(v.rol!=="bakici") opsiyonlar(v).forEach(function(o){
-        if(o.son!==bugunK && o.son!==yarinK) return;
-        sat.push({o:6,renk:"#4A5A7A", m:"<b>"+esc(cev(o.son===bugunK?"Opsiyon bugün bitiyor":"Opsiyon yarın bitiyor"))+"</b> · "+esc(o.ad||""),
-          v:v.ad||"", r:{id:""}, vid:v.id});
-      });
-      if(v.rol!=="destek"){
-        (v.rez||[]).forEach(function(r){
-          var kl=kalanTutar(v,r);
-          if(kl>0 && r.start<=yarinK && r.end>=bugunK){
-            // neden burada: girişte ya da çıkışta alınacak para
-            var neGun=r.start>=bugunK ? "Giriş "+kisa(r.start) : "Çıkış "+kisa(r.end);
-            sat.push({o:5,renk:"#9B2C4A",
-              m:"<b>"+esc(neGun)+"</b> · "+esc(r.guest)+" · "+para(kl)+" alınacak", v:villaAdi, r:r, vid:v.id});
-          }
-        });
-      }
-    });
-    if(!sat.length){ el.classList.add("hide"); el.innerHTML=""; return; }
-    sat.sort(function(a,b){ return a.o-b.o; });
-    el.classList.remove("hide");
-    var fazla=Math.max(0,sat.length-4);
-    el.innerHTML='<div class="hBas">Bugün ve yarın</div>'+
-      sat.slice(0,4).map(function(x){
-        return '<button class="hSatir" data-hv="'+x.vid+'" data-hr="'+x.r.id+'">'+
-          '<span class="hNokta" style="background:'+x.renk+'"></span>'+
-          "<span>"+x.m+(x.v?'<br><span class="hVilla">'+esc(x.v)+"</span>":"")+"</span></button>";
-      }).join("")+
-      (fazla?'<button class="hDaha" id="hDaha" type="button"><span>'+esc(cev("+"+fazla+" olay daha · Takvim'de gör"))+"</span>"+ikon("sag",{boy:18})+"</button>":"");
+  // 40.4: "Bugün ve yarın" kartı kaldırıldı (çok villada listeyi aşağı itiyordu; aynı bilgi Takvim → Ajanda'da ve her villanın
+  // "Sıradaki" kartında). Yerine villa arama: 4 ve üstü villada görünür; ad ve konumda arar, Türkçe harf / büyük-küçük farkı yok
+  // ("ŞİŞLİ" → "şişli", "salta" → "Villa Salta"). Dolu / boş etiketleri süzgeç; ikisi birlikte çalışır. Arama ve süzgeç
+  // bellekte (S.anaAra, S.anaSuz): villaya girip dönünce yerinde kalır, uygulama kapanınca sıfırlanır.
+  function araNorm(x){
+    return String(x||"").toLocaleLowerCase("tr").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/ı/g,"i").replace(/\s+/g," ").trim();
   }
+  var ANA_ARA_EN_AZ=4;
+  function anaAraKur(){
+    var kutu=document.getElementById("anaAra"), gir=document.getElementById("anaAraGir"), gor=S.villalar.length>=ANA_ARA_EN_AZ;
+    if(!gor) S.anaAra="";
+    kutu.classList[gor?"remove":"add"]("hide");
+    gir.placeholder=cev("Villa ara"); gir.setAttribute("aria-label",cev("Villa ara"));
+    if(gir.value!==(S.anaAra||"")) gir.value=S.anaAra||"";
+    anaListeSuz();
+  }
+  function anaListeSuz(){
+    var q=araNorm(S.anaAra), suz=S.anaSuz||null, n=0;
+    Array.prototype.forEach.call(document.querySelectorAll("#villalar > .kart[data-id]"),function(k){
+      var dolu=k.getAttribute("data-dolu")==="1";
+      var ok=!(suz==="dolu" && !dolu) && !(suz==="bos" && dolu) && (!q || (k.getAttribute("data-ara")||"").indexOf(q)>=0);
+      k.classList[ok?"remove":"add"]("hide"); if(ok) n++;
+    });
+    var sil=document.getElementById("anaAraSil"); if(sil) sil.classList[S.anaAra?"remove":"add"]("hide");
+    var yok=document.getElementById("anaSuzYok"); if(!yok) return;
+    if(n || !S.villalar.length){ yok.classList.add("hide"); yok.innerHTML=""; return; }
+    var ham=String(S.anaAra||"").trim();
+    yok.className="anaSuzYok"+(ham?" anaAraYok":"");
+    yok.innerHTML = ham
+      ? '<div class="bosYazi">'+esc(cev("‘"+ham+"’ adında "+(suz==="dolu"?"dolu ":suz==="bos"?"boş ":"")+"villa yok"))+"</div>"+
+        '<button type="button" class="big ghost" data-ik="x" id="anaAraTemizle">'+esc(cev("Aramayı temizle"))+"</button>"
+      : '<div class="sm muted" style="padding:.5rem 0">'+esc(cev(suz==="dolu"?"Bugün dolu villa yok.":"Bugün boş villa yok."))+"</div>";
+  }
+  // sıralama ipucu arama varken gizli: arama boşalınca / dolunca ana ekran yeniden çizilir
+  function anaAraYaz(deger){
+    var eski=!!S.anaAra; S.anaAra=deger; anaListeSuz();
+    if(eski!==!!S.anaAra) cizAna();
+  }
+  function anaAraTemizle(odak){
+    var g=document.getElementById("anaAraGir"); g.value=""; anaAraYaz("");
+    if(odak) g.focus();
+  }
+  (function(){
+    var g=document.getElementById("anaAraGir");
+    g.addEventListener("input",function(){ anaAraYaz(g.value); });
+    g.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); g.blur(); } else if(e.key==="Escape" && g.value){ e.preventDefault(); anaAraTemizle(true); } });
+    document.getElementById("anaAraSil").addEventListener("click",function(){ anaAraTemizle(true); });
+    document.getElementById("villalar").addEventListener("click",function(e){ if(e.target.closest("#anaAraTemizle")) anaAraTemizle(false); });
+  })();
 
   function acikEkran(){
     var l=["giris","sifre","onay","ana","takvim","kasa","misafirler","fiyatEkran","fotoEkran","sihirbaz"];
@@ -5101,17 +5102,6 @@
     var b=e.target.closest("[data-suz]"); if(!b) return;
     S.anaSuz = S.anaSuz===b.dataset.suz ? null : b.dataset.suz;
     cizAna();
-  });
-
-  // 18.17: satıra dokununca o rezervasyon açılır (Villalarım'ın üstünde); "+N olay daha" → Takvim sekmesi
-  document.getElementById("hatirlat").addEventListener("click",function(e){
-    if(e.target.closest("#hDaha")){ sekmeGit("ajanda"); return; }
-    var b=e.target.closest(".hSatir"); if(!b) return;
-    var v=S.villalar.filter(function(x){ return x.id===b.dataset.hv; })[0]; if(!v) return;
-    var r=(v.rez||[]).filter(function(x){ return x.id===b.dataset.hr; })[0];
-    if(!r){ ac(v.id); return; }
-    S.aktif=v.id; MAP=harita(v.rez); S.salt=false; S.ustDetay=true;
-    detay(r);
   });
 
   // 10.14 alt menü kabarcığı: seçili sekmeye kayar (--hiz-ekran); menü yeni görünüyorsa anında yerleşir
@@ -6021,7 +6011,7 @@
     var kap=document.getElementById("villalar");
     var el=null, kartlar=[], yuva=[], ilk=0, hedef=0, adim=0;
     surukleBagla(kap,{secici:".kart",
-      uygun:function(){ return !S.anaSuz && S.villalar.length>=2; },
+      uygun:function(){ return !S.anaSuz && !S.anaAra && S.villalar.length>=2; },
       basla:function(t){
         el=t;
         kartlar=Array.prototype.slice.call(kap.querySelectorAll(".kart"));
