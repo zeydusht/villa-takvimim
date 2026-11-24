@@ -304,6 +304,13 @@ ile işaretlenir (iki kez çarpılmasın).
   yerine). Kutular yan yana, tutar kesilmez: sığmazsa alt satıra iner. Altında alınan ödemeler (tarih, tutar, not, sağda ok;
   dokununca düzenle / "Bu ödemeyi sil"). En altta "Yeni ödeme": kalan hazır yazılı; kalan 0 ise yerine "Ödemenin tamamı alındı"
   ve "Ek ödeme ekle". Bakıcı bu ekranı görmez (yetkiler aynı). Para hep `para()`: 13.000 ₺.
+  **Görev 41.1:** tek bakışta tam / eksik / fazla / hiç. Kutular: "Alınması gereken" (gri) · Alınan (açık yeşil kutu, koyu yeşil
+  yazı) · Kalan (açık kırmızı kutu, koyu kırmızı yazı; tam alındıysa açık yeşil, "✓ 0 ₺") ya da "Fazla alındı" (açık kırmızı; artık
+  lacivert değil). Renkler `--giris-renk/--giris-zemin` ve `--cikis-renk/--cikis-zemin` (kontrast ≈ 7:1). Listenin altında tek
+  cümlelik durum satırı, ikonlu (`.odDurum`): tam → yeşil "Ödemenin tamamı alındı" + "Ek ödeme ekle"; eksik → kırmızı "1.000 ₺ eksik ·
+  alınması gerekiyor" + Yeni ödeme (kalan hazır); fazla → kırmızı uyarı üçgeni "15.000 ₺ fazla alındı" + "Yanlış girilen bir ödeme
+  varsa…" açıklaması (tamamı alındı / Ek ödeme ekle / Yeni ödeme yok); hiç → kırmızı "Henüz ödeme alınmadı" + Yeni ödeme (toplam
+  hazır). Karar tek yerde: `odemeDurumu(v,r)` (Sıradaki kartı ve Ajanda da bunu kullanır).
 - **Alttan açılan pencere, gri alan (Görev 40.6):** arkadaki karartılmış alana dokununca pencere kapanır ("Kapat" ile aynı,
   aynı animasyon). Dokunuş gri alanda başlayıp gri alanda bitmeli (panelden kayıp gri alanda bırakmak kapatmaz). Rehber bir adım
   gösterirken kapanmaz. Formlarda (`formTakip`: yeni / düzenlenen rezervasyon, ödeme al / gir / düzenle, gelir-gider, opsiyon,

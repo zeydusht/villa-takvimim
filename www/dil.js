@@ -604,6 +604,9 @@
     "Yeni ödeme":"New payment", "Ek ödeme ekle":"Add another payment", "Fazla alındı":"Overpaid",
     // Görev 40.8: Rezervasyonu düzenle tutar tablosu
     "Tutarlar":"Amounts", "Ek ücret":"Extra fee", "Depozito":"Deposit",
+    // Görev 41.1: Ödemeler durum satırı
+    "Alınması gereken":"Amount due", "Henüz ödeme alınmadı":"No payment received yet",
+    "Yanlış girilen bir ödeme varsa üstteki listeden dokunup düzeltin ya da silin.":"If a payment was entered by mistake, tap it in the list above to fix or delete it.",
     "Kayıt ve uyarılarda telefon hafifçe titresin":"Vibrate gently on saves and warnings",
     "Kapak":"Cover", "Kapak yap":"Make cover", "Kapak fotoğrafı":"Cover photo", "Tümünü gör":"See all",
     "Fotoğraf seçin":"Select photos", "Henüz fotoğraf yok.":"No photos yet.",
@@ -1317,6 +1320,12 @@
     [/^Teklif · (.+)$/, "Offer · $1"],
     [/^(.+) → (.+) · (\d+) gece(?: · (.+))?$/, function (_, a, b, n, t) { return a + " → " + b + " · " + n + " nights" + (t ? " · " + t : ""); }],
     // Görev 17: saate göre durum, yerleştirme, ödeme
+    // Görev 41.1 / 41.2: ödeme durumu
+    [/^([\d.,]+ ₺) eksik · alınması gerekiyor$/, "$1 short · still to collect"],
+    [/^([\d.,]+ ₺) fazla alındı$/, "$1 overpaid"],
+    [/^([\d.,]+ ₺) eksik$/, "$1 short"],
+    [/^Yerleşti · ([\d.,]+ ₺) eksik$/, "Checked in · $1 short"],
+    [/^Yerleşti · ([\d.,]+ ₺) fazla alındı$/, "Checked in · $1 overpaid"],
     // Görev 40.4: "‘xyz’ adında villa yok" (süzgeç seçiliyse "dolu villa" / "boş villa")
     [/^‘(.+)’ adında (dolu |boş )?villa yok$/, function (_, q, t) { return "No " + (t === "dolu " ? "booked " : t === "boş " ? "free " : "") + "villa matches ‘" + q + "’"; }],
     [/^Bugün (\d+:\d+)'(?:da|de|ta|te) (.+) girecek$/, "$2 checks in today at $1"],
