@@ -100,6 +100,9 @@
     --g3d-bolum-bas:56px;         /* 39.3 içerik bölümü başlığının başındaki görsel (çizgi ikonun yerinde) */
     --g3d-bolum-bas-kucuk:40px;   /* aynı görsel: dar ekranda (380 pt ve altı) ve büyük yazıda */
     --g3d-bolum-bas-boy:max(var(--g3d-bolum-bas-kucuk), calc(var(--g3d-bolum-bas) - (1rem - 17px) * 8));   /* yazı büyüdükçe 56 → 40 */
+    --vb-foto:43%;                /* 40.1 villa kartının sağındaki kare fotoğraf: kartın iç genişliğinin %43'ü ≈ kartın %38'i (390 pt'de ≈ 130 pt) */
+    --vb-foto-kucuk:96px;         /* aynı fotoğraf: villa adı sığmazsa (dar ekran / büyük yazı) */
+    --vb-foto-kose:16px;          /* fotoğrafın köşesi */
     --g3d-kart:64px;              /* seçim kartları (.secKart) */
     --g3d-bos:192px;              /* boş hâl (37.3); 760 pt'den kısa ekranda yazı büyüdükçe küçülür, 640 pt altında 144 pt */
     --g3d-sihirbaz:160px;         /* sihirbaz çizimleri */
@@ -1347,7 +1350,28 @@
   .vbSol{flex:1 1 auto; min-width:0}
   .vbUst .vRozet{margin-top:.125rem}
   .villaBas .durumEt{margin-top:.875rem}
-  .villaBas .durumAlt{margin-top:.5rem}
+  /* 40.1 villa kartı: solda ad, konum, Boş/Dolu; sağda büyük kare fotoğraf (dokununca galeri). Fotoğraf yoksa villa-bos görseli +
+     "Fotoğraf ekle". Ad sığmazsa (bir kelime kesilecekse ya da üç satıra iniyorsa) fotoğraf 96 pt'ye iner (JS: .vbDar); yine
+     sığmazsa adın yazısı adım adım en çok %70'e küçülür (iki satır, kelime bölünmeden) */
+  .villaBas .vbUst{align-items:center}
+  .villaBas .vbAd{overflow-wrap:normal}
+  /* son çare (.vbTasar): tek kelime 96 pt'de %70 yazıyla bile sığmıyor → ad kartın tam genişliğinde, fotoğraf altında sağda.
+     Orada da sığmazsa (.vbKir) kelime bölünür */
+  .villaBas.vbTasar .vbUst{display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:.75rem; align-items:center}
+  .villaBas.vbTasar .vbSol{display:contents}
+  .villaBas.vbTasar .vbAd{grid-column:1 / -1}
+  .villaBas.vbTasar .vbKonum, .villaBas.vbTasar .vbSol > .durumEt{grid-column:1; justify-self:start}
+  .villaBas.vbTasar .vbFoto{grid-column:2; grid-row:2 / span 2; margin-top:.75rem}
+  .villaBas.vbKir .vbAd{overflow-wrap:anywhere}
+  .vbFoto{flex:none; width:max(var(--vb-foto-kucuk), var(--vb-foto)); aspect-ratio:1; border-radius:var(--vb-foto-kose); overflow:hidden; padding:0; border:0;
+    background:var(--soft) center/cover no-repeat; box-shadow:inset 0 0 0 1px rgba(16,22,19,.08); position:relative;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.125rem; color:var(--ok);
+    touch-action:manipulation; transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
+  .villaBas.vbDar .vbFoto{width:var(--vb-foto-kucuk)}
+  button.vbFoto:active, button.vbFoto.basili{transform:scale(var(--basili-olcek))}
+  .vbFoto img{display:block; width:72%; height:auto; aspect-ratio:1; object-fit:contain; margin-top:-.25rem; pointer-events:none}
+  .vbFoto .vbEkle{font-size:.8125rem; line-height:1.2; font-weight:500; padding:0 .375rem; text-align:center}
+  .villaBas.vbDar .vbFoto .vbEkle{font-size:.75rem}
   /* 12.3: sadece villa durum kutusu (div); takvimdeki bugün hücresine (button.cell.today) uygulanmaz */
   div.today{padding-bottom:1.5rem; margin:0 0 1.5rem}
   /* durum etiketi: dolu = koyu yeşil, boş = açık gri (10.3, 10.12, 10.13, 12.1) */
@@ -4799,6 +4823,51 @@
     return f ? '<span class="vRozet" aria-hidden="true" style="background-image:url(\''+kucukResim(f)+'\')"></span>'
              : '<span class="vRozet" aria-hidden="true" style="background-color:'+esc(v.color||"#0B5B57")+'">'+esc(basHarf(v.ad)||"V")+"</span>";
   }
+  // 40.1 villa kartının sağındaki büyük kare fotoğraf: varsa kapak (dokununca galeri), yoksa villa-bos görseli + "Fotoğraf ekle"
+  function vbFotoHTML(v){
+    var f=(v.fotolar||[])[0];
+    if(f) return '<button type="button" class="vbFoto" id="vbFoto" data-vb="galeri" aria-label="'+esc(cev("Fotoğraflar"))+'" style="background-image:url(\''+
+      String(f.tam||f.thumb||"").replace(/'/g,"%27")+'\')"></button>';
+    var ekle=duzenlenebilir();
+    return '<'+(ekle?'button type="button" data-vb="ekle"':"span")+' class="vbFoto vbBos" id="vbFoto">'+
+      '<img src="img/3d/villa-bos-256.webp" alt="" aria-hidden="true" width="256" height="256" decoding="async" onerror="this.style.visibility=\'hidden\'">'+
+      (ekle?'<span class="vbEkle">'+esc(cev("Fotoğraf ekle"))+"</span></button>":"</span>");
+  }
+  // ad sığmazsa fotoğraf 96 pt: 130 pt'de bir kelime sütuna sığmıyor ya da ad üç satıra iniyorsa. 96'da da sığmazsa
+  // adın yazısı %5'lik adımlarla en çok %70'e küçülür; o da yetmezse ad ikiden çok satıra iner, kelime yine bölünmez
+  // (tek kelime %70'te bile sığmıyorsa son çare .vbTasar: kelime bölünür)
+  function vbFotoBoy(){
+    var k=document.querySelector("#bugun .villaBas"); if(!k) return;
+    var ad=k.querySelector(".vbAd"); if(!ad.clientWidth) return;   // ekran gizli: goster → baslikYenile yeniden ölçer
+    var sigmaz=function(){
+      var r=document.createRange(), g=ad.clientWidth, enUzun=0;
+      String(ad.textContent).split(/\s+/).forEach(function(w){
+        if(!w) return; var t=document.createElement("span"); t.style.whiteSpace="nowrap"; t.textContent=w; ad.appendChild(t);
+        enUzun=Math.max(enUzun,t.getBoundingClientRect().width); ad.removeChild(t); });
+      var sat=Math.round(ad.getBoundingClientRect().height/parseFloat(getComputedStyle(ad).lineHeight));
+      return { kelime:enUzun>g+.5, satir:sat };
+    };
+    k.classList.remove("vbDar","vbTasar","vbKir"); ad.style.fontSize="";
+    var a=sigmaz(), tamam=function(){ return !a.kelime && a.satir<=2; };
+    if(tamam()) return;
+    k.classList.add("vbDar"); a=sigmaz();
+    var taban=parseFloat(getComputedStyle(ad).fontSize);
+    for(var o=.95; !tamam() && o>=.699; o-=.05){ ad.style.fontSize=(taban*o).toFixed(2)+"px"; a=sigmaz(); }
+    if(!tamam()){
+      // iki satıra sığmıyor: kelimeyi bölmeyen en büyük boy
+      for(var o2=1; o2>=.699; o2-=.05){ ad.style.fontSize=(taban*o2).toFixed(2)+"px"; a=sigmaz(); if(!a.kelime) break; }
+      if(a.kelime){
+        // bir kelime %70'te bile sığmıyor: ad tam genişliğe çıkar, fotoğraf altına iner
+        k.classList.add("vbTasar");
+        for(var o3=1; o3>=.699; o3-=.05){ ad.style.fontSize=(taban*o3).toFixed(2)+"px"; a=sigmaz(); if(!a.kelime) break; }
+        if(a.kelime) k.classList.add("vbKir");
+      }
+    }
+  }
+  document.getElementById("bugun").addEventListener("click",function(e){
+    var b=e.target.closest("[data-vb]"); if(!b || !aktif()) return;
+    if(b.getAttribute("data-vb")==="galeri") fotoGorucu(0); else fotoEkleSec();
+  });
   function rozetKoy(ekran){
     var el=document.getElementById(ekran), h1=el&&el.querySelector("h1"); if(!h1) return;
     var sat=h1.parentNode;
@@ -4930,7 +4999,7 @@
     h.classList[bos?"add":"remove"]("gorselBos");
     if(gizli && g) g.style.opacity="";
   }
-  function baslikYenile(){ BASLIK.kare=0; baslikGorselDurum(); baslikGuncelle(); if(window.bolumGorselIste) bolumGorselIste(); }   // 39.3: bölüm başlıkları da (yazı boyutu, sekme, yazı tipi)
+  function baslikYenile(){ BASLIK.kare=0; baslikGorselDurum(); baslikGuncelle(); if(window.bolumGorselIste) bolumGorselIste(); vbFotoBoy(); }   // 39.3: bölüm başlıkları da (yazı boyutu, sekme, yazı tipi); 40.1 villa kartı fotoğrafı
   window.baslikYenile=baslikYenile;   // boş hâl görseli yüklenemeyince (onerror) de çağrılır
   // haric dışındaki ekranların başlıklarında satır içi değer kalmasın
   function baslikTemizle(haric){
@@ -6533,10 +6602,11 @@
     if(sahip0 && kurulu()) hz.push(hapHTML("paylas","is-paylas","paylas","Paylaş"));
     var konum=String((v.bilgi&&v.bilgi.konum)||"").trim();
     document.getElementById("bugun").innerHTML=
-      // villa ekranında da başlığın sağ üstünde villanın küçük kapak fotoğrafı (alt ekranlardaki gibi)
+      // 40.1: solda ad, konum, Boş/Dolu; sağda büyük kare kapak fotoğrafı. "Bugün 16:00'da … girecek" gibi alt satır yok:
+      // sıradaki iş hemen alttaki "Sıradaki" kartında, bilgi tek yerde
       '<div class="villaBas"><div class="vbUst"><div class="vbSol"><div class="vbAd">'+esc(v.ad||cev("Villa"))+"</div>"+
-      (konum?'<div class="vbKonum">'+esc(konum)+"</div>":"")+"</div>"+villaRozet(v)+"</div>"+durumEtiket(dm.dolu,dm.misafir)+
-      '<div class="durumAlt">'+esc(dm.alt)+"</div></div>";
+      (konum?'<div class="vbKonum">'+esc(konum)+"</div>":"")+durumEtiket(dm.dolu,dm.misafir)+"</div>"+vbFotoHTML(v)+"</div></div>";
+    vbFotoBoy();
     var vHap=document.getElementById("villaHap"), vHapEski=vHap.innerHTML;
     vHap.innerHTML=hz.join("");
     document.getElementById("villaHapKap").classList[hz.length?"remove":"add"]("hide");

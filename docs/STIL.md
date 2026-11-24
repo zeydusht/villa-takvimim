@@ -261,6 +261,7 @@ ile işaretlenir (iki kez çarpılmasın).
     |---|---|---|
     | `--g3d-baslik` / `--g3d-baslik-kucuk` | Villalarım / Takvim / Hesap başlığı | 88 pt; 380 pt ve altı ekranda, büyük yazıda 64 pt |
     | `--g3d-bolum` | sayfa / panel başlığının sağı (Misafirler, Gelir & gider, Teklifler paneli) | 56 pt |
+    | `--vb-foto` / `--vb-foto-kucuk` / `--vb-foto-kose` | villa sayfası üst kartının sağındaki kare fotoğraf (Görev 40.1) | kartın ≈ %38'i (390 pt'de 131 pt), en az 96 pt; ad sığmazsa 96 pt; köşe 16 pt |
     | `--g3d-bolum-bas` / `--g3d-bolum-bas-kucuk` | içerik bölümü başlığının başı (Görev 39) | 56 pt; dar ekranda (380 pt ve altı), büyük yazıda ve yazı 56 pt'de iki satıra iniyorsa 40 pt |
     | `--g3d-kart` | seçim kartları (`.secKart`) | 64 pt |
     | `--g3d-bos` | boş hâl (Görev 37.3) | 192 pt; kısa ekranda (yükseklik 640 pt altı) 144 pt |
@@ -287,6 +288,13 @@ ile işaretlenir (iki kez çarpılmasın).
     kaydırmaya bağlı kalmaz. Gizlenip gelmesi `--hiz-ac`.
     Yer daralırsa önce görsel küçülür, yazı bölünmez; 36 pt'nin altına inince görünmez. Villalarım'da dolu / boş etiketleri "+ Villa ekle" ile aynı satırın sağ ucunda; sığmazsa alt satırda, sola yaslı (Görev 37.2).
     Kaydırınca başlık görseli üst çubuğa girdikçe söner (üst %10'u şeffaf kenar, oraya kadar tam), yarısı girince görünmez.
+- **Villa sayfası üst kartı (Görev 40.1):** solda villa adı, konum, Boş/Dolu etiketi; sağda büyük kare kapak fotoğrafı
+  (`--vb-foto`), içerikle dikey ortalı. Fotoğrafa dokununca tam ekran galeri açılır. Fotoğraf yoksa yerinde `villa-bos` görseli
+  ve "Fotoğraf ekle" (dokununca fotoğraf ekleme; düzenleyemeyen kullanıcıda yalnız görsel). Kartta alt satır yok: sıradaki
+  giriş / çıkış hemen alttaki "Sıradaki" kartında, bilgi tek yerde.
+  - Ad sığmazsa (bir kelime sütuna sığmıyor ya da üç satıra iniyor) fotoğraf 96 pt'ye iner; yine sığmazsa adın yazısı %5'lik
+    adımlarla en çok %70'e küçülür. Kelime hiçbir zaman kesilmez; tek kelime %70'te de sığmıyorsa ad kartın tam genişliğine
+    çıkar, fotoğraf altına iner (`vbFotoBoy`, JS).
 - **Yükleniyor (Görev 31.7):** dönen çark yerine iskelet (gri kutu, yazı yerine yuvarlak çizgiler).
   - Yalnız veri 300 ms'de gelmezse görünür (`--iskelet-gecikme`); göründüyse en az 400 ms kalır (`--iskelet-en-az`, `iskeletBitir`).
   - Üstünde 1,6 sn'lik yavaş, doğrusal parlama dolaşır (`--iskelet-parlama`); "Hareketi azalt"ta sabit.
