@@ -260,7 +260,8 @@ ile işaretlenir (iki kez çarpılmasın).
     | Değişken | Yer | Boyut |
     |---|---|---|
     | `--g3d-baslik` / `--g3d-baslik-kucuk` | Villalarım / Takvim / Hesap başlığı | 88 pt; 380 pt ve altı ekranda, büyük yazıda 64 pt |
-    | `--g3d-bolum` | bölüm başlıkları (liste doluyken) | 56 pt |
+    | `--g3d-bolum` | sayfa / panel başlığının sağı (Misafirler, Gelir & gider, Teklifler paneli) | 56 pt |
+    | `--g3d-bolum-bas` / `--g3d-bolum-bas-kucuk` | içerik bölümü başlığının başı (Görev 39) | 56 pt; dar ekranda (380 pt ve altı), büyük yazıda ve yazı 56 pt'de iki satıra iniyorsa 40 pt |
     | `--g3d-kart` | seçim kartları (`.secKart`) | 64 pt |
     | `--g3d-bos` | boş hâl (Görev 37.3) | 192 pt; kısa ekranda (yükseklik 640 pt altı) 144 pt |
     | `--g3d-sihirbaz` | sihirbaz | 160 pt |
@@ -270,6 +271,11 @@ ile işaretlenir (iki kez çarpılmasın).
     `-512`'si de kırpılmış, `srcset` ile 3x ekranda o seçilir; 88 pt altındaki yerlerde `-256` yeter.
   - Hiza (Görev 36.4): görsel yazıyla dikey ortalı, arada en az 8 pt; satıra yazı satırından fazla yükseklik katmaz (negatif margin),
     üstüne / altına taşar. Bölüm satırında altında hemen kart olduğu için 10 pt yukarıda.
+  - İçerik bölümü başlıkları (Görev 39.3): `[3D görsel] Başlık ……… [Tümünü gör]`. Görsel çizgi ikonun yerinde, sola yaslı;
+    yazı görselin dikey ortasında, arada 10 pt. Satıra yazı satırından fazla yükseklik katmaz; altındaki karta en az 8 pt
+    kalsın diye satırın altına taşma kadar boşluk eklenir. Yer yoksa önce görsel 40 pt'ye küçülür, sonra yazı iki satıra iner.
+    Yalnız içerik bölümlerinde (villa sayfası, Gelir & gider, misafir kartı); Hesap'taki ayar başlıkları ve form etiketleri
+    çizgi ikonla kalır. Görsel yüklenemezse çizgi ikon kalır.
   - Sekme başlıkları (Görev 37.1, 38.2): yazı sayfanın tam ortasında, görsel hemen solunda; arada 10 pt, dikey ortalı. Üç sütun
     (`1fr · yazı · 1fr`): görsel ortalamaya dahil değil, gelip gidince yazı kımıldamaz. Yazı hiç bölünmez, kesilmez: sol sütun
     darsa görsel önce küçülür (en az 48 pt), sonra gizlenir. Alt satırdaki etiketler ve "+ Villa ekle" sola yaslı kalır. Görselin dolu kısmı ile alttaki öğe arasında en az 8 pt (`--alt`: görselin

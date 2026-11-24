@@ -96,7 +96,10 @@
     --g3d-baslik:88px;            /* Villalarım / Takvim / Hesap başlığı */
     --g3d-baslik-kucuk:64px;      /* aynı başlık: dar ekranda (380 pt ve altı) ve büyük yazıda */
     --g3d-baslik-boy:max(var(--g3d-baslik-kucuk), calc(var(--g3d-baslik) - (1rem - 17px) * 8));   /* yazı büyüdükçe 88 → 64 */
-    --g3d-bolum:56px;             /* bölüm başlıkları (liste doluyken boş hâl görselinin küçüğü) */
+    --g3d-bolum:56px;             /* sayfa / panel başlığının sağındaki küçük görsel (liste doluyken boş hâl görselinin küçüğü) */
+    --g3d-bolum-bas:56px;         /* 39.3 içerik bölümü başlığının başındaki görsel (çizgi ikonun yerinde) */
+    --g3d-bolum-bas-kucuk:40px;   /* aynı görsel: dar ekranda (380 pt ve altı) ve büyük yazıda */
+    --g3d-bolum-bas-boy:max(var(--g3d-bolum-bas-kucuk), calc(var(--g3d-bolum-bas) - (1rem - 17px) * 8));   /* yazı büyüdükçe 56 → 40 */
     --g3d-kart:64px;              /* seçim kartları (.secKart) */
     --g3d-bos:192px;              /* boş hâl (37.3); 760 pt'den kısa ekranda yazı büyüdükçe küçülür, 640 pt altında 144 pt */
     --g3d-sihirbaz:160px;         /* sihirbaz çizimleri */
@@ -1539,6 +1542,20 @@
   .ikBas{display:inline-flex; color:var(--r); flex:none}
   .eyebrow[data-iki]{display:flex; align-items:center; gap:.5rem}
   #fotoBas .eyebrow{display:flex; align-items:center; gap:.5rem}
+  /* 39.3 içerik bölümü başlığı: [3D görsel 56 pt] Başlık ……… [Tümünü gör]. Görsel çizgi ikonun yerinde, sola yaslı; yazı görselin
+     dikey ortasında, arada 10 pt. Satıra yazı satırından fazla yükseklik katmaz (negatif margin), üstüne / altına taşar; altındaki
+     karta en az 8 pt kalsın diye satırın altına taşma kadar boşluk eklenir. Dar ekranda / büyük yazıda 40 pt; yazı yine sığmazsa
+     iki satıra iner, görsel iki satırın ortasında durur. Görsel görünür mü kararı JS'te (bolumGorselDurum → .g3dAcik) */
+  .eyebrow > .bolumG3{display:none}
+  .eyebrow.g3dAcik{display:flex; align-items:center; gap:10px}
+  .eyebrow.g3dAcik > .ikBas{display:none}
+  .eyebrow.g3dAcik > .bolumG3{display:block; flex:none; width:var(--g3d-bolum-bas-boy); height:var(--g3d-bolum-bas-boy);
+    margin:calc(var(--g3d-bolum-bas-boy) / -2 + .65em) 0; pointer-events:none}
+  .bolumG3 img{display:block; width:100%; height:100%; object-fit:contain; pointer-events:none}
+  .g3dSatir.bolumSatir, #fotoBas.g3dSatir{align-items:center}
+  .g3dSatir{padding-bottom:max(0px, calc(var(--g3d-bolum-bas-boy) / 2 - .771875rem + 8px))}
+  @media (max-width:380px){ :root{--g3d-bolum-bas-boy:var(--g3d-bolum-bas-kucuk)} }
+  .g3dKucuk{--g3d-bolum-bas-boy:var(--g3d-bolum-bas-kucuk)}   /* JS: 56 pt'de yazı iki satıra iniyorsa */
   /* 11.4 rezervasyon satırları: misafir renginde baş harf, giriş/çıkış ikonları, kalan ödeme */
   .harfDaire{flex:none; width:2.25rem; height:2.25rem; border-radius:99px; color:#fff; font-size:.8235rem; letter-spacing:.03em;
     display:flex; align-items:center; justify-content:center; line-height:1}
@@ -3906,7 +3923,43 @@
       var p=el.getAttribute("data-iki").split(":"), is=IS[p[0]]||IS.hesap;
       el.insertAdjacentHTML("afterbegin",'<span class="ikBas '+is.sinif+'">'+ikon(p[1]||is.ikon,{boy:18})+"</span>");
     });
+    // 39.3: içerik bölümü başlığının 3D görseli (çizgi ikonun hemen ardına; hangisinin görüneceğine bolumGorselDurum karar verir)
+    hepsi("[data-g3d]").forEach(function(el){
+      if(el.querySelector(":scope > .bolumG3")) return;
+      var g=el.getAttribute("data-g3d"), h='<span class="bolumG3" aria-hidden="true"><img src="img/3d/'+g+'-256.webp" alt="" width="256" height="256" '+
+        'decoding="async" onerror="this.parentNode.classList.add(\'yok\');window.bolumGorselDurum&&bolumGorselDurum()"></span>';
+      var ik=el.querySelector(":scope > .ikBas");
+      if(ik) ik.insertAdjacentHTML("afterend",h); else el.insertAdjacentHTML("afterbegin",h);
+    });
+    if(window.bolumGorselIste) bolumGorselIste();
   }
+  // 39.3: başlıkta 3D görsel mi çizgi ikon mu. Görsel yüklenemezse (.yok) çizgi ikon kalır.
+  // Satır (.bolumSatir / #fotoBas ya da başlığın kendisi) .g3dSatir alır: dikey ortalama ve alttaki karta boşluk
+  function bolumGorselDurum(){
+    BOLUM_G3_KARE=0;
+    Array.prototype.forEach.call(document.querySelectorAll(".eyebrow[data-g3d]"),function(el){
+      var g=el.querySelector(":scope > .bolumG3"), acik=!!g && !g.classList.contains("yok");
+      var u=el.parentElement, satir=(u && (u.classList.contains("bolumSatir") || u.id==="fotoBas")) ? u : el;
+      el.classList[acik?"add":"remove"]("g3dAcik");
+      satir.classList[acik?"add":"remove"]("g3dSatir");
+      // yer yoksa önce görsel küçülür (56 → 40 pt); yazı 40 pt'de de sığmazsa iki satıra iner (görsel iki satırın ortasında)
+      var kucuk=false;
+      if(acik && el.offsetParent!==null){
+        el.classList.remove("g3dKucuk"); satir.classList.remove("g3dKucuk");
+        kucuk=bolumSatirSayisi(el)>1;
+      }
+      el.classList[kucuk?"add":"remove"]("g3dKucuk"); satir.classList[kucuk?"add":"remove"]("g3dKucuk");
+    });
+  }
+  function bolumSatirSayisi(el){
+    var t=[].filter.call(el.childNodes,function(n){ return n.nodeType===3 && n.textContent.trim(); }); if(!t.length) return 1;
+    var r=document.createRange(); r.setStartBefore(t[0]); r.setEndAfter(t[t.length-1]);
+    return Math.round(r.getBoundingClientRect().height/(parseFloat(getComputedStyle(el).lineHeight)||1));
+  }
+  window.addEventListener("resize",function(){ bolumGorselIste(); });
+  var BOLUM_G3_KARE=0;
+  function bolumGorselIste(){ if(!BOLUM_G3_KARE) BOLUM_G3_KARE=requestAnimationFrame(bolumGorselDurum); }
+  window.bolumGorselDurum=bolumGorselDurum; window.bolumGorselIste=bolumGorselIste;
   try{
     new MutationObserver(function(ml){
       ml.forEach(function(m){
@@ -4856,7 +4909,7 @@
     h.classList[bos?"add":"remove"]("gorselBos");
     if(gizli && g) g.style.opacity="";
   }
-  function baslikYenile(){ BASLIK.kare=0; baslikGorselDurum(); baslikGuncelle(); }
+  function baslikYenile(){ BASLIK.kare=0; baslikGorselDurum(); baslikGuncelle(); if(window.bolumGorselIste) bolumGorselIste(); }   // 39.3: bölüm başlıkları da (yazı boyutu, sekme, yazı tipi)
   window.baslikYenile=baslikYenile;   // boş hâl görseli yüklenemeyince (onerror) de çağrılır
   // haric dışındaki ekranların başlıklarında satır içi değer kalmasın
   function baslikTemizle(haric){
@@ -6517,7 +6570,6 @@
     if(!tumYak.length) lh=bosHal("takvim","Henüz rezervasyon yok.",duzenlenebilir()?'<button class="big" data-ik="takvim-arti" id="rezBosEkle">'+esc(cev("Rezervasyon ekle"))+"</button>":"",
       "Takvimden tarih aralığı seçerek başlayın.");
     else yak.forEach(function(r){ lh+=rezKartHTML(v,r,true); });
-    bolum3d(document.getElementById("listeBas"),"takvim",tumYak.length>0);
     // 16.6: "Tümünü gör" alttaki buton yerine başlıkta
     document.querySelector('#listeBas [data-tumu="rez"]').classList[kalanlar.length>6?"remove":"add"]("hide");
     document.getElementById("listeBas").classList[(sir && !kalanlar.length)?"add":"remove"]("hide");
@@ -7387,7 +7439,6 @@
     var l=on.l||[];
     bol.classList[l.length?"remove":"add"]("hide");
     if(l.length) satir.classList.add("hide");   // bölüm varken "Teklifler" satırı tekrarlanmaz
-    bolum3d(bol.querySelector(".bolumSatir"),"rozet-yuzde",l.length>0);
     document.getElementById("tkListe").innerHTML=!l.length?"":'<div class="grup">'+l.slice(0,3).map(function(t){
       var d=teklifDurumu(t);
       return '<button class="satirBtn tkSatir" data-kod="'+esc(t.kod)+'"><span class="ikKutu is-para">'+ikon("rozet-yuzde",{boy:20})+"</span>"+
