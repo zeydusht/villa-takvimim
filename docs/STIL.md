@@ -279,7 +279,11 @@ ile işaretlenir (iki kez çarpılmasın).
     çizgi ikonla kalır. Görsel yüklenemezse çizgi ikon kalır.
     Bölümde büyük boş hâl görseli (ya da boş hâl çizimi) görünüyorsa başlıkta görsel olmaz, çizgi ikon döner (Görev 39.4);
     karar JS'te (`bolumGorselDurum`, `:has()` değil), DOM değişince bir sonraki kareden önce; gelen öğe `--hiz-ac` ile solarak gelir.
-  - Sekme başlıkları (Görev 37.1, 38.2): yazı sayfanın tam ortasında, görsel hemen solunda; arada 10 pt, dikey ortalı. Üç sütun
+  - Sekme başlıkları (Görev 37.1, 38.2, 40.3): yazı sayfanın tam ortasında; görsel sol sütunda **sola yaslı** (sol kenarı sayfanın
+    sol iç kenarında, "+ Villa ekle" ile aynı hizada, Görev 40.3), yazıyla en az 10 pt ara, dikey ortalı. Görselin dolu üstü ile
+    üst çubuğun alt kenarı arasında en az 12 pt (`--baslik-ust-pay`; `--ust`: görselin üstteki şeffaf payı, başlık gerekirse
+    `padding-top` ile aşağı iner — margin Takvim / Hesap'ta üstteki boşlukla birleşip yutuluyordu). Üç görselin üst / alt şeffaf
+    payı aynı (~%10; `baslik-hesap` Görev 40.3'te buna göre yeniden kırpıldı). Üç sütun
     (`1fr · yazı · 1fr`): görsel ortalamaya dahil değil, gelip gidince yazı kımıldamaz. Yazı hiç bölünmez, kesilmez: sol sütun
     darsa görsel önce küçülür (en az 48 pt), sonra gizlenir. Alt satırdaki etiketler ve "+ Villa ekle" sola yaslı kalır. Görselin dolu kısmı ile alttaki öğe arasında en az 8 pt (`--alt`: görselin
     alttaki şeffaf payı; başlığın alt boşluğu buna göre).

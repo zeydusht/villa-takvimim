@@ -100,6 +100,7 @@
     --g3d-bolum-bas:56px;         /* 39.3 içerik bölümü başlığının başındaki görsel (çizgi ikonun yerinde) */
     --g3d-bolum-bas-kucuk:40px;   /* aynı görsel: dar ekranda (380 pt ve altı) ve büyük yazıda */
     --g3d-bolum-bas-boy:max(var(--g3d-bolum-bas-kucuk), calc(var(--g3d-bolum-bas) - (1rem - 17px) * 8));   /* yazı büyüdükçe 56 → 40 */
+    --baslik-ust-pay:12.5px;      /* 40.3 sekme başlık görselinin dolu üstü ile üst çubuk arasında en az 12 pt (+ yuvarlama payı) */
     --vb-foto:43%;                /* 40.1 villa kartının sağındaki kare fotoğraf: kartın iç genişliğinin %43'ü ≈ kartın %38'i (390 pt'de ≈ 130 pt) */
     --vb-foto-kucuk:96px;         /* aynı fotoğraf: villa adı sığmazsa (dar ekran / büyük yazı) */
     --vb-foto-kose:16px;          /* fotoğrafın köşesi */
@@ -1474,7 +1475,8 @@
      baslikGorselDurum gizler. Yazı tek satır, kesilmez */
   h1.h1G:has(> .baslikGK){display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); justify-content:center; gap:0}
   h1.h1G > .baslikGK + span{grid-column:2; white-space:nowrap; max-width:none}
-  .baslikGK{--ara:10px; grid-column:1; min-width:0; display:flex; align-items:center; justify-content:flex-end; padding-right:var(--ara);
+  /* 40.3: görsel sol sütunda sola yaslı (sol kenarı sayfanın sol iç kenarında, "+ Villa ekle" ile aynı hizada); yazının yeri değişmez */
+  .baslikGK{--ara:10px; grid-column:1; min-width:0; display:flex; align-items:center; justify-content:flex-start; padding-right:var(--ara);
     height:var(--g3d-baslik-boy); margin:calc(var(--g3d-baslik-boy) / -2 + 1.125rem) 0; pointer-events:none}
   .baslikG{flex:none; display:block; object-fit:contain; width:var(--g3d-baslik-boy); max-width:100%;
     height:auto; aspect-ratio:1/1; pointer-events:none}
@@ -1483,13 +1485,17 @@
      38.1: karar JS'te (baslikGorselDurum → h1.gorselGizli; boş hâl yüzündense ayrıca .gorselBos). Eskiden :has(.bosHal…) ve
      container sorgusuydu; görsel display:none iken baslikGuncelle yüksekliği 0 ölçüp görsele kalıcı opacity:0 yazıyordu */
   .baslikGK{transition:opacity var(--hiz-ac) var(--egri-gecis), visibility 0s linear 0s}
-  h1.h1G:has(> .baslikGK){transition:margin-bottom var(--hiz-ac) var(--egri-gecis)}
+  h1.h1G:has(> .baslikGK){transition:margin-bottom var(--hiz-ac) var(--egri-gecis), padding-top var(--hiz-ac) var(--egri-gecis)}
   h1.gorselGizli .baslikGK{opacity:0; visibility:hidden;
     transition:opacity var(--hiz-ac) var(--egri-gecis), visibility 0s linear var(--hiz-ac)}
-  h1.h1G.gorselBos:has(> .baslikGK), .anaBas h1.h1G.gorselBos:has(> .baslikGK){margin-bottom:.25rem}
+  h1.h1G.gorselBos:has(> .baslikGK), .anaBas h1.h1G.gorselBos:has(> .baslikGK){margin-bottom:.25rem; padding-top:0}
   @media (prefers-reduced-motion: reduce){ .baslikGK, h1.h1G:has(> .baslikGK){transition-duration:var(--hiz-azalt)} }
   /* görselin dolu (şeffaf olmayan) kısmı ile alttaki öğe arasında en az 8 pt: --alt görselin alttaki şeffaf payı */
   h1.h1G:has(> .baslikGK){margin-bottom:max(0px, calc(var(--g3d-baslik-boy) * (.5 - var(--alt, 0)) - 1.125rem + 8px))}
+  /* 40.3 görselin dolu üstü ile üst çubuğun alt kenarı arasında en az 12 pt (--baslik-ust-pay). --ust: görselin üstteki şeffaf payı;
+     başlığın üstünde zaten 1.5rem var (çubuk ile ekranın başı arası), eksik kalan kadar başlık aşağı iner. margin değil padding:
+     Takvim / Hesap'ta başlığın margin'i üstteki boşlukla birleşip (collapse) yutuluyordu */
+  h1.h1G:has(> .baslikGK){padding-top:max(0px, calc(var(--g3d-baslik-boy) * (.5 - var(--ust, 0)) - 1.125rem + var(--baslik-ust-pay) - 1.5rem))}
   @media (max-width:380px){ :root{--g3d-baslik-boy:var(--g3d-baslik-kucuk)} }
   /* 37.2 "+ Villa ekle" solda, dolu / boş etiketleri aynı satırın sağ ucunda, dikey ortalı. Sığmazsa etiketler alt satıra iner
      ve sola yaslanır (sol kenarı "Villa ekle" ile aynı); hiçbir genişlikte sağda tek başına durmaz */
@@ -2176,7 +2182,7 @@
     <!-- 32.7: çift satış riski (kapatılamaz; çözülünce kalkar) -->
     <div id="cakismaKartlar" class="hide"></div>
     <!-- 18.15: başlığın sağında dolu / boş etiketleri (dar ekranda alta iner); altında yalnız "+ Villa ekle" -->
-    <div class="anaBas"><h1 class="h1G" style="--alt:.098"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-villalar-512.webp" srcset="img/3d/baslik-villalar-256.webp 256w, img/3d/baslik-villalar-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Villalarım</span></h1></div>
+    <div class="anaBas"><h1 class="h1G" style="--ust:.098; --alt:.1"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-villalar-512.webp" srcset="img/3d/baslik-villalar-256.webp 256w, img/3d/baslik-villalar-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Villalarım</span></h1></div>
     <!-- 37.2: "+ Villa ekle" solda, dolu / boş etiketleri aynı satırın sağ ucunda -->
     <div class="anaSatir"><div class="hapSira hide" id="anaHap" role="toolbar"></div><div class="sm muted" id="ozet"></div></div>
     <div class="siraIpucu hide" id="siraIpucu"></div>
@@ -2204,7 +2210,7 @@
 
   <!-- TAKVİM SEKMESİ: tüm villaların yaklaşan giriş/çıkışları -->
   <div id="ajanda" class="hide sekmeEkran">
-    <h1 class="h1G" style="--alt:.115"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-takvim-512.webp" srcset="img/3d/baslik-takvim-256.webp 256w, img/3d/baslik-takvim-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Takvim</span></h1>
+    <h1 class="h1G" style="--ust:.113; --alt:.117"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-takvim-512.webp" srcset="img/3d/baslik-takvim-256.webp 256w, img/3d/baslik-takvim-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Takvim</span></h1>
     <!-- 33.7: iki parça: Ajanda (giriş / çıkışlar) | Misafirler (bütün villaların misafirleri) -->
     <div class="seg ajUst" id="ajUst" role="tablist">
       <button data-u="ajanda" role="tab">Ajanda</button><button data-u="misafir" role="tab">Misafirler</button>
@@ -2230,7 +2236,7 @@
 
   <!-- HESAP SEKMESİ -->
   <div id="hesapEkran" class="hide sekmeEkran">
-    <h1 class="h1G" style="--alt:0"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-hesap-512.webp" srcset="img/3d/baslik-hesap-256.webp 256w, img/3d/baslik-hesap-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Hesap</span></h1>
+    <h1 class="h1G" style="--ust:.104; --alt:.105"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-hesap-512.webp" srcset="img/3d/baslik-hesap-256.webp 256w, img/3d/baslik-hesap-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Hesap</span></h1>
     <div style="margin-top:1.25rem">
     <!-- 29.3: Yönetim bölümü yalnız yöneticiye / onaycıya JavaScript ile eklenir (diğer kullanıcılarda DOM'da hiç yok) -->
     <div id="yonetimYer"></div>
