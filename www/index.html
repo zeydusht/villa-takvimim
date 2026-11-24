@@ -108,6 +108,7 @@
     --cikis-zemin:#FBF1F4;        /* açık kırmızı (Çıkış etiketi zemini, "Yarın") */
     --cikis-cerceve:#C4718A;      /* Çıkış etiketi çerçevesi */
     --baslik-ust-pay:12.5px;      /* 40.3 sekme başlık görselinin dolu üstü ile üst çubuk arasında en az 12 pt (+ yuvarlama payı) */
+    --baslik-alt-pay:8.5px;       /* 36.7 / 40.9 görselin dolu altı ile alttaki öğe arasında en az 8 pt (+ yuvarlama payı) */
     --vb-foto:43%;                /* 40.1 villa kartının sağındaki kare fotoğraf: kartın iç genişliğinin %43'ü ≈ kartın %38'i (390 pt'de ≈ 130 pt) */
     --vb-foto-kucuk:96px;         /* aynı fotoğraf: villa adı sığmazsa (dar ekran / büyük yazı) */
     --vb-foto-kose:16px;          /* fotoğrafın köşesi */
@@ -1546,8 +1547,9 @@
     transition:opacity var(--hiz-ac) var(--egri-gecis), visibility 0s linear var(--hiz-ac)}
   h1.h1G.gorselBos:has(> .baslikGK), .anaBas h1.h1G.gorselBos:has(> .baslikGK){margin-bottom:.25rem; padding-top:0}
   @media (prefers-reduced-motion: reduce){ .baslikGK, h1.h1G:has(> .baslikGK){transition-duration:var(--hiz-azalt)} }
-  /* görselin dolu (şeffaf olmayan) kısmı ile alttaki öğe arasında en az 8 pt: --alt görselin alttaki şeffaf payı */
-  h1.h1G:has(> .baslikGK){margin-bottom:max(0px, calc(var(--g3d-baslik-boy) * (.5 - var(--alt, 0)) - 1.125rem + 8px))}
+  /* görselin dolu (şeffaf olmayan) kısmı ile alttaki öğe arasında en az 8 pt: --alt görselin alttaki şeffaf payı.
+     40.9: görsel 40.3'te dikeyde (.1 - --ust) kadar kaydırıldığı için o kayma da hesaba katılır: .5 - --alt + (.1 - --ust) */
+  h1.h1G:has(> .baslikGK){margin-bottom:max(0px, calc(var(--g3d-baslik-boy) * (.6 - var(--alt, 0) - var(--ust, .1)) - 1.125rem + var(--baslik-alt-pay)))}
   /* 40.3 görselin dolu üstü ile üst çubuğun alt kenarı arasında en az 12 pt (--baslik-ust-pay). --ust: görselin üstteki şeffaf payı;
      başlığın üstünde zaten 1.5rem var (çubuk ile ekranın başı arası), eksik kalan kadar başlık aşağı iner. margin değil padding:
      Takvim / Hesap'ta başlığın margin'i üstteki boşlukla birleşip (collapse) yutuluyordu */
@@ -1556,7 +1558,7 @@
   /* 37.2 "+ Villa ekle" solda, dolu / boş etiketleri aynı satırın sağ ucunda, dikey ortalı. Sığmazsa etiketler alt satıra iner
      ve sola yaslanır (sol kenarı "Villa ekle" ile aynı); hiçbir genişlikte sağda tek başına durmaz */
   .anaBas h1.h1G:has(> .baslikGK){flex:1 1 auto; min-width:0}   /* 37.1: başlık satır genişliğinde kalır (38.2: ortası sayfanın ortası) */
-  .anaBas h1.h1G:has(> .baslikGK){margin-bottom:max(1rem, calc(var(--g3d-baslik-boy) * (.5 - var(--alt, 0)) - 1.125rem + 8px))}
+  .anaBas h1.h1G:has(> .baslikGK){margin-bottom:max(1rem, calc(var(--g3d-baslik-boy) * (.6 - var(--alt, 0) - var(--ust, .1)) - 1.125rem + var(--baslik-alt-pay)))}
   .anaSatir{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.5rem; min-height:3rem}
   .anaSatir > #anaHap{flex:none; margin:0; padding:0; overflow:visible}
   .anaSatir:has(> #anaHap.hide){min-height:0}   /* villa yokken yalnız alt yazı */
@@ -2258,7 +2260,7 @@
     <!-- 32.7: çift satış riski (kapatılamaz; çözülünce kalkar) -->
     <div id="cakismaKartlar" class="hide"></div>
     <!-- 18.15: başlığın sağında dolu / boş etiketleri (dar ekranda alta iner); altında yalnız "+ Villa ekle" -->
-    <div class="anaBas"><h1 class="h1G" style="--ust:.098; --alt:.1"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-villalar-512.webp" srcset="img/3d/baslik-villalar-256.webp 256w, img/3d/baslik-villalar-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Villalarım</span></h1></div>
+    <div class="anaBas"><h1 class="h1G" style="--ust:.098; --alt:.098"><span class="baslikGK"><img class="baslikG" src="img/3d/baslik-villalar-512.webp" srcset="img/3d/baslik-villalar-256.webp 256w, img/3d/baslik-villalar-512.webp 512w" sizes="(max-width:380px) 64px, 88px" alt="" aria-hidden="true" width="256" height="256" loading="lazy" decoding="async" onerror="this.remove()"></span><span>Villalarım</span></h1></div>
     <!-- 37.2: "+ Villa ekle" solda, dolu / boş etiketleri aynı satırın sağ ucunda -->
     <div class="anaSatir"><div class="hapSira hide" id="anaHap" role="toolbar"></div><div class="sm muted" id="ozet"></div></div>
     <!-- 40.4: "Bugün ve yarın" kartı yerine villa arama (4 ve üstü villada) -->

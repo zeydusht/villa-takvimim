@@ -288,7 +288,7 @@ ile işaretlenir (iki kez çarpılmasın).
     Dikeyde de `--ust` − %10 kadar kayar: üç görselin dolu üstü her yazı boyunda aynı yerde. Üç sütun
     (`1fr · yazı · 1fr`): görsel ortalamaya dahil değil, gelip gidince yazı kımıldamaz. Yazı hiç bölünmez, kesilmez: sol sütun
     darsa görsel önce küçülür (en az 48 pt), sonra gizlenir. Alt satırdaki etiketler ve "+ Villa ekle" sola yaslı kalır. Görselin dolu kısmı ile alttaki öğe arasında en az 8 pt (`--alt`: görselin
-    alttaki şeffaf payı; başlığın alt boşluğu buna göre).
+    alttaki şeffaf payı; başlığın alt boşluğu buna göre; `--baslik-alt-pay` 8,5 px; Görev 40.9'dan beri dikey kayma da hesaba katılır).
     Görsel görünür mü kararını JS verir (Görev 38.1, `baslikGorselDurum` → `h1.gorselGizli`): ekranda büyük boş hâl görseli
     gerçekten görünüyorsa ya da görsele 48 pt yer kalmıyorsa gizlenir. CSS `:has()` / container sorgusu kullanılmaz; sonuç
     kaydırmaya bağlı kalmaz. Gizlenip gelmesi `--hiz-ac`.

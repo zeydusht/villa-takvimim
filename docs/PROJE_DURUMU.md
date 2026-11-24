@@ -1,6 +1,6 @@
 # Villa Takvim — Proje Durumu
 
-_Son güncelleme: 23 Kasım 2026_
+_Son güncelleme: 24 Kasım 2026_
 
 ## Ne bu?
 Villa Takvim'in (villatakvim.netlify.app) iPhone/Android uygulaması. App adı: **Villa Takvimim**.
@@ -742,6 +742,12 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       yazı görselin dikey ortasında, boş bölümde çizgi ikon geri gelir · Claude Code (24 Kasım). 39.1–39.6 ayrı commit;
       Netlify'a yüklenmedi. 8 yeni görsel `codex exec` ile (`docs/CODEX_3D_GORSELLER_3.md`). Rapor: `docs/qa/gorev39/README.md`.
       Hesap'taki ayar başlıkları çizgi ikonla kaldı.
+- [x] Görev 40 — Villa sayfası üst kartında büyük kare fotoğraf (dokununca galeri, yoksa "Fotoğraf ekle"), yeni `bolum-teklif`
+      görseli, sekme başlığı görselleri sola yaslı ve aynı yükseklikte, Villalarım'da "Bugün ve yarın" yerine arama (4+ villa;
+      dolu / boş süzgeci), giriş yeşil / çıkış kırmızı, gri alana dokununca pencere kapanır (kaydedilmemiş değişiklik sorulur),
+      yeni Ödemeler ekranı (Alınacak · Alınan · Kalan, ödeme listesi), hizalı tutar satırları · Claude Code (24 Kasım).
+      40.1–40.9 ayrı commit; Netlify'a yüklenmedi. Rapor: `docs/qa/gorev40/README.md`. "Fazla alındı" turuncu yerine lacivert
+      (sıcak renk yasağı). ÖNCE (ürün yöneticisi): `docs/VERITABANI_GOREV40.sql` (giriş bildirimleri) henüz uygulanmadı.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
