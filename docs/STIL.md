@@ -325,6 +325,7 @@ ile işaretlenir (iki kez çarpılmasın).
   - Ad sığmazsa (bir kelime sütuna sığmıyor ya da üç satıra iniyor) fotoğraf 96 pt'ye iner; yine sığmazsa adın yazısı %5'lik
     adımlarla en çok %70'e küçülür. Kelime hiçbir zaman kesilmez; tek kelime %70'te de sığmıyorsa ad kartın tam genişliğine
     çıkar, fotoğraf altına iner (`vbFotoBoy`, JS).
+  - Boş/Dolu etiketi ("Dolu · Ad Soyad") kesilmez: sütun darsa iki satıra iner (köşe 1rem).
 - **Yükleniyor (Görev 31.7):** dönen çark yerine iskelet (gri kutu, yazı yerine yuvarlak çizgiler).
   - Yalnız veri 300 ms'de gelmezse görünür (`--iskelet-gecikme`); göründüyse en az 400 ms kalır (`--iskelet-en-az`, `iskeletBitir`).
   - Üstünde 1,6 sn'lik yavaş, doğrusal parlama dolaşır (`--iskelet-parlama`); "Hareketi azalt"ta sabit.

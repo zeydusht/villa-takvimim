@@ -1400,6 +1400,9 @@
   .vbSol{flex:1 1 auto; min-width:0}
   .vbUst .vRozet{margin-top:.125rem}
   .villaBas .durumEt{margin-top:.875rem}
+  /* 40.1: fotoğraf yanında sütun daraldı; "Dolu · Ad Soyad" kesilmez, gerekirse iki satıra iner */
+  .villaBas .durumEt{border-radius:1rem}
+  .villaBas .durumEt > span{white-space:normal; overflow:visible; overflow-wrap:anywhere}
   /* 40.1 villa kartı: solda ad, konum, Boş/Dolu; sağda büyük kare fotoğraf (dokununca galeri). Fotoğraf yoksa villa-bos görseli +
      "Fotoğraf ekle". Ad sığmazsa (bir kelime kesilecekse ya da üç satıra iniyorsa) fotoğraf 96 pt'ye iner (JS: .vbDar); yine
      sığmazsa adın yazısı adım adım en çok %70'e küçülür (iki satır, kelime bölünmeden) */
@@ -1410,8 +1413,9 @@
   .villaBas.vbTasar .vbUst{display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:.75rem; align-items:center}
   .villaBas.vbTasar .vbSol{display:contents}
   .villaBas.vbTasar .vbAd{grid-column:1 / -1}
-  .villaBas.vbTasar .vbKonum, .villaBas.vbTasar .vbSol > .durumEt{grid-column:1; justify-self:start}
-  .villaBas.vbTasar .vbFoto{grid-column:2; grid-row:2 / span 2; margin-top:.75rem}
+  .villaBas.vbTasar .vbKonum{grid-column:1; justify-self:start}
+  .villaBas.vbTasar .vbSol > .durumEt{grid-column:1 / -1; justify-self:start}
+  .villaBas.vbTasar .vbFoto{grid-column:2; grid-row:2; margin-top:.75rem}
   .villaBas.vbKir .vbAd{overflow-wrap:anywhere}
   .vbFoto{flex:none; width:max(var(--vb-foto-kucuk), var(--vb-foto)); aspect-ratio:1; border-radius:var(--vb-foto-kose); overflow:hidden; padding:0; border:0;
     background:var(--soft) center/cover no-repeat; box-shadow:inset 0 0 0 1px rgba(16,22,19,.08); position:relative;
