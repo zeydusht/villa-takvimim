@@ -609,6 +609,12 @@
     "Yanlış girilen bir ödeme varsa üstteki listeden dokunup düzeltin ya da silin.":"If a payment was entered by mistake, tap it in the list above to fix or delete it.",
     // Görev 41.2: Sıradaki kartı
     "Yerleşti · ödeme tamam":"Checked in · fully paid",
+    // Görev 41.6: yerleştirme / çıkış kaydını düzenle
+    "Yerleştirme":"Check-in", "Yerleştirme saati":"Check-in time", "Çıkış saati":"Check-out time",
+    "Yerleştirmeyi geri al":"Undo check-in", "Çıkışı geri al":"Undo check-out", "Emin misiniz?":"Are you sure?",
+    "Yerleştirme geri alınsın mı? Misafir yerleştirilmemiş görünür.":"Undo the check-in? The guest will show as not checked in.",
+    "Çıkış geri alınsın mı? Misafir içeride görünür.":"Undo the check-out? The guest will show as staying.",
+    "Evet, yerleştirmeyi geri al":"Yes, undo check-in", "Evet, çıkışı geri al":"Yes, undo check-out", "Saati girin.":"Enter a time.",
     "Kayıt ve uyarılarda telefon hafifçe titresin":"Vibrate gently on saves and warnings",
     "Kapak":"Cover", "Kapak yap":"Make cover", "Kapak fotoğrafı":"Cover photo", "Tümünü gör":"See all",
     "Fotoğraf seçin":"Select photos", "Henüz fotoğraf yok.":"No photos yet.",
@@ -1320,6 +1326,8 @@
     [/^(.+) → (.+) · (\d+) gece(?: · (.+))?$/, function (_, a, b, n, t) { return a + " → " + b + " · " + n + " nights" + (t ? " · " + t : ""); }],
     // Görev 17: saate göre durum, yerleştirme, ödeme
     // Görev 41.1 / 41.2: ödeme durumu
+    [/^Yerleştirme saati (\d{1,2}:\d{2}) olarak kaydedildi$/, "Check-in time saved as $1"],
+    [/^Çıkış saati (\d{1,2}:\d{2}) olarak kaydedildi$/, "Check-out time saved as $1"],
     [/^([\d.,]+ ₺) eksik · alınması gerekiyor$/, "$1 short · still to collect"],
     [/^([\d.,]+ ₺) fazla alındı$/, "$1 overpaid"],
     [/^([\d.,]+ ₺) eksik$/, "$1 short"],

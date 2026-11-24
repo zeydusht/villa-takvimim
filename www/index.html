@@ -2107,7 +2107,11 @@
   .akisDurum{display:flex; align-items:center; flex-wrap:wrap; gap:.375rem; margin:1rem 0 .25rem; padding:.75rem 1rem;
     border-radius:var(--kose); background:#E3EFEC; color:var(--ok); font-size:1rem}
   .akisDurum .linkBtn{color:var(--ok); text-decoration:underline; min-height:2.75rem; padding:0 .25rem}
-  .akisAyrac{color:var(--ok)}
+  /* 41.6 "Düzenle" satırın sağ ucunda (sığmazsa alt satırda yine sağda) */
+  .akisDurum .akisYazi{flex:1 1 auto; min-width:0}
+  .akisDurum .akisDuzenle{margin-left:auto; flex:none; min-width:3rem; min-height:3rem; padding:0 .5rem}
+  .saatGir{width:100%; min-height:3rem; padding:.5rem .75rem; font-size:1.0625rem; font-variant-numeric:tabular-nums;
+    border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose); background:#fff}
   .akisKayar{overflow:hidden; margin:0 -.25rem}
   .akisIc{display:flex; width:200%; transition:transform var(--hiz-cubuk) var(--egri-gecis)}
   .akisIc.ikinci{transform:translateX(-50%)}
@@ -8853,18 +8857,19 @@
   function akisBlok(v,r){
     if(!v || !r) return "";
     var s=trSimdi(), tk=s.k;
+    // 41.6: "Yerleştirildi · 11:45" / "Çıktı · 10:05" satırının sağ ucunda "Düzenle" (saati değiştir ya da geri al)
     var durumSat=function(yazi,id){
-      return '<div class="akisDurum">'+ikon("tik-daire",{boy:20})+"<span>"+esc(yazi)+"</span>"+
-        '<span class="akisAyrac">·</span><button class="linkBtn" id="'+id+'">'+esc(cev("geri al"))+"</button></div>";
+      return '<div class="akisDurum">'+ikon("tik-daire",{boy:20})+'<span class="akisYazi">'+esc(yazi)+"</span>"+
+        '<button class="linkBtn akisDuzenle" type="button" id="'+id+'">'+esc(cev("Düzenle"))+"</button></div>";
     };
     // çıkış günü: "Misafir çıktı mı?" → "Evet, çıktı" (sonra depozito iadesi kartı)
     if(r.end===tk && r.start<tk){
-      if(r.cikisOnay) return durumSat(cev("Çıktı")+" · "+trSaat(r.cikisOnay),"ak-cGeri");
+      if(r.cikisOnay) return durumSat(cev("Çıktı")+" · "+trSaat(r.cikisOnay),"ak-cDuzenle");
       return '<div class="akisKart"><div class="akisSoru">'+esc(cev("Misafir çıktı mı?"))+"</div>"+
         '<button class="big" data-ik="cikis" id="ak-cikti">'+esc(cev("Evet, çıktı"))+"</button></div>";
     }
     if(r.end<=tk) return "";
-    if(r.girisOnay) return durumSat(cev("Yerleştirildi")+" · "+trSaat(r.girisOnay),"ak-gGeri");
+    if(r.girisOnay) return durumSat(cev("Yerleştirildi")+" · "+trSaat(r.girisOnay),"ak-gDuzenle");
     // giriş günü ya da villanın sıradaki girişi
     var girisGunu=r.start===tk, sir=siradakiOlay(v);
     if(!girisGunu && !(sir && sir.giris && sir.r.id===r.id)) return "";
@@ -8889,10 +8894,7 @@
     if(el("ak-yerlestir")) el("ak-yerlestir").onclick=function(){
       yerlestir(v,r,0,function(){ detay(r); parlat(".overlay:not(.kapaniyor) .akisDurum"); });
     };
-    if(el("ak-gGeri")) el("ak-gGeri").onclick=function(){
-      onayVer(v,r,"giris",null).then(function(){ bildir(cev("Yerleştirme geri alındı")); },onayHataGoster);
-      ciz(); detay(r);
-    };
+    if(el("ak-gDuzenle")) el("ak-gDuzenle").onclick=function(){ onayDuzenle(v,r,"giris"); };
     if(el("ak-cikti")) el("ak-cikti").onclick=function(){
       onayVer(v,r,"cikis",new Date().toISOString()).then(function(){},onayHataGoster);
       ciz(); tamam(cev(r.guest+" çıktı"));
@@ -8901,10 +8903,59 @@
       var dk=document.querySelector(".overlay:not(.kapaniyor) .depKart");
       if(dk){ try{ dk.scrollIntoView({block:"center",behavior:"smooth"}); }catch(x){} parlat(dk); }
     };
-    if(el("ak-cGeri")) el("ak-cGeri").onclick=function(){
-      onayVer(v,r,"cikis",null).then(function(){ bildir(cev("Çıkış geri alındı")); },onayHataGoster);
-      ciz(); detay(r);
+    if(el("ak-cDuzenle")) el("ak-cDuzenle").onclick=function(){ onayDuzenle(v,r,"cikis"); };
+  }
+  // 41.6: yerleştirme / çıkış kaydını düzenle (detayın üstünde küçük pencere): saati değiştir (örn. 11:45 → 16:20) ya da
+  // "Yerleştirmeyi geri al" / "Çıkışı geri al" (kırmızı; önce "Emin misiniz?"). Tarih aynı kalır (onayın Türkiye saatiyle günü).
+  function onayDuzenle(v,r,tur){
+    var giris=tur==="giris", a=giris?"girisOnay":"cikisOnay";
+    if(!r[a]) return;
+    var gun=new Date(Date.parse(r[a])+3*36e5).toISOString().slice(0,10), saat0=trSaat(r[a]);
+    var o=perde('<div class="head"><h2>'+esc(cev(giris?"Yerleştirme":"Çıkış"))+"</h2>"+kapatBtn()+"</div>"+
+      '<div class="sm muted" style="margin:.5rem 0 1.25rem">'+esc(r.guest)+" · "+esc(kisa(gun))+"</div>"+
+      '<div class="field"><label class="eyebrow" for="od-saat" style="display:block;margin-bottom:.375rem">'+esc(cev(giris?"Yerleştirme saati":"Çıkış saati"))+"</label>"+
+        '<input id="od-saat" class="saatGir" type="time" step="60" value="'+saat0+'"></div>'+
+      '<button class="big" data-ik="tik" id="od-kaydet" type="button">'+esc(cev("Kaydet"))+"</button>"+
+      '<button class="big tehlike" data-ik="geri-al" id="od-geri" type="button" style="margin-top:2rem">'+esc(cev(giris?"Yerleştirmeyi geri al":"Çıkışı geri al"))+"</button>",
+      undefined,{katman:true});
+    formTakip(o);
+    var yenile=function(){ ciz(); if(!document.getElementById("ana").classList.contains("hide")) cizAna(); detay(r); parlat(".overlay:not(.kapaniyor) .akisDurum"); };
+    document.getElementById("od-kaydet").onclick=function(){
+      var s=document.getElementById("od-saat").value;
+      if(!/^\d{1,2}:\d{2}$/.test(s)) return uyari(cev("Saati girin."));
+      if(s===saat0){ kapatOverlay(o); return; }
+      var iso=new Date(Date.parse(gun+"T"+("0"+s).slice(-5)+":00+03:00")).toISOString();
+      o._formIlk=null; kapatOverlay(o,true);
+      onayVer(v,r,tur,iso).then(function(){},onayHataGoster);
+      yenile(); tamam(cev((giris?"Yerleştirme saati ":"Çıkış saati ")+s+" olarak kaydedildi"));
     };
+    document.getElementById("od-geri").onclick=function(){
+      eminSor(cev(giris?"Yerleştirme geri alınsın mı? Misafir yerleştirilmemiş görünür.":"Çıkış geri alınsın mı? Misafir içeride görünür."),
+        cev(giris?"Evet, yerleştirmeyi geri al":"Evet, çıkışı geri al"),function(){
+        o._formIlk=null; kapatOverlay(o,true);
+        onayVer(v,r,tur,null).then(function(){ bildir(cev(giris?"Yerleştirme geri alındı":"Çıkış geri alındı")); },onayHataGoster);
+        yenile();
+      });
+    };
+  }
+  // "Emin misiniz?" (açık pencerenin üstünde ayrı katman; Vazgeç pencereye döner)
+  function eminSor(metin,evetYazi,evet){
+    titret("hata");
+    var o=document.createElement("div");
+    o.className="overlay";
+    o.innerHTML='<div class="sheet"><h2 style="margin:0 0 .5rem"></h2><p style="margin:0 0 1.25rem;font-size:1rem;line-height:1.5"></p>'+
+      '<button class="big tehlike" type="button" id="esEvet"></button>'+
+      '<button class="big ghost" type="button" id="esVaz" style="margin-top:.5rem"></button></div>';
+    o.querySelector("h2").textContent=cev("Emin misiniz?");
+    o.querySelector("p").textContent=metin;
+    o.querySelector("#esEvet").textContent=evetYazi;
+    o.querySelector("#esVaz").textContent=cev("Vazgeç");
+    function kapa(){ o.remove(); kilitDenetle(); }
+    o.querySelector("#esVaz").onclick=kapa;
+    o.querySelector("#esEvet").onclick=function(){ kapa(); evet(); };
+    o.addEventListener("click",function(e){ if(e.target===o) kapa(); });
+    document.body.appendChild(o);
+    panelKademe(o,null);
   }
   // onay ver / geri al (zaman: ISO ya da null). Ekran hemen güncellenir; sunucu reddederse eski hâline döner.
   function onayVer(v,r,tur,zaman){
@@ -14105,12 +14156,16 @@
   function kapatBtn(){
     return '<button class="x" aria-label="'+esc(cev("Kapat"))+'">'+ikon("x",{boy:20,kalinlik:1.75})+'<span class="xYazi">'+esc(cev("Kapat"))+"</span></button>";
   }
-  function perde(html,altKapat){
+  function perde(html,altKapat,secenek){
+    // 41.6: secenek.katman → açık pencerenin üstünde ayrı katman (alttaki kapanmaz; kapanınca alttaki yerinde)
+    var katman=!!(secenek && secenek.katman);
     // Başka panelin yerine açılıyorsa: eskisi hemen kalkar, arka plan kararmış kalır, yenisi aşağıdan kayar
-    var yerine=!!document.querySelector(".overlay:not(.kapaniyor)");
+    var yerine=!katman && !!document.querySelector(".overlay:not(.kapaniyor)");
     var acikL=document.querySelectorAll(".overlay:not(.kapaniyor)"), eskiOzet=yerine?panelOzet(acikL[acikL.length-1]):null;
-    Array.prototype.forEach.call(document.querySelectorAll(".overlay.kapaniyor"),function(x){ x.remove(); });
-    kapat(true);
+    if(!katman){
+      Array.prototype.forEach.call(document.querySelectorAll(".overlay.kapaniyor"),function(x){ x.remove(); });
+      kapat(true);
+    }
     var o=document.createElement("div");
     o.className="overlay"+(yerine?" anlik":"");
     o.innerHTML='<div class="sheet">'+html+"</div>";
@@ -14134,7 +14189,7 @@
     document.body.appendChild(o);
     kilitDenetle();
     var x=o.querySelector(".x");
-    if(x) x.onclick=function(){ x.classList.add("basildi"); setTimeout(function(){ kapat(); },100); };
+    if(x) x.onclick=function(){ x.classList.add("basildi"); setTimeout(function(){ kapatOverlay(o); },100); };
     asagiCekKapat(o,sh);
     panelKademe(o,eskiOzet);
     return o;

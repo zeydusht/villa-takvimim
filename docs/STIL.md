@@ -218,6 +218,11 @@ ile işaretlenir (iki kez çarpılmasın).
   kaydırıcısı en üstte olmayan alanda başlayan hareket sayılmaz. Kaydedilmemiş değişiklik varsa önce sorulur (40.6 sorusu); rehber
   adım gösterirken ve zorunlu pencerede çalışmaz. Hareket azaltılmışsa pencere parmağı izlemez, eşik geçilince anında kapanır.
   Eski "yukarı çekince lastik" kalktı: yukarı hareket içeriği kaydırır.
+- Pencerenin üstünde küçük pencere (Görev 41.6): `perde(html, undefined, {katman:true})` açık pencereyi kapatmadan üstüne açılır;
+  kapanınca alttaki yerinde. Gri alan, aşağı çekme ve kaydedilmemiş değişiklik sorusu aynı. "Emin misiniz?" için `eminSor`.
+- **Yerleştirme / çıkış kaydı (Görev 41.6):** detaydaki "Yerleştirildi · 11:45" / "Çıktı · 10:05" satırında "Geri al" yok; satırın
+  sağ ucunda "Düzenle" (48 pt). Düzenle → küçük pencere: saat (`type=time`; tarih aynı kalır) + Kaydet, altta kırmızı
+  "Yerleştirmeyi geri al" / "Çıkışı geri al" → "Emin misiniz?" (Evet, … geri al / Vazgeç).
 - Hiçbir animasyon sırasında `pointer-events:none` kalmaz. Kapanmakta olan panele dokunulursa kapanış durur, panel olduğu yerden
   çekmece eğrisiyle geri açılır (`geriAc`).
 
