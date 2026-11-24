@@ -31,11 +31,20 @@ Ortak stilin ardına eklenen not (her istekte aynı):
 | `bolum-kanal.png` | Gelir & gider: Satış kanalları | A wooden signpost with three chunky arrow signs pointing in different directions (green, turquoise, terracotta), blank signs, standing on a small tuft of grass. |
 | `bolum-not.png` | Misafir kartı: Misafir notları | A small spiral notebook in mint with a chunky terracotta pencil lying diagonally across it. |
 
+## Görev 40.2 eki
+
+Eski `teklif` görseli (ev + kâğıt uçak) "teklif" ile bağdaşmıyordu. Yerine `bolum-teklif` çizildi; "Teklifler" başlığında, boş hâlinde
+ve teklif sihirbazında kullanılır. Misafir sayfasındaki `misafir-teklif` değişmedi. Aynı ortak stil, aynı ek not.
+
+| Dosya | Nerede | Tarif |
+|---|---|---|
+| `bolum-teklif.png` | Villa sayfası: Teklifler (başlık, boş hâl, teklif sihirbazı) | An open mint-green envelope with a chunky lime-green price tag sliding out of it, the tag showing one big bold white percent sign, and a small desk calendar page standing beside the envelope. Meaning: a date and price offer sent to a guest. |
+
 Var olan görsellerle eşlenen başlıklar (yeni çizim yok):
 
 | Başlık | Görsel |
 |---|---|
 | Yaklaşan rezervasyonlar | `takvim-bos` |
-| Teklifler | `teklif` |
+| Teklifler | `teklif` (Görev 40.2'den beri `bolum-teklif`) |
 | Fotoğraflar | `sh-foto` |
 | Misafir kartı: Konaklamalar | `misafirler-bos` |

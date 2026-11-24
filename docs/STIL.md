@@ -260,7 +260,7 @@ ile işaretlenir (iki kez çarpılmasın).
     | Değişken | Yer | Boyut |
     |---|---|---|
     | `--g3d-baslik` / `--g3d-baslik-kucuk` | Villalarım / Takvim / Hesap başlığı | 88 pt; 380 pt ve altı ekranda, büyük yazıda 64 pt |
-    | `--g3d-bolum` | sayfa / panel başlığının sağı (Misafirler, Gelir & gider, Teklifler paneli) | 56 pt |
+    | `--g3d-bolum` | sayfa / panel başlığının sağı (Misafirler, Gelir & gider, Teklifler paneli); Özel teklif panelinde açıklama cümlesinin sağı (Görev 40.2) | 56 pt |
     | `--vb-foto` / `--vb-foto-kucuk` / `--vb-foto-kose` | villa sayfası üst kartının sağındaki kare fotoğraf (Görev 40.1) | kartın ≈ %38'i (390 pt'de 131 pt), en az 96 pt; ad sığmazsa 96 pt; köşe 16 pt |
     | `--g3d-bolum-bas` / `--g3d-bolum-bas-kucuk` | içerik bölümü başlığının başı (Görev 39) | 56 pt; dar ekranda (380 pt ve altı), büyük yazıda ve yazı 56 pt'de iki satıra iniyorsa 40 pt |
     | `--g3d-kart` | seçim kartları (`.secKart`) | 64 pt |

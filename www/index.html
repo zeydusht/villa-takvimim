@@ -1460,6 +1460,10 @@
   .bolumSatir:has(> .tumuLink:not(.hide)) > .eyebrow{flex-shrink:1}   /* "Tümünü gör" varken yazı yine kırılabilir */
   .bolumSatir > .bolumGorsel ~ *{flex-shrink:0}
   .head > .bolumGorsel{margin-right:0}
+  /* 40.2 Özel teklif: açıklama cümlesi + sağında teklif görseli (--g3d-bolum), dikey ortalı */
+  .tkGiris{display:flex; align-items:center; gap:.75rem; margin:.5rem 0 1rem}
+  .tkGiris > .sm{flex:1 1 auto; min-width:0; line-height:1.5}
+  .tkGiris > img{flex:none; width:var(--g3d-bolum); height:var(--g3d-bolum); object-fit:contain; pointer-events:none}
   h1.h1G > .bolumGorsel{--ara:.5rem; margin-right:0}
   /* 35.3 başlık + 3D görsel aynı satırda, görsel dikey ortalı. Yazı büyüdükçe (kök 17 px'ten büyük) ve dar ekranda 48 pt */
   h1.h1G{display:flex; align-items:center; gap:.5rem}
@@ -2389,7 +2393,7 @@
     </div>
 
     <div class="section hide" id="tkBolum">
-      <div class="bolumSatir"><div class="eyebrow" data-iki="para:rozet-yuzde" data-g3d="teklif">Teklifler</div>
+      <div class="bolumSatir"><div class="eyebrow" data-iki="para:rozet-yuzde" data-g3d="bolum-teklif">Teklifler</div>
         <button class="tumuLink" data-tumu="teklif">Tümünü gör</button></div>
       <div id="tkListe"></div>
     </div>
@@ -6319,8 +6323,9 @@
   });
   // 31.8: boş hâl — ikon, tek cümle, (varsa) kısa açıklama, tek ana düğme
   // 34.7: boş hâllerde ikon yerine 3D görsel (www/img/3d). Görsel yüklenemezse ikon kalır.
+  // 40.2: teklif görseli bolum-teklif (zarf + % etiketi + takvim yaprağı); eski "teklif" (ev + kâğıt uçak) kullanılmıyor
   var BOS_3D={ev:"villa-bos", "takvim-tik":"ajanda-bos", "takvim-x":"arama", kisiler:"misafirler-bos", takvim:"takvim-bos",
-    "rozet-yuzde":"teklif", banknot:"para-bos", fis:"para-bos", "kisi-arti":"bakici", baglanti:"baglanti"};
+    "rozet-yuzde":"bolum-teklif", banknot:"para-bos", fis:"para-bos", "kisi-arti":"bakici", baglanti:"baglanti"};
   // 35.4: liste doluyken başlığın (ilk öğesinin) hemen sağında küçük 3D görsel; boşken kaldırılır (boş hâlin büyük görseli görünür)
   function bolum3d(el,ik,dolu){
     if(!el) return;
@@ -7685,8 +7690,10 @@
     var T={giris:o.giris||"", cikis:o.cikis||"", ad:o.misafir||"", fiyat:o.fiyat||0, fiyatElle:!!o.fiyat, yuzde:0,
            gec:"3", kod:teklifKodu(), mesajElle:false, N:null};
     var $=function(id){ return document.getElementById(id); };
+    // 40.2: açıklama cümlesinin sağında teklif görseli (başlık satırında "Nasıl?" ve "Kapat" var, orada yer yok)
     perde('<div class="head"><h2>'+esc(cev("Özel teklif"))+"</h2>"+kapatBtn()+"</div>"+
-      '<div class="sm muted" style="margin:.5rem 0 1rem;line-height:1.5">'+esc(cev("Misafir bağlantıyı açınca bu tarihler seçili ve size özel fiyatla gelir."))+"</div>"+
+      '<div class="tkGiris"><div class="sm muted">'+esc(cev("Misafir bağlantıyı açınca bu tarihler seçili ve size özel fiyatla gelir."))+"</div>"+
+        '<img src="img/3d/'+BOS_3D["rozet-yuzde"]+'-256.webp" alt="" aria-hidden="true" width="256" height="256" decoding="async" onerror="this.remove()"></div>'+
       '<div class="ikili">'+
         '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Giriş"))+"</div>"+tarihInput("tk-giris",T.giris)+"</div>"+
         '<div class="field"><div class="eyebrow" style="margin-bottom:.375rem">'+esc(cev("Çıkış"))+"</div>"+tarihInput("tk-cikis",T.cikis)+"</div>"+
