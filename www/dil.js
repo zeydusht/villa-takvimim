@@ -598,6 +598,8 @@
     "Bugün dolu villa yok.":"No villa is booked today.", "Bugün boş villa yok.":"No villa is free today.",
     // Görev 40.4: Villalarım arama
     "Villa ara":"Search villas", "Aramayı temizle":"Clear search",
+    // Görev 40.6: gri alana dokununca, kaydedilmemiş değişiklik varsa
+    "Değişiklikler kaydedilmedi. Çıkılsın mı?":"Your changes aren't saved. Leave anyway?",
     "Kayıt ve uyarılarda telefon hafifçe titresin":"Vibrate gently on saves and warnings",
     "Kapak":"Cover", "Kapak yap":"Make cover", "Kapak fotoğrafı":"Cover photo", "Tümünü gör":"See all",
     "Fotoğraf seçin":"Select photos", "Henüz fotoğraf yok.":"No photos yet.",

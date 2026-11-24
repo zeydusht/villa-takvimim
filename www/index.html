@@ -6168,6 +6168,7 @@
       '<input id="v-ad" placeholder="'+esc(cev("Örn. Villa Salta"))+'" autocomplete="off" enterkeyhint="done"></div>'+
       '<div class="sm warn hide" id="v-ad-hata" style="margin:-.5rem 0 1rem">'+esc(cev("Villa adını yazın"))+"</div>"+
       '<button class="big" data-ik="arti" id="v-kaydet">'+esc(cev("Villayı ekle"))+"</button>");
+    formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
     var i=document.getElementById("v-ad"), b=document.getElementById("v-kaydet");
     var adHata=document.getElementById("v-ad-hata");
     i.addEventListener("input",function(){
@@ -7612,6 +7613,7 @@
       '<div class="eyebrow" style="margin:.25rem 0 .5rem">'+esc(cev("Son geçerlilik"))+"</div>"+gecerlilikSec("op-gec")+
       '<div style="margin-top:1rem">'+alan("op-not",esc(cev("Not")),esc(cev("İsteğe bağlı")),"text")+"</div>"+
       '<button class="big" data-ik="saat" id="op-kaydet">'+esc(cev("Opsiyonu kaydet"))+"</button>");
+    formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
     var son=gecerlilikBagla("op-gec","2");
     kanalSecBagla("op-kaynak");
     document.getElementById("op-kaydet").onclick=function(){
@@ -7728,6 +7730,7 @@
       '<div class="sm" id="tk-durum" style="margin:.5rem 0 0;min-height:1.25rem"></div>'+
       '<button class="big" data-ik="mesaj" id="tk-wa">'+esc(cev("WhatsApp'ta gönder"))+"</button>"+
       '<button class="big renkli is-paylas" data-ik="kopyala" id="tk-kopya" style="margin-top:.5rem">'+esc(cev("Teklifi kopyala"))+"</button>");
+    formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
     var fi=$("tk-fiyat"); sayiBicimle(fi);
     function sonTarih(){ return T.gec==="tarih" ? ($("tk-son").value||"") : fmt(addDays(today,+T.gec)); }
     function tarihHatasi(){
@@ -8368,6 +8371,7 @@
       kapora+
       '<div style="margin-top:1rem">'+alan("f-note","Not","İsteğe bağlı","text")+"</div>"+
       '<div class="altSabit"><button class="big" data-ik="tik" id="f-kaydet">Rezervasyonu kaydet</button></div>');
+    formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
 
     var isim=document.getElementById("f-guest"), btn=document.getElementById("f-kaydet");
     var isimHata=document.getElementById("f-guest-hata");
@@ -8824,6 +8828,7 @@
           '<button class="akisKucuk" id="ak-henuz">'+esc(cev("Henüz değil"))+"</button>"+
         "</div>"+
       "</div></div>");
+    formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
     var inp=document.getElementById("ak-tutar"), tm=document.getElementById("ak-tamami"), hata=document.getElementById("ak-hata");
     var btn=document.getElementById("ak-kaydet"), t=0;
     sayiBicimle(inp);
@@ -8919,6 +8924,7 @@
           alan("dz-dep","Hasar depozitosu (₺)","","tel",k.dep?binlik(k.dep):""); })() : "")+
       '<div class="sm warn" id="dz-hata" style="min-height:1.25rem"></div>'+
       '<button class="big" data-ik="tik" id="dz-kaydet">Değişiklikleri kaydet</button>');
+    formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
 
     ["dz-tutar","dz-ek","dz-dep"].forEach(function(id){ var e=document.getElementById(id); if(e) sayiBicimle(e); });
     kanalSecBagla("dz-kaynak");
@@ -8983,6 +8989,7 @@
         }).join("")+"</div>":'<div class="eyebrow" style="margin:2.25rem 0 .25rem">'+esc(cev("Alınan ödemeler"))+"</div>"+
           bosHal("banknot","Henüz ödeme alınmadı.","","Aldığınız tutarı yukarıya yazıp kaydedin."))+
       '<button class="big renkli is-para" data-ik="kalem" id="o-toplam" style="margin-top:1rem">Toplam tutarı düzenle</button>');
+    formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
 
     var oT=document.getElementById("o-tutar");
     sayiBicimle(oT);
@@ -9026,6 +9033,7 @@
         '<button class="big" data-ik="tik" id="os-kaydet">'+esc(cev("Kaydet"))+"</button>"+
         '<button class="big ghost" id="os-vaz" style="margin-top:.5rem">Vazgeç</button>'+
         '<button class="big tehlike" data-ik="cop" id="os-sil" style="margin-top:2rem">Bu ödemeyi sil</button>');
+    formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
       sayiBicimle(document.getElementById("os-tutar"));
       document.getElementById("os-vaz").onclick=function(){ kapat(); odemeSheet(r,{rehbersiz:true}); };
       document.getElementById("os-kaydet").onclick=function(){
@@ -11361,6 +11369,7 @@
         '<div class="sheetfoto" id="h-onizleme">'+((mevcut&&mevcut.foto)?'<span class="mini" style="background-image:url('+mevcut.foto.thumb+')"></span>':"")+"</div>"+
         '<button class="big renkli is-foto" data-ik="kamera" id="h-foto" style="margin-top:0">'+((mevcut&&mevcut.foto)?"Fotoğrafı değiştir":"Fotoğraf ekle")+"</button>")+
       '<button class="big" data-ik="tik" id="h-kaydet"'+""+'>Kaydet</button>');
+    formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
     var tIn=document.getElementById("h-tutar"), adIn=document.getElementById("h-ad");
     sayiBicimle(tIn);
     if(gelirMi && !mevcut) adIn.focus();
@@ -13922,7 +13931,18 @@
     // Tek kapatma yolu: sağ üstteki X. Başlığında X olmayan panellere de eklenir.
     if(altKapat!==false && !sh.querySelector(".x")) sh.insertAdjacentHTML("afterbegin",kapatBtn());
     o.addEventListener("click",function(e){ if(o.classList.contains("kapaniyor")) return; if(e.target.closest("[data-kapat]")) kapat(); });
-    o.addEventListener("click",function(e){ if(o.classList.contains("kapaniyor")) return; if(e.target===o && !o.classList.contains("mfaZorunlu")) kapat(); });
+    // 40.6: gri alana dokununca kapanır ("Kapat" ile aynı, aynı animasyon). Dokunuş gri alanda başlayıp gri alanda bitmeli (panelden
+    // kayıp gri alanda bırakmak kapatmaz). Rehber bir adım gösterirken kapanmaz. Kaydedilmemiş değişikliği olan formda önce sorulur.
+    var griBas=false;
+    o.addEventListener("pointerdown",function(e){ griBas = e.target===o; });
+    o.addEventListener("click",function(e){
+      if(o.classList.contains("kapaniyor") || e.target!==o) return;
+      var bas=griBas; griBas=false;
+      if(!bas || o.classList.contains("mfaZorunlu")) return;
+      if(window.Rehber && Rehber.aktif && Rehber.aktif()) return;
+      if(formDegisti(o)){ cikisSor(o,{metin:"Değişiklikler kaydedilmedi. Çıkılsın mı?", devam:"Devam et"}); return; }
+      kapatOverlay(o);
+    });
     o.addEventListener("pointerdown",function(e){ if(o.classList.contains("kapaniyor") && e.target.closest && e.target.closest(".sheet")) geriAc(o); },true);   // 29.6: zorunlu panel dışa dokununca kapanmaz
     document.body.appendChild(o);
     kilitDenetle();
@@ -14012,8 +14032,37 @@
     kilitDenetle();
     if(!acikP && S.ilkBekle) setTimeout(ilkGoster,hiz("kapa"));
   }).observe(document.body,{childList:true}); }catch(e){}
+  // 40.6: formun açılıştaki değerleri saklanır; kullanıcı bir alanı değiştirdiyse (input / change / seçim düğmesi) ve değerler
+  // açılıştakinden farklıysa formDegisti true. Açılıştan sonra kod ile doldurulan değerler (bir sonraki kare) açılış sayılır.
+  function formDegerleri(o){
+    var sh=o.querySelector(".sheet"); if(!sh) return "";
+    var l=[];
+    Array.prototype.forEach.call(sh.querySelectorAll("input, textarea, select"),function(e){
+      if(e.type==="file") return;
+      l.push(e.id+"="+((e.type==="checkbox"||e.type==="radio") ? e.checked : e.value));
+    });
+    Array.prototype.forEach.call(sh.querySelectorAll(".seg button, [aria-pressed]"),function(e){
+      l.push((e.id||e.textContent.trim().slice(0,20))+":"+(e.classList.contains("on")||e.getAttribute("aria-pressed")==="true"));
+    });
+    return l.join("|");
+  }
+  function formTakip(o){
+    if(!o){ var l=document.querySelectorAll(".overlay:not(.kapaniyor)"); o=l[l.length-1]; }
+    if(!o) return;
+    o._formIlk=formDegerleri(o); o._formDokun=false;
+    requestAnimationFrame(function(){ if(!o._formDokun && o._formIlk!=null) o._formIlk=formDegerleri(o); });
+    var sh=o.querySelector(".sheet");
+    var dokun=function(e){ if(e.isTrusted) o._formDokun=true; };
+    sh.addEventListener("input",dokun,true); sh.addEventListener("change",dokun,true);
+    sh.addEventListener("click",function(e){ if(e.isTrusted && e.target.closest && e.target.closest(".seg button, [aria-pressed]")) o._formDokun=true; },true);
+  }
+  function formDegisti(o){
+    if(o._kapatSor && o._kapatSor()) return true;
+    return o._formIlk!=null && !!o._formDokun && formDegerleri(o)!==o._formIlk;
+  }
   // 33.2: "Yazdıklarınız kaydedilmedi, çıkılsın mı?" (formun üstünde ayrı katman; formu kapatmaz)
-  function cikisSor(fo){
+  function cikisSor(fo,yz){
+    yz=yz||{};
     var sh=fo.querySelector(".sheet"); if(sh) sh.style.transform="";
     titret("hata");
     var o=document.createElement("div");
@@ -14021,12 +14070,12 @@
     o.innerHTML='<div class="sheet"><p style="margin:0 0 1.25rem;font-size:1rem;line-height:1.5"></p>'+
       '<button class="big" type="button" id="csDevam"></button>'+
       '<button class="big ghost" type="button" id="csCik" style="margin-top:.5rem"></button></div>';
-    o.querySelector("p").textContent=cev("Yazdıklarınız kaydedilmedi, çıkılsın mı?");
-    o.querySelector("#csDevam").textContent=cev("Yazmaya devam et");
+    o.querySelector("p").textContent=cev(yz.metin||"Yazdıklarınız kaydedilmedi, çıkılsın mı?");
+    o.querySelector("#csDevam").textContent=cev(yz.devam||"Yazmaya devam et");
     o.querySelector("#csCik").textContent=cev("Çık");
     function kapa(){ o.remove(); kilitDenetle(); }
     o.querySelector("#csDevam").onclick=kapa;
-    o.querySelector("#csCik").onclick=function(){ kapa(); fo._kapatSor=null; kapatOverlay(fo); };
+    o.querySelector("#csCik").onclick=function(){ kapa(); fo._kapatSor=null; fo._formIlk=null; kapatOverlay(fo); };
     o.addEventListener("click",function(e){ if(e.target===o) kapa(); });
     document.body.appendChild(o);
     panelKademe(o,null);

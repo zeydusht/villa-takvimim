@@ -292,6 +292,11 @@ ile işaretlenir (iki kez çarpılmasın).
     kaydırmaya bağlı kalmaz. Gizlenip gelmesi `--hiz-ac`.
     Yer daralırsa önce görsel küçülür, yazı bölünmez; 36 pt'nin altına inince görünmez. Villalarım'da dolu / boş etiketleri "+ Villa ekle" ile aynı satırın sağ ucunda; sığmazsa alt satırda, sola yaslı (Görev 37.2).
     Kaydırınca başlık görseli üst çubuğa girdikçe söner (üst %10'u şeffaf kenar, oraya kadar tam), yarısı girince görünmez.
+- **Alttan açılan pencere, gri alan (Görev 40.6):** arkadaki karartılmış alana dokununca pencere kapanır ("Kapat" ile aynı,
+  aynı animasyon). Dokunuş gri alanda başlayıp gri alanda bitmeli (panelden kayıp gri alanda bırakmak kapatmaz). Rehber bir adım
+  gösterirken kapanmaz. Formlarda (`formTakip`: yeni / düzenlenen rezervasyon, ödeme al / gir / düzenle, gelir-gider, opsiyon,
+  özel teklif, yeni villa) kullanıcı bir alanı değiştirdiyse önce sorulur: "Değişiklikler kaydedilmedi. Çıkılsın mı?" · Çık /
+  Devam et.
 - **Giriş / çıkış renkleri (Görev 40.5):** giriş yeşil (`--giris-renk` #0B5B57, zemin `--giris-zemin`), çıkış kırmızı
   (`--cikis-renk` = uyarı kırmızısı #9B2C4A, zemin `--cikis-zemin`, çerçeve `--cikis-cerceve`). Rezervasyon detayında Giriş satırı
   (ikon, başlık, tarih, saat) yeşil, Çıkış satırı kırmızı; Ajanda'da "Giriş 16:00" / "Çıkış 10:00" etiketleri aynı renkte. Tarih
