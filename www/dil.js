@@ -602,6 +602,8 @@
     "Değişiklikler kaydedilmedi. Çıkılsın mı?":"Your changes aren't saved. Leave anyway?",
     // Görev 40.7: Ödemeler ekranı
     "Yeni ödeme":"New payment", "Ek ödeme ekle":"Add another payment", "Fazla alındı":"Overpaid",
+    // Görev 40.8: Rezervasyonu düzenle tutar tablosu
+    "Tutarlar":"Amounts", "Ek ücret":"Extra fee", "Depozito":"Deposit",
     "Kayıt ve uyarılarda telefon hafifçe titresin":"Vibrate gently on saves and warnings",
     "Kapak":"Cover", "Kapak yap":"Make cover", "Kapak fotoğrafı":"Cover photo", "Tümünü gör":"See all",
     "Fotoğraf seçin":"Select photos", "Henüz fotoğraf yok.":"No photos yet.",

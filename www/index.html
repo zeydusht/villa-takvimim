@@ -100,6 +100,8 @@
     --g3d-bolum-bas:56px;         /* 39.3 içerik bölümü başlığının başındaki görsel (çizgi ikonun yerinde) */
     --g3d-bolum-bas-kucuk:40px;   /* aynı görsel: dar ekranda (380 pt ve altı) ve büyük yazıda */
     --g3d-bolum-bas-boy:max(var(--g3d-bolum-bas-kucuk), calc(var(--g3d-bolum-bas) - (1rem - 17px) * 8));   /* yazı büyüdükçe 56 → 40 */
+    --tutar-satir:3rem;           /* 40.8 tutar satırlarının yüksekliği (ücret kartı, Rezervasyonu düzenle) */
+    --tutar-sutun:10ch;           /* 40.8 tutar sütununda yazı genişliği: 1.250.000 sığar */
     --giris-renk:#0B5B57;         /* 40.5 giriş yeşili (Giriş satırı, "Giriş 16:00" etiketleri, Bugün etiketi zemini) */
     --giris-zemin:#E3EFEC;        /* açık yeşil (Giriş etiketi zemini, "Yarın") */
     --cikis-renk:#9B2C4A;         /* 40.5 çıkış kırmızısı = uyarı kırmızısı (--uyari) */
@@ -618,6 +620,37 @@
   .depDurum{margin-top:1rem; font-size:.9375rem; color:var(--muted)}
   .linkBtn{color:var(--ok); text-decoration:underline; text-underline-offset:2px; min-height:3rem; padding:0 .25rem}
   .ucretKart{border:var(--cerceve-kalinlik) solid var(--line); border-radius:var(--kose); padding:1rem; margin-top:.25rem}
+  /* 40.8 ücret kartı tek ızgara: ad · tutar · Değiştir. Tutarlar aynı sütunda sağa yaslı (tabular-nums, kesilmez, ₺ bitişik);
+     "Değiştir"i olmayan satırın tutarı da aynı sütunda. Bütün satırlar aynı yükseklikte (--tutar-satir). Ad sütuna sığmazsa
+     (JS: .ucDar) adlar kendi satırına çıkar, tutar sütunu yine hizalı */
+  .ucretKart{display:grid; grid-template-columns:minmax(0,1fr) auto auto; column-gap:.5rem; align-items:center}
+  .ucretKart > *{grid-column:1 / -1}
+  .ucretKart > .ucSatir{display:contents}
+  .ucretKart .ucAd{grid-column:1; min-height:var(--tutar-satir); display:flex; align-items:center; overflow-wrap:normal}
+  .ucretKart .ucDeger{grid-column:2; justify-self:end; text-align:right; min-height:var(--tutar-satir); display:flex; align-items:center}
+  .ucretKart .ucSatir .ucAd + .ucDeger{margin-left:0}
+  .ucretKart .ucDegis{grid-column:3}
+  .ucretKart.ucDar .ucAd{grid-column:1 / -1; min-height:0; padding-top:.375rem}
+  .ucretKart.ucDar .ucDeger{min-height:calc(var(--tutar-satir) - .5rem)}
+  .ucretKart.ucIkon .ucDegis.big{font-size:0; width:var(--tutar-satir); padding:0; justify-content:center; gap:0}
+  /* 40.8 Rezervasyonu düzenle: Konaklama ücreti · Ek ücret · Depozito · Toplam. Ad solda; tutar sütunu sağa yaslı, aynı genişlikte,
+     tabular-nums, ₺ sayıya bitişik (&nbsp;₺, alt satıra düşmez); satırlar eşit yükseklikte ve eşit aralıklı */
+  .tutarTablo{border:var(--cerceve-kalinlik) solid var(--line); border-radius:var(--kose); padding:.25rem 1rem; margin:0 0 1rem}
+  .ttSatir{display:flex; align-items:center; gap:.75rem; min-height:calc(var(--tutar-satir) + .75rem); padding:.375rem 0}
+  .ttSatir + .ttSatir{box-shadow:inset 0 1px 0 var(--line)}   /* ayırıcı çizgi satır boyunu değiştirmez */
+  .ttAd{flex:1 1 auto; min-width:0; font-size:1rem; line-height:1.3}
+  .ttDeger{flex:none; display:flex; align-items:center; justify-content:flex-end; white-space:nowrap; font-variant-numeric:tabular-nums}
+  .ttDeger input{width:calc(var(--tutar-sutun) + 1.25rem + 2 * var(--cerceve-kalinlik)); min-height:var(--tutar-satir); padding:.5rem .625rem; text-align:right; font-size:1.0625rem;
+    font-variant-numeric:tabular-nums; border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose); background:#fff}
+  .ttDeger input:focus{border-color:var(--ok); box-shadow:0 0 0 1px var(--ok)}
+  .ttDeger .ttSonuc{display:inline-block; min-width:calc(var(--tutar-sutun) + 1.25rem + 2 * var(--cerceve-kalinlik)); padding:0 calc(.625rem + var(--cerceve-kalinlik)); text-align:right;
+    font-size:1.0625rem; font-weight:500}
+  .ttDeger .ttTl{margin-left:.25rem; color:var(--muted)}
+  .ttToplam .ttAd{font-weight:500}
+  .ttDeger{min-height:var(--tutar-satir)}
+  .tutarTablo.ttDar .ttSatir{flex-wrap:wrap; row-gap:.25rem}
+  .tutarTablo.ttDar .ttAd{flex:1 1 100%}
+  .tutarTablo.ttDar .ttDeger{margin-left:auto}
   .ucBas{display:flex; align-items:center; justify-content:space-between; gap:.75rem}
   .ucTut{font-size:1.125rem; margin-top:.25rem}
   .ucBas .big{width:auto; margin:0; min-height:3rem; padding:.5rem 1rem; flex:none}
@@ -7772,7 +7805,8 @@
       if(N.ek) h+=sat(esc(cev("Kısa konaklama ücreti")),N.ek,true);
       h+='<div class="ucCizgi"></div><div class="ucSatir ucToplam"><span class="ucAd">'+esc(cev("Konaklama ücreti"))+'</span><span class="ucDeger">'+para(N.konaklama)+"</span></div>";
       if(N.dep) h+=sat(esc(cev("Hasar depozitosu")),N.dep,true)+'<div class="sm muted" style="margin-top:.25rem">'+esc(cev(para(N.dep)+" depozito çıkışta iade edilir."))+"</div>";
-      el.innerHTML=h;
+      el.innerHTML=h.replace(/(\d) ₺/g,"$1&nbsp;₺");   // 40.8
+      ucDarAyar(el);
     }
     function karsiCiz(){
       var el=$("tk-karsi"), N=T.N;
@@ -8168,6 +8202,27 @@
     Object.keys(eski).forEach(function(k){ if(eski[k]) v.fiyatlar[k]=eski[k]; else delete v.fiyatlar[k]; });
     kaydet(); fiyatYenile();
   }
+  // 40.8: ücret kartında bir ad (tek kelimesi bile) sütununa sığmıyorsa adlar kendi satırına çıkar (tutarlar yine hizalı)
+  // (ad sütunu tutar + "Değiştir" sütunlarından sonra kalan yer; ad onun sağına, tutarın üstüne taşıyorsa dar)
+  function ucDarAyar(el){
+    if(!el) return; el.classList.remove("ucDar");
+    ikonlariYerlestir(el);   // ikonlar MutationObserver'la sonradan gelir; ölçümden önce yerinde olsun
+    var dar=Array.prototype.some.call(el.querySelectorAll(".ucAd"),function(a){
+      var d=a.nextElementSibling; if(!d || !d.classList.contains("ucDeger")) return false;
+      return a.getBoundingClientRect().right > d.getBoundingClientRect().left - 4 || a.scrollWidth > a.clientWidth + 1; });
+    if(dar) el.classList.add("ucDar");
+    // tutar + "Değiştir" yine sığmıyorsa düğme yalnız kalem ikonu (adı aria-label'da)
+    el.classList.remove("ucIkon");
+    var sag=el.getBoundingClientRect().right-parseFloat(getComputedStyle(el).paddingRight)-parseFloat(getComputedStyle(el).borderRightWidth);
+    if(Array.prototype.some.call(el.querySelectorAll(".ucDegis"),function(b){ return b.getBoundingClientRect().right>sag+1; })) el.classList.add("ucIkon");
+  }
+  // 40.8 Rezervasyonu düzenle tutar tablosu: bir ad (tek kelimesi bile) yanındaki tutara sığmıyorsa bütün adlar üste çıkar,
+  // tutar sütunu altta sağa yaslı kalır (satırlar yine eşit)
+  function ttDarAyar(el){
+    if(!el) return; el.classList.remove("ttDar");
+    var dar=Array.prototype.some.call(el.querySelectorAll(".ttAd"),function(a){ return a.scrollWidth > a.clientWidth + 1; });
+    if(dar) el.classList.add("ttDar");
+  }
   function sayiBicimle(inp){
     inp.addEventListener("input",function(){
       var n=sayi(inp.value); inp.value=n?binlik(n):"";
@@ -8414,7 +8469,7 @@
     var satir=function(anahtar,ad,deger,arti){
       return '<div class="ucSatir"><span class="ucAd">'+ad+"</span>"+
         '<span class="ucDeger">'+(arti?"+":"")+para(deger)+"</span>"+
-        (acik[anahtar]?"":'<button class="big renkli is-para ucDegis" data-ik="kalem" data-ik-boy="16" data-ud="'+anahtar+'">'+esc(cev("Değiştir"))+"</button>")+"</div>"+
+        (acik[anahtar]?"":'<button class="big renkli is-para ucDegis" data-ik="kalem" data-ik-boy="16" data-ud="'+anahtar+'" aria-label="'+esc(cev("Değiştir"))+'">'+esc(cev("Değiştir"))+"</button>")+"</div>"+
         (acik[anahtar]?'<div class="ucAlan"><div class="ucDuzen"><input id="f-u-'+anahtar+'" type="tel" inputmode="numeric" autocomplete="off" value="'+(deger?binlik(deger):"")+'" aria-label="'+esc(ad)+'">'+
           '<button type="button" class="ucTamam" data-ut="'+anahtar+'">'+ikon("tik",{boy:18,kalinlik:2.5})+"<span>"+esc(cev("Tamam"))+"</span></button></div></div>":"");
     };
@@ -8430,7 +8485,8 @@
       }
       html+='<div class="ucCizgi"></div><div class="ucSatir ucBuyuk"><span class="ucAd">'+esc(cev("Misafirden alınacak toplam"))+'</span><span class="ucDeger">'+para(toplamU())+"</span></div>";
       if(U.dep || acik.dep) html+='<div class="sm muted" id="f-depNot" style="margin-top:.25rem">'+esc(cev(para(U.dep)+" depozito çıkışta iade edilir."))+"</div>";
-      el.innerHTML=html;
+      el.innerHTML=html.replace(/(\d) ₺/g,"$1&nbsp;₺");   // 40.8: ₺ sayıya bitişik
+      ucDarAyar(el);
       Array.prototype.forEach.call(el.querySelectorAll("[data-ud]"),function(bt){
         bt.onclick=function(){
           var k=bt.dataset.ud; acik[k]=!acik[k]; kartCiz();
@@ -8463,9 +8519,10 @@
       Array.prototype.forEach.call(s2,function(row){
         var k=(row.querySelector("[data-ud]")||{}).dataset; k=k&&k.ud;
         var dv=row.querySelector(".ucDeger"); if(!dv) return;
-        if(k) dv.textContent=(k!=="geceler"?"+":"")+para(U[k]);
-        else if(row.classList.contains("ucBuyuk")) dv.textContent=para(toplamU());
-        else if(row.classList.contains("ucToplam")) dv.textContent=para(konaklama());
+        var tl=function(x){ return para(x).replace(/ ₺$/,"\u00a0₺"); };   // 40.8
+        if(k) dv.textContent=(k!=="geceler"?"+":"")+tl(U[k]);
+        else if(row.classList.contains("ucBuyuk")) dv.textContent=tl(toplamU());
+        else if(row.classList.contains("ucToplam")) dv.textContent=tl(konaklama());
       });
       var dn=document.getElementById("f-depNot"); if(dn) dn.textContent=cev(para(U.dep)+" depozito çıkışta iade edilir.");
     };
@@ -8932,16 +8989,26 @@
       alan("dz-people","Kaç kişi","2","number",r.people)+
       alan("dz-phone","Telefon","İsteğe bağlı","telefon",r.phone)+
       alan("dz-note","Not","İsteğe bağlı","text",r.note)+
+      // 40.8: tutarlar hizalı tabloda (ad solda, tutar sütunu sağa yaslı, ₺ bitişik), altta canlı Toplam
       (paraGorur()? (function(){ var k=kalemler(v,r);
-        return '<div class="ikili">'+
-          alan("dz-tutar","Geceler toplamı (₺)","","tel",binlik(k.geceler))+
-          alan("dz-ek","Kısa konaklama ücreti (₺)","","tel",k.ek?binlik(k.ek):"")+"</div>"+
-          alan("dz-dep","Hasar depozitosu (₺)","","tel",k.dep?binlik(k.dep):""); })() : "")+
+        var gir=function(id,ad,val){ return '<label class="ttSatir" for="'+id+'"><span class="ttAd">'+esc(cev(ad))+'</span><span class="ttDeger">'+
+          '<input id="'+id+'" type="tel" inputmode="numeric" autocomplete="off" placeholder="0" value="'+val+'"><span class="ttTl">₺</span></span></label>'; };
+        return '<div class="eyebrow" style="margin:.25rem 0 .5rem">'+esc(cev("Tutarlar"))+"</div>"+
+          '<div class="tutarTablo" id="dz-tutarlar">'+
+          gir("dz-tutar","Konaklama ücreti",k.geceler?binlik(k.geceler):"")+
+          gir("dz-ek","Ek ücret",k.ek?binlik(k.ek):"")+
+          gir("dz-dep","Depozito",k.dep?binlik(k.dep):"")+
+          '<div class="ttSatir ttToplam"><span class="ttAd">'+esc(cev("Toplam"))+'</span><span class="ttDeger"><span class="ttSonuc" id="dz-toplam"></span><span class="ttTl">₺</span></span></div>'+
+          "</div>"; })() : "")+
       '<div class="sm warn" id="dz-hata" style="min-height:1.25rem"></div>'+
       '<button class="big" data-ik="tik" id="dz-kaydet">Değişiklikleri kaydet</button>');
     formTakip();   // 40.6: gri alana dokununca kaydedilmemiş değişiklik sorulur
 
     ["dz-tutar","dz-ek","dz-dep"].forEach(function(id){ var e=document.getElementById(id); if(e) sayiBicimle(e); });
+    var dzTop=document.getElementById("dz-toplam");
+    var dzTopYaz=function(){ if(!dzTop) return;
+      dzTop.textContent=binlik(["dz-tutar","dz-ek","dz-dep"].reduce(function(a,id){ return a+sayi(document.getElementById(id).value); },0))||"0"; };
+    if(dzTop){ dzTopYaz(); document.getElementById("dz-tutarlar").addEventListener("input",dzTopYaz); ttDarAyar(document.getElementById("dz-tutarlar")); }
     kanalSecBagla("dz-kaynak");
     document.getElementById("dz-kaydet").onclick=function(){
       var b1=document.getElementById("dz-bas").value;

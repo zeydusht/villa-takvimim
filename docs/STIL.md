@@ -292,6 +292,11 @@ ile işaretlenir (iki kez çarpılmasın).
     kaydırmaya bağlı kalmaz. Gizlenip gelmesi `--hiz-ac`.
     Yer daralırsa önce görsel küçülür, yazı bölünmez; 36 pt'nin altına inince görünmez. Villalarım'da dolu / boş etiketleri "+ Villa ekle" ile aynı satırın sağ ucunda; sığmazsa alt satırda, sola yaslı (Görev 37.2).
     Kaydırınca başlık görseli üst çubuğa girdikçe söner (üst %10'u şeffaf kenar, oraya kadar tam), yarısı girince görünmez.
+- **Tutar satırları (Görev 40.8):** tutar sütunu sağa yaslı, `tabular-nums`, `nowrap`; ₺ sayıya bitişik (`&nbsp;₺`). Satırlar eşit
+  yükseklikte (`--tutar-satir`). Rezervasyonu düzenle: Konaklama ücreti · Ek ücret · Depozito · Toplam tablosu (`.tutarTablo`;
+  giriş kutuları aynı genişlikte, `--tutar-sutun` 1.250.000 sığar; Toplam canlı). Bir ad yanına sığmazsa bütün adlar üste çıkar
+  (`.ttDar`). Yeni rezervasyon / özel teklif ücret kartı tek ızgara (ad · tutar · Değiştir): tutarlar aynı sütunda; ad sığmazsa
+  kendi satırına çıkar (`.ucDar`), tutar + "Değiştir" de sığmazsa düğme yalnız kalem ikonu (`.ucIkon`).
 - **Ödemeler ekranı (Görev 40.7):** ödemeler eklenerek tutulur; ekran bunu anlatır. En üstte üç kutu: Alınacak (siyah) · Alınan
   (yeşil) · Kalan (kırmızı); fazla alındıysa Kalan yerine "Fazla alındı" (lacivert: uygulamada sıcak renk yok, görevdeki "turuncu"
   yerine). Kutular yan yana, tutar kesilmez: sığmazsa alt satıra iner. Altında alınan ödemeler (tarih, tutar, not, sağda ok;
