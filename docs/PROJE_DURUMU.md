@@ -738,6 +738,10 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Gerçek sebep: boş hâlde görsel gizliyken `baslikGuncelle()` yüksekliğini 0 ölçüp görsele kalıcı `opacity:0` yazıyordu;
       ancak kaydırınca siliniyordu (WebKit ve Chromium'da aynı). Artık görselin görünüp görünmeyeceğine JS karar veriyor
       (`baslikGorselDurum` → `h1.gorselGizli`), CSS `:has()` / container sorgusu yok. Testler webkit + chromium.
+- [x] Görev 39 — İçerik bölümü başlıklarında çizgi ikon yerine 3D görsel (villa sayfası, Gelir & gider, misafir kartı);
+      yazı görselin dikey ortasında, boş bölümde çizgi ikon geri gelir · Claude Code (24 Kasım). 39.1–39.6 ayrı commit;
+      Netlify'a yüklenmedi. 8 yeni görsel `codex exec` ile (`docs/CODEX_3D_GORSELLER_3.md`). Rapor: `docs/qa/gorev39/README.md`.
+      Hesap'taki ayar başlıkları çizgi ikonla kaldı.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
