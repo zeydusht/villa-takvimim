@@ -66,7 +66,7 @@ begin
 end $$;
 revoke all on function public.yerlesme_bildir() from public, anon, authenticated;
 
-drop trigger if exists tr_yerlesme_bildir on public.rezervasyonlar;
+-- (tetikleyici yeni; önce silmeye gerek yok)
 create trigger tr_yerlesme_bildir after update of giris_onay on public.rezervasyonlar
   for each row execute function public.yerlesme_bildir();
 
