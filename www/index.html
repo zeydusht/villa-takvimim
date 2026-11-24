@@ -1442,17 +1442,18 @@
   h1.h1G:has(> .baslikGK){gap:0}
   h1.h1G > .baslikGK + span{flex:0 0 auto; white-space:nowrap}
   .baslikGK{--ara:10px; flex:0 1 calc(var(--g3d-baslik-boy) + var(--ara)); min-width:0; display:flex; align-items:center;
-    height:var(--g3d-baslik-boy); margin:calc(var(--g3d-baslik-boy) / -2 + 1.125rem) 0; pointer-events:none;
-    container-type:inline-size; contain-intrinsic-inline-size:calc(var(--g3d-baslik-boy) + var(--ara))}
+    height:var(--g3d-baslik-boy); margin:calc(var(--g3d-baslik-boy) / -2 + 1.125rem) 0; pointer-events:none}
   .baslikG{flex:none; display:block; object-fit:contain; width:var(--g3d-baslik-boy); max-width:calc(100% - var(--ara));
     height:auto; aspect-ratio:1/1; pointer-events:none}
-  @container (max-width:57.9px){ .baslikG{display:none} }
   /* 37.3 ekranda büyük boş hâl görseli varken başlık görseli gizlenir (aynı ekranda iki 3D görsel olmaz); yazı yumuşakça sola kayar.
-     İlk villa eklenince görsel aynı yumuşaklıkla geri gelir */
-  .baslikGK{transition:flex-basis var(--hiz-ac) var(--egri-gecis), opacity var(--hiz-ac) var(--egri-gecis)}
+     İlk villa eklenince görsel aynı yumuşaklıkla geri gelir.
+     38.1: karar JS'te (baslikGorselDurum → h1.gorselGizli; boş hâl yüzündense ayrıca .gorselBos). Eskiden :has(.bosHal…) ve
+     container sorgusuydu; görsel display:none iken baslikGuncelle yüksekliği 0 ölçüp görsele kalıcı opacity:0 yazıyordu */
+  .baslikGK{transition:flex-basis var(--hiz-ac) var(--egri-gecis), opacity var(--hiz-ac) var(--egri-gecis), visibility 0s linear 0s}
   h1.h1G:has(> .baslikGK){transition:margin-bottom var(--hiz-ac) var(--egri-gecis)}
-  .sekmeEkran:has(.bosHal:not(.hide *) .bosGorsel:not(.yok)) .baslikGK{flex-basis:0; opacity:0}
-  .sekmeEkran:has(.bosHal:not(.hide *) .bosGorsel:not(.yok)) h1.h1G:has(> .baslikGK){margin-bottom:.25rem}
+  h1.gorselGizli .baslikGK{flex-basis:0; opacity:0; visibility:hidden;
+    transition:flex-basis var(--hiz-ac) var(--egri-gecis), opacity var(--hiz-ac) var(--egri-gecis), visibility 0s linear var(--hiz-ac)}
+  h1.h1G.gorselBos:has(> .baslikGK), .anaBas h1.h1G.gorselBos:has(> .baslikGK){margin-bottom:.25rem}
   @media (prefers-reduced-motion: reduce){ .baslikGK, h1.h1G:has(> .baslikGK){transition-duration:var(--hiz-azalt)} }
   /* görselin dolu (şeffaf olmayan) kısmı ile alttaki öğe arasında en az 8 pt: --alt görselin alttaki şeffaf payı */
   h1.h1G:has(> .baslikGK){margin-bottom:max(0px, calc(var(--g3d-baslik-boy) * (.5 - var(--alt, 0)) - 1.125rem + 8px))}
@@ -4379,7 +4380,8 @@
     });
     if(S.villalar.some(function(v){ return !(v.id in yer); })) villaSiraYaz();
   }
-  function cizAna(){
+  function cizAna(){ return baslikSonra(cizAnaIc,this,arguments); }   // 38.1
+  function cizAnaIc(){
     if(S.yigin) S.yigin.ana=null;   // 17.5: Villalar sekmesinin kökündeyiz, saklı villa yığını geçersiz
     villaSirala();
     goster("ana");
@@ -4542,7 +4544,7 @@
       if(cekme<ESIK){ if(cekme>0) bitir(); cekme=0; return; }
       cekme=0;
       kur().classList.add("donuyor"); ciz(TUT,true);
-      buluttanYenile().then(function(){ bitir(); bildir("✓ "+cev("Güncel")); },
+      buluttanYenile().then(function(){ bitir(); bildir("✓ "+cev("Güncel")); try{ baslikYenile(); }catch(e){} },
         function(){ bitir(); bildir(cev("Yenilenemedi. İnternetinizi kontrol edin.")); });
     };
     document.addEventListener("touchend",birak,{passive:true});
@@ -4791,7 +4793,9 @@
     // ekranı çağıran kod içeriği hemen ardından çizer; çizimden sonra konumu bir kez daha uygula
     if(hedef) requestAnimationFrame(function(){ if(!document.getElementById(id).classList.contains("hide")) sayfayaKaydir(hedef); });
     kademeli(id);
-    requestAnimationFrame(baslikGuncelle);   // 34.2
+    // 38.1: başka sekmelerin başlığında satır içi opacity / transform kalmasın; yeni sekmede durum bir kare sonra (içerik çizilince)
+    baslikTemizle(document.getElementById(id));
+    requestAnimationFrame(baslikYenile);   // 34.2
   }
 
   // ================= 34.2 KAYARKEN KÜÇÜLEN BAŞLIK =================
@@ -4815,15 +4819,51 @@
     if(!azHareket()){ h.style.opacity=String(1-ilerleme*.85); h.style.transform=ilerleme?"translateY("+(-ilerleme*6)+"px)":""; }
     // 36.4: 3D görsel üst çubuğa girdikçe söner, yarısı çubuğun altına girdiğinde hiç görünmez (yarım kesik kalmaz).
     // Görselin üst %10'u şeffaf kenar: oraya kadar sönmez (sayfa en üstteyken tam görünür)
+    // 38.1: görsel gizliyken (ya da kutusu yokken) dokunma: yükseklik 0 ölçülür, 0'a bölünüp kalıcı opacity:0 yazılırdı
     var g=h.querySelector(".baslikG");
-    if(g){ var gr=g.getBoundingClientRect(), gs=Math.max(0,Math.min(1,(alt-gr.top-gr.height*.1)/(gr.height*.4))); g.style.opacity=gs?String(1-gs):""; }
+    if(g){ var gr=g.getBoundingClientRect();
+      if(h.classList.contains("gorselGizli") || gr.height<1) g.style.opacity="";
+      else { var gs=Math.max(0,Math.min(1,(alt-gr.top-gr.height*.1)/(gr.height*.4))); g.style.opacity=gs?String(1-gs):""; } }
     var metin=h.textContent.trim();
     if(bb.textContent!==metin) bb.textContent=metin;
     bar.classList[r.bottom<=alt+2 ? "add" : "remove"]("baslikli");
   }
   function baslikIste(){ if(!BASLIK.kare) BASLIK.kare=requestAnimationFrame(baslikGuncelle); }
   window.addEventListener("scroll",baslikIste,{passive:true});
-  window.addEventListener("resize",baslikIste);
+  // ================= 38.1 BAŞLIK GÖRSELİ: GÖRÜNÜR MÜ =================
+  // Görünen sekmenin başlık görselinin gizlenip gizlenmeyeceğine JS karar verir (h1.gorselGizli). Gizlenir: ekranda büyük boş hâl
+  // görseli gerçekten görünüyorsa (aynı ekranda iki 3D görsel olmaz) ya da görsele en az 48 pt yer kalmıyorsa. Sonuç kaydırmaya
+  // bağlı değil: sekme değişince, Ajanda filtresi değişince, listeler her çizildiğinde, veri yenilenince, resize'da, yazı boyutu
+  // değişince, yazı tipleri yüklenince çağrılır (hemen ardından baslikGuncelle).
+  var BASLIK_EN_AZ=48;
+  function baslikGorselDurum(){
+    var h=gorunenBaslik(); if(!h) return;
+    var k=h.querySelector(".baslikGK"); if(!k) return;
+    var ekran=h.closest(".sekmeEkran")||h.parentElement, bos=false;
+    Array.prototype.forEach.call(ekran.querySelectorAll(".bosHal .bosGorsel:not(.yok)"),function(e){
+      if(e.offsetParent!==null && e.getClientRects().length) bos=true; });
+    var t=k.nextElementSibling, g=k.querySelector(".baslikG");
+    var ara=parseFloat(getComputedStyle(k).getPropertyValue("--ara"))||10;
+    // görsele kalan yer: başlık genişliği − yazı − ara (görselin şu anki durumundan bağımsız)
+    var yer=h.clientWidth-(t?t.getBoundingClientRect().width:0)-ara;
+    var gizli=bos || !g || yer<BASLIK_EN_AZ;
+    h.classList[gizli?"add":"remove"]("gorselGizli");
+    h.classList[bos?"add":"remove"]("gorselBos");
+    if(gizli && g) g.style.opacity="";
+  }
+  function baslikYenile(){ BASLIK.kare=0; baslikGorselDurum(); baslikGuncelle(); }
+  window.baslikYenile=baslikYenile;   // boş hâl görseli yüklenemeyince (onerror) de çağrılır
+  // haric dışındaki ekranların başlıklarında satır içi değer kalmasın
+  function baslikTemizle(haric){
+    Array.prototype.forEach.call(document.querySelectorAll("h1.h1G"),function(x){
+      if(haric && haric.contains(x)) return;
+      x.style.opacity=""; x.style.transform=""; var g0=x.querySelector(".baslikG"); if(g0) g0.style.opacity=""; });
+  }
+  // bir çizim fonksiyonunu çalıştırır; nasıl biterse bitsin ardından başlık görselinin durumunu yeniler
+  function baslikSonra(f,t,a){ try{ return f.apply(t,a); } finally{ try{ baslikYenile(); }catch(e){} } }
+  var BASLIK_RS=0;
+  window.addEventListener("resize",function(){ if(!BASLIK_RS) BASLIK_RS=requestAnimationFrame(function(){ BASLIK_RS=0; baslikYenile(); }); });
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ try{ baslikYenile(); }catch(e){} });
 
   // ================= 26.3 KADEMELİ GİRİŞ / 26.4 KAYDIRINCA BELİRME =================
   // Ekran (bu oturumda) ilk açıldığında görünen içerik yukarıdan aşağı sırayla gelir: her öğe 10 pt aşağıdan + saydamdan,
@@ -5035,7 +5075,8 @@
   // en üstte kapalı-açılır "Şu an konaklayanlar". Olay olmayan günler gösterilmez.
   var GUN_UZUN={tr:["Pazar","Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi"], en:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]};
   function gunUzun(d){ return GUN_UZUN[(window.DIL&&DIL.ingilizce&&DIL.ingilizce())?"en":"tr"][d.getDay()]; }
-  function cizAjanda(){
+  function cizAjanda(){ return baslikSonra(cizAjandaIc,this,arguments); }   // 38.1
+  function cizAjandaIc(){
     goster("ajanda");
     if(ajUstCiz()) return;
     if(S.yukleniyor){ document.getElementById("ajOzet").textContent=""; document.getElementById("ajandaListe").innerHTML=ajandaIskelet(); return; }
@@ -5455,7 +5496,8 @@
     return '<div class="maVilla'+(x.engel?" soluk":"")+(sec&&on?" secili":"")+'" data-vid="'+esc(v.id)+'">'+kural+ust+
       (btn.length?'<div class="maIslem n'+btn.length+'" style="--n:'+btn.length+'">'+btn.join("")+"</div>":"")+"</div>";
   }
-  function maSonucCiz(){
+  function maSonucCiz(){ return baslikSonra(maSonucCizIc,this,arguments); }   // 38.1
+  function maSonucCizIc(){
     var ic=document.getElementById("maIc"); if(!ic || !MA.bas || !MA.bit) return;
     var bas=MA.bas, bit=MA.bit, gc=maGece(bas,bit), R=maAra(bas,bit,MA.kisi), bos=R.bos.slice();
     if(MA.sira==="fiyat") bos.sort(function(a,b){
@@ -5665,7 +5707,8 @@
   function crmBul(k){ return crmListe().filter(function(g){ return g.anahtar===k; })[0]||null; }
   function crmKezYazi(n){ return n>1 ? cev(n+" kez geldi") : cev("İlk kez"); }
   function crmKanalHaplari(g){ return KANAL_SIRA.filter(function(k){ return g.kanallar[k]; }).map(function(k){ return kanalHap(k); }).join(""); }
-  function cizCrm(){
+  function cizCrm(){ return baslikSonra(cizCrmIc,this,arguments); }   // 38.1
+  function cizCrmIc(){
     var paraVar=S.villalar.some(maParaGor);
     var pb=document.querySelector('#crmSira [data-s="para"]'); if(pb) pb.classList.toggle("hide",!paraVar);
     if(!paraVar && CRM.sira==="para") CRM.sira="son";
@@ -5730,7 +5773,7 @@
   }
   document.getElementById("ajSeg").addEventListener("click",function(e){
     var b=e.target.closest("[data-m]"); if(!b) return;
-    AJ.mod=b.dataset.m; cizAjanda();
+    AJ.mod=b.dataset.m; cizAjanda(); baslikYenile();   // 38.1
   });
 
   document.getElementById("villalar").addEventListener("click",function(e){
@@ -6140,7 +6183,7 @@
   function bosHal(ik,cumle,dugme,alt,ek){
     var g=BOS_3D[ik];
     var gorsel=g ? '<span class="bosGorsel" aria-hidden="true"><img src="img/3d/'+g+'-512.webp" alt="" width="512" height="512" decoding="async" '+
-        'onerror="this.parentNode.classList.add(\'yok\');this.remove()">'+ikon(ik,{boy:48,kalinlik:1.75})+"</span>"
+        'onerror="this.parentNode.classList.add(\'yok\');this.remove();window.baslikYenile&&baslikYenile()">'+ikon(ik,{boy:48,kalinlik:1.75})+"</span>"
       : '<span class="bosIkon" aria-hidden="true">'+ikon(ik,{boy:48,kalinlik:1.75})+"</span>";
     return '<div class="bosHal" role="status">'+gorsel+
       '<div class="bosYazi">'+esc(cev(cumle))+"</div>"+(alt?'<div class="bosAlt">'+esc(cev(alt))+"</div>":"")+(dugme||"")+(ek||"")+"</div>";
@@ -9135,6 +9178,7 @@
     Array.prototype.forEach.call(document.querySelectorAll("#hs-yazi [data-y]"),function(b){
       b.classList[b.dataset.y===y?"add":"remove"]("on"); b.setAttribute("aria-pressed",String(b.dataset.y===y)); });
     try{ kabarcikYerle(); }catch(e){}
+    requestAnimationFrame(function(){ try{ baslikYenile(); }catch(e){} });   // 38.1
   }
   yaziUygula(yaziAl(),false);
   document.getElementById("hs-yazi").addEventListener("click",function(e){

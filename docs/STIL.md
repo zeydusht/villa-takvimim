@@ -273,6 +273,9 @@ ile işaretlenir (iki kez çarpılmasın).
   - Sekme başlıkları (Görev 37.1): önce görsel (sola yaslı), sonra yazı; arada 10 pt, dikey ortalı. Yazı hiç bölünmez: yer yoksa
     görsel önce küçülür (en az 48 pt), sonra gizlenir. Görselin dolu kısmı ile alttaki öğe arasında en az 8 pt (`--alt`: görselin
     alttaki şeffaf payı; başlığın alt boşluğu buna göre).
+    Görsel görünür mü kararını JS verir (Görev 38.1, `baslikGorselDurum` → `h1.gorselGizli`): ekranda büyük boş hâl görseli
+    gerçekten görünüyorsa ya da görsele 48 pt yer kalmıyorsa gizlenir. CSS `:has()` / container sorgusu kullanılmaz; sonuç
+    kaydırmaya bağlı kalmaz. Gizlenip gelmesi `--hiz-ac`.
     Yer daralırsa önce görsel küçülür, yazı bölünmez; 36 pt'nin altına inince görünmez. Villalarım'da dolu / boş etiketleri "+ Villa ekle" ile aynı satırın sağ ucunda; sığmazsa alt satırda, sola yaslı (Görev 37.2).
     Kaydırınca başlık görseli üst çubuğa girdikçe söner (üst %10'u şeffaf kenar, oraya kadar tam), yarısı girince görünmez.
 - **Yükleniyor (Görev 31.7):** dönen çark yerine iskelet (gri kutu, yazı yerine yuvarlak çizgiler).
