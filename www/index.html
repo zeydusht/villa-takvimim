@@ -1555,6 +1555,13 @@
   .g3dSatir.bolumSatir, #fotoBas.g3dSatir{align-items:center}
   .g3dSatir{padding-bottom:max(0px, calc(var(--g3d-bolum-bas-boy) / 2 - .771875rem + 8px))}
   @media (max-width:380px){ :root{--g3d-bolum-bas-boy:var(--g3d-bolum-bas-kucuk)} }
+  /* 39.4 boş bölümde görsel yerine çizgi ikon: gelen solarak gelir (--hiz-ac), satırın alt boşluğu yumuşakça değişir */
+  @keyframes g3dGel{from{opacity:0}}
+  .eyebrow.g3dAcik > .bolumG3, .eyebrow[data-g3d]:not(.g3dAcik) > .ikBas{animation:g3dGel var(--hiz-ac) var(--egri-gecis)}
+  .bolumSatir, #fotoBas, .eyebrow[data-g3d]{transition:padding-bottom var(--hiz-ac) var(--egri-gecis)}
+  @media (prefers-reduced-motion: reduce){
+    .eyebrow.g3dAcik > .bolumG3, .eyebrow[data-g3d]:not(.g3dAcik) > .ikBas{animation-duration:var(--hiz-azalt)}
+    .bolumSatir, #fotoBas, .eyebrow[data-g3d]{transition-duration:var(--hiz-azalt)} }
   .g3dKucuk{--g3d-bolum-bas-boy:var(--g3d-bolum-bas-kucuk)}   /* JS: 56 pt'de yazı iki satıra iniyorsa */
   /* 11.4 rezervasyon satırları: misafir renginde baş harf, giriş/çıkış ikonları, kalan ödeme */
   .harfDaire{flex:none; width:2.25rem; height:2.25rem; border-radius:99px; color:#fff; font-size:.8235rem; letter-spacing:.03em;
@@ -3934,11 +3941,24 @@
     if(window.bolumGorselIste) bolumGorselIste();
   }
   // 39.3: başlıkta 3D görsel mi çizgi ikon mu. Görsel yüklenemezse (.yok) çizgi ikon kalır.
+  // 39.4: bölümde büyük boş hâl görseli (ya da boş hâl çizimi, ör. Fotoğraflar) görünüyorsa başlıkta görsel olmaz, çizgi ikon
+  // geri gelir: aynı resim iki kere görünmez. Karar JS'te (:has() değil); görünürlük yapıdan okunur (bölüm içinde .hide /
+  // display:none ata yok), ekranın kendisi gizliyken de doğru. DOM her değiştiğinde bir sonraki kareden önce yeniden verilir.
   // Satır (.bolumSatir / #fotoBas ya da başlığın kendisi) .g3dSatir alır: dikey ortalama ve alttaki karta boşluk
+  function bolumIcindeGorunur(e,kok){
+    for(var x=e;x && x!==kok;x=x.parentElement){ if(x.classList.contains("hide") || x.style.display==="none" || x.style.visibility==="hidden") return false; }
+    return true;
+  }
+  function bolumBos(el){
+    var kok=el.closest(".section, .sheet, .sekmeEkran") || el.parentElement;
+    var l=kok.querySelectorAll(".bosHal .bosGorsel:not(.yok) img, img.cizim3d");
+    for(var i=0;i<l.length;i++) if(bolumIcindeGorunur(l[i],kok)) return true;
+    return false;
+  }
   function bolumGorselDurum(){
     BOLUM_G3_KARE=0;
     Array.prototype.forEach.call(document.querySelectorAll(".eyebrow[data-g3d]"),function(el){
-      var g=el.querySelector(":scope > .bolumG3"), acik=!!g && !g.classList.contains("yok");
+      var g=el.querySelector(":scope > .bolumG3"), acik=!!g && !g.classList.contains("yok") && !bolumBos(el);
       var u=el.parentElement, satir=(u && (u.classList.contains("bolumSatir") || u.id==="fotoBas")) ? u : el;
       el.classList[acik?"add":"remove"]("g3dAcik");
       satir.classList[acik?"add":"remove"]("g3dSatir");
@@ -3962,6 +3982,7 @@
   window.bolumGorselDurum=bolumGorselDurum; window.bolumGorselIste=bolumGorselIste;
   try{
     new MutationObserver(function(ml){
+      bolumGorselIste();   // 39.4: boş hâl eklenip kaldırılınca başlık hemen doğru hâle geçer
       ml.forEach(function(m){
         for(var i=0;i<m.addedNodes.length;i++) if(m.addedNodes[i].nodeType===1) ikonlariYerlestir(m.addedNodes[i]);
         var t=m.target;
@@ -6622,7 +6643,7 @@
       fe.className="fotoSerit";
     }
     fe.innerHTML=fh;
-    document.getElementById("fotoCizim").classList[fl.length?"add":"remove"]("hide");
+    document.getElementById("fotoCizim").classList[fl.length?"add":"remove"]("hide"); bolumGorselIste();   // 39.4
     document.getElementById("fotoBas").innerHTML='<span class="eyebrow" data-iki="foto:resimler" data-g3d="sh-foto">'+
       (fl.length<4 ? esc(cev("En az 4 fotoğraf ekleyin"))+" · "+fl.length+"/4" : esc(cev("Fotoğraflar"))+" · "+fl.length)+"</span>"+
       (fl.length?'<button class="tumu" id="fotoTumu">'+esc(cev("Tümünü gör"))+"</button>":"");
