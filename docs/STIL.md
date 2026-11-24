@@ -284,7 +284,8 @@ ile işaretlenir (iki kez çarpılmasın).
     üst çubuğun alt kenarı arasında en az 12 pt (`--baslik-ust-pay`; `--ust`: görselin üstteki şeffaf payı, başlık gerekirse
     `padding-top` ile aşağı iner — margin Takvim / Hesap'ta üstteki boşlukla birleşip yutuluyordu). Üç görselin üst / alt şeffaf
     payı aynı (~%10; `baslik-hesap` Görev 40.3'te buna göre yeniden kırpıldı).
-    Hizalanan, görselin dolu sol kenarı: `--sol` (soldaki şeffaf pay, hesapta %12,5) kadar sola kaydırılır (`translate`). Üç sütun
+    Hizalanan, görselin dolu sol kenarı: `--sol` (soldaki şeffaf pay, hesapta %12,5) kadar sola kaydırılır (`translate`).
+    Dikeyde de `--ust` − %10 kadar kayar: üç görselin dolu üstü her yazı boyunda aynı yerde. Üç sütun
     (`1fr · yazı · 1fr`): görsel ortalamaya dahil değil, gelip gidince yazı kımıldamaz. Yazı hiç bölünmez, kesilmez: sol sütun
     darsa görsel önce küçülür (en az 48 pt), sonra gizlenir. Alt satırdaki etiketler ve "+ Villa ekle" sola yaslı kalır. Görselin dolu kısmı ile alttaki öğe arasında en az 8 pt (`--alt`: görselin
     alttaki şeffaf payı; başlığın alt boşluğu buna göre).
@@ -297,7 +298,7 @@ ile işaretlenir (iki kez çarpılmasın).
   yükseklikte (`--tutar-satir`). Rezervasyonu düzenle: Konaklama ücreti · Ek ücret · Depozito · Toplam tablosu (`.tutarTablo`;
   giriş kutuları aynı genişlikte, `--tutar-sutun` 1.250.000 sığar; Toplam canlı). Bir ad yanına sığmazsa bütün adlar üste çıkar
   (`.ttDar`). Yeni rezervasyon / özel teklif ücret kartı tek ızgara (ad · tutar · Değiştir): tutarlar aynı sütunda; ad sığmazsa
-  kendi satırına çıkar (`.ucDar`), tutar + "Değiştir" de sığmazsa düğme yalnız kalem ikonu (`.ucIkon`).
+  kendi satırına çıkar (`.ucDar`: tutar ve düğme iki sütunda), tutar + "Değiştir" de sığmazsa düğme yalnız kalem ikonu, 48 pt (`.ucIkon`).
 - **Ödemeler ekranı (Görev 40.7):** ödemeler eklenerek tutulur; ekran bunu anlatır. En üstte üç kutu: Alınacak (siyah) · Alınan
   (yeşil) · Kalan (kırmızı); fazla alındıysa Kalan yerine "Fazla alındı" (lacivert: uygulamada sıcak renk yok, görevdeki "turuncu"
   yerine). Kutular yan yana, tutar kesilmez: sığmazsa alt satıra iner. Altında alınan ödemeler (tarih, tutar, not, sağda ok;

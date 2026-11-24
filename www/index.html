@@ -630,9 +630,11 @@
   .ucretKart .ucDeger{grid-column:2; justify-self:end; text-align:right; min-height:var(--tutar-satir); display:flex; align-items:center}
   .ucretKart .ucSatir .ucAd + .ucDeger{margin-left:0}
   .ucretKart .ucDegis{grid-column:3}
+  .ucretKart.ucDar{grid-template-columns:minmax(0,1fr) auto}
   .ucretKart.ucDar .ucAd{grid-column:1 / -1; min-height:0; padding-top:.375rem}
-  .ucretKart.ucDar .ucDeger{min-height:calc(var(--tutar-satir) - .5rem)}
-  .ucretKart.ucIkon .ucDegis.big{font-size:0; width:var(--tutar-satir); padding:0; justify-content:center; gap:0}
+  .ucretKart.ucDar .ucDeger{grid-column:1; min-height:calc(var(--tutar-satir) - .5rem)}
+  .ucretKart.ucDar .ucDegis{grid-column:2}
+  .ucretKart.ucIkon .ucDegis.big{font-size:0; width:48px; min-width:48px; padding:0; justify-content:center; gap:0}
   /* 40.8 Rezervasyonu düzenle: Konaklama ücreti · Ek ücret · Depozito · Toplam. Ad solda; tutar sütunu sağa yaslı, aynı genişlikte,
      tabular-nums, ₺ sayıya bitişik (&nbsp;₺, alt satıra düşmez); satırlar eşit yükseklikte ve eşit aralıklı */
   .tutarTablo{border:var(--cerceve-kalinlik) solid var(--line); border-radius:var(--kose); padding:.25rem 1rem; margin:0 0 1rem}
@@ -1525,7 +1527,9 @@
   .baslikGK{--ara:10px; grid-column:1; min-width:0; display:flex; align-items:center; justify-content:flex-start; padding-right:var(--ara);
     height:var(--g3d-baslik-boy); margin:calc(var(--g3d-baslik-boy) / -2 + 1.125rem) 0; pointer-events:none}
   /* 40.3: --sol = görselin soldaki şeffaf payı; dolu kısmın sol kenarı "+ Villa ekle" ile aynı hizada (anahtarlık 12,5% içeride başlıyor) */
-  .baslikG{translate:calc(-100% * var(--sol, 0)) 0}   /* görsel küçülse de payı kadar (kendi genişliğinin yüzdesi) */
+  /* görsel küçülse de payı kadar (kendi boyunun yüzdesi). Dikeyde de üst şeffaf payı farkı (--ust − %10) kadar kayar: üç görselin
+     dolu üstü aynı yerde */
+  .baslikG{translate:calc(-100% * var(--sol, 0)) calc(-100% * (var(--ust, .1) - .1))}
   .baslikG{flex:none; display:block; object-fit:contain; width:var(--g3d-baslik-boy); max-width:100%;
     height:auto; aspect-ratio:1/1; pointer-events:none}
   /* 37.3 ekranda büyük boş hâl görseli varken başlık görseli gizlenir (aynı ekranda iki 3D görsel olmaz). İlk villa eklenince
@@ -1543,7 +1547,7 @@
   /* 40.3 görselin dolu üstü ile üst çubuğun alt kenarı arasında en az 12 pt (--baslik-ust-pay). --ust: görselin üstteki şeffaf payı;
      başlığın üstünde zaten 1.5rem var (çubuk ile ekranın başı arası), eksik kalan kadar başlık aşağı iner. margin değil padding:
      Takvim / Hesap'ta başlığın margin'i üstteki boşlukla birleşip (collapse) yutuluyordu */
-  h1.h1G:has(> .baslikGK){padding-top:max(0px, calc(var(--g3d-baslik-boy) * (.5 - var(--ust, 0)) - 1.125rem + var(--baslik-ust-pay) - 1.5rem))}
+  h1.h1G:has(> .baslikGK){padding-top:max(0px, calc(var(--g3d-baslik-boy) * (.5 - .1) - 1.125rem + var(--baslik-ust-pay) - 1.5rem))}
   @media (max-width:380px){ :root{--g3d-baslik-boy:var(--g3d-baslik-kucuk)} }
   /* 37.2 "+ Villa ekle" solda, dolu / boş etiketleri aynı satırın sağ ucunda, dikey ortalı. Sığmazsa etiketler alt satıra iner
      ve sola yaslanır (sol kenarı "Villa ekle" ile aynı); hiçbir genişlikte sağda tek başına durmaz */
