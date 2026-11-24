@@ -41,7 +41,8 @@ Kullanıcı yaşlı bir villa sahibi. Her karar "daha sade, daha net" yönünde 
 **Rezervasyon renkleri** (`PALET`): #0B5B57, #8C3A5E, #3C4E8C, #7A4B8C, #4F6B22, #5A6B7A, #9B2C4A, #2E6E8E.
 
 **Yasak:**
-- Sarı ve turuncu kullanılmaz.
+- Sarı ve turuncu kullanılmaz. Tek istisna (Görev 41.2, ürün kararı): villa sayfasındaki Sıradaki kartının "misafir henüz gelmedi"
+  hâli açık amber (`--bekliyor-zemin` / `--bekliyor-cerceve` / `--bekliyor-yazi`); kırmızı alarm gibi durmasın, çıkış kırmızısıyla karışmasın.
 - Kontrast her metinde en az WCAG AA olmalı: normal yazı 4,5:1, büyük yazı 3:1. Gri üstüne gri yok.
 
 ## 2. Yazı
@@ -311,6 +312,11 @@ ile işaretlenir (iki kez çarpılmasın).
   alınması gerekiyor" + Yeni ödeme (kalan hazır); fazla → kırmızı uyarı üçgeni "15.000 ₺ fazla alındı" + "Yanlış girilen bir ödeme
   varsa…" açıklaması (tamamı alındı / Ek ödeme ekle / Yeni ödeme yok); hiç → kırmızı "Henüz ödeme alınmadı" + Yeni ödeme (toplam
   hazır). Karar tek yerde: `odemeDurumu(v,r)` (Sıradaki kartı ve Ajanda da bunu kullanır).
+- **Sıradaki kartının rengi (Görev 41.2):** misafir gelmedi → açık amber, "13.000 ₺ alınacak" kırmızı; yerleştirildi + ödeme tam →
+  açık yeşil, "✓ Yerleşti · ödeme tamam"; yerleştirildi + eksik / hiç → açık kırmızı, uyarı ikonu "Yerleşti · 1.000 ₺ eksik"; fazla →
+  açık kırmızı "Yerleşti · 15.000 ₺ fazla alındı"; sıradaki olay çıkış (yerleştirme onayı yok) → nötr gri-yeşil (`--sir-notr-*`;
+  tam yeşilinden ayrılsın diye eski açık yeşil değil). Renk tek başına anlam taşımaz: yazı ve ikon da durumu söyler. Ajanda
+  kartlarının ödeme satırı aynı karar: kalan / fazla kırmızı ("1.000 ₺ eksik", "15.000 ₺ fazla alındı"), tam yeşil "✓ Ödendi".
 - **Alttan açılan pencere, gri alan (Görev 40.6):** arkadaki karartılmış alana dokununca pencere kapanır ("Kapat" ile aynı,
   aynı animasyon). Dokunuş gri alanda başlayıp gri alanda bitmeli (panelden kayıp gri alanda bırakmak kapatmaz). Rehber bir adım
   gösterirken kapanmaz. Formlarda (`formTakip`: yeni / düzenlenen rezervasyon, ödeme al / gir / düzenle, gelir-gider, opsiyon,

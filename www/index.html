@@ -108,7 +108,12 @@
     --cikis-zemin:#FBF1F4;        /* açık kırmızı (Çıkış etiketi zemini, "Yarın") */
     --cikis-cerceve:#C4718A;      /* Çıkış etiketi çerçevesi */
     --baslik-ust-pay:12.5px;      /* 40.3 sekme başlık görselinin dolu üstü ile üst çubuk arasında en az 12 pt (+ yuvarlama payı) */
-    --baslik-alt-pay:8.5px;       /* 36.7 / 40.9 görselin dolu altı ile alttaki öğe arasında en az 8 pt (+ yuvarlama payı) */
+    --baslik-alt-pay:8.5px;
+    --bekliyor-zemin:#FFF4DB;     /* 41.2 Sıradaki kartı "misafir bekleniyor": açık amber (sarı/turuncu yasağının tek istisnası) */
+    --bekliyor-cerceve:#B7791F;   /* amber kenar */
+    --bekliyor-yazi:#6B4500;      /* amber kart üzerindeki "SIRADAKİ" (kontrast ≈ 7.6:1) */
+    --sir-notr-zemin:#F1F5F3;     /* 41.2 Sıradaki olay çıkış: nötr gri-yeşil */
+    --sir-notr-cerceve:#8A9A92;       /* 36.7 / 40.9 görselin dolu altı ile alttaki öğe arasında en az 8 pt (+ yuvarlama payı) */
     --vb-foto:43%;                /* 40.1 villa kartının sağındaki kare fotoğraf: kartın iç genişliğinin %43'ü ≈ kartın %38'i (390 pt'de ≈ 130 pt) */
     --vb-foto-kucuk:96px;         /* aynı fotoğraf: villa adı sığmazsa (dar ekran / büyük yazı) */
     --vb-foto-kose:16px;          /* fotoğrafın köşesi */
@@ -2033,6 +2038,21 @@
     border:2px solid var(--ok); border-radius:var(--kose); color:var(--ink); touch-action:manipulation;
     transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), background-color var(--gecis)}
   .sirKart:active{background:#CFE3DD; transform:scale(var(--basili-olcek))}
+  /* 41.2 durum renkleri: bekliyor (amber) · tam (yeşil) · eksik / fazla (kırmızı) · çıkış (nötr gri-yeşil). :active biraz koyu */
+  .sirKart.bekliyor{background:var(--bekliyor-zemin); border-color:var(--bekliyor-cerceve)}
+  .sirKart.bekliyor:active{background:#FBE7B8}
+  .sirKart.bekliyor .sirBas{color:var(--bekliyor-yazi)}
+  .sirKart.tam{background:var(--giris-zemin); border-color:var(--giris-renk)}
+  .sirKart.eksik{background:var(--cikis-zemin); border-color:var(--cikis-cerceve)}
+  .sirKart.eksik:active{background:#F5DDE4}
+  .sirKart.eksik .sirBas{color:var(--cikis-renk)}
+  .sirKart.notr{background:var(--sir-notr-zemin); border-color:var(--sir-notr-cerceve)}
+  .sirKart.notr:active{background:#E1E8E4}
+  .sirKart.notr .sirBas{color:#3F4843}
+  .sirDurum{display:flex; align-items:center; gap:.5rem; margin-top:.625rem; font-size:1rem; line-height:1.35; overflow-wrap:anywhere}
+  .sirDurum .ik{flex:none}
+  .sirKart.tam .sirDurum{color:var(--giris-renk)}
+  .sirKart.eksik .sirDurum{color:var(--cikis-renk)}
   /* 17.1: "SIRADAKİ" ve hemen yanında zaman etiketi; tarih satırı yok */
   .sirUst{display:flex; align-items:center; justify-content:flex-start; gap:.5rem}
   .sirBas{font-size:.8235rem; letter-spacing:.09em; text-transform:uppercase; color:var(--ok); font-weight:500}
@@ -5359,7 +5379,6 @@
         h+='<div class="ajGunBas">'+(fark===0?'<span class="ajGunVurgu">'+esc(cev("Bugün"))+"</span> · ":(fark===1?'<span class="ajGunVurgu">'+esc(cev("Yarın"))+"</span> · ":""))+
           esc(gunUzun(d)+" "+kisa(o.k))+"</div>";
       }
-      var kalan=o.giris ? kalanTutar(o.v,o.r) : 0;
       // 17.2: bugünkü giriş saati geçtiyse / yerleştirildiyse "Yerleşti", çıkış olduysa "Çıktı"
       var bugunOlay=o.k===an.k;
       var olduAd = !bugunOlay ? "" : (o.giris ? (girdiMi(o.r,an) ? "Yerleşti" : "") : (ciktiMi(o.r,an) ? "Çıktı" : ""));
@@ -5368,8 +5387,14 @@
         ? '<span class="ajEt gri">'+ikon("tik",{boy:14})+esc(cev(olduAd))+(olduSaat?" "+esc(olduSaat):"")+"</span>"
         : '<span class="ajEt '+(o.giris?"giris":"cikis")+'">'+ikon(o.giris?"giris":"cikis",{boy:14})+esc(cev((o.giris?"Giriş ":"Çıkış ")+(o.giris?GIRIS:CIKIS)))+"</span>";
       var depBekler=!o.giris && (!S.bulut || o.v.rol!=="bakici") && !o.r.depIade && kalemler(o.v,o.r).eldeDep>0;
-      var sag = kalan>0 ? '<span class="ajTutar">'+esc(para(kalan))+"</span>"
-        : ((o.giris && odemeTam(o.v,o.r)) ? '<span class="ajOdendi">'+ikon("tik",{boy:14,kalinlik:2.5})+esc(cev("Ödendi"))+"</span>" : "");
+      // 41.2: ödeme satırı Sıradaki kartıyla aynı karar (odemeDurumu): kalan / fazla kırmızı, tam yeşil ✓. Misafir yerleştiyse
+      // (bugün giriş saati geçti ya da yerleştirme onayı var) kalan "eksik" diye yazılır; çıkış kartında da eksik / fazla görünür.
+      var od=odemeDurumu(o.v,o.r), yerlesti = o.giris ? !!olduAd : !!o.r.girisOnay, sag="";
+      if(o.giris || yerlesti){
+        if(od.d==="fazla") sag='<span class="ajTutar">'+esc(cev(para(od.fazla)+" fazla alındı"))+"</span>";
+        else if(od.kalan>0 && (o.giris || od.d!=="yok")) sag='<span class="ajTutar">'+esc(yerlesti ? cev(para(od.kalan)+" eksik") : para(od.kalan))+"</span>";
+        else if(o.giris && od.d==="tam") sag='<span class="ajOdendi">'+ikon("tik",{boy:14,kalinlik:2.5})+esc(cev("Ödendi"))+"</span>";
+      }
       h+='<button class="ajKart" data-ai="'+i+'">'+villaRozet(o.v)+
         '<span class="ajKartIc"><span class="ajVilla">'+esc(o.v.ad||cev("Villa"))+"</span>"+
           '<span class="ajAlt">'+etiket+'<span class="ajMisafir">'+esc(o.r.guest)+(o.r.people?" · "+esc(cev(o.r.people+" kişi")):"")+"</span></span>"+
@@ -6505,17 +6530,37 @@
   }
   // 17.1: üst satırda "SIRADAKİ" + zaman etiketi (Bugün yeşil dolu; Yarın / N gün sonra açık lacivert);
   // altında "16:00 · abc girecek" ve sağda alınacak tutar ya da "Ödeme alındı"
+  // 41.2: kartın rengi durumu söyler (yazı ve ikon da söyler, renk tek başına değil):
+  //   misafir gelmedi (sıradaki giriş)        → açık amber (.bekliyor); "13.000 ₺ alınacak" kırmızı kalır
+  //   yerleştirildi + ödeme tam                → açık yeşil (.tam): "✓ Yerleşti · ödeme tamam"
+  //   yerleştirildi + eksik / hiç / fazla      → açık kırmızı (.eksik): "Yerleşti · 1.000 ₺ eksik" / "… fazla alındı"
+  //   sıradaki olay çıkış (yerleştirme onayı yok ya da tutar bilinmiyor) → nötr gri-yeşil (.notr)
+  // Karar odemeDurumu ile: Ödemeler ekranı ve Ajanda ile aynı.
+  function sirHal(v,o){
+    var od=odemeDurumu(v,o.r);
+    if(o.giris) return {hal:"bekliyor", od:od};
+    if(o.r.girisOnay && od.d!=="yok") return {hal:od.d==="tam"?"tam":"eksik", od:od};
+    return {hal:"notr", od:od};
+  }
   function siradakiHTML(v,o){
     var r=o.r, d=parse(o.k), gf=Math.round((d-parse(trBugun()))/86400000);
     var ne=gf<=0?"Bugün":(gf===1?"Yarın":(gf<7?gf+" gün sonra":kisa(o.k)));
-    var kalan=kalanGorur()?kalanTutar(v,r):0;
-    var sag = kalan>0 ? '<span class="sirKalan">'+esc(cev(para(kalan)+" alınacak"))+"</span>"
-      : ((o.giris && odemeTam(v,r)) ? '<span class="sirAlindi">'+ikon("tik",{boy:16,kalinlik:2.5})+"<span>"+esc(cev("Ödeme alındı"))+"</span></span>" : "");
-    return '<button class="sirKart'+yeniCls(r.id)+'" data-id="'+r.id+'" data-olay="'+(o.giris?"giris":"cikis")+'">'+
+    var sh=sirHal(v,o), od=sh.od, sag="", durum="";
+    if(sh.hal==="bekliyor"){
+      sag = od.d==="fazla" ? '<span class="sirKalan">'+esc(cev(para(od.fazla)+" fazla alındı"))+"</span>"
+        : (od.kalan>0 ? '<span class="sirKalan">'+esc(cev(para(od.kalan)+" alınacak"))+"</span>"
+        : (od.d==="tam" ? '<span class="sirAlindi">'+ikon("tik",{boy:16,kalinlik:2.5})+"<span>"+esc(cev("Ödeme alındı"))+"</span></span>" : ""));
+    } else if(sh.hal==="tam"){
+      durum='<span class="sirDurum">'+ikon("tik-daire",{boy:20})+"<span>"+esc(cev("Yerleşti · ödeme tamam"))+"</span></span>";
+    } else if(sh.hal==="eksik"){
+      durum='<span class="sirDurum">'+ikon("uyari-ucgen",{boy:20})+"<span>"+
+        esc(cev(od.d==="fazla" ? "Yerleşti · "+para(od.fazla)+" fazla alındı" : "Yerleşti · "+para(od.kalan)+" eksik"))+"</span></span>";
+    }
+    return '<button class="sirKart '+sh.hal+yeniCls(r.id)+'" data-id="'+r.id+'" data-olay="'+(o.giris?"giris":"cikis")+'" data-hal="'+sh.hal+'">'+
       '<span class="sirUst"><span class="sirBas">'+esc(cev("Sıradaki"))+'</span><span class="sirNe'+(gf<=0?" bugun":"")+'">'+esc(cev(ne))+"</span></span>"+
       '<span class="sirAlt"><span class="sirAd">'+ikon(o.giris?"giris":"cikis",{boy:20,sinif:o.giris?"gir":"cik"})+
         "<span>"+esc(o.saat)+" · <span>"+esc(r.guest||"—")+"</span> <span>"+esc(cev(o.giris?"girecek":"çıkacak"))+"</span></span></span>"+
-        sag+"</span>"+
+        sag+"</span>"+durum+
       "</button>";
   }
   // 18.5: rezervasyon yoksa da kart aynı yerde: "SIRADAKİ · Henüz rezervasyon yok" + "Nasıl yapılır?" (takvim turu)

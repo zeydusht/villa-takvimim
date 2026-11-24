@@ -607,6 +607,8 @@
     // Görev 41.1: Ödemeler durum satırı
     "Alınması gereken":"Amount due", "Henüz ödeme alınmadı":"No payment received yet",
     "Yanlış girilen bir ödeme varsa üstteki listeden dokunup düzeltin ya da silin.":"If a payment was entered by mistake, tap it in the list above to fix or delete it.",
+    // Görev 41.2: Sıradaki kartı
+    "Yerleşti · ödeme tamam":"Checked in · fully paid",
     "Kayıt ve uyarılarda telefon hafifçe titresin":"Vibrate gently on saves and warnings",
     "Kapak":"Cover", "Kapak yap":"Make cover", "Kapak fotoğrafı":"Cover photo", "Tümünü gör":"See all",
     "Fotoğraf seçin":"Select photos", "Henüz fotoğraf yok.":"No photos yet.",
