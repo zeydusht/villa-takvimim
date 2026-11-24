@@ -116,6 +116,7 @@ Dört tür (`.big`):
   adım işaretleri; erişilebilirlik etiketleri var).
 - **Yardım:** yalnız "?" değil, "? Nasıl?" yazan hap (`rhSoru`). Panelde başlığın altında kendi satırında; dar başlık satırında
   (ekran başlığı yanında) yalnız "?" kalabilir. Erişilebilirlik etiketi "Yardım".
+  Rezervasyon detayında "Nasıl?" yok (Görev 41.3); oradaki rehber (ödeme / depozito / PDF) de kaldırıldı.
 
 - Yalnız `ikon(ad, {boy, kalinlik})` kullanılır: Lucide çizgi ikonları, `class="ik"`.
 - Boyut 16–24, çizgi 1.75–2.

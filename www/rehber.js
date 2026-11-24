@@ -131,9 +131,6 @@
     opsUzat: "Misafir biraz daha düşünecekse süreyi buradan uzatın.",
     teklifCevir: "Misafir kabul edince ‘Rezervasyona çevir’e dokunun; teklif fiyatı forma gelir.",
     teklifTekrar: "Misafire yeniden göndermek için ‘Teklifi tekrar gönder’e dokunun.",
-    rezOdeme: "Misafirden ödeme alınca buradan kaydedin.",
-    rezDepozito: "Depozitoyu iade ettiyseniz buradan işaretleyin.",
-    rezPdf: "Rezervasyon formunu (PDF) misafire göndermek için dokunun.",
     pdfGonder: "Formu misafire göndermek için dokunun.",
     sayfaKaldir: "Sayfayı kapatmak isterseniz en alttaki ‘Villa sayfasını yayından kaldır’a dokunun.",
     // 27.6 müsaitlik arama ("Hangi villam boş?")

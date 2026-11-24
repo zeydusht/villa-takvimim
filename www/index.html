@@ -7423,13 +7423,6 @@
         {hedef:rhTek("#td-cevir"), metin:RM.teklifCevir, bekle:"ileri", istege:true},
         {hedef:rhTek("#td-tekrar"), metin:RM.teklifTekrar, bekle:"ileri", istege:true}
       ]}; },
-    // Rezervasyon ayrıntısı: ödeme, depozito iadesi, PDF form (panel başlığındaki "?")
-    rezDetay:function(){ return {ad:"rezDetay", bastan:true,
-      adimlar:[
-        {hedef:function(){ var b=pq("#ak-odeme"); return b ? (b.closest(".akisKart")||b) : null; }, metin:RM.rezOdeme, bekle:"ileri", istege:true},
-        {hedef:rhTek(".depKart"), metin:RM.rezDepozito, bekle:"ileri", istege:true},
-        {hedef:rhTek("#d-form"), metin:RM.rezPdf, bekle:"ileri", istege:true}
-      ]}; },
     // 18.13 uygulama turu (kurulum bitince bir kez; Hesap → Yardım'dan tekrar)
     tur:function(){ return {ad:"tur", sormaz:true,
       bitince:function(){ rhNabizKaldir(); if(S.secim||S.start||S.rezModu){ S.secim=null; S.start=null; S.rezModu=false; ciz(); } },
@@ -8830,7 +8823,8 @@
         kaydet(); if(aktif()===v) ciz(); bildir("Rezervasyon geri alındı.");
       });
     };
-    rhSoru(REHBER.rezDetay);   // 26.6
+    // 41.3: rezervasyon detayında "Nasıl?" yok (rehber başka ekranlarda aynen duruyor). Bu pencereye bağlı tek rehber (rezDetay)
+    // yalnız bu düğmeden açılıyordu; o da kaldırıldı, kırık adım kalmadı.
   }
 
   // ================= 17.4 ÖDEMEYİ AL + MİSAFİRİ YERLEŞTİR =================
