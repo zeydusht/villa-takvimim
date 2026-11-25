@@ -18,7 +18,8 @@ Kullanıcı yaşlı bir villa sahibi. Her karar "daha sade, daha net" yönünde 
 | Çizgi | `--line` / `--cizgi` | #D9DFDB / #C9D1CC | Ayraç, ince kenar |
 | Açık zemin | `--soft` | #F1F5F3 | Kutu zemini |
 | Basılı zemin / çerçeve | `--basili-zemin` / `--basili-cerceve` | #E3EFEC / #0B5B57 | Dokununca |
-| Şarap kırmızısı | `--uyari` | #9B2C4A | Para: ödenmedi / alınacak; uyarı; tehlikeli işlem |
+| Şarap kırmızısı | `--uyari` | #9B2C4A | Para: **yalnız fazla alınan ödeme** (Görev 43.1); uyarı; tehlikeli işlem |
+| Ödeme amberi | `--od-amber-yazi` / `-zemin` / `-kenar` | #7A5200 / #FFF3D1 / #E3A400 | **Yalnız** ödeme eksik / hiç alınmadı (Görev 43.1; yazı açık amberde 6,3:1, beyazda 6,9:1; kenar rengi yazıda kullanılmaz) |
 | Tehlike çerçevesi | `--tehlike-cerceve` | #C4718A | Kırmızı düğmenin çerçevesi |
 | Mercan kırmızısı | `--bugun` | #E5484D | **Yalnız** takvimde "bugün" çerçevesi |
 | Lacivert | `--lacivert` (+ `-zemin`, `-cerceve`, `-basili`) | #3C4E8C | Para işleri, bilgi rozetleri |
@@ -41,8 +42,8 @@ Kullanıcı yaşlı bir villa sahibi. Her karar "daha sade, daha net" yönünde 
 **Rezervasyon renkleri** (`PALET`): #0B5B57, #8C3A5E, #3C4E8C, #7A4B8C, #4F6B22, #5A6B7A, #9B2C4A, #2E6E8E.
 
 **Yasak:**
-- Sarı ve turuncu kullanılmaz. Tek istisna (Görev 41.2, ürün kararı): villa sayfasındaki Sıradaki kartının "misafir henüz gelmedi"
-  hâli açık amber (`--bekliyor-zemin` / `--bekliyor-cerceve` / `--bekliyor-yazi`); kırmızı alarm gibi durmasın, çıkış kırmızısıyla karışmasın.
+- Sarı ve turuncu kullanılmaz. Tek istisna (Görev 43.1, Zeyd'in kuralı): ödeme eksik ya da hiç alınmadıysa amber
+  (`--od-amber-*`). 41.2'deki "misafir henüz gelmedi" amberi kalktı; Sıradaki kartı artık ödeme durumunun rengini alır.
 - Kontrast her metinde en az WCAG AA olmalı: normal yazı 4,5:1, büyük yazı 3:1. Gri üstüne gri yok.
 
 ## 2. Yazı
@@ -343,7 +344,28 @@ ile işaretlenir (iki kez çarpılmasın).
   alınması gerekiyor" + Yeni ödeme (kalan hazır); fazla → kırmızı uyarı üçgeni "15.000 ₺ fazla alındı" + "Yanlış girilen bir ödeme
   varsa…" açıklaması (tamamı alındı / Ek ödeme ekle / Yeni ödeme yok); hiç → kırmızı "Henüz ödeme alınmadı" + Yeni ödeme (toplam
   hazır). Karar tek yerde: `odemeDurumu(v,r)` (Sıradaki kartı ve Ajanda da bunu kullanır).
-- **Sıradaki kartının rengi (Görev 41.2):** misafir gelmedi → açık amber, "13.000 ₺ alınacak" kırmızı; yerleştirildi + ödeme tam →
+- **Ödeme durumu: tek kural, her yerde aynı renk (Görev 43.1, 41.1 / 41.2'deki kırmızı kalan ve eksiğin yerine).**
+
+  | Durum | Renk | İkon | Yazı |
+  |---|---|---|---|
+  | Tam alındı | yeşil (`--od-tam-*` = giriş yeşili) | ✓ `tik-daire` | "Ödemenin tamamı alındı" |
+  | Eksik alındı | amber (`--od-amber-*`) | ! `unlem-daire` | "5.000 ₺ eksik · 5.000 ₺ alındı" |
+  | Hiç alınmadı | amber | ! `unlem-daire` | "Henüz ödeme alınmadı · 10.000 ₺" |
+  | Fazla alındı | kırmızı (`--od-fazla-*` = uyarı kırmızısı) | ⚠ `uyari-ucgen` | "15.000 ₺ fazla alındı" |
+  | Tutar girilmemiş | nötr gri | – | – |
+
+  - Karar `odemeDurumu(v,r)` (bakıcıda `kalanSunucu`), görünüm `odGor(od)` (sınıf `od-tam` / `od-eksik` / `od-fazla` / `od-yok`,
+    ikon, rozet) ve yazı `odYazi(od)`. Yazı rengi `.odRenk.od-…`; kutu, kart ve düğme zemini aynı `od-…` sınıfıyla.
+  - Uygulandığı yerler: rezervasyon detayının durum satırı (fazlada "Alınan" altında kırmızı "Fazla alındı: 15.000 ₺"), "Ödemeler"
+    yuvarlak düğmesi (zemin + ikon durum renginde, sağ üstte ✓ / ! / ⚠ rozeti, `aria-label` durum yazısıyla), en üstteki
+    "… alınacak" kartı (amber), Ödemeler ekranı (Alınan yeşil, Kalan amber, Fazla kırmızı, durum satırı), Sıradaki kartı, Ajanda
+    tutarları, villa sayfasındaki rezervasyon listesi, Gelir & gider ("Alınacak" kutusu ve listesi, rezervasyon etiketleri),
+    yeni rezervasyondaki "Kalan ödeme".
+  - Renk tek başına anlam taşımaz: ikon ve yazı her yerde var.
+  - Sıradaki kartı: sıradaki olay giriş → ödeme rengi ("16:00 · Ayşe girecek" yazısı kalır); çıkış ve misafir yerleştirildi →
+    ödeme rengi + "Yerleşti · 19:16" satırı; çıkış ve yerleştirme onayı yok (ya da tutar yok) → nötr.
+  - Giriş / çıkış renkleri (Görev 40.5: giriş yeşil, çıkış kırmızı) ödeme değil, tarih işaretidir; değişmedi.
+- **Sıradaki kartının rengi (Görev 41.2, 43.1 ile değişti):** misafir gelmedi → açık amber, "13.000 ₺ alınacak" kırmızı; yerleştirildi + ödeme tam →
   açık yeşil, "✓ Yerleşti · ödeme tamam"; yerleştirildi + eksik / hiç → açık kırmızı, uyarı ikonu "Yerleşti · 1.000 ₺ eksik"; fazla →
   açık kırmızı "Yerleşti · 15.000 ₺ fazla alındı"; sıradaki olay çıkış (yerleştirme onayı yok) → nötr gri-yeşil (`--sir-notr-*`;
   tam yeşilinden ayrılsın diye eski açık yeşil değil). Renk tek başına anlam taşımaz: yazı ve ikon da durumu söyler. Ajanda

@@ -1329,6 +1329,9 @@
     [/^Yerleştirme saati (\d{1,2}:\d{2}) olarak kaydedildi$/, "Check-in time saved as $1"],
     [/^Çıkış saati (\d{1,2}:\d{2}) olarak kaydedildi$/, "Check-out time saved as $1"],
     [/^([\d.,]+ ₺) eksik · alınması gerekiyor$/, "$1 short · still to collect"],
+    // Görev 43.1
+    [/^([\d.,]+ ₺) eksik · ([\d.,]+ ₺) alındı$/, "$1 short · $2 received"],
+    [/^Henüz ödeme alınmadı · ([\d.,]+ ₺)$/, "No payment received yet · $1"],
     [/^([\d.,]+ ₺) fazla alındı$/, "$1 overpaid"],
     [/^([\d.,]+ ₺) eksik$/, "$1 short"],
     [/^Yerleşti · ([\d.,]+ ₺) eksik$/, "Checked in · $1 short"],

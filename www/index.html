@@ -115,9 +115,14 @@
     --cikis-cerceve:#C4718A;      /* Çıkış etiketi çerçevesi */
     --baslik-ust-pay:12.5px;      /* 40.3 sekme başlık görselinin dolu üstü ile üst çubuk arasında en az 12 pt (+ yuvarlama payı) */
     --baslik-alt-pay:8.5px;
-    --bekliyor-zemin:#FFF4DB;     /* 41.2 Sıradaki kartı "misafir bekleniyor": açık amber (sarı/turuncu yasağının tek istisnası) */
-    --bekliyor-cerceve:#B7791F;   /* amber kenar */
-    --bekliyor-yazi:#6B4500;      /* amber kart üzerindeki "SIRADAKİ" (kontrast ≈ 7.6:1) */
+    /* 43.1 ödeme durumu renkleri (tek kural, her yerde aynı): tam yeşil · eksik / hiç alınmadı amber · fazla kırmızı.
+       Amber yalnız ödeme eksik / hiç alınmadı için (sarı / turuncu yasağının tek istisnası). Kırmızı ödemede yalnız fazla. */
+    --od-amber-yazi:#7A5200;      /* koyu amber yazı: açık amber zeminde 6.3:1, beyazda 6.9:1 */
+    --od-amber-zemin:#FFF3D1;     /* açık amber zemin */
+    --od-amber-kenar:#E3A400;     /* amber kenar (yalnız çerçeve ve rozet zemini; yazıda kullanılmaz) */
+    --od-amber-basili:#FBE7A8;    /* amber kart basılıyken */
+    --od-tam-yazi:var(--giris-renk); --od-tam-zemin:var(--giris-zemin); --od-tam-kenar:var(--giris-renk);
+    --od-fazla-yazi:var(--uyari); --od-fazla-zemin:var(--cikis-zemin); --od-fazla-kenar:var(--cikis-cerceve);
     --sir-notr-zemin:#F1F5F3;     /* 41.2 Sıradaki olay çıkış: nötr gri-yeşil */
     --sir-notr-cerceve:#8A9A92;       /* 36.7 / 40.9 görselin dolu altı ile alttaki öğe arasında en az 8 pt (+ yuvarlama payı) */
     --vb-foto:43%;                /* 40.1 villa kartının sağındaki kare fotoğraf: kartın iç genişliğinin %43'ü ≈ kartın %38'i (390 pt'de ≈ 130 pt) */
@@ -624,8 +629,9 @@
   .ucAlan .field > .eyebrow{display:none}
   .hzAlt{display:block; font-size:.8235rem; color:var(--muted)}
   .hazirOdeme .big{flex-direction:column}
-  .alinacakBuyuk{font-size:1.5rem; color:#9B2C4A; margin-bottom:.5rem}
-  .alindiTamam{font-size:1.25rem; color:#0B5B57; margin-bottom:.5rem}
+  .alinacakBuyuk{font-size:1.5rem; margin-bottom:.5rem}
+  .alindiTamam{font-size:1.25rem; margin-bottom:.5rem}
+  .odFazlaSatir{display:flex; align-items:center; gap:.375rem; margin-top:.25rem; font-weight:500}
   .depKart{background:var(--lacivert-zemin); border:2px solid var(--lacivert-cerceve); border-radius:var(--kose); padding:1rem; margin-top:1rem; font-size:1rem}
   .depBtn{display:grid; gap:.5rem; margin-top:.75rem}
   .depBtn .big{margin:0}
@@ -678,17 +684,14 @@
   .odKutu .lab{font-size:.8235rem; line-height:1.3; color:var(--muted)}
   .odKutu .val{font-size:1.125rem; margin-top:.25rem; white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--ink);
     display:flex; align-items:center; gap:.25rem}
-  /* 41.1: Alınan kutusu açık yeşil, Kalan / Fazla alındı açık kırmızı, tam alındıysa Kalan da yeşil (✓). Yazı koyu tonda
-     (kontrast ≥ 4.5:1: #0B5B57 / #E3EFEC ≈ 6.9, #9B2C4A / #FBF1F4 ≈ 7.1) */
-  .odKutu.alinan, .odKutu.kalan.sifir{background:var(--giris-zemin)}
-  .odKutu.alinan .lab, .odKutu.alinan .val, .odKutu.kalan.sifir .lab, .odKutu.kalan.sifir .val{color:var(--giris-renk)}
-  .odKutu.kalan, .odKutu.fazla{background:var(--cikis-zemin)}
-  .odKutu.kalan .lab, .odKutu.kalan .val, .odKutu.fazla .lab, .odKutu.fazla .val{color:var(--cikis-renk)}
+  /* 43.1: Alınan kutusu açık yeşil; Kalan amber (!), Fazla alındı kırmızı (⚠), tam alındıysa Kalan da yeşil (✓). Yazı koyu tonda
+     (kontrast ≥ 4.5:1: #0B5B57 / #E3EFEC ≈ 6.7, #7A5200 / #FFF3D1 ≈ 6.3, #9B2C4A / #FBF1F4 ≈ 6.7) */
+  .odKutu.alinan{background:var(--od-tam-zemin)}
+  .odKutu.alinan .lab, .odKutu.alinan .val{color:var(--od-tam-yazi)}
   .odDurumBlok{margin-top:1.5rem}
   .odDurum{display:flex; align-items:center; gap:.5rem; font-size:1.125rem; line-height:1.35}
   .odDurum .ik{flex:none}
-  .odDurum.tam{color:var(--giris-renk)}
-  .odDurum.kirmizi{color:var(--cikis-renk)}
+  .odDurum.od-yok{color:var(--muted)}
   .odAciklama{margin-top:.375rem; line-height:1.45}
   .odDurumBlok .linkBtn{margin-top:.25rem}
   .odSatir .odTutar{display:block; font-variant-numeric:tabular-nums; white-space:nowrap}
@@ -823,7 +826,7 @@
   .kKutu .kkEt{font-size:.875rem}
   .kKutu .kkAlt{font-size:.8235rem; line-height:1.3}
   .kKutu.yesil{background:#E3EFEC; border-color:#B9D3CE; color:#0B5B57}
-  .kKutu.kirmizi{background:#F7E6EB; border-color:#E2BCC8; color:#9B2C4A}
+  .kKutu.amber{background:var(--od-amber-zemin); border-color:var(--od-amber-kenar); color:var(--od-amber-yazi)}   /* 43.1 alınacak */
   .kKutu.gri{background:#EEF1EF; border-color:#D5DCD8; color:#3F4843}
   .kCumle{font-size:.9375rem; line-height:1.5; color:var(--ink); margin-top:.875rem}
   .kBas{align-items:center; margin-bottom:.5rem}
@@ -1698,8 +1701,8 @@
   .tarihIk{display:inline-flex; align-items:center; gap:.25rem; white-space:nowrap}
   .tarihIk .ik.gir{color:var(--ok)} .tarihIk .ik.cik{color:#8A948F}
   .rkSag{flex:none; display:flex; flex-direction:column; align-items:flex-end; gap:.25rem}
-  .kalanEt{display:inline-flex; align-items:center; gap:.25rem; font-size:.875rem; color:#9B2C4A; white-space:nowrap}
-  .kalanEt .ik{color:var(--lacivert)}
+  .kalanEt{display:inline-flex; align-items:center; gap:.25rem; font-size:.875rem; white-space:nowrap}
+  .kalanEt .ik{flex:none}
   .rezKart{padding-left:.75rem}
   .satirBtn > span.harfDaire{flex:none}
   .satirBtn > .harfDaire + span{flex:1 1 auto; min-width:0; white-space:normal}
@@ -1742,8 +1745,8 @@
   .ajMisafir{font-size:.9375rem; color:var(--muted); min-width:0}
   .ajDepEt{align-self:flex-start; font-size:.8235rem; padding:.0625rem .5rem; border-radius:99px; background:var(--lacivert-zemin); color:var(--lacivert)}
   .ajSag{flex:none; text-align:right}
-  .ajTutar{color:#9B2C4A; font-size:.9375rem; white-space:nowrap}
-  .ajOdendi{display:inline-flex; align-items:center; gap:.25rem; color:var(--ok); font-size:.875rem; white-space:nowrap}
+  .ajTutar{display:inline-flex; align-items:center; gap:.25rem; font-size:.9375rem; white-space:nowrap}
+  .ajTutar .ik{flex:none}
   .ajKonak{display:flex; align-items:center; gap:.75rem; width:100%; min-height:3.5rem; margin-top:1.25rem; padding:.5rem 1rem;
     border-radius:var(--kose); background:#E3EFEC; color:var(--ok); font-size:1.0625rem; text-align:left}
   .ajKonak span:nth-child(2){flex:1}
@@ -1766,8 +1769,6 @@
   .gunEt.cikis.bugun{background:var(--cikis-renk); border-color:var(--cikis-renk); color:#fff}
   .gunEt.cikis.yarin{background:var(--cikis-zemin); border-color:var(--cikis-cerceve); color:var(--cikis-renk)}
   .alinacakBuyuk, .alindiTamam{display:flex; align-items:center; gap:.5rem}
-  .alinacakBuyuk > .ik{color:var(--lacivert)}
-  .alindiTamam > .ik{color:var(--ok)}
   /* 11.7 ay özeti kutuları renkli */
   .okutu.is-rez, .okutu.is-para, .okutu.is-misafir{background:var(--r12)}
   .okutu .lab{display:flex; align-items:center; gap:.3125rem}
@@ -2052,21 +2053,22 @@
     border:2px solid var(--ok); border-radius:var(--kose); color:var(--ink); touch-action:manipulation;
     transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris), background-color var(--gecis)}
   .sirKart:active{background:#CFE3DD; transform:scale(var(--basili-olcek))}
-  /* 41.2 durum renkleri: bekliyor (amber) · tam (yeşil) · eksik / fazla (kırmızı) · çıkış (nötr gri-yeşil). :active biraz koyu */
-  .sirKart.bekliyor{background:var(--bekliyor-zemin); border-color:var(--bekliyor-cerceve)}
-  .sirKart.bekliyor:active{background:#FBE7B8}
-  .sirKart.bekliyor .sirBas{color:var(--bekliyor-yazi)}
-  .sirKart.tam{background:var(--giris-zemin); border-color:var(--giris-renk)}
-  .sirKart.eksik{background:var(--cikis-zemin); border-color:var(--cikis-cerceve)}
-  .sirKart.eksik:active{background:#F5DDE4}
-  .sirKart.eksik .sirBas{color:var(--cikis-renk)}
+  /* 43.1 kartın rengi ödeme durumu (odGor): tam yeşil · eksik / hiç amber · fazla kırmızı · çıkış ya da tutar yok nötr. :active koyu */
+  .sirKart.od-tam{background:var(--od-tam-zemin); border-color:var(--od-tam-kenar)}
+  .sirKart.od-eksik{background:var(--od-amber-zemin); border-color:var(--od-amber-kenar)}
+  .sirKart.od-eksik:active{background:var(--od-amber-basili)}
+  .sirKart.od-eksik .sirBas{color:var(--od-amber-yazi)}
+  .sirKart.od-fazla{background:var(--od-fazla-zemin); border-color:var(--od-fazla-kenar)}
+  .sirKart.od-fazla:active{background:#F5DDE4}
+  .sirKart.od-fazla .sirBas{color:var(--od-fazla-yazi)}
   .sirKart.notr{background:var(--sir-notr-zemin); border-color:var(--sir-notr-cerceve)}
   .sirKart.notr:active{background:#E1E8E4}
   .sirKart.notr .sirBas{color:#3F4843}
   .sirDurum{display:flex; align-items:center; gap:.5rem; margin-top:.625rem; font-size:1rem; line-height:1.35}
   .sirDurum .ik{flex:none}
-  .sirKart.tam .sirDurum{color:var(--giris-renk)}
-  .sirKart.eksik .sirDurum{color:var(--cikis-renk)}
+  .sirYer{display:flex; align-items:center; gap:.375rem; margin-top:.625rem; font-size:1rem; line-height:1.35; color:var(--ink)}
+  .sirYer .ik{flex:none; color:var(--ok)}
+  .sirYer + .sirDurum{margin-top:.375rem}
   /* 17.1: "SIRADAKİ" ve hemen yanında zaman etiketi; tarih satırı yok */
   .sirUst{display:flex; align-items:center; justify-content:flex-start; gap:.5rem}
   .sirBas{font-size:.8235rem; letter-spacing:.09em; text-transform:uppercase; color:var(--ok); font-weight:500}
@@ -2076,8 +2078,8 @@
   .sirAlt{display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-top:.625rem; flex-wrap:wrap}
   .sirAd{display:flex; align-items:center; gap:.5rem; font-size:1.125rem; line-height:1.3; min-width:0}
   .sirAd .ik.gir{color:var(--ok)} .sirAd .ik.cik{color:#8A948F}
-  .sirKalan{font-size:.9375rem; color:#9B2C4A; white-space:nowrap}
-  .sirAlindi{display:inline-flex; align-items:center; gap:.25rem; font-size:.9375rem; color:var(--ok); white-space:nowrap}
+  .sirTutar{display:inline-flex; align-items:center; gap:.3125rem; font-size:.9375rem; line-height:1.3}
+  .sirTutar .ik{flex:none}
   #siradaki:not(:empty){margin:0 0 1.5rem}
   .sirKart.sirBos{background:#fff; border-style:dashed}
   /* 18.22: dokunma alanı en az 48 px */
@@ -2099,7 +2101,8 @@
   .akisKart .big{margin-top:.5rem}
   .akisKart .big:first-of-type{margin-top:0}
   .akisTutar{display:flex; flex-direction:column; align-items:center; text-align:center; margin:.125rem 0 .875rem; line-height:1.25}
-  .akisTutar > span:first-child{font-family:var(--serif); font-size:1.75rem; color:#9B2C4A}
+  .akisTutar > span:first-child{font-family:var(--serif); font-size:1.75rem; display:inline-flex; align-items:center; justify-content:center; gap:.375rem; flex-wrap:wrap}
+  .akisTutar > span:first-child > .ik{flex:none}
   .akisDep{font-size:.9375rem; color:var(--lacivert); margin-top:.25rem}
   .akisSoru{font-family:var(--serif); font-weight:400; font-size:1.375rem; line-height:1.3; text-align:center; margin:.25rem 0 1rem}
   .akisAlindi{display:flex; align-items:center; justify-content:center; gap:.375rem; color:var(--ok); font-size:1rem; margin:0 0 .75rem}
@@ -2317,6 +2320,36 @@
   html[data-yazi] .vbFoto .vbEkle, html[data-yazi] .villaBas.vbDar .vbFoto .vbEkle{font-size:14px}
   /* başlıklar ve kısa etiketler dengeli satırlara bölünür (ortada tek kelimelik kısa satır kalmaz) */
   h1, h2, h3, .kad, .ajVilla, .maKartBas, .maAd, .ozAd, .ucAd, .spBas, .sirBosAlt, .kkAlt, .satirBtn > span, .anahtar > span{text-wrap:balance}
+  /* ===== Görev 43.1: ödeme durumu renkleri (tek kural; odGor) ===== */
+  .odRenk.od-tam{color:var(--od-tam-yazi)}
+  .odRenk.od-eksik{color:var(--od-amber-yazi)}
+  .odRenk.od-fazla{color:var(--od-fazla-yazi)}
+  .odRenk > .ik{flex:none}
+  .alinacakBuyuk.odRenk > .ik, .alindiTamam.odRenk > .ik{color:inherit}
+  .odKutu.od-tam{background:var(--od-tam-zemin)}
+  .odKutu.od-eksik{background:var(--od-amber-zemin); box-shadow:inset 0 0 0 1.5px var(--od-amber-kenar)}
+  .odKutu.od-fazla{background:var(--od-fazla-zemin); box-shadow:inset 0 0 0 1.5px var(--od-fazla-kenar)}
+  .odKutu.od-tam .lab, .odKutu.od-tam .val{color:var(--od-tam-yazi)}
+  .odKutu.od-eksik .lab, .odKutu.od-eksik .val{color:var(--od-amber-yazi)}
+  .odKutu.od-fazla .lab, .odKutu.od-fazla .val{color:var(--od-fazla-yazi)}
+  .akisKart.od-eksik{background:var(--od-amber-zemin); border-color:var(--od-amber-kenar)}
+  .akisKart.od-fazla{background:var(--od-fazla-zemin); border-color:var(--od-fazla-kenar)}
+  .akisKart.od-eksik .akisDep{color:var(--od-amber-yazi)}
+  .durumEt{display:inline-flex; align-items:center; gap:.25rem}
+  .durumEt .ik{flex:none}
+  .durumEt.od-tam{background:var(--od-tam-zemin); color:var(--od-tam-yazi)}
+  .durumEt.od-eksik{background:var(--od-amber-zemin); color:var(--od-amber-yazi)}
+  .durumEt.od-fazla{background:var(--od-fazla-zemin); color:var(--od-fazla-yazi)}
+  /* rezervasyon detayındaki "Ödemeler" yuvarlak düğmesi: zemin ve ikon durumun renginde, sağ üstte küçük rozet */
+  .eylem.od-tam{--r:var(--od-tam-yazi); --r12:var(--od-tam-zemin); --r22:#CFE3DD; --ry:var(--od-tam-yazi); --rz:var(--od-tam-yazi)}
+  .eylem.od-eksik{--r:var(--od-amber-yazi); --r12:var(--od-amber-zemin); --r22:var(--od-amber-basili); --ry:var(--od-amber-yazi); --rz:var(--od-amber-kenar)}
+  .eylem.od-fazla{--r:var(--od-fazla-yazi); --r12:var(--od-fazla-zemin); --r22:#F5DDE4; --ry:var(--od-fazla-yazi); --rz:var(--od-fazla-yazi)}
+  .eylem.od-eksik .eDaire{box-shadow:inset 0 0 0 1.5px var(--od-amber-kenar)}
+  .eylem.od-fazla .eDaire{box-shadow:inset 0 0 0 1.5px var(--od-fazla-kenar)}
+  .eDaire{position:relative}
+  .eRozet{position:absolute; top:-3px; right:-3px; width:22px; height:22px; border-radius:50%; background:var(--rz,var(--r));
+    color:#fff; border:2px solid #fff; display:flex; align-items:center; justify-content:center}
+  .eylem.od-eksik .eRozet{color:var(--od-amber-yazi)}
 </style>
 </head>
 <body>
@@ -2861,7 +2894,7 @@
     </div>
     <div class="kutu3">
       <button class="kKutu yesil" id="kAlindiKutu" data-git="kAlinanBol"><span class="kkIk" data-ik="tik-daire" data-ik-boy="22"></span><span class="kkSayi" id="kGelir">0 ₺</span><span class="kkEt">Alındı</span></button>
-      <button class="kKutu kirmizi" id="kAlinacak" data-git="kAlinacakBol"><span class="kkIk" data-ik="saat" data-ik-boy="22"></span><span class="kkSayi" id="kBekleyen">0 ₺</span><span class="kkEt">Alınacak</span><span class="kkAlt" id="kBekleyenAlt"></span></button>
+      <button class="kKutu amber" id="kAlinacak" data-git="kAlinacakBol"><span class="kkIk" data-ik="unlem-daire" data-ik-boy="22"></span><span class="kkSayi" id="kBekleyen">0 ₺</span><span class="kkEt">Alınacak</span><span class="kkAlt" id="kBekleyenAlt"></span></button>
       <button class="kKutu gri" id="kGiderKutu" data-git="kGiderBol"><span class="kkIk" data-ik="fis" data-ik-boy="22"></span><span class="kkSayi" id="kGider">0 ₺</span><span class="kkEt">Giderler</span></button>
     </div>
     <div class="kCumle" id="kAcik"></div>
@@ -4676,18 +4709,21 @@
   }
 
   function paraOzetHTML(v,r){
-    var k=kalemler(v,r);
+    var k=kalemler(v,r), od=odemeDurumu(v,r), g=odGor(od);
     var sat=function(ad,deger,cls){
       return '<div class="para'+(cls?" "+cls:"")+'"><span class="muted">'+ad+"</span><span>"+deger+"</span></div>"; };
-    var h = k.kalan>0
-      ? '<div class="alinacakBuyuk">'+ikon("cuzdan",{boy:24})+"<span>"+paraSay("kalan:"+r.id,k.kalan,cev(para(k.kalan)+" alınacak"))+"</span></div>"
-      : '<div class="alindiTamam">'+ikon("tik-daire",{boy:22})+"<span>"+esc(cev("Ödemenin tamamı alındı"))+"</span></div>";
+    // 43.1: durum satırı odGor / odYazi ile (fazla ödemede artık "tamamı alındı" yazmaz); tutar girilmemişse satır yok
+    var h = (od.d==="eksik" || od.d==="hic")
+      ? '<div class="alinacakBuyuk odRenk '+g.s+'" id="d-odDurum" data-od="'+od.d+'">'+ikon(g.ik,{boy:24})+"<span>"+paraSay("kalan:"+r.id,k.kalan,odYazi(od))+"</span></div>"
+      : od.d==="yok" ? ""
+      : '<div class="alindiTamam odRenk '+g.s+'" id="d-odDurum" data-od="'+od.d+'">'+ikon(g.ik,{boy:22})+"<span>"+esc(odYazi(od))+"</span></div>";
     h+=sat(esc(cev("Konaklama ücreti")), para(k.konaklama));
     if(k.dep) h+=sat(esc(cev("Hasar depozitosu"))+' <span class="sm">'+esc(cev("(çıkışta iade)"))+"</span>", para(k.dep));
     h+='<div class="para net"><span>'+esc(cev("Toplam"))+"</span><span>"+para(k.toplam)+"</span></div>";
     if(k.odenen){
       var notlar=[]; (r.odemeler||[]).forEach(function(o){ if(o.not && notlar.indexOf(o.not)<0) notlar.push(o.not); });
       h+='<div class="sm" style="margin-top:.5rem">'+esc(cev("Alınan"))+": "+para(k.odenen)+(notlar.length?" ("+esc(notlar.join(", "))+")":"")+"</div>";
+      if(od.d==="fazla") h+='<div class="sm odRenk od-fazla odFazlaSatir" id="d-fazla">'+ikon("uyari-ucgen",{boy:16})+"<span>"+esc(cev("Fazla alındı"))+": "+para(od.fazla)+"</span></div>";
     }
     return h;
   }
@@ -5541,11 +5577,13 @@
       var depBekler=!o.giris && (!S.bulut || o.v.rol!=="bakici") && !o.r.depIade && kalemler(o.v,o.r).eldeDep>0;
       // 41.2: ödeme satırı Sıradaki kartıyla aynı karar (odemeDurumu): kalan / fazla kırmızı, tam yeşil ✓. Misafir yerleştiyse
       // (bugün giriş saati geçti ya da yerleştirme onayı var) kalan "eksik" diye yazılır; çıkış kartında da eksik / fazla görünür.
-      var od=odemeDurumu(o.v,o.r), yerlesti = o.giris ? !!olduAd : !!o.r.girisOnay, sag="";
+      // 43.1: renk ve ikon odGor'dan (eksik / hiç amber !, fazla kırmızı ⚠, tam yeşil ✓)
+      var od=odemeDurumu(o.v,o.r), g=odGor(od), yerlesti = o.giris ? !!olduAd : !!o.r.girisOnay, sag="";
       if(o.giris || yerlesti){
-        if(od.d==="fazla") sag='<span class="ajTutar">'+esc(cev(para(od.fazla)+" fazla alındı"))+"</span>";
-        else if(od.kalan>0 && (o.giris || od.d!=="yok")) sag='<span class="ajTutar">'+esc(yerlesti ? cev(para(od.kalan)+" eksik") : para(od.kalan))+"</span>";
-        else if(o.giris && od.d==="tam") sag='<span class="ajOdendi">'+ikon("tik",{boy:14,kalinlik:2.5})+esc(cev("Ödendi"))+"</span>";
+        var yz = od.d==="fazla" ? cev(para(od.fazla)+" fazla alındı")
+          : (od.kalan>0 && (o.giris || od.d!=="yok")) ? (yerlesti ? cev(para(od.kalan)+" eksik") : para(od.kalan))
+          : (o.giris && od.d==="tam") ? cev("Ödendi") : "";
+        if(yz) sag='<span class="ajTutar odRenk '+g.s+'" data-od="'+od.d+'">'+ikon(g.ik,{boy:16})+"<span>"+esc(yz)+"</span></span>";
       }
       h+='<button class="ajKart" data-ai="'+i+'">'+villaRozet(o.v)+
         '<span class="ajKartIc"><span class="ajVilla">'+esc(o.v.ad||cev("Villa"))+"</span>"+
@@ -6632,9 +6670,12 @@
     return '<span class="tarihIk">'+ikon("giris",{boy:15,sinif:"gir"})+esc(kisa(r.start))+"</span> "+
            '<span class="tarihIk">'+ikon("cikis",{boy:15,sinif:"cik"})+esc(kisa(r.end))+"</span>";
   }
-  function kalanEt(t){ return '<span class="kalanEt">'+ikon("cuzdan",{boy:16})+para(t).replace(/ ₺/g,"&nbsp;₺")+"</span>"; }
+  // 43.1: kalan tutar amber + "!" (eksik / hiç alınmadı); fazla alınan kırmızı + ⚠
+  function kalanEt(t){ return '<span class="kalanEt odRenk od-eksik">'+ikon("unlem-daire",{boy:16})+para(t).replace(/ ₺/g,"&nbsp;₺")+"</span>"; }
+  function fazlaEt(t){ return '<span class="kalanEt odRenk od-fazla">'+ikon("uyari-ucgen",{boy:16})+esc(cev(para(t)+" fazla alındı"))+"</span>"; }
   function rezKartHTML(v,r,yeniOlabilir){
     var kalan=kalanGorur()?kalanTutar(v,r):0;
+    var fazla=paraGorur()?odemeDurumu(v,r).fazla:0;
     var tutarYok=paraGorur() && !(r.tutar>0);
     var gf=Math.round((parse(r.start)-today)/86400000);
     var yakin=(gf>=0 && gf<7) ? (gf===0?"Bugün":(gf===1?"Yarın":gf+" gün sonra")) : "";
@@ -6648,7 +6689,7 @@
         (r.disKontrol==="bekliyor"?'<span class="rkSaat" title="'+esc(cev("Diğer siteler kontrol ediliyor"))+'">'+ikon("saat",{boy:15})+"</span>":"")+'</span><span class="rkAlt">'+tarihler+
       (tutarYok?' <span class="eksikYazi">'+esc(cev("· tutar girilmedi"))+"</span>":"")+
       "</span></span>"+
-      ((yakin||kalan>0)?'<span class="rkSag">'+(yakin?'<span class="yakinEt">'+esc(cev(yakin))+"</span>":"")+(kalan>0?kalanEt(kalan):"")+"</span>":"")+
+      ((yakin||kalan>0||fazla>0)?'<span class="rkSag">'+(yakin?'<span class="yakinEt">'+esc(cev(yakin))+"</span>":"")+(kalan>0?kalanEt(kalan):(fazla>0?fazlaEt(fazla):""))+"</span>":"")+
       "</button>";
   }
   // 12.4: en yakın olay. Başlamamış rezervasyonun olayı giriş, içerideki misafirinki çıkış; aynı gün çıkış (10:00) girişten (16:00) önce
@@ -6675,38 +6716,53 @@
     var d = f>0 ? "fazla" : (k.kalan>0 ? (k.odenen>0?"eksik":"hic") : (k.odenen>0?"tam":"yok"));
     return {d:d, kalan:k.kalan, fazla:f, odenen:k.odenen, toplam:k.toplam};
   }
-  // ödemenin tamamı alındı mı (✓ göstermek için; hiç tutar yokken "alındı" denmez)
-  function odemeTam(v,r){
-    if(S.bulut && v && v.rol==="bakici") return !!r.kalanBilinir && !(r.kalanSunucu>0);
-    var k=kalemler(v,r); return k.kalan<=0 && k.odenen>0;
+  // 43.1: ödeme durumunun görünümü tek yerde (Zeyd'in kuralı). Renk tek başına anlam taşımaz: her yerde ikon ve yazı da var.
+  //   tam   → yeşil, ✓ (tik-daire)   "Ödemenin tamamı alındı"
+  //   eksik → amber, ! (unlem-daire)  "5.000 ₺ eksik · 5.000 ₺ alındı"
+  //   hic   → amber, ! (unlem-daire)  "Henüz ödeme alınmadı · 10.000 ₺"
+  //   fazla → kırmızı, ⚠ (uyari-ucgen) "15.000 ₺ fazla alındı"
+  //   yok   → nötr (tutar girilmemiş)
+  // s: CSS sınıfı (yazı için "odRenk od-…", kart / kutu için yalnız "od-…"), ik: ikon, rz: küçük rozet ikonu
+  var OD_GOR={
+    tam:{s:"od-tam", ik:"tik-daire", rz:"tik"},
+    eksik:{s:"od-eksik", ik:"unlem-daire", rz:"unlem"},
+    hic:{s:"od-eksik", ik:"unlem-daire", rz:"unlem"},
+    fazla:{s:"od-fazla", ik:"uyari-ucgen", rz:"uyari-ucgen"},
+    yok:{s:"od-yok", ik:"cuzdan", rz:""}
+  };
+  function odGor(od){ return OD_GOR[od && od.d]||OD_GOR.yok; }
+  function odYazi(od){
+    if(od.d==="tam") return cev("Ödemenin tamamı alındı");
+    if(od.d==="fazla") return cev(para(od.fazla)+" fazla alındı");
+    if(od.d==="eksik") return od.odenen>0 ? cev(para(od.kalan)+" eksik · "+para(od.odenen)+" alındı") : cev(para(od.kalan)+" eksik");
+    if(od.d==="hic") return cev("Henüz ödeme alınmadı · "+para(od.toplam||od.kalan));
+    return "";
   }
   // 17.1: üst satırda "SIRADAKİ" + zaman etiketi (Bugün yeşil dolu; Yarın / N gün sonra açık lacivert);
   // altında "16:00 · abc girecek" ve sağda alınacak tutar ya da "Ödeme alındı"
-  // 41.2: kartın rengi durumu söyler (yazı ve ikon da söyler, renk tek başına değil):
-  //   misafir gelmedi (sıradaki giriş)        → açık amber (.bekliyor); "13.000 ₺ alınacak" kırmızı kalır
-  //   yerleştirildi + ödeme tam                → açık yeşil (.tam): "✓ Yerleşti · ödeme tamam"
-  //   yerleştirildi + eksik / hiç / fazla      → açık kırmızı (.eksik): "Yerleşti · 1.000 ₺ eksik" / "… fazla alındı"
-  //   sıradaki olay çıkış (yerleştirme onayı yok ya da tutar bilinmiyor) → nötr gri-yeşil (.notr)
-  // Karar odemeDurumu ile: Ödemeler ekranı ve Ajanda ile aynı.
+  // 43.1: kartın rengi ödeme durumunu söyler (odGor; yazı ve ikon da söyler, renk tek başına değil):
+  //   sıradaki olay giriş                      → ödeme durumu: tam yeşil · eksik / hiç amber · fazla kırmızı (tutar yoksa nötr);
+  //                                              yerleşme yazıyla: "16:00 · Ayşe girecek"
+  //   sıradaki olay çıkış, misafir yerleştirildi → ödeme durumu + "Yerleşti · 19:16"
+  //   sıradaki olay çıkış, yerleştirme onayı yok ya da tutar bilinmiyor → nötr gri-yeşil (.notr)
+  // Karar odemeDurumu ile: Ödemeler ekranı, rezervasyon detayı ve Ajanda ile aynı.
   function sirHal(v,o){
-    var od=odemeDurumu(v,o.r);
-    if(o.giris) return {hal:"bekliyor", od:od};
-    if(o.r.girisOnay && od.d!=="yok") return {hal:od.d==="tam"?"tam":"eksik", od:od};
-    return {hal:"notr", od:od};
+    var od=odemeDurumu(v,o.r), g=odGor(od);
+    var renkli = od.d!=="yok" && (o.giris || !!o.r.girisOnay);
+    return {hal:renkli?g.s:"notr", od:od, g:g};
   }
   function siradakiHTML(v,o){
     var r=o.r, d=parse(o.k), gf=Math.round((d-parse(trBugun()))/86400000);
     var ne=gf<=0?"Bugün":(gf===1?"Yarın":(gf<7?gf+" gün sonra":kisa(o.k)));
-    var sh=sirHal(v,o), od=sh.od, sag="", durum="";
-    if(sh.hal==="bekliyor"){
-      sag = od.d==="fazla" ? '<span class="sirKalan">'+esc(cev(para(od.fazla)+" fazla alındı"))+"</span>"
-        : (od.kalan>0 ? '<span class="sirKalan">'+esc(cev(para(od.kalan)+" alınacak"))+"</span>"
-        : (od.d==="tam" ? '<span class="sirAlindi">'+ikon("tik",{boy:16,kalinlik:2.5})+"<span>"+esc(cev("Ödeme alındı"))+"</span></span>" : ""));
-    } else if(sh.hal==="tam"){
-      durum='<span class="sirDurum">'+ikon("tik-daire",{boy:20})+"<span>"+esc(cev("Yerleşti · ödeme tamam"))+"</span></span>";
-    } else if(sh.hal==="eksik"){
-      durum='<span class="sirDurum">'+ikon("uyari-ucgen",{boy:20})+"<span>"+
-        esc(cev(od.d==="fazla" ? "Yerleşti · "+para(od.fazla)+" fazla alındı" : "Yerleşti · "+para(od.kalan)+" eksik"))+"</span></span>";
+    var sh=sirHal(v,o), od=sh.od, g=sh.g, sag="", durum="";
+    if(sh.hal!=="notr"){
+      if(o.giris){
+        var yz = od.d==="tam" ? cev("Ödeme alındı") : (od.d==="fazla" ? cev(para(od.fazla)+" fazla alındı") : cev(para(od.kalan)+" alınacak"));
+        sag='<span class="sirTutar odRenk '+g.s+'">'+ikon(g.ik,{boy:18})+"<span>"+esc(yz)+"</span></span>";
+      } else {
+        durum='<span class="sirYer">'+ikon("tik",{boy:16,kalinlik:2.5})+"<span>"+esc(cev("Yerleşti")+" · "+trSaat(r.girisOnay))+"</span></span>"+
+          '<span class="sirDurum odRenk '+g.s+'">'+ikon(g.ik,{boy:20})+"<span>"+esc(odYazi(od))+"</span></span>";
+      }
     }
     return '<button class="sirKart '+sh.hal+yeniCls(r.id)+'" data-id="'+r.id+'" data-olay="'+(o.giris?"giris":"cikis")+'" data-hal="'+sh.hal+'">'+
       '<span class="sirUst"><span class="sirBas">'+esc(cev("Sıradaki"))+'</span><span class="sirNe'+(gf<=0?" bugun":"")+'">'+esc(cev(ne))+"</span></span>"+
@@ -8681,7 +8737,8 @@
     var kalanYaz=function(){
       var el=document.getElementById("f-kalanYazi"); if(!el) return;
       var al=kaporaAcik?sayi(document.getElementById("f-odenen").value):0;
-      el.innerHTML=esc(cev("Kalan ödeme"))+': <span style="color:#9B2C4A">'+para(Math.max(0,toplamU()-al))+"</span>";
+      var klU=Math.max(0,toplamU()-al);   // 43.1: kalan amber, yoksa yeşil
+      el.innerHTML=esc(cev("Kalan ödeme"))+': <span class="odRenk '+(klU>0?"od-eksik":"od-tam")+'">'+para(klU)+"</span>";
       var ob=document.getElementById("f-onerilen");
       if(ob) ob.textContent=cev("Önerilen kapora")+" · "+para(onerilenKapora());
     };
@@ -8899,13 +8956,19 @@
   // 16.5: rezervasyon detayında yuvarlak eylem butonları
   function detayEylemleri(r){
     var n=telNormal(r.phone), l=[];
-    var e=function(etiket,is,ik,yazi,ek){ return "<"+etiket+' class="eylem '+is+'" '+ek+'><span class="eDaire">'+ikon(ik,{boy:24})+
+    var e=function(etiket,is,ik,yazi,ek,rozet){ return "<"+etiket+' class="eylem '+is+'" '+ek+'><span class="eDaire">'+ikon(ik,{boy:24})+(rozet||"")+
       '</span><span class="eYazi">'+esc(cev(yazi))+"</span></"+etiket+">"; };
     if(n){
       l.push(e("a","is-rez","telefon","Ara",'href="tel:'+esc(n)+'"'));
       l.push(e("a","is-wa","mesaj","WhatsApp",'href="https://wa.me/'+esc(n.slice(1))+'" target="_blank" rel="noopener"'));
     }
-    if(paraGorur()) l.push(e("button","is-para","cuzdan","Ödemeler",'type="button" id="d-odeme"'));
+    // 43.1: "Ödemeler" düğmesi ödeme durumunun renginde, sağ üstünde küçük rozet (✓ / ! / ⚠); ekran okuyucuya durum yazısı
+    if(paraGorur()){
+      var od=odemeDurumu(aktif(),r), g=odGor(od);
+      l.push(e("button","is-para "+(od.d==="yok"?"":g.s),"cuzdan","Ödemeler",
+        'type="button" id="d-odeme" data-od="'+od.d+'"'+(od.d==="yok"?"":' aria-label="'+esc(cev("Ödemeler")+" · "+odYazi(od))+'"'),
+        g.rz && od.d!=="yok" ? '<span class="eRozet" aria-hidden="true">'+ikon(g.rz,{boy:12,kalinlik:3})+"</span>" : ""));
+    }
     if(duzenlenebilir()) l.push(e("button","is-rez","kalem","Düzenle",'type="button" id="d-duzenle"'));
     return l.length?'<div class="eylemSira">'+l.join("")+"</div>":"";
   }
@@ -8941,8 +9004,8 @@
         paraOzetHTML(aktif(),r)+"</div>" : "")+
       (!paraGorur() && kalanGorur()? (function(){ var kl=kalanTutar(aktif(),r), dp=r.depozitoSunucu||0;
         return '<div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--line)">'+
-          '<div class="para net"><span>Kalan ödeme</span><span style="color:'+(kl>0?"#9B2C4A":"#0B5B57")+'">'+
-          para(kl)+"</span></div>"+
+          '<div class="para net"><span>Kalan ödeme</span><span class="odRenk '+(kl>0?"od-eksik":"od-tam")+'">'+
+          ikon(kl>0?"unlem-daire":"tik-daire",{boy:18})+para(kl)+"</span></div>"+
           (dp>0&&kl>0?'<div class="sm muted" style="text-align:right;margin-top:.125rem">'+esc(cev("("+para(dp)+" depozito dahil)"))+"</div>":"")+
           "</div>"; })() : "")+
       // PDF, villaya git ve iptal: liste satırı (iptal her zaman en altta)
@@ -9009,16 +9072,18 @@
     // giriş günü ya da villanın sıradaki girişi
     var girisGunu=r.start===tk, sir=siradakiOlay(v);
     if(!girisGunu && !(sir && sir.giris && sir.r.id===r.id)) return "";
-    var kl=kalanGorur()?kalanTutar(v,r):0, dp=Math.min(kl,kalanDepozito(v,r));
+    var kl=kalanGorur()?kalanTutar(v,r):0, dp=Math.min(kl,kalanDepozito(v,r)), od=odemeDurumu(v,r);
     if(!girisGunu && kl<=0) return "";
-    var h='<div class="akisKart">';
+    // 43.1: kart ödeme durumunun renginde: alınacak varsa amber (!), fazla alındıysa kırmızı (⚠), tamsa yeşil (✓)
+    var h='<div class="akisKart'+(kl>0?" od-eksik":(od.d==="fazla"?" od-fazla":""))+'" data-od="'+od.d+'">';
     if(kl>0){
-      h+='<div class="akisTutar"><span>'+esc(cev(para(kl)+" alınacak"))+"</span>"+
+      h+='<div class="akisTutar"><span class="odRenk od-eksik">'+ikon("unlem-daire",{boy:24})+"<span>"+esc(cev(para(kl)+" alınacak"))+"</span></span>"+
         (dp>0?'<span class="akisDep">'+esc(cev("("+para(dp)+" depozito dahil)"))+"</span>":"")+"</div>"+
         '<button class="big" data-ik="cuzdan" id="ak-odeme">'+esc(cev(girisGunu?"Ödemeyi al ve misafiri yerleştir":"Ödemeyi al"))+"</button>";
       if(girisGunu) h+='<button class="big renkli is-rez" data-ik="giris" id="ak-yerlestir">'+esc(cev("Ödeme almadan yerleştir"))+"</button>";
     } else {
-      if(odemeTam(v,r)) h+='<div class="akisAlindi">'+ikon("tik",{boy:18,kalinlik:2.5})+"<span>"+esc(cev("Ödeme alındı"))+"</span></div>";
+      if(od.d==="fazla") h+='<div class="akisAlindi odRenk od-fazla">'+ikon("uyari-ucgen",{boy:18})+"<span>"+esc(cev(para(od.fazla)+" fazla alındı"))+"</span></div>";
+      else if(odemeTam(v,r)) h+='<div class="akisAlindi odRenk od-tam">'+ikon("tik",{boy:18,kalinlik:2.5})+"<span>"+esc(cev("Ödeme alındı"))+"</span></div>";
       h+='<button class="big" data-ik="giris" id="ak-yerlestir">'+esc(cev("Misafiri yerleştir"))+"</button>";
     }
     return h+"</div>";
@@ -9326,19 +9391,19 @@
     var yeniAcik = od.d==="eksik" || od.d==="hic" || od.d==="yok";
     if(!kk.odenen && kk.kapora>0 && kk.kapora<kKal) hz.push('<button class="big renkli is-para" data-ik="cuzdan" data-hz="'+kk.kapora+'">'+esc(cev("Önerilen kapora"))+" · "+para(kk.kapora)+"</button>");
     var kutuOd=function(sinif,lab,val,ek){ return '<div class="odKutu '+sinif+'"><div class="lab">'+esc(cev(lab))+'</div><div class="val">'+(ek||"")+"<span>"+val+"</span></div></div>"; };
-    var durumSatir = od.d==="tam" ? '<div class="odDurum tam" id="o-durum" data-d="tam">'+ikon("tik-daire",{boy:22})+"<span>"+esc(cev("Ödemenin tamamı alındı"))+"</span></div>"
-      : od.d==="fazla" ? '<div class="odDurum kirmizi" id="o-durum" data-d="fazla">'+ikon("uyari-ucgen",{boy:22})+"<span>"+esc(cev(para(fazla)+" fazla alındı"))+"</span></div>"+
-          '<div class="sm muted odAciklama">'+esc(cev("Yanlış girilen bir ödeme varsa üstteki listeden dokunup düzeltin ya da silin."))+"</div>"
-      : od.d==="eksik" ? '<div class="odDurum kirmizi" id="o-durum" data-d="eksik">'+ikon("cuzdan",{boy:22})+"<span>"+esc(cev(para(kKal)+" eksik · alınması gerekiyor"))+"</span></div>"
-      : '<div class="odDurum kirmizi" id="o-durum" data-d="hic">'+ikon("cuzdan",{boy:22})+"<span>"+esc(cev("Henüz ödeme alınmadı"))+"</span></div>";
+    // 43.1: durum satırı odGor / odYazi ile: tam yeşil ✓ · eksik / hiç amber ! · fazla kırmızı ⚠ · tutar yok nötr
+    var dg=odGor(od);
+    var durumSatir = '<div class="odDurum odRenk '+dg.s+'" id="o-durum" data-d="'+od.d+'">'+ikon(dg.ik,{boy:22})+"<span>"+
+        esc(od.d==="yok" ? cev("Henüz ödeme alınmadı") : odYazi(od))+"</span></div>"+
+      (od.d==="fazla" ? '<div class="sm muted odAciklama">'+esc(cev("Yanlış girilen bir ödeme varsa üstteki listeden dokunup düzeltin ya da silin."))+"</div>" : "");
     perde('<div class="head"><h2>'+esc(cev("Ödemeler"))+"</h2>"+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 1.25rem">'+esc(r.guest)+" · "+aralikMetni(r)+"</div>"+
       '<div class="odOzet" id="o-ozet">'+
         kutuOd("alinacak","Alınması gereken",para(kTop))+
         kutuOd("alinan","Alınan",para(kk.odenen))+
-        (fazla>0 ? kutuOd("fazla","Fazla alındı",para(fazla))
-          : (od.d==="tam" ? kutuOd("kalan sifir","Kalan",para(0),ikon("tik",{boy:18,kalinlik:2.5}))
-          : kutuOd("kalan","Kalan",para(kKal))))+
+        (fazla>0 ? kutuOd("fazla od-fazla","Fazla alındı",para(fazla),ikon("uyari-ucgen",{boy:18}))
+          : (od.d==="tam" ? kutuOd("kalan sifir od-tam","Kalan",para(0),ikon("tik",{boy:18,kalinlik:2.5}))
+          : kutuOd("kalan"+(kKal>0?" od-eksik":""),"Kalan",para(kKal),kKal>0?ikon("unlem-daire",{boy:18}):"")))+
       "</div>"+
       (gecmis.length ? '<div class="eyebrow" style="margin:1.75rem 0 .5rem">'+esc(cev("Alınan ödemeler"))+"</div>"+
         '<div class="grup" id="o-liste">'+
@@ -9384,7 +9449,7 @@
       ciz();
       if(!document.getElementById("kasa").classList.contains("hide")) cizKasa();
       kaydet();
-      if(secenek.donus==="detay"){ detay(r); parlat(".overlay:not(.kapaniyor) .alinacakBuyuk, .overlay:not(.kapaniyor) .alindiTamam"); }
+      if(secenek.donus==="detay"){ detay(r); parlat(".overlay:not(.kapaniyor) #d-odDurum"); }
       else { kapat(); parlat('#liste .row[data-id="'+r.id+'"], #siradaki [data-id="'+r.id+'"]'); parlat('#tahsilat [data-id="'+r.id+'"]'); }
       rhBildir("kaydedildi:odeme");
       tamam(cev(para(t)+" ödeme kaydedildi"));
@@ -11425,11 +11490,14 @@
     var th="";
     if(!rz.length) th='<div class="sm muted">'+don+" için rezervasyon yok.</div>";
     else rz.forEach(function(r){
-      var kx=kalemler(v,r), t=kx.toplam, al=kx.odenen, et;
+      // 43.1: etiket odemeDurumu / odGor ile (Ödendi yeşil ✓ · Kısmen / Ödenmedi amber ! · Fazla kırmızı ⚠)
+      var kx=kalemler(v,r), t=kx.toplam, al=kx.odenen, et, odx=odemeDurumu(v,r), gx=odGor(odx);
+      var dEt=function(yazi){ return '<span class="durumEt '+gx.s+'" data-od="'+odx.d+'">'+ikon(gx.ik,{boy:14})+esc(cev(yazi))+"</span>"; };
       if(!(r.tutar>0)) et='<span class="durumEt bos">'+esc(cev("Tutar girilmedi"))+"</span>";
-      else if(kx.kalan<=0) et='<span class="durumEt ok">'+esc(cev("Ödendi"))+"</span> "+para(t);
-      else if(al>0) et='<span class="durumEt kismen">'+esc(cev("Kısmen"))+"</span> "+nf.format(al)+" / "+para(t);
-      else et='<span class="durumEt yok">'+esc(cev("Ödenmedi"))+"</span> "+para(t);
+      else if(odx.d==="fazla") et=dEt("Fazla alındı")+" "+nf.format(al)+" / "+para(t);
+      else if(odx.d==="tam") et=dEt("Ödendi")+" "+para(t);
+      else if(al>0) et=dEt("Kısmen")+" "+nf.format(al)+" / "+para(t);
+      else et=dEt("Ödenmedi")+" "+para(t);
       th+='<button class="row'+yeniCls(r.id)+'" data-id="'+r.id+'"'+(!(r.tutar>0)?' data-tutarsiz="1"':"")+'>'+harfDaire(r)+
         '<span class="name">'+esc(r.guest)+' <span class="muted nw" style="font-size:.8235rem">· '+aralikMetni(r)+"</span></span>"+
         '<span class="meta nw" style="display:flex;align-items:center;gap:.375rem;color:var(--ink)">'+et+"</span></button>";
