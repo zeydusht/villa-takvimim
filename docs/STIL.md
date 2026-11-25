@@ -301,8 +301,10 @@ ile işaretlenir (iki kez çarpılmasın).
   - Süzgeç boş kalırsa kısa not.
   - Çizimler 3D (`img/3d/<ad>-512.webp`, Görev 34–35); eski düz çizimler (`img/bos-*`, `img/sihirbaz-*`) kaldırıldı.
   - Düzen (Görev 37.3): görsel ortada, altında 16 pt; sonra kalın başlık, açıklama, düğme; hepsi ortalı. Kısa ekranda düğme ilk ekranda.
-  - Ekranda büyük boş hâl görseli varken sekme başlığının görseli gizlenir (aynı ekranda tek 3D görsel); veri gelince yumuşakça
-    (`--hiz-ac`) geri gelir.
+  - Görev 44.1: sekme başlığının görseli (Villalarım, Takvim, Hesap) boş hâl görseli varken de görünür; ikisi farklı resim, aynı
+    ekranda durabilir. (37.3'teki "boş hâlde başlık görseli gizlenir" kuralı kalktı: filtreye dokununca görsel kayboluyordu.)
+  - **Genel kural (Görev 44.1):** bir filtreye ya da sekmeye dokununca kullanıcının dokunmadığı başlık, görsel ya da düğme
+    kaybolmaz, yerinden zıplamaz. Görünürlük yalnız ekran genişliğine ve yazı boyutuna bağlı olabilir; veriye, filtreye bağlı olmaz.
   - 3D görseller dekupe (şeffaf webp) ve kendi gölgeleri var. Arkalarında hiçbir hâlde (gece modu, büyük yazı, dokunma, seçili kart)
     renk, daire, kare, kenarlık ya da ikinci gölge (`drop-shadow`) olmaz; uygulama ve misafir sayfası hep açık zeminde (Görev 36.2).
     Tek istisna: görsel yüklenemeyince çıkan ikonlu yedek hâl (`.bosGorsel.yok`, `.secKartGorsel.yok`), orada `--soft` zemin kalır.
@@ -340,8 +342,8 @@ ile işaretlenir (iki kez çarpılmasın).
     (`1fr · yazı · 1fr`): görsel ortalamaya dahil değil, gelip gidince yazı kımıldamaz. Yazı hiç bölünmez, kesilmez: sol sütun
     darsa görsel önce küçülür (en az 48 pt), sonra gizlenir. Alt satırdaki etiketler ve "+ Villa ekle" sola yaslı kalır. Görselin dolu kısmı ile alttaki öğe arasında en az 8 pt (`--alt`: görselin
     alttaki şeffaf payı; başlığın alt boşluğu buna göre; `--baslik-alt-pay` 8,5 px; Görev 40.9'dan beri dikey kayma da hesaba katılır).
-    Görsel görünür mü kararını JS verir (Görev 38.1, `baslikGorselDurum` → `h1.gorselGizli`): ekranda büyük boş hâl görseli
-    gerçekten görünüyorsa ya da görsele 48 pt yer kalmıyorsa gizlenir. CSS `:has()` / container sorgusu kullanılmaz; sonuç
+    Görsel görünür mü kararını JS verir (Görev 38.1, `baslikGorselDurum` → `h1.gorselGizli`): yalnız görsele 48 pt yer kalmıyorsa
+    gizlenir (Görev 44.1: boş hâl görseli artık gizlemez). CSS `:has()` / container sorgusu kullanılmaz; sonuç
     kaydırmaya bağlı kalmaz. Gizlenip gelmesi `--hiz-ac`.
     Yer daralırsa önce görsel küçülür, yazı bölünmez; 36 pt'nin altına inince görünmez. Villalarım'da dolu / boş etiketleri "+ Villa ekle" ile aynı satırın sağ ucunda; sığmazsa alt satırda, sola yaslı (Görev 37.2).
     Kaydırınca başlık görseli üst çubuğa girdikçe söner (üst %10'u şeffaf kenar, oraya kadar tam), yarısı girince görünmez.

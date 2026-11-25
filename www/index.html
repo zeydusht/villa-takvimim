@@ -1567,15 +1567,13 @@
   .baslikG{translate:calc(-100% * var(--sol, 0)) calc(-100% * (var(--ust, .1) - .1))}
   .baslikG{flex:none; display:block; object-fit:contain; width:var(--g3d-baslik-boy); max-width:100%;
     height:auto; aspect-ratio:1/1; pointer-events:none}
-  /* 37.3 ekranda büyük boş hâl görseli varken başlık görseli gizlenir (aynı ekranda iki 3D görsel olmaz). İlk villa eklenince
-     görsel yumuşakça geri gelir (38.2: yalnız saydamlık; yazı yerinde kalır).
-     38.1: karar JS'te (baslikGorselDurum → h1.gorselGizli; boş hâl yüzündense ayrıca .gorselBos). Eskiden :has(.bosHal…) ve
+  /* 38.2 görsele yer yoksa gizlenir (yalnız saydamlık; yazı yerinde kalır). 44.1: boş hâl görseli artık gizlemez.
+     38.1: karar JS'te (baslikGorselDurum → h1.gorselGizli). Eskiden :has(.bosHal…) ve
      container sorgusuydu; görsel display:none iken baslikGuncelle yüksekliği 0 ölçüp görsele kalıcı opacity:0 yazıyordu */
   .baslikGK{transition:opacity var(--hiz-ac) var(--egri-gecis), visibility 0s linear 0s}
   h1.h1G:has(> .baslikGK){transition:margin-bottom var(--hiz-ac) var(--egri-gecis), padding-top var(--hiz-ac) var(--egri-gecis)}
   h1.gorselGizli .baslikGK{opacity:0; visibility:hidden;
     transition:opacity var(--hiz-ac) var(--egri-gecis), visibility 0s linear var(--hiz-ac)}
-  h1.h1G.gorselBos:has(> .baslikGK), .anaBas h1.h1G.gorselBos:has(> .baslikGK){margin-bottom:.25rem; padding-top:0}
   @media (prefers-reduced-motion: reduce){ .baslikGK, h1.h1G:has(> .baslikGK){transition-duration:var(--hiz-azalt)} }
   /* görselin dolu (şeffaf olmayan) kısmı ile alttaki öğe arasında en az 8 pt: --alt görselin alttaki şeffaf payı.
      40.9: görsel 40.3'te dikeyde (.1 - --ust) kadar kaydırıldığı için o kayma da hesaba katılır: .5 - --alt + (.1 - --ust) */
@@ -5306,25 +5304,23 @@
   function baslikIste(){ if(!BASLIK.kare) BASLIK.kare=requestAnimationFrame(baslikGuncelle); }
   window.addEventListener("scroll",baslikIste,{passive:true});
   // ================= 38.1 BAŞLIK GÖRSELİ: GÖRÜNÜR MÜ =================
-  // Görünen sekmenin başlık görselinin gizlenip gizlenmeyeceğine JS karar verir (h1.gorselGizli). Gizlenir: ekranda büyük boş hâl
-  // görseli gerçekten görünüyorsa (aynı ekranda iki 3D görsel olmaz) ya da görsele en az 48 pt yer kalmıyorsa. Sonuç kaydırmaya
+  // Görünen sekmenin başlık görselinin gizlenip gizlenmeyeceğine JS karar verir (h1.gorselGizli). Gizlenir: yalnız görsele en az
+  // 48 pt yer kalmıyorsa (44.1: boş hâl görseli yüzünden artık gizlenmez). Sonuç kaydırmaya
   // bağlı değil: sekme değişince, Ajanda filtresi değişince, listeler her çizildiğinde, veri yenilenince, resize'da, yazı boyutu
   // değişince, yazı tipleri yüklenince çağrılır (hemen ardından baslikGuncelle).
   var BASLIK_EN_AZ=48;
   function baslikGorselDurum(){
     var h=gorunenBaslik(); if(!h) return;
     var k=h.querySelector(".baslikGK"); if(!k) return;
-    var ekran=h.closest(".sekmeEkran")||h.parentElement, bos=false;
-    Array.prototype.forEach.call(ekran.querySelectorAll(".bosHal .bosGorsel:not(.yok)"),function(e){
-      if(e.offsetParent!==null && e.getClientRects().length) bos=true; });
+    // 44.1: boş hâl görseli görünse de başlık görseli gizlenmez (filtre / boş liste / veri yenilenmesi görseli kaybettirmez;
+    // ikisi farklı resim). Yalnız yer yoksa (ekran genişliği ve yazı boyutu, 38.2) gizlenir.
     var t=k.nextElementSibling, g=k.querySelector(".baslikG");
     var ara=parseFloat(getComputedStyle(k).getPropertyValue("--ara"))||10;
     // görsele kalan yer (38.2): yazı ortada, görsel sol sütunda → (başlık genişliği − yazı) / 2 − ara.
     // Görselin şu anki durumundan bağımsız: gizliyken de aynı ölçülür
     var yer=(h.clientWidth-(t?t.getBoundingClientRect().width:0))/2-ara;
-    var gizli=bos || !g || yer<BASLIK_EN_AZ;
+    var gizli=!g || yer<BASLIK_EN_AZ;
     h.classList[gizli?"add":"remove"]("gorselGizli");
-    h.classList[bos?"add":"remove"]("gorselBos");
     if(gizli && g) g.style.opacity="";
   }
   function baslikYenile(){ BASLIK.kare=0; baslikGorselDurum(); baslikGuncelle(); if(window.bolumGorselIste) bolumGorselIste(); vbFotoBoy(); barGeriAyar(); }   // 39.3: bölüm başlıkları da (yazı boyutu, sekme, yazı tipi); 40.1 villa kartı fotoğrafı
