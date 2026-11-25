@@ -2371,7 +2371,9 @@
   /* ===== Görev 44.2: akıcılık ===== */
   /* villa sayfasının ekran dışındaki bölümleri ekrana girene kadar dizilmez / boyanmaz (villaya girişte tek karede yapılan iş
      yarıya iner). Boyutları bir kez görülünce hatırlanır (contain-intrinsic-size: auto), kaydırma yeri kaymaz. */
-  #takvim > .section{content-visibility:auto; contain-intrinsic-size:auto 320px}
+  /* content-visibility boyamayı bölüm kutusuyla sınırlar: bölüm başlığındaki 3D görsel yukarı taşınca üstü kesiliyordu.
+     Üstte 1.5rem iç boşluk açıp dış boşluğu aynı kadar azaltıyoruz: yerleşim aynı, görselin taşacak yeri var. */
+  #takvim > .section{content-visibility:auto; contain-intrinsic-size:auto 320px; padding-top:1.5rem; margin-top:1.25rem}
   /* Ajanda ve Villalarım listelerinde ekran dışındaki kartlar da (sekme açılırken dizilmez) */
   #ajandaListe > .ajKart{content-visibility:auto; contain-intrinsic-size:auto 84px}
   #villalar > .kart{content-visibility:auto; contain-intrinsic-size:auto 220px}
