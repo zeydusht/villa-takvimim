@@ -354,8 +354,8 @@ ile işaretlenir (iki kez çarpılmasın).
   (yeşil) · Kalan (kırmızı); fazla alındıysa Kalan yerine "Fazla alındı" (lacivert: uygulamada sıcak renk yok, görevdeki "turuncu"
   yerine). Kutular yan yana, tutar kesilmez: sığmazsa alt satıra iner. Altında alınan ödemeler (tarih, tutar, not, sağda ok;
   dokununca düzenle / "Bu ödemeyi sil"). En altta "Yeni ödeme": kalan hazır yazılı; kalan 0 ise yerine "Ödemenin tamamı alındı"
-  ve "Ek ödeme ekle". Bakıcı bu ekranı görmez (yetkiler aynı). Para hep `para()`: 13.000 ₺. **Görev 43.4:** `para()` sayı ile ₺ arasına bölünmez boşluk koyar (` `; HTML'de `&nbsp;`); elle birleştirilen tutarlarda da
-  aynısı (`binlik(x)+" ₺"`). ₺ satır başına tek başına düşmez. Çeviri (`DIL.cevir`) eşleşmede bunu normal boşluk sayar.
+  ve "Ek ödeme ekle". Bakıcı bu ekranı görmez (yetkiler aynı). Para hep `para()`: 13.000 ₺. **Görev 43.4:** `para()` sayı ile ₺ arasına bölünmez boşluk koyar (`\u00a0`; HTML'de `&nbsp;`); elle birleştirilen tutarlarda da
+  aynısı (`binlik(x)+"\u00a0₺"`). ₺ satır başına tek başına düşmez. Çeviri (`DIL.cevir`) eşleşmede bunu normal boşluk sayar.
   **Görev 41.1:** tek bakışta tam / eksik / fazla / hiç. Kutular: "Alınması gereken" (gri) · Alınan (açık yeşil kutu, koyu yeşil
   yazı) · Kalan (açık kırmızı kutu, koyu kırmızı yazı; tam alındıysa açık yeşil, "✓ 0 ₺") ya da "Fazla alındı" (açık kırmızı; artık
   lacivert değil). Renkler `--giris-renk/--giris-zemin` ve `--cikis-renk/--cikis-zemin` (kontrast ≈ 7:1). Listenin altında tek

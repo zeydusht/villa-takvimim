@@ -761,6 +761,12 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Netlify'a yüklenmedi. Rapor: `docs/qa/gorev42/README.md` (önce / sonra görüntüleri). Kalıcı test
       `docs/qa/gorev42/test/okunabilirlik.js`: 43 ekranda 0 bölünmüş kelime / 0 dar / 0 taşma (öncesi 124 / 210 / 8).
       Sapma: "dar" kuralı paragrafın kısa son satırını saymıyor; × Kapat 48 pt (dokunma alanı kuralı).
+- [x] Görev 43 — Ödeme durumu tek kural, her yerde aynı renk (tam yeşil ✓, eksik / hiç alınmadı amber !, fazla kırmızı ⚠; detay,
+      "Ödemeler" düğmesi rozetli, Ödemeler ekranı, Sıradaki, Ajanda, liste, Gelir & gider), soldan kaydırarak geri (ekran parmağı
+      takip eder, arkadaki ekran -%25'ten gelir), geri düğmesi "‹ Villalar" (sığmazsa yalnız ok), tutarlarda ₺ bölünmez
+      · Claude Code (25 Kasım). 43.1–43.5 ayrı commit; Netlify'a yüklenmedi. Rapor: `docs/qa/gorev43/README.md`.
+      Kenar hareketi ana ekrana eklenmiş uygulamada / Capacitor'da; Safari sekmesinde Safari'ninki kalır. Misafir kartı pencere
+      olduğu için orada kenar hareketi yok. GERÇEK İPHONE'DA BAKILACAK: kenardan kaydırma hissi (takip, yaylanma, fiske).
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
