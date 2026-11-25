@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <style id="vtIlkZemin">html:root,html:root body{background:#10180D!important}</style>
 <!-- 26.7: yazı boyutu (Hesap → Görünüm) ilk kareden önce: bütün uygulama yazıları rem, kök ölçekle büyür -->
-<script>try{var vtY={buyuk:"119.53125%",cokbuyuk:"132.8125%"}[localStorage.getItem("vt-yazi")];if(vtY)document.documentElement.style.fontSize=vtY;}catch(e){}</script>
+<script>try{var vtY={buyuk:"119.53125%",cokbuyuk:"132.8125%"}[localStorage.getItem("vt-yazi")];if(vtY){document.documentElement.style.fontSize=vtY;document.documentElement.setAttribute("data-yazi",localStorage.getItem("vt-yazi"));}}catch(e){}</script>
 <meta name="theme-color" content="#10180D" data-normal="#0B5B57">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Villa Takvimim</title>
@@ -43,6 +43,9 @@
     --kose:.75rem;                /* butonlar, kartlar ve satırlar aynı köşe */
     --dokunma-yukseklik:3.25rem;  /* 52px: ana ve ikincil butonlar, satırlar */
     --yazi-en-az:8em;             /* 42.1 satırlardaki yazı sütununun en az genişliği (≈ 8 harf); sağdaki öğe sığmazsa alta iner */
+    --ik-kutu:36px;               /* 42.2 satırlardaki ikon kutusu (her yazı boyutunda 36 pt; büyük yazıda büyüyüp yazının yerini yemez) */
+    --sayfa-kenar:min(1.25rem, 20px);   /* 42.2 sayfanın sağ / sol boşluğu: normal yazıda 20 pt, büyük yazıda büyümez (yazıya yer kalsın) */
+    --panel-kenar:min(1.5rem, 24px);    /* 42.2 alttan açılan pencerenin sağ / sol boşluğu (aynı mantık) */
     --ok-isareti:#2E3833;         /* satırların sağındaki › */
     --basili-cerceve:#0B5B57;     /* basınca çerçeve */
     --basili-zemin:#E3EFEC;       /* basınca zemin */
@@ -160,12 +163,12 @@
     justify-content:space-between; gap:.75rem; font-size:.875rem; line-height:1.4}
   .kilitBar button{flex:none; text-decoration:underline; font-size:.875rem}
   .destekBar{position:sticky; z-index:44; background:#E8EAF1; border-bottom:2px solid #AEB6D2;
-    margin:-1.5rem -1.25rem 1rem; padding:.5rem 1.25rem; display:flex; align-items:center;
+    margin:-1.5rem calc(-1 * var(--sayfa-kenar)) 1rem; padding:.5rem var(--sayfa-kenar); display:flex; align-items:center;
     justify-content:space-between; gap:.75rem; font-size:.9375rem; line-height:1.35; color:#24305A}
   .destekBar .big{flex:none; width:auto; margin:0; min-height:3rem; padding:.25rem 1rem; background:#fff}
   .appBar{position:sticky; top:0; z-index:45; background:var(--ok); color:#fff;
-    margin:-2rem -1.25rem 1.5rem; display:flex; justify-content:center;
-    padding:calc(.6875rem + env(safe-area-inset-top)) 1.25rem .6875rem}
+    margin:-2rem calc(-1 * var(--sayfa-kenar)) 1.5rem; display:flex; justify-content:center;
+    padding:calc(.6875rem + env(safe-area-inset-top)) var(--sayfa-kenar) .6875rem}
   .appBarIc{width:100%; max-width:25.5rem; display:flex; align-items:center; gap:.5rem;
     font-family:var(--serif); font-size:1.0625rem; letter-spacing:-.01em}
   .barGeri{flex:none; color:#fff; width:3rem; height:3rem; margin:-.5rem 0 -.5rem -.75rem;
@@ -181,7 +184,7 @@
   .appBar.baslikli .barBaslik{opacity:1}
   .appBar.baslikli .barMarka, .appBar.baslikli .barLogo{opacity:0}
   .appBar.baslikli{box-shadow:0 1px 0 rgba(255,255,255,.14)}
-  .wrap{width:100%; max-width:28rem; padding:2rem 1.25rem calc(2.5rem + env(safe-area-inset-bottom))}
+  .wrap{width:100%; max-width:28rem; padding:2rem var(--sayfa-kenar) calc(2.5rem + env(safe-area-inset-bottom))}
   /* 34.4: kart yığını: büyük panel açıkken arkadaki sayfa küçülür ve yuvarlanır */
   .wrap{transition:transform var(--hiz-ac) var(--egri-cekmece), border-radius var(--hiz-ac) var(--egri-cekmece)}
   html:has(body.yigin), html body.yigin{background:#101613 !important}
@@ -237,10 +240,10 @@
   @media (max-width:360px){ .hizli .big{font-size:.8235rem; padding:.75rem .25rem; gap:.25rem} }
   /* Görev 16.4: hızlı işlem hapları — yatay kaydırılır, ilki dolu yeşil, diğerleri iş renginin açık tonu */
   .hapSira{display:flex; gap:.5rem; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; scrollbar-width:none;
-    margin:1rem -1.25rem 0; padding:.125rem 1.25rem; -webkit-overflow-scrolling:touch}
+    margin:1rem calc(-1 * var(--sayfa-kenar)) 0; padding:.125rem var(--sayfa-kenar); -webkit-overflow-scrolling:touch}
   .hapSira::-webkit-scrollbar{display:none}
   /* 17.3: villa ekranında hap sırası takvimin üstünde; kenarlarda beyaza solan gölge (kaydırılabildiği belli olsun) */
-  .hapKap{position:relative; margin:.875rem -1.25rem .75rem}
+  .hapKap{position:relative; margin:.875rem calc(-1 * var(--sayfa-kenar)) .75rem}
   .hapKap .hapSira{margin:0}
   .hapKap::before, .hapKap::after{content:""; position:absolute; top:0; bottom:0; width:32px; pointer-events:none; z-index:1;
     opacity:0; transition:opacity var(--hiz-bas, .15s)}
@@ -887,7 +890,7 @@
   body{padding-bottom:var(--klavyeSayfa,0px); --rhKlavyePb:var(--klavyeSayfa,0px)}
   /* 20.1: klavye açıkken paneldeki sabit "Kaydet" çubuğu alanın üstüne binmesin: formun sonunda akar */
   body.klavyeAcik .altSabit{position:static}
-  .sheet{width:100%; max-width:28rem; background:#fff; border-radius:1rem 1rem 0 0; padding:1.5rem;
+  .sheet{width:100%; max-width:28rem; background:#fff; border-radius:1rem 1rem 0 0; padding:1.5rem var(--panel-kenar);
     padding-bottom:calc(1.5rem + env(safe-area-inset-bottom) + var(--klavye,0px)); margin-top:auto}
   @media(min-width:640px){ .sheet{border-radius:1rem; margin:auto} }
   .sheet h2, .sheet h3{font-family:var(--serif); font-size:1.5rem; letter-spacing:var(--harf-serif); margin:0;
@@ -1114,7 +1117,6 @@
   #uyelikBtn .sag{flex:none; max-width:none}
   #hesapAd{color:#3F4843; font-size:.875rem; overflow-wrap:anywhere}
   #hesapAd:empty{display:none}
-  #yoneticiBtn > span:not(.ikKutu):not(.sag){flex:1 1 auto; min-width:min-content; overflow-wrap:normal}
   /* 30.4: Üyelik paneli */
   .uyKutu{background:var(--soft); border-radius:.75rem; padding:1.125rem 1rem; margin:.75rem 0 1.25rem}
   .uyKutu .uyBas{font-family:var(--serif); font-size:1.5rem; line-height:1.25}
@@ -1137,7 +1139,6 @@
   .proLink{display:flex; flex-wrap:wrap; gap:0 1.5rem}
   .proLink a{display:inline-flex; align-items:center; justify-content:center; min-height:3rem; min-width:3rem; padding:0 .25rem; color:var(--ok); font-size:1rem}
   #mfaBtn .sag{flex:none; max-width:none}
-  #yoneticiBtn .sag{white-space:normal; overflow:visible; text-overflow:clip; text-align:right; max-width:45%}
   /* 29.6: iki adımlı doğrulama */
   .mfaAdim{margin:0 0 1rem; padding-left:1.25rem; line-height:1.5}
   .mfaAdim li{margin-bottom:.375rem}
@@ -2191,6 +2192,57 @@
   .anahtar > span:first-child:not(.ikKutu), .anahtar > .ikKutu + span,
   .vsAd, .baslikSatir > h1, .kanalRAd, .crmKVilla, .komAd, .kuralMetin{flex:1 1 var(--yazi-en-az); min-width:auto}
   .baslikSatir, .komSatir, .kuralSatir{flex-wrap:wrap}
+  /* ===== Görev 42.2: satır düzeni, sığmayınca alt alta =====
+     [ikon] [başlık + alt yazı] [sağdaki etiket / sayı / anahtar] [›]. Satır kendi genişliğine göre düzen değiştirir (flex-wrap):
+     sağdaki öğe başlığın yanına sığmazsa başlığın ALTINA, sola yaslı iner; yazı sütunu daralmaz. İkon solda, ok (›) sağda,
+     ikisi de dikey ortada ve satırın akışından ayrı (alta inen etiket ikonun altına değil, başlığın altına gelir).
+     İkon kutusu her yazı boyutunda --ik-kutu (36 pt): büyük yazıda 44–48 pt'ye büyüyüp yazının yerini yemez. */
+  .satirBtn, .anahtar, .row{flex-wrap:wrap; row-gap:.375rem; position:relative}
+  .satirBtn > .ikKutu, .satirBtn > .harfDaire, .anahtar > .ikKutu, .row > .harfDaire:first-child, .row > .ikKutu:first-child{
+    position:absolute; left:12px; top:50%; margin:0; transform:translateY(-50%); width:var(--ik-kutu); height:var(--ik-kutu)}
+  .row > .harfDaire:first-child, .row > .ikKutu:first-child{left:0}
+  .rezKart > .harfDaire:first-child{left:12px}
+  .satirBtn:has(> .ikKutu), .satirBtn:has(> .harfDaire), .grup > .anahtar:has(> .ikKutu){padding-left:calc(24px + var(--ik-kutu))}
+  .row:has(> .harfDaire:first-child), .row:has(> .ikKutu:first-child){padding-left:calc(.75rem + var(--ik-kutu))}
+  .rezKart:has(> .harfDaire:first-child){padding-left:calc(24px + var(--ik-kutu))}
+  /* ok (›) */
+  /* ok ve ikon yazı boyutuyla büyümez (px): büyük yazıda yazıya yer kalsın */
+  .satirBtn{padding-right:36px}
+  .satirBtn::after{position:absolute; right:16px; top:50%; width:7px; height:7px; margin:-4px 0 0; transform:rotate(45deg)}
+  .hsAc::after{margin-top:-5px}
+  .satirBtn.dtTalepSatir{padding-right:1rem}
+  /* sağdaki öğe: kesilmez (… yok); sığmazsa alta iner, sola yaslı küçük etiket */
+  .satirBtn .sag, .satirBtn .sag.kGoster, .satirBtn .sag.tamamYazi, .satirBtn .sag.crmPara, #uyelikBtn .sag{
+    flex:0 1 auto; min-width:0; max-width:100%; white-space:normal; overflow:visible; text-overflow:clip; text-align:left}
+  .satirBtn .sag.eksikEt{flex:0 1 auto; max-width:100%; white-space:nowrap}
+  .row .meta{flex:0 1 auto; max-width:100%}
+  .anahtar > .svic{flex:none}
+  .rezKart .rkMetin{flex:1 1 var(--yazi-en-az); min-width:auto}
+  .rezKart .rkSag{align-items:flex-start}
+  /* Ajanda kartı: rozet solda (dikey ortada), tutar sığmazsa villa / misafir yazısının altına iner */
+  .ajKart{flex-wrap:wrap; row-gap:.375rem; position:relative; padding-left:calc(1rem + 3rem + .875rem)}
+  .ajKart .vRozet{position:absolute; left:1rem; top:50%; transform:translateY(-50%)}
+  .ajKartIc{flex:1 1 var(--yazi-en-az); min-width:auto}
+  .ajSag{flex:0 1 auto; max-width:100%; text-align:left}
+  /* Villa kartı: ad, durum ve "Sıradaki: 27 Kasım · Ayşe Yılmaz" kesilmez, sığmazsa alt satıra iner */
+  .kartAlt{min-width:auto; flex:1 1 var(--yazi-en-az)}
+  .kad, .kalt{white-space:normal; overflow:visible; text-overflow:clip}
+  .durumEt > span{white-space:normal; overflow:visible; text-overflow:clip}
+  /* büyük yazıda (Büyük / Çok büyük): ikon / rozet / baş harf kutuları 36–44 pt'de kalır, yazıya yer bırakır */
+  html[data-yazi] .ajKart{padding-left:calc(16px + var(--ik-kutu) + 12px)}
+  html[data-yazi] .ajKart .vRozet{left:16px; width:var(--ik-kutu); height:var(--ik-kutu); border-radius:10px; font-size:15px}
+  html[data-yazi] .kart .harf{width:44px; height:44px; margin:.875rem 0 .875rem 12px; font-size:22px}
+  html[data-yazi] .kart .kapak{width:5.5rem}
+  /* diğer satırlar: aynı kural (yazı sütunu en az --yazi-en-az, en uzun kelimeden dar olmaz; sağdaki sığmazsa alta iner) */
+  .ipMetin, .shKartAd, .ttAd, .misSatir .bilgi, .kSatir .kAd, .gunSatir .gA, .secKartMetin, .silinenSatir .bilgi, .siraIpucu span,
+  .ajSatir .ajIc, .head.headRozet > h2, .sayacSatir .sayacAd, .odaBaslik, .crmSatir > .crmMetin, .kontrolSatir .ksAd, .akisDurum .akisYazi{
+    flex:1 1 var(--yazi-en-az); min-width:auto}
+  .shKart, .ttSatir, .gunSatir, .secKart, .silinenSatir, .siraIpucu, .ajSatir, .head.headRozet, .sayacSatir, .kontrolSatir, .misSatir{flex-wrap:wrap}
+  .misSatir{position:relative; row-gap:.25rem}
+  .misSatir > .harfDaire{position:absolute; left:12px; top:50%; transform:translateY(-50%); width:var(--ik-kutu); height:var(--ik-kutu)}
+  .misSatir:has(> .harfDaire){padding-left:calc(24px + var(--ik-kutu))}
+  .misSatir .ad2{white-space:normal; overflow:visible; text-overflow:clip}
+  .misSatir .sagBil{flex:0 1 auto; max-width:100%; text-align:left}
 </style>
 </head>
 <body>
@@ -4638,7 +4690,8 @@
       var tk0=fmt(today);
       var sonraki=v.rez.filter(function(r){return r.start>tk0})
         .sort(function(a,b){return a.start<b.start?-1:1})[0];
-      var alt=sonraki ? "Sıradaki: "+kisa(sonraki.start)+" · "+sonraki.guest : (bm.c ? "" : "Kayıtlı rezervasyon yok");
+      // 42.3: "27 Kasım" kendi içinde bölünmez (bölünmez boşluk); satır sığmazsa ad alt satıra iner
+      var alt=sonraki ? "Sıradaki: "+kisa(sonraki.start).replace(/ /g,"\u00a0")+" · "+sonraki.guest : (bm.c ? "" : "Kayıtlı rezervasyon yok");
       // 17.2: bugün giriş var ama saat gelmedi / yerleştirilmedi: "Boş" + "Bugün 16:00'da abc girecek"
       var dmK=durum(v); if(dmK.bugunGiris) alt=dmK.alt;
       // "Villa Salta" → S (baştaki "Villa" kelimesi atlanır)
@@ -9603,6 +9656,8 @@
   function yaziUygula(y,kaydet2){
     if(!YAZI.hasOwnProperty(y)) y="normal";
     document.documentElement.style.fontSize=YAZI[y];
+    // 42.2: büyük yazıya özel kurallar (ikon kutusu küçülür, "Kapat" yuvarlak × olur) html[data-yazi] ile
+    if(y==="normal") document.documentElement.removeAttribute("data-yazi"); else document.documentElement.setAttribute("data-yazi",y);
     if(kaydet2) store.set("vt-yazi",y);
     Array.prototype.forEach.call(document.querySelectorAll("#hs-yazi [data-y]"),function(b){
       b.classList[b.dataset.y===y?"add":"remove"]("on"); b.setAttribute("aria-pressed",String(b.dataset.y===y)); });
