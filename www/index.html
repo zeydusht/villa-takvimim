@@ -333,7 +333,7 @@
   .ipucu .ikKutu{flex:none; background:#fff}
   .ipMetin{flex:1; min-width:0}
   .ipCumle{font-size:.9375rem; line-height:1.45; color:var(--ink)}
-  .ipCumle .ipAlt{color:var(--muted)}
+  .ipCumle .ipAlt, .ipCumle .ipNokta{color:var(--muted)}
   .ipBtn{margin-top:.75rem; display:inline-flex; align-items:center; gap:.375rem; height:3rem; padding:0 1.125rem;
     border-radius:999px; background:var(--r); color:#fff; font-size:.875rem; font-weight:500}
   .ipBtn:active{opacity:.85}
@@ -2243,6 +2243,80 @@
   .misSatir:has(> .harfDaire){padding-left:calc(24px + var(--ik-kutu))}
   .misSatir .ad2{white-space:normal; overflow:visible; text-overflow:clip}
   .misSatir .sagBil{flex:0 1 auto; max-width:100%; text-align:left}
+  /* ===== Görev 42.3: özel ekranlar ===== */
+  /* büyük yazıda "✕ Kapat" hapı yerine 48 pt'lik yuvarlak × (aria-label="Kapat"): başlıklar daralmaz */
+  html[data-yazi] .x{width:48px; min-width:48px; height:48px; padding:0; top:-6px; right:-6px}
+  html[data-yazi] .x .xYazi{display:none}
+  html[data-yazi] .sheet > .x{top:12px; right:12px}
+  html[data-yazi] .head:has(> .x), html[data-yazi] .sheet > .x ~ h2, html[data-yazi] .sheet > .x ~ h3{padding-right:48px}
+  /* 1. rezervasyon detayı başlığı: üst satır Kapat'ın yanında (altında kalmaz), ad tam genişlikte */
+  .head.detayBas{padding-right:0}
+  .detayBas .dBasUst{display:flex; align-items:center; flex-wrap:wrap; gap:0 .5rem; min-height:2.5rem; margin:0 0 .25rem; padding-right:7rem}
+  html[data-yazi] .detayBas .dBasUst{min-height:38px; padding-right:48px}
+  .detayBas h3{padding-right:0}
+  /* 2. Giriş / Çıkış: geniş yerde iki sütun; dar yerde alt alta iki satır "→ Giriş · 27 Kasım · 16:00" (satırın kendi genişliğine göre) */
+  .girCikCols{container-type:inline-size}
+  .girCikCols .bsMetin .lab{margin-bottom:.25rem}
+  @container (max-width: 20em){
+    .girCikCols > .bilgiSat{grid-column:1 / -1; padding:.125rem 0}
+    .girCikCols .bsMetin{display:flex; flex-wrap:wrap; align-items:baseline; column-gap:.5rem}
+    .girCikCols .bsMetin .lab{margin:0; font-size:1rem; letter-spacing:0; text-transform:none}
+    .girCikCols .bsMetin > div + div::before{content:"·"; margin-right:.5rem; color:var(--muted)}
+  }
+  .bsTarih .gunEt{white-space:nowrap}
+  /* 3. Ödemeler kutuları: dar yerde alt alta, tam genişlikte; etiket solda, tutar sağda, tek satır */
+  .odOzet{container-type:inline-size}
+  @container (max-width: 20em){
+    .odOzet > .odKutu{flex:1 1 100%; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.25rem .75rem}
+    .odOzet > .odKutu .val{margin-top:0}
+  }
+  /* 4. Fiyatlar: iki kart sığmazsa alt alta tam genişlikte; ay adı bölünmez, durum yazısı sığmazsa altına iner */
+  .fyUstBtn{grid-template-columns:repeat(auto-fit, minmax(min(100%, 9.5em), 1fr))}
+  .fyAyAd{white-space:nowrap}
+  .satirBtn.fyAy .sag{flex:0 1 auto; max-width:100%; text-align:left}
+  /* 5. fotoğraf düğmeleri: yazıyı içine alır; dar yerde 2 sütun (sütun sayısı kutunun yazısına göre) */
+  .fotoSerit{grid-template-columns:repeat(auto-fit, minmax(min(100%, 4.5em), 1fr))}
+  /* seçim paneli düğmeleri (Rezervasyon / Teklif / Opsiyon): eşit genişlik; sığmazsa alt satıra */
+  .spBtnler{display:flex; flex-wrap:wrap}
+  .spBtn{flex:1 1 0; min-width:max-content}
+  .spUst{flex-wrap:wrap}
+  .spMetin{flex:1 1 var(--yazi-en-az); min-width:auto}
+  .spTutar{flex-wrap:wrap}
+  .spDokum{flex:1 1 var(--yazi-en-az); min-width:auto}
+  .spToplam{margin-left:auto}
+  html[data-yazi] .spKapat{width:48px; min-width:48px; height:48px; padding:0; margin-left:auto}
+  html[data-yazi] .spKapat > span{display:none}
+  /* "Hangi villam boş?" kartı: ok sağda akıştan ayrı, büyük yazıda yuvarlak ikon 36 pt */
+  .maKart{position:relative; padding-right:calc(1rem + 24px + .5rem)}
+  .maKart > .ik:last-child{position:absolute; right:1rem; top:50%; margin-top:-12px}
+  .maKartMetin{flex:1 1 var(--yazi-en-az); min-width:auto}
+  html[data-yazi] .maKart{gap:12px; padding-left:14px}
+  html[data-yazi] .maKartIk{width:var(--ik-kutu); height:var(--ik-kutu)}
+  /* Hangi villam boş sonuç kartı: villa adı sütunu daralmaz */
+  .maVillaAd{min-width:auto; flex-basis:var(--yazi-en-az)}
+  html[data-yazi] .maKapak{width:44px; height:44px}
+  /* özellik çipleri (Nesi var?): 2 sütun sığmazsa tek sütun */
+  .cipler.ozIzgara{grid-template-columns:repeat(auto-fit, minmax(min(100%, 10em), 1fr))}
+  .cip.ozBtn .ozAd{min-width:auto}
+  /* Gelir & gider kutuları: 3 sütun sığmazsa 2 ya da 1 sütun */
+  .kutu3{grid-template-columns:repeat(auto-fit, minmax(min(100%, 6.5em), 1fr))}
+  /* ipucu kartı: büyük yazıda ikon ve kapat düğmesi yeri küçülür */
+  html[data-yazi] .ipucu{padding-right:44px; gap:12px}
+  html[data-yazi] .ipucu .ikKutu{width:var(--ik-kutu); height:var(--ik-kutu)}
+  /* anahtarlı ayar satırı: anahtar alta inince yazı satırın tamamını kullanır */
+  .anahtar > .ikKutu + span{padding-right:0}
+  /* ipucu: büyük yazıda açıklama kendi satırında (cümlenin ortasından başlamaz) */
+  html[data-yazi] .ipCumle .ipNokta{display:none}
+  html[data-yazi] .ipCumle .ipAlt{display:block; margin-top:.25rem}
+  /* villa kartı: büyük yazıda baş harf kutusu ve boşluklar küçülür, villa adı en çok 24 pt */
+  html[data-yazi] .kartAlt{padding:.75rem 12px}
+  html[data-yazi] .kad{font-size:min(1.25rem, 24px)}
+  /* villa sayfası üst kartı: büyük yazıda "Fotoğraf ekle" kutusu yazıyı kesmez (görsel küçülür, kutu gerekirse uzar) */
+  html[data-yazi] .vbFoto{aspect-ratio:auto; min-height:var(--vb-foto-kucuk); padding:.375rem 0}
+  html[data-yazi] .vbFoto img{width:52%}
+  html[data-yazi] .vbFoto .vbEkle, html[data-yazi] .villaBas.vbDar .vbFoto .vbEkle{font-size:14px}
+  /* başlıklar ve kısa etiketler dengeli satırlara bölünür (ortada tek kelimelik kısa satır kalmaz) */
+  h1, h2, h3, .kad, .ajVilla, .maKartBas, .maAd, .ozAd, .ucAd, .spBas, .sirBosAlt, .kkAlt, .satirBtn > span, .anahtar > span{text-wrap:balance}
 </style>
 </head>
 <body>
@@ -4900,7 +4974,7 @@
     var y=a.yaz(a.v);
     el.className="ipucu "+a.is;
     el.innerHTML='<span class="ikKutu '+a.is+'">'+ikon(a.ik,{boy:20})+"</span>"+
-      '<div class="ipMetin"><div class="ipCumle">'+esc(y[0])+(y[1]?' <span class="ipAlt">· '+esc(y[1])+"</span>":"")+"</div>"+
+      '<div class="ipMetin"><div class="ipCumle">'+esc(y[0])+(y[1]?' <span class="ipNokta">·</span> <span class="ipAlt">'+esc(y[1])+"</span>":"")+"</div>"+
       '<div class="ipDugmeler"><button class="ipBtn" type="button">'+esc(cev(a.btn))+"</button>"+
       '<button class="ipKapat" type="button">'+ikon("x",{boy:18})+"<span>"+esc(cev("Kapat"))+"</span></button></div></div>";
     el.querySelector(".ipKapat").onclick=function(){ store.set("vt-ipucu-"+a.tip,String(Date.now())); ipucuCiz(); };
@@ -6846,7 +6920,7 @@
       var tikSvg=ikon("tik",{boy:14,kalinlik:3});
       if(kapali){
         kur.innerHTML='<button class="satirBtn" data-kk="ac" data-ikk="bilgi:liste-tik"><span class="kTek">'+
-          esc(cev("Villa kurulumu"))+" · "+kd.biten+"/"+SH_ADIM+'</span><span class="sag kGoster">'+esc(cev("Göster"))+"</span></button>";
+          esc(cev("Villa kurulumu"))+"\u00a0·\u00a0"+kd.biten+"/"+SH_ADIM+'</span><span class="sag kGoster">'+esc(cev("Göster"))+"</span></button>";
       } else {
         kur.innerHTML='<div class="kBas"><span class="kBasSol"><span class="kBaslik">'+esc(cev("Villanızı hazırlayın"))+"</span>"+
           '<span class="kSay">'+kd.biten+"/"+SH_ADIM+"</span></span>"+gizleBtn+"</div>"+
@@ -7011,7 +7085,7 @@
       if(sahipMi() && duzenlenebilir()) btn.push('<button class="spBtn is-ops" id="spOps">'+ikon("saat",{boy:22})+"<span>"+esc(cev("Opsiyon"))+"</span></button>");
       h='<div class="spUst"><div class="spMetin"><span class="spBas">'+esc(tarih+" · "+cev(gc+" gece"))+"</span></div>"+x+"</div>"+
         ((toplam||dokum)?'<div class="spTutar"><span class="spDokum">'+esc(dokum)+'</span><span class="spToplam">'+toplam+"</span></div>":"")+
-        '<div class="spBtnler" style="grid-template-columns:repeat('+btn.length+',minmax(0,1fr))">'+btn.join("")+"</div>";
+        '<div class="spBtnler">'+btn.join("")+"</div>";
     }
     var yeni=!p.classList.contains("acik"), durumDegisti=(p.dataset.durum!==durum);
     // panel açıkken seçilen aralık değişince toplam önceki aralığın toplamından sayar (arada "çıkış gününü seçin" olsa da)
@@ -8214,7 +8288,7 @@
         var key=y+"-"+(m+1), sec=!!F.secAy[key];
         h+='<button class="satirBtn fyAy'+(gec?" gecmisAy":"")+(F.secMod&&sec?" secili":"")+'"'+(F.secMod?"":' data-ikk="fiyat:takvim"')+' data-ay="'+key+'"><span class="tikli">'+
           (F.secMod?'<span class="tik'+(sec?" on":"")+'">'+(sec?ikon("tik",{boy:14,kalinlik:3}):"")+"</span>":"")+
-          "<span>"+esc(AYLAR[m]+" "+y)+(gec?'<span class="fyGecmisEt">'+esc(cev("geçmiş"))+"</span>":"")+
+          '<span><span class="fyAyAd">'+esc(AYLAR[m]+" "+y)+"</span>"+(gec?'<span class="fyGecmisEt">'+esc(cev("geçmiş"))+"</span>":"")+
           ((eksik && fl.length)?'<span class="fyEksik">'+esc(cev(eksik+" gün fiyatsız"))+"</span>":"")+
           (gy?'<span class="fyGecenYil">'+esc(cev("Geçen yıl: "+gy))+"</span>":"")+
           "</span></span>"+sag+"</button>";
@@ -8355,7 +8429,8 @@
     ikonlariYerlestir(el);   // ikonlar MutationObserver'la sonradan gelir; ölçümden önce yerinde olsun
     var dar=Array.prototype.some.call(el.querySelectorAll(".ucAd"),function(a){
       var d=a.nextElementSibling; if(!d || !d.classList.contains("ucDeger")) return false;
-      return a.getBoundingClientRect().right > d.getBoundingClientRect().left - 4 || a.scrollWidth > a.clientWidth + 1; });
+      return a.getBoundingClientRect().right > d.getBoundingClientRect().left - 4 || a.scrollWidth > a.clientWidth + 1 ||
+        a.getBoundingClientRect().width < 8*parseFloat(getComputedStyle(a).fontSize); });   // 42.3: ad sütunu ≈ 8 harften darsa
     if(dar) el.classList.add("ucDar");
     // tutar + "Değiştir" yine sığmıyorsa düğme yalnız kalem ikonu (adı aria-label'da)
     el.classList.remove("ucIkon");
@@ -8841,20 +8916,21 @@
     return '<span class="gunEt '+tur+" "+(k===b?"bugun":"yarin")+'">'+esc(cev(k===b?"Bugün":"Yarın"))+"</span>";
   }
   function detay(r){
-    perde('<div class="head">'+
-      '<div class="sm muted" style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem;white-space:nowrap;flex:none">'+
-        '<span class="dot" style="background:'+r.color+'"></span>'+esc(cev(gece(r)+" gece"))+(crmGelisSira(r)>1?'<span id="d-gelis">· '+esc(cev(crmGelisSira(r)+". gelişi"))+"</span>":"")+"</div>"+
+    // 42.3: "4 gece · 2. gelişi" kendi satırında (Kapat'ın yanında, altında kalmaz); misafir adı satırın tamamını kullanır
+    perde('<div class="head detayBas">'+
+      '<div class="sm muted dBasUst">'+
+        '<span class="dot" style="background:'+r.color+'"></span><span class="nw">'+esc(cev(gece(r)+" gece"))+"</span>"+(crmGelisSira(r)>1?'<span id="d-gelis" class="nw">· '+esc(cev(crmGelisSira(r)+". gelişi"))+"</span>":"")+"</div>"+
       "<h3>"+esc(r.guest)+"</h3>"+kapatBtn()+"</div>"+
       // 33.4: başlığın altında kanal ("Airbnb'den"), rengiyle
       (rezKanal(aktif(),r)?'<div class="kanalSatir" id="d-kanal">'+kanalHap(rezKanal(aktif(),r))+'<span style="color:'+kanal(rezKanal(aktif(),r)).renk+'">'+esc(cev(kanal(rezKanal(aktif(),r)).den))+"</span></div>":"")+
       // 17.4: en üstte "Ödemeyi al ve misafiri yerleştir" / "Misafir çıktı mı?"
       akisBlok(aktif(),r)+
-      '<div class="cols">'+
+      '<div class="cols girCikCols">'+
         // 40.5: giriş yeşil, çıkış kırmızı; bugün / yarın etiketi
-        '<div class="bilgiSat girSat" id="d-giris">'+ikon("giris",{boy:20,sinif:"gir"})+'<div><div class="eyebrow lab" style="margin-bottom:.25rem">Giriş</div><div>'+kisa(r.start)+
-          gunEt(r.start,"giris")+"</div><div>"+GIRIS+"</div></div></div>"+
-        '<div class="bilgiSat cikSat" id="d-cikis">'+ikon("cikis",{boy:20})+'<div><div class="eyebrow lab" style="margin-bottom:.25rem">Çıkış</div><div>'+kisa(r.end)+
-          gunEt(r.end,"cikis")+"</div><div>"+CIKIS+"</div></div></div>"+
+        '<div class="bilgiSat girSat" id="d-giris">'+ikon("giris",{boy:20,sinif:"gir"})+'<div class="bsMetin"><div class="eyebrow lab">Giriş</div><div class="bsTarih"><span class="nw">'+kisa(r.start)+"</span>"+
+          gunEt(r.start,"giris")+'</div><div class="bsSaat">'+GIRIS+"</div></div></div>"+
+        '<div class="bilgiSat cikSat" id="d-cikis">'+ikon("cikis",{boy:20})+'<div class="bsMetin"><div class="eyebrow lab">Çıkış</div><div class="bsTarih"><span class="nw">'+kisa(r.end)+"</span>"+
+          gunEt(r.end,"cikis")+'</div><div class="bsSaat">'+CIKIS+"</div></div></div>"+
       "</div>"+
       '<div class="bilgiSat">'+ikon("kisiler",{boy:20})+"<div>"+esc(cev((r.people||"—")+" kişi"))+"</div></div>"+
       (telNormal(r.phone)?'<div class="bilgiSat">'+ikon("telefon",{boy:20})+"<div>"+esc(telGoster(r.phone))+"</div></div>":"")+

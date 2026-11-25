@@ -28,7 +28,8 @@
     -webkit-appearance:none;appearance:none;background-clip:padding-box}
   .pad{padding:0 1.25rem}
   .eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;color:var(--yes);font-weight:600}
-  h1{font-family:var(--serif);font-weight:400;font-size:2rem;letter-spacing:-.02em;margin:.375rem 0 0}
+  /* 42.3: dar ekranda (320) villa adı kelime kelime alt alta dizilmesin: en çok ekran genişliğinin %9'u, dengeli satırlar */
+  h1{font-family:var(--serif);font-weight:400;font-size:min(2rem, 9vw);letter-spacing:-.02em;margin:.375rem 0 0;text-wrap:balance}
   h2{font-family:var(--serif);font-weight:400;font-size:1.375rem;letter-spacing:-.02em;margin:0 0 1rem}
   .bolum{border-top:1px solid var(--line);margin-top:2rem;padding-top:2rem}
   /* 26.4: bölüm ekrana girene kadar saydam; girince 16 pt aşağıdan solarak (bir kez) */
