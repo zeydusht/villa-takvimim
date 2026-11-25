@@ -124,6 +124,12 @@ Dört tür (`.big`):
   - grup içindeki satırlar (`.grup > .satirBtn`) küçülmez, yalnız zemin değişir (satırlar birbirine yapışık);
   - menüde seçilen satır menü kapanmadan önce 120 ms (`--hiz-secildi`) ana renkte görünür (`secimParla`);
   - hover kullanılmaz. Gerekirse yalnız `@media (hover:hover) and (pointer:fine)` içinde (telefonda "yapışık hover" kalmasın).
+- **Üst çubuktaki geri düğmesi (Görev 43.3, iOS tarzı):**
+  - Kalın sol ok (‹, çizgi 2,75) + önceki ekranın adı: "‹ Villalar", "‹ Takvim" (Ajanda'dan gelindiyse), Gelir & gider / Misafirler /
+    Fiyatlar / Fotoğraflar'da "‹ Villa Salta". Çerçeve yok; arkasında %14 yarı saydam beyaz, köşeleri yuvarlak zemin.
+  - Dokunma alanı 48 × 48 pt (görünen zemin 40 pt). Basınca saydamlık .55 ve %96'ya küçülür. Klavye odağında beyaz halka.
+  - Yazı sığmazsa (dar ekran, Çok büyük yazı, uzun villa adı) ya da "Villa Takvimim" / kaydırınca beliren küçük başlıkla
+    çakışacaksa yalnız ok kalır, yuvarlak yarı saydam zeminde (`.yalnizOk`). `aria-label` her zaman "Geri: Villalar" (`barGeriAyar`).
 - **Silme ve iptal:**
   - Önemliyse onay sorulur.
   - Her durumda 5 saniyelik **"Geri al"** bildirimi (`geriAlBildir`) gösterilir.

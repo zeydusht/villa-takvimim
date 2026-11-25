@@ -2355,6 +2355,22 @@
   .kgGolge{position:fixed; top:0; bottom:0; left:0; width:16px; z-index:3; pointer-events:none;
     background:linear-gradient(to left, rgba(16,22,19,.16), rgba(16,22,19,0))}
   body.kgSurukle{overflow-x:hidden}
+  /* ===== Görev 43.3: geri düğmesi iOS tarzı: kalın ‹ + önceki ekranın adı, çerçevesiz, yarı saydam beyaz zemin ===== */
+  .barGeri{width:auto; min-width:48px; height:48px; margin:-.5rem .25rem -.5rem -.625rem; padding:0 .875rem 0 .375rem; gap:.0625rem;
+    border:0; background:none; border-radius:14px; overflow:visible; color:#fff; justify-content:flex-start;
+    font-family:var(--sans); font-size:1rem; font-weight:600; letter-spacing:0; line-height:1.2; white-space:nowrap;
+    transition:opacity var(--hiz-bas), transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
+  .barGeri::before{inset:4px 0; border-radius:12px; background:rgba(255,255,255,.14); transform:none; opacity:1; transition:box-shadow var(--hiz-bas)}
+  .barGeri svg{stroke-width:2.75; flex:none}
+  .bgYazi{position:relative; z-index:1}
+  .barGeri:active{opacity:.55; transform:scale(.96); color:#fff}
+  .barGeri:active::before{transform:none; opacity:1}
+  .barGeri:focus{outline:none}
+  .barGeri:focus-visible::before{box-shadow:0 0 0 2px var(--ok), 0 0 0 5px #fff}
+  /* sığmazsa yalnız ok: 48 pt dokunma alanı, 40 pt yarı saydam yuvarlak zemin */
+  .barGeri.yalnizOk{width:48px; padding:0; justify-content:center}
+  .barGeri.yalnizOk::before{inset:4px; border-radius:50%}
+  .barGeri.yalnizOk .bgYazi{display:none}
 </style>
 </head>
 <body>
@@ -2390,8 +2406,7 @@
 <div class="wrap">
   <div class="appBar hide" id="appBar">
     <div class="appBarIc">
-      <button class="barGeri hide" id="barGeri" aria-label="Geri" data-ik="sol" data-ik-boy="22">
-      </button>
+      <button class="barGeri hide" id="barGeri" type="button" aria-label="Geri" data-ik="sol" data-ik-boy="22"><span class="bgYazi" id="barGeriYazi" aria-hidden="true"></span></button>
       <svg class="barLogo" viewBox="184 191 656 640" aria-hidden="true" focusable="false" width="22" height="22"><mask id="vtSemBar" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024"><rect x="0" y="0" width="1024" height="1024" fill="black"/><g fill="white"><rect x="629" y="201" width="97" height="190" rx="12"/><rect x="250" y="400" width="522" height="430" rx="62"/><polyline points="218.5,449 512,226 805.5,449" fill="none" stroke="white" stroke-width="69" stroke-linecap="round" stroke-linejoin="round"/><polygon points="250,425 512,226 772,425 772,520 250,520"/></g><g fill="black"><path d="M512 280 L606 352 L606 398 Q606 411 593 411 L431 411 Q418 411 418 398 L418 352 Z"/><rect x="360" y="382" width="44" height="104" rx="22"/><rect x="619" y="382" width="44" height="104" rx="22"/><rect x="312" y="542" width="101" height="96" rx="20"/><rect x="460" y="542" width="103" height="96" rx="20"/><rect x="609" y="542" width="102" height="96" rx="20"/><rect x="312" y="673" width="101" height="96" rx="20"/><rect x="460" y="673" width="103" height="96" rx="20"/></g></mask><rect x="0" y="0" width="1024" height="1024" fill="currentColor" mask="url(#vtSemBar)"/></svg>
       <span class="barMarka">Villa Takvimim</span>
       <span class="barBaslik" id="barBaslik" aria-hidden="true"></span>
@@ -5226,6 +5241,7 @@
     if(bar) bar.classList[(id==="giris"||id==="onay"||id==="sifre")?"add":"remove"]("hide");
     var gb=document.getElementById("barGeri");
     if(gb) gb.classList[(id==="takvim"||id==="kasa"||id==="misafirler"||id==="fiyatEkran"||id==="fotoEkran"||id==="sihirbaz")?"remove":"add"]("hide");
+    barGeriAyar();   // 43.3
     // 18.14: ekranlar arası geçiş — ileri giderken yeni ekran sağdan 30 px + solma, geri gelirken soldan (260 ms);
     // sekme değişiminde yalnız solma. Altta sabit çubuğu olan ekranlarda (fiyat, fotoğraf, misafir) yalnız solma.
     if(onceki && onceki!==id && !azHareket() && !document.getElementById("acilis") && !KG.surduGeri){
@@ -5269,7 +5285,7 @@
     var h=gorunenBaslik();
     if(BASLIK.h1 && BASLIK.h1!==h){ BASLIK.h1.style.opacity=""; BASLIK.h1.style.transform=""; var g0=BASLIK.h1.querySelector(".baslikG"); if(g0) g0.style.opacity=""; }
     BASLIK.h1=h;
-    if(!h){ bar.classList.remove("baslikli"); return; }
+    if(!h){ if(bar.classList.contains("baslikli")){ bar.classList.remove("baslikli"); barGeriAyar(); } return; }
     var alt=bar.getBoundingClientRect().bottom, r=h.getBoundingClientRect();
     var ilerleme=Math.max(0,Math.min(1,(alt-r.top+r.height*.25)/(r.height*1.25)));
     if(!azHareket()){ h.style.opacity=String(1-ilerleme*.85); h.style.transform=ilerleme?"translateY("+(-ilerleme*6)+"px)":""; }
@@ -5280,9 +5296,11 @@
     if(g){ var gr=g.getBoundingClientRect();
       if(h.classList.contains("gorselGizli") || gr.height<1) g.style.opacity="";
       else { var gs=Math.max(0,Math.min(1,(alt-gr.top-gr.height*.1)/(gr.height*.4))); g.style.opacity=gs?String(1-gs):""; } }
-    var metin=h.textContent.trim();
-    if(bb.textContent!==metin) bb.textContent=metin;
-    bar.classList[r.bottom<=alt+2 ? "add" : "remove"]("baslikli");
+    var metin=h.textContent.trim(), degisti=false;
+    if(bb.textContent!==metin){ bb.textContent=metin; degisti=true; }
+    var bl=r.bottom<=alt+2;
+    if(bl!==bar.classList.contains("baslikli")){ bar.classList[bl?"add":"remove"]("baslikli"); degisti=true; }
+    if(degisti) barGeriAyar();   // 43.3: küçük başlık belirdi / değişti: geri düğmesinin yazısı sığıyor mu
   }
   function baslikIste(){ if(!BASLIK.kare) BASLIK.kare=requestAnimationFrame(baslikGuncelle); }
   window.addEventListener("scroll",baslikIste,{passive:true});
@@ -5308,7 +5326,7 @@
     h.classList[bos?"add":"remove"]("gorselBos");
     if(gizli && g) g.style.opacity="";
   }
-  function baslikYenile(){ BASLIK.kare=0; baslikGorselDurum(); baslikGuncelle(); if(window.bolumGorselIste) bolumGorselIste(); vbFotoBoy(); }   // 39.3: bölüm başlıkları da (yazı boyutu, sekme, yazı tipi); 40.1 villa kartı fotoğrafı
+  function baslikYenile(){ BASLIK.kare=0; baslikGorselDurum(); baslikGuncelle(); if(window.bolumGorselIste) bolumGorselIste(); vbFotoBoy(); barGeriAyar(); }   // 39.3: bölüm başlıkları da (yazı boyutu, sekme, yazı tipi); 40.1 villa kartı fotoğrafı
   window.baslikYenile=baslikYenile;   // boş hâl görseli yüklenemeyince (onerror) de çağrılır
   // haric dışındaki ekranların başlıklarında satır içi değer kalmasın
   function baslikTemizle(haric){
@@ -14666,6 +14684,36 @@
     if(e==="takvim") return S.destek ? null : (S.villaDonus==="ajanda" ? "ajanda" : "ana");
     if(e==="kasa"||e==="misafirler"||e==="fiyatEkran"||e==="fotoEkran"||e==="sihirbaz") return "takvim";
     return null;
+  }
+  // 43.3: sol üstteki geri düğmesi iOS gibi "‹ Villalar" / "‹ Takvim" / "‹ Villa Salta" (önceki ekranın adı). Yazı sığmazsa
+  // (dar ekran, Çok büyük yazı) ya da üst çubuktaki "Villa Takvimim" veya küçük başlıkla çakışacaksa yalnız ok kalır (yarı saydam
+  // yuvarlak zemin). aria-label her zaman "Geri: Villalar". Ölçüm hep yazılı hâlde yapılır (yalnızOk sınıfı önce kalkar): titreme yok.
+  function barGeriAd(){
+    var on=kgOnceki(acikEkran());
+    if(on==="ana") return cev("Villalar");
+    if(on==="ajanda") return cev("Takvim");
+    if(on==="takvim"){ var v=aktif(); return (v && v.ad) || cev("Villa"); }
+    return "";
+  }
+  function barGeriAyar(){
+    var b=document.getElementById("barGeri"), y=document.getElementById("barGeriYazi");
+    if(!b || !y || b.classList.contains("hide")) return;
+    var ad=barGeriAd();
+    if(y.textContent!==ad) y.textContent=ad;
+    b.setAttribute("aria-label", ad ? cev("Geri")+": "+ad : cev("Geri"));
+    b.classList.remove("yalnizOk");
+    if(!ad){ b.classList.add("yalnizOk"); return; }
+    var bar=document.getElementById("appBar"), ic=b.parentNode, r=b.getBoundingClientRect(), icR=ic.getBoundingClientRect(), sigmaz=false;
+    if(r.width>icR.width*.5) sigmaz=true;   // yazı çubuğun yarısından genişse (uzun villa adı)
+    else if(bar.classList.contains("baslikli")){
+      var bb=document.getElementById("barBaslik"), q=bb.getBoundingClientRect();
+      sigmaz = !!bb.textContent && r.right+8>q.left;
+    } else {
+      var m=ic.querySelector(".barMarka");
+      // marka tek satırda ölçülür: sığmazsa iki satıra kırılır, o da çakışma sayılır
+      if(m && m.offsetParent!==null){ m.style.whiteSpace="nowrap"; var mr=m.getBoundingClientRect(); sigmaz = mr.right>icR.right+.5 || mr.left<r.right; m.style.whiteSpace=""; }
+    }
+    if(sigmaz) b.classList.add("yalnizOk");
   }
   function kgAcik(){
     var ua=navigator.userAgent||"";
