@@ -42,6 +42,7 @@
     --cerceve-kalinlik:2px;
     --kose:.75rem;                /* butonlar, kartlar ve satırlar aynı köşe */
     --dokunma-yukseklik:3.25rem;  /* 52px: ana ve ikincil butonlar, satırlar */
+    --yazi-en-az:8em;             /* 42.1 satırlardaki yazı sütununun en az genişliği (≈ 8 harf); sağdaki öğe sığmazsa alta iner */
     --ok-isareti:#2E3833;         /* satırların sağındaki › */
     --basili-cerceve:#0B5B57;     /* basınca çerçeve */
     --basili-zemin:#E3EFEC;       /* basınca zemin */
@@ -425,13 +426,13 @@
   .section{margin-top:2rem}
   .row{display:flex; align-items:center; gap:.75rem; padding:.75rem 0;
     border-bottom:1px solid var(--line); width:100%}
-  .row .name{flex:1; min-width:0; white-space:normal; overflow-wrap:anywhere}
+  .row .name{flex:1; min-width:0; white-space:normal}
   .nw{white-space:nowrap}
   .row .meta{font-size:.875rem; color:var(--muted); flex:none}
   .satirBtn{display:flex; align-items:center; gap:.75rem; width:100%; min-height:var(--dokunma-yukseklik);
     padding:.75rem 1rem .75rem 1.125rem; margin-top:.5rem}
   /* Soldaki yazı hiç kesilmez (gerekirse alt satıra geçer); yer daralırsa önce sağdaki açıklama daralır */
-  .satirBtn > span:first-child{flex:1 1 auto; min-width:0; white-space:normal; overflow-wrap:anywhere}
+  .satirBtn > span:first-child{flex:1 1 auto; min-width:0; white-space:normal}
   .satirBtn .sag{color:#3F4843; font-size:.875rem; flex:0 1000 auto; min-width:0; max-width:55%;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:right}
   .satirAlt{display:block; font-size:.8235rem; color:var(--muted); margin-top:.125rem}
@@ -815,7 +816,7 @@
     text-align:left; min-height:6.5rem; border:1.5px solid transparent; touch-action:manipulation; transition:transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
   .kKutu:active{transform:scale(var(--basili-olcek))}
   .kKutu .kkIk{display:flex; margin-bottom:.125rem}
-  .kKutu .kkSayi{font-size:clamp(.9375rem,4.4vw,1.25rem); line-height:1.2; font-variant-numeric:tabular-nums; overflow-wrap:anywhere}
+  .kKutu .kkSayi{font-size:clamp(.9375rem,4.4vw,1.25rem); line-height:1.2; font-variant-numeric:tabular-nums}
   .kKutu .kkEt{font-size:.875rem}
   .kKutu .kkAlt{font-size:.8235rem; line-height:1.3}
   .kKutu.yesil{background:#E3EFEC; border-color:#B9D3CE; color:#0B5B57}
@@ -1106,7 +1107,7 @@
   .ksRozet.pro{background:var(--basili-zemin); color:var(--ok)}
   .ksRozet.elle{background:var(--lacivert-zemin); color:var(--lacivert)}
   .kdUyelik{background:var(--soft); border-radius:.75rem; padding:.875rem 1rem; line-height:1.5}
-  .kdUyelik .kdUyNot{color:var(--muted); font-size:.875rem; margin-top:.25rem; overflow-wrap:anywhere}
+  .kdUyelik .kdUyNot{color:var(--muted); font-size:.875rem; margin-top:.25rem}
   /* alt yazılı satırlarda sağdaki değer (e-posta, Açık / Kapalı) kesilmesin: sol sütun alt satıra kayar */
   /* yazı sütunu esner; ikon kutusu (data-ikk ile başa eklenir) ve sağdaki değer esnemez */
   #hesapBtn > span:not(.ikKutu):not(.sag), #mfaBtn > span:not(.ikKutu):not(.sag), #uyelikBtn > span:not(.ikKutu):not(.sag){flex:1 1 9rem}
@@ -1152,7 +1153,7 @@
   #kd-liste button.name{min-height:3rem}
   .etSatir{display:grid; grid-template-columns:auto 1fr; gap:.125rem .75rem; padding:.625rem 0; border-bottom:1px solid var(--line); font-size:.9375rem; line-height:1.35}
   .etZaman{color:var(--muted); font-size:.8235rem; font-variant-numeric:tabular-nums; white-space:nowrap; padding-top:.1rem}
-  .etAlt{grid-column:2; color:var(--muted); font-size:.8235rem; overflow-wrap:anywhere}
+  .etAlt{grid-column:2; color:var(--muted); font-size:.8235rem}
   .etSatir.hata .etAd{color:var(--uyari)}
   /* ================= 27 MÜSAİTLİK ARAMA ================= */
   /* 27.1: Takvim sekmesinde başlığın altında belirgin kart (açık yeşil zemin, yeşil çerçeve); tek villada daha küçük */
@@ -1399,8 +1400,8 @@
   a[x-apple-data-detectors]{color:inherit !important; text-decoration:none !important; font:inherit !important}
   .monthbar .m{text-decoration:none}
   /* 10.1 ay özeti kutuları: yazı taşmaz */
-  .okutu .lab{min-height:0; white-space:normal; overflow:visible; overflow-wrap:anywhere}
-  .okutu .alt{white-space:normal; overflow:visible; overflow-wrap:anywhere; line-height:1.35}
+  .okutu .lab{min-height:0; white-space:normal; overflow:visible}
+  .okutu .alt{white-space:normal; overflow:visible; line-height:1.35}
   .okutu .val{font-size:clamp(.9375rem, 4.2vw, 1.0625rem)}
   @media (max-width:360px){ .okutu{padding:.5rem .5625rem} .okutu .lab{letter-spacing:.02em; min-height:2.6em} }
   /* 10.2 / 10.6 yuvarlak çerçeveli ok butonları; basınca merkezden dolar */
@@ -1421,7 +1422,7 @@
   .monthbar > div:first-child{min-width:0}
   /* 10.3 villa başlık kartı */
   .villaBas{border:var(--cerceve-kalinlik) solid var(--line); border-radius:var(--kose); padding:1rem 1.125rem 1.125rem}
-  .vbAd{font-family:var(--serif); font-size:1.875rem; letter-spacing:var(--harf-serif); line-height:1.15; overflow-wrap:anywhere}
+  .vbAd{font-family:var(--serif); font-size:1.875rem; letter-spacing:var(--harf-serif); line-height:1.15}
   .vbKonum{font-size:.9375rem; color:var(--muted); margin-top:.25rem}
   .vbUst{display:flex; align-items:flex-start; justify-content:space-between; gap:.75rem}
   .vbSol{flex:1 1 auto; min-width:0}
@@ -1429,7 +1430,7 @@
   .villaBas .durumEt{margin-top:.875rem}
   /* 40.1: fotoğraf yanında sütun daraldı; "Dolu · Ad Soyad" kesilmez, gerekirse iki satıra iner */
   .villaBas .durumEt{border-radius:1rem}
-  .villaBas .durumEt > span{white-space:normal; overflow:visible; overflow-wrap:anywhere}
+  .villaBas .durumEt > span{white-space:normal; overflow:visible}
   /* 40.1 villa kartı: solda ad, konum, Boş/Dolu; sağda büyük kare fotoğraf (dokununca galeri). Fotoğraf yoksa villa-bos görseli +
      "Fotoğraf ekle". Ad sığmazsa (bir kelime kesilecekse ya da üç satıra iniyorsa) fotoğraf 96 pt'ye iner (JS: .vbDar); yine
      sığmazsa adın yazısı adım adım en çok %70'e küçülür (iki satır, kelime bölünmeden) */
@@ -1443,7 +1444,6 @@
   .villaBas.vbTasar .vbKonum{grid-column:1; justify-self:start}
   .villaBas.vbTasar .vbSol > .durumEt{grid-column:1 / -1; justify-self:start}
   .villaBas.vbTasar .vbFoto{grid-column:2; grid-row:2; margin-top:.75rem}
-  .villaBas.vbKir .vbAd{overflow-wrap:anywhere}
   .vbFoto{flex:none; width:max(var(--vb-foto-kucuk), var(--vb-foto)); aspect-ratio:1; border-radius:var(--vb-foto-kose); overflow:hidden; padding:0; border:0;
     background:var(--soft) center/cover no-repeat; box-shadow:inset 0 0 0 1px rgba(16,22,19,.08); position:relative;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.125rem; color:var(--ok);
@@ -1491,7 +1491,7 @@
   .rezKart::after{content:""; flex:none; width:.4375rem; height:.4375rem; margin:0 .25rem 0 -.125rem;
     border-top:2px solid var(--ok-isareti); border-right:2px solid var(--ok-isareti); transform:rotate(45deg)}
   .rezKart .rkMetin{flex:1; min-width:0}
-  .rezKart .rkAd{display:block; overflow-wrap:anywhere}
+  .rezKart .rkAd{display:block}
   .rezKart .rkAlt{display:block; font-size:.875rem; color:var(--muted); margin-top:.125rem}
   /* 26.7: büyük yazıda tarih satırı kırılır, sağdaki rozetin altına taşmaz. Kart dar kalırsa (büyük yazı + dar ekran) rozet ve
      tutar ad sütununu ezmesin diye alt satıra iner (kartın kendi genişliğine göre; normal boyutta kart geniş, değişmez) */
@@ -1611,7 +1611,7 @@
     border-radius:var(--kose); touch-action:manipulation}
   .anaAraSil:active{background:var(--basili-zemin)}
   .anaAraYok{padding:1.5rem 0 .5rem; text-align:center}
-  .anaAraYok .bosYazi{font-size:1rem; line-height:1.45; overflow-wrap:anywhere}
+  .anaAraYok .bosYazi{font-size:1rem; line-height:1.45}
   .anaAraYok .big{margin-top:1rem}
   .ozetEt .durumEt{min-height:2.75rem; padding:.375rem 1rem; touch-action:manipulation;
     transition:opacity var(--hiz-bas), box-shadow var(--hiz-bas), transform var(--bas-sure,var(--hiz-birak)) var(--egri-giris)}
@@ -1655,7 +1655,7 @@
   .ikKutu{flex:none; width:2.25rem; height:2.25rem; border-radius:.625rem; background:var(--r15); color:var(--r);
     display:flex; align-items:center; justify-content:center}
   .satirBtn > span.ikKutu{flex:none}
-  .satirBtn > span.ikKutu + span{flex:1 1 auto; min-width:0; white-space:normal; overflow-wrap:anywhere}
+  .satirBtn > span.ikKutu + span{flex:1 1 auto; min-width:0; white-space:normal}
   .satirBtn:has(> .ikKutu){padding-left:.75rem}
   .grup{display:block; margin-top:.75rem; background:#fff; border:var(--cerceve-kalinlik) solid var(--cerceve);
     border-radius:var(--kose); overflow:hidden}
@@ -1701,7 +1701,7 @@
   .kalanEt .ik{color:var(--lacivert)}
   .rezKart{padding-left:.75rem}
   .satirBtn > span.harfDaire{flex:none}
-  .satirBtn > .harfDaire + span{flex:1 1 auto; min-width:0; white-space:normal; overflow-wrap:anywhere}
+  .satirBtn > .harfDaire + span{flex:1 1 auto; min-width:0; white-space:normal}
   .satirBtn:has(> .harfDaire){padding-left:.75rem}
   .misSatir .harfDaire{background:#7A4B8C}
   .kSatir > .ikKutu{margin-right:-.25rem}
@@ -1714,7 +1714,7 @@
   .villaSecKart:active{transform:scale(var(--basili-olcek)); background:var(--basili-zemin)}
   .vsFoto{flex:none; width:3.5rem; height:3.5rem; border-radius:.75rem; background:center/cover no-repeat}
   .vsHarf{display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.25rem}
-  .vsAd{flex:1; min-width:0; font-size:1.125rem; overflow-wrap:anywhere}
+  .vsAd{flex:1; min-width:0; font-size:1.125rem}
   /* 18.21: sık sorulan sorular */
   .sss{display:grid; gap:.5rem; margin-top:.75rem}
   .sssMadde{border:var(--cerceve-kalinlik) solid var(--cerceve); border-radius:var(--kose); background:#fff}
@@ -1734,11 +1734,11 @@
   .ajKart:active{transform:scale(var(--basili-olcek)); background:var(--basili-zemin)}
   .ajKart .vRozet{flex:none; width:3rem; height:3rem; border-radius:.75rem; font-size:1.125rem}
   .ajKartIc{flex:1; min-width:0; display:flex; flex-direction:column; gap:.3125rem}
-  .ajVilla{font-size:1.1875rem; line-height:1.25; overflow-wrap:anywhere}
+  .ajVilla{font-size:1.1875rem; line-height:1.25}
   .ajAlt{display:flex; flex-wrap:wrap; align-items:center; gap:.375rem .5rem}
   .ajAlt .ajEt{margin:0}
   .ajAlt .ajEt .ik{display:inline-block; vertical-align:-3px; margin-right:.25rem}
-  .ajMisafir{font-size:.9375rem; color:var(--muted); min-width:0; overflow-wrap:anywhere}
+  .ajMisafir{font-size:.9375rem; color:var(--muted); min-width:0}
   .ajDepEt{align-self:flex-start; font-size:.8235rem; padding:.0625rem .5rem; border-radius:99px; background:var(--lacivert-zemin); color:var(--lacivert)}
   .ajSag{flex:none; text-align:right}
   .ajTutar{color:#9B2C4A; font-size:.9375rem; white-space:nowrap}
@@ -1774,7 +1774,7 @@
   @media (max-width:360px){ .okutu .lab .ik{display:none} }
   /* 12.9 alt ekranlarda başlığın sağında villanın kapak fotoğrafı (yoksa villa renginde baş harf) */
   .baslikSatir{display:flex; align-items:center; justify-content:space-between; gap:.75rem}
-  .baslikSatir > h1{flex:1 1 auto; min-width:0; overflow-wrap:anywhere}
+  .baslikSatir > h1{flex:1 1 auto; min-width:0}
   .vRozet{flex:none; width:44px; height:44px; border-radius:12px; background:var(--soft) center/cover no-repeat;
     display:flex; align-items:center; justify-content:center; color:#fff; font-size:.9375rem; letter-spacing:.03em; line-height:1;
     box-shadow:inset 0 0 0 1px rgba(16,22,19,.08)}
@@ -1786,7 +1786,7 @@
     background:#fff; border:1.5px solid var(--cerceve); color:var(--ink); font-size:.875rem; line-height:1.25; text-align:left}
   .cip.ozBtn::before{content:none}
   .cip.ozBtn .ozIk{flex:none; color:#7A857F}
-  .cip.ozBtn .ozAd{flex:1 1 auto; min-width:0; overflow-wrap:anywhere}
+  .cip.ozBtn .ozAd{flex:1 1 auto; min-width:0}
   .cip.ozBtn .ozTik{flex:none; color:var(--ok); visibility:hidden}
   .cip.ozBtn.on{background:#E3EFEC; border-color:var(--ok)}
   .cip.ozBtn.on .ozIk{color:var(--ok)}
@@ -1855,7 +1855,7 @@
   .kanalR{display:block; width:100%; text-align:left; padding:.75rem 0; border:0; border-bottom:1px solid var(--line); background:none; color:var(--ink); font:inherit}
   .kanalR:last-child{border-bottom:0}
   .kanalRUst{display:flex; align-items:center; flex-wrap:wrap; gap:.25rem .625rem}
-  .kanalRAd{flex:1 1 8rem; min-width:0; overflow-wrap:anywhere}
+  .kanalRAd{flex:1 1 8rem; min-width:0}
   .kanalRCiro{flex:none; margin-left:auto; font-variant-numeric:tabular-nums}
   .kanalRAlt{margin-top:.25rem; color:var(--muted); font-size:.8823rem; line-height:1.45}
   .kanalRNet{color:var(--ok)}
@@ -1873,14 +1873,13 @@
   .crmAraKutu{margin:1rem 0 .75rem}
   .crmSatir{align-items:center}
   .crmSatir > .crmMetin{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:.125rem; white-space:normal}
-  .crmAd{overflow-wrap:anywhere}
   .crmKanallar{display:flex; flex-wrap:wrap; gap:.25rem; margin-top:.25rem}
   .satirBtn .sag.crmPara{flex:none; max-width:none; font-variant-numeric:tabular-nums; color:var(--ink)}
   .crmKonak{display:flex; flex-direction:column}
   .crmKSatir{padding:.625rem 0; border-bottom:1px solid var(--line)}
   .crmKSatir:last-child{border-bottom:0}
   .crmKUst{display:flex; flex-wrap:wrap; gap:.25rem .75rem; align-items:baseline}
-  .crmKVilla{flex:1 1 8rem; min-width:0; overflow-wrap:anywhere}
+  .crmKVilla{flex:1 1 8rem; min-width:0}
   .crmKTutar{flex:none; margin-left:auto; font-variant-numeric:tabular-nums}
   .crmKAlt{display:flex; align-items:center; flex-wrap:wrap; gap:.375rem; margin-top:.25rem; color:var(--muted); font-size:.8823rem}
   .crmNot{padding:.5rem 0; border-bottom:1px solid var(--line); line-height:1.45}
@@ -1900,7 +1899,7 @@
     background:var(--uyari); color:#fff; font-size:.8235rem; font-variant-numeric:tabular-nums}
   .tlDurum{flex:none; max-width:none}
   .tlDurum.d-bekliyor{color:var(--uyari)} .tlDurum.d-baglandi{color:var(--ok)}
-  .tlBilgi{margin:.875rem 0 0; line-height:1.45; overflow-wrap:anywhere}
+  .tlBilgi{margin:.875rem 0 0; line-height:1.45; overflow-wrap:break-word}
   .tlBilgi .lab{margin-bottom:.125rem}
   .tlSite{display:inline-flex; align-items:center; gap:.5rem}
   .tlLink{display:inline-flex; align-items:center; min-height:3rem; color:var(--lacivert); word-break:break-all}
@@ -1908,7 +1907,7 @@
   .tlSeg button{flex:1 1 40%}
   .komListe{display:flex; flex-direction:column; gap:.5rem}
   .komSatir{display:flex; align-items:center; gap:.75rem; min-height:var(--dokunma-yukseklik)}
-  .komAd{flex:1 1 auto; min-width:0; overflow-wrap:anywhere}
+  .komAd{flex:1 1 auto; min-width:0}
   .komGir{flex:none; display:flex; align-items:center; gap:.25rem; color:var(--muted)}
   .komGir input{width:4.5rem; text-align:right}
   .kanalBaslik{display:flex; align-items:center; gap:.375rem; margin-bottom:.375rem}
@@ -2004,7 +2003,7 @@
   /* 13.4 kullanıcı kuralları */
   .kuralSatir{display:flex; align-items:center; gap:.5rem; padding:.375rem .375rem .375rem .25rem; border-bottom:1px solid var(--line); margin-bottom:-1px}
   .kuralTut{flex:none; width:2.5rem; height:2.75rem; display:flex; align-items:center; justify-content:center; color:#8A948F; touch-action:none; cursor:grab}
-  .kuralMetin{flex:1 1 auto; min-width:0; overflow-wrap:anywhere; font-size:.9375rem; line-height:1.4}
+  .kuralMetin{flex:1 1 auto; min-width:0; font-size:.9375rem; line-height:1.4}
   .kuralSatir.suruk{background:var(--basili-zemin); box-shadow:0 6px 18px rgba(16,22,19,.16); position:relative; z-index:2}
   /* 13.6 boş günleri paylaş */
   .seg.segDort{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem}
@@ -2063,7 +2062,7 @@
   .sirKart.notr{background:var(--sir-notr-zemin); border-color:var(--sir-notr-cerceve)}
   .sirKart.notr:active{background:#E1E8E4}
   .sirKart.notr .sirBas{color:#3F4843}
-  .sirDurum{display:flex; align-items:center; gap:.5rem; margin-top:.625rem; font-size:1rem; line-height:1.35; overflow-wrap:anywhere}
+  .sirDurum{display:flex; align-items:center; gap:.5rem; margin-top:.625rem; font-size:1rem; line-height:1.35}
   .sirDurum .ik{flex:none}
   .sirKart.tam .sirDurum{color:var(--giris-renk)}
   .sirKart.eksik .sirDurum{color:var(--cikis-renk)}
@@ -2074,7 +2073,7 @@
     background:var(--lacivert-zemin); color:var(--lacivert); border:1.5px solid var(--lacivert-cerceve)}
   .sirNe.bugun{background:var(--ok); color:#fff; border-color:var(--ok)}
   .sirAlt{display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-top:.625rem; flex-wrap:wrap}
-  .sirAd{display:flex; align-items:center; gap:.5rem; font-size:1.125rem; line-height:1.3; min-width:0; overflow-wrap:anywhere}
+  .sirAd{display:flex; align-items:center; gap:.5rem; font-size:1.125rem; line-height:1.3; min-width:0}
   .sirAd .ik.gir{color:var(--ok)} .sirAd .ik.cik{color:#8A948F}
   .sirKalan{font-size:.9375rem; color:#9B2C4A; white-space:nowrap}
   .sirAlindi{display:inline-flex; align-items:center; gap:.25rem; font-size:.9375rem; color:var(--ok); white-space:nowrap}
@@ -2140,7 +2139,7 @@
   .spUst{display:flex; align-items:center; justify-content:space-between; gap:.5rem; min-height:3rem}
   .spMetin{display:flex; flex-direction:column; min-width:0}
   /* 20.5: başlık kalın ve yeşil (bu panelde kalın yazı serbest) */
-  .spBas{font-size:1.25rem; line-height:1.3; overflow-wrap:anywhere; font-weight:600; color:var(--ok)}
+  .spBas{font-size:1.25rem; line-height:1.3; font-weight:600; color:var(--ok)}
   .spAlt{font-size:1rem; color:var(--ink); line-height:1.35; margin-top:.25rem}
   .spTutar{display:flex; align-items:flex-end; justify-content:space-between; gap:.75rem; margin-top:.375rem}
   .spDokum{font-size:.875rem; color:var(--muted); line-height:1.35; min-width:0}
@@ -2184,6 +2183,14 @@
      arkalarında renk, daire, kare, kenarlık ya da ikinci gölge olmaz. İstisna: görsel yüklenemeyince ikonlu yedek hâl (.yok) */
   .baslikG, .bolumGorsel, .bolumGorsel img, .bosGorsel:not(.yok), .bosGorsel img, .secKartGorsel:not(.yok), .secKartGorsel img, .cizim3d{
     background:none; border:0; border-radius:0; box-shadow:none; filter:none; outline:0}
+  /* ===== Görev 42.1: kelime ortasından bölme yok (docs/STIL.md "Okunabilirlik") =====
+     Normal yazı hiçbir yerde kelime ortasından bölünmez (overflow-wrap:anywhere / word-break:break-all yalnız bağlantı adresi,
+     e-posta ve kodda). Satırlardaki yazı sütunu en az --yazi-en-az (≈ 8 harf) yer ister ve en uzun kelimesinden dar olmaz
+     (min-width:auto); sağdaki öğe sığmıyorsa yazı daralmaz, sağdaki öğe alt satıra iner (flex-wrap). */
+  .row .name, .satirBtn > span:first-child:not(.ikKutu):not(.harfDaire):not(.dtRozet), .satirBtn > span.ikKutu + span, .satirBtn > .harfDaire + span,
+  .anahtar > span:first-child:not(.ikKutu), .anahtar > .ikKutu + span,
+  .vsAd, .baslikSatir > h1, .kanalRAd, .crmKVilla, .komAd, .kuralMetin{flex:1 1 var(--yazi-en-az); min-width:auto}
+  .baslikSatir, .komSatir, .kuralSatir{flex-wrap:wrap}
 </style>
 </head>
 <body>
