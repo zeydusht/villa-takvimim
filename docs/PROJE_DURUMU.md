@@ -767,6 +767,12 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       · Claude Code (25 Kasım). 43.1–43.5 ayrı commit; Netlify'a yüklenmedi. Rapor: `docs/qa/gorev43/README.md`.
       Kenar hareketi ana ekrana eklenmiş uygulamada / Capacitor'da; Safari sekmesinde Safari'ninki kalır. Misafir kartı pencere
       olduğu için orada kenar hareketi yok. GERÇEK İPHONE'DA BAKILACAK: kenardan kaydırma hissi (takip, yaylanma, fiske).
+- [x] Görev 44 — Başlık görseli filtreyle / boş hâlde kaybolmuyor (yalnız yer yoksa gizli), akıcılık (zorunlu layout tekrarları,
+      content-visibility, bulanıklık kalktı, iOS 120 Hz anahtarı; en kötü kare villa girişi 1083 → 233 ms, CPU 4x yavaş), Villalar ve
+      Hesap başlık görselleri yeniden (yatay, Takvim'le aynı stil; oran 1,31 / 1,38) · Claude Code (25 Kasım). 44.1–44.4 ayrı commit;
+      Netlify'a yüklenmedi. Rapor: `docs/qa/gorev44/README.md`, ölçüm `performans.md`, adaylar `www/img/3d/aday/`.
+      Kalan: ekran açılışının ilk karesi hâlâ 50 ms'yi geçiyor (büyük ekranı parça parça çizmek ayrı iş). Görev 43.1'de silinen
+      `odemeTam` (giriş günü detay hatası) 44.2'de düzeltildi. GERÇEK İPHONE'DA BAKILACAK: akıcılık, 120 Hz.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
