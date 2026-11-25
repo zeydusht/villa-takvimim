@@ -2605,7 +2605,7 @@
     <div class="yaziOnizle" id="hs-yaziOnizle" aria-hidden="true">
       <div class="yoBas">Pazartesi 23 Kasım</div>
       <div>16:00 · Hasan Demir girecek</div>
-      <div class="sm muted">29.000 ₺ alınacak</div>
+      <div class="sm muted">29.000&nbsp;₺ alınacak</div>
     </div>
     <div class="eyebrow" style="margin:2.25rem 0 .75rem" data-iki="hesap:dil">Dil / Language</div>
     <div class="seg" id="hs-dil">
@@ -2910,12 +2910,12 @@
     <!-- 14.9: büyük net kazanç, 3 renkli kutu, tek cümle; listeler; istatistikler en altta kapalı -->
     <div class="ozetKart">
       <div class="okLab" id="kNetLab">Net kazanç</div>
-      <div class="okVal" id="kNet">0 ₺</div>
+      <div class="okVal" id="kNet">0&nbsp;₺</div>
     </div>
     <div class="kutu3">
-      <button class="kKutu yesil" id="kAlindiKutu" data-git="kAlinanBol"><span class="kkIk" data-ik="tik-daire" data-ik-boy="22"></span><span class="kkSayi" id="kGelir">0 ₺</span><span class="kkEt">Alındı</span></button>
-      <button class="kKutu amber" id="kAlinacak" data-git="kAlinacakBol"><span class="kkIk" data-ik="unlem-daire" data-ik-boy="22"></span><span class="kkSayi" id="kBekleyen">0 ₺</span><span class="kkEt">Alınacak</span><span class="kkAlt" id="kBekleyenAlt"></span></button>
-      <button class="kKutu gri" id="kGiderKutu" data-git="kGiderBol"><span class="kkIk" data-ik="fis" data-ik-boy="22"></span><span class="kkSayi" id="kGider">0 ₺</span><span class="kkEt">Giderler</span></button>
+      <button class="kKutu yesil" id="kAlindiKutu" data-git="kAlinanBol"><span class="kkIk" data-ik="tik-daire" data-ik-boy="22"></span><span class="kkSayi" id="kGelir">0&nbsp;₺</span><span class="kkEt">Alındı</span></button>
+      <button class="kKutu amber" id="kAlinacak" data-git="kAlinacakBol"><span class="kkIk" data-ik="unlem-daire" data-ik-boy="22"></span><span class="kkSayi" id="kBekleyen">0&nbsp;₺</span><span class="kkEt">Alınacak</span><span class="kkAlt" id="kBekleyenAlt"></span></button>
+      <button class="kKutu gri" id="kGiderKutu" data-git="kGiderBol"><span class="kkIk" data-ik="fis" data-ik-boy="22"></span><span class="kkSayi" id="kGider">0&nbsp;₺</span><span class="kkEt">Giderler</span></button>
     </div>
     <div class="kCumle" id="kAcik"></div>
     <div id="kasaBos" class="hide"></div>
@@ -3071,7 +3071,8 @@
     return n;
   }
   var nf=new Intl.NumberFormat((window.DIL&&DIL.ingilizce())?"en-US":"tr-TR");
-  var para=function(n){ return nf.format(Math.round(n||0))+" ₺" };
+  // 43.4: sayı ile ₺ arasında bölünmez boşluk: "6.000 ₺" satır sonunda bölünmez, ₺ alt satıra tek başına düşmez
+  var para=function(n){ return nf.format(Math.round(n||0))+"\u00a0₺" };
   // küçük resim adresi (CSS url('…') içinde tırnak bozmasın)
   var kucukResim=function(f){ return String(f.thumb||f.tam||"").replace(/'/g,"%27"); };
   // Türkçede "%53", İngilizcede "53%"
@@ -6696,7 +6697,7 @@
            '<span class="tarihIk">'+ikon("cikis",{boy:15,sinif:"cik"})+esc(kisa(r.end))+"</span>";
   }
   // 43.1: kalan tutar amber + "!" (eksik / hiç alınmadı); fazla alınan kırmızı + ⚠
-  function kalanEt(t){ return '<span class="kalanEt odRenk od-eksik">'+ikon("unlem-daire",{boy:16})+para(t).replace(/ ₺/g,"&nbsp;₺")+"</span>"; }
+  function kalanEt(t){ return '<span class="kalanEt odRenk od-eksik">'+ikon("unlem-daire",{boy:16})+para(t).replace(/[ \u00a0]₺/g,"&nbsp;₺")+"</span>"; }
   function fazlaEt(t){ return '<span class="kalanEt odRenk od-fazla">'+ikon("uyari-ucgen",{boy:16})+esc(cev(para(t)+" fazla alındı"))+"</span>"; }
   function rezKartHTML(v,r,yeniOlabilir){
     var kalan=kalanGorur()?kalanTutar(v,r):0;
@@ -8034,7 +8035,7 @@
                                        : x.getDate()+" "+AYLAR_TR[x.getMonth()]+" – "+z.getDate()+" "+AYLAR_TR[z.getMonth()];
   }
   function trKadar(k){ var d=parse(k); return d.getDate()+" "+AYLAR_TR[d.getMonth()]+"'"+AY_EK[d.getMonth()]+" kadar"; }
-  function trPara(n){ return new Intl.NumberFormat("tr-TR").format(Math.round(n||0))+" ₺"; }
+  function trPara(n){ return new Intl.NumberFormat("tr-TR").format(Math.round(n||0))+"\u00a0₺"; }
   function teklifNormal(v,bas,bit){
     if(!bas || !bit) return null;
     var k=konaklamaHesap(v,bas,bit); if(k.gece<1) return null;
@@ -8101,12 +8102,12 @@
       if(!N){ el.innerHTML='<div class="sm muted">'+esc(cev("Tarihleri seçince normal ücret burada görünür."))+"</div>"; return; }
       var sat=function(ad,deger,arti){ return '<div class="ucSatir"><span class="ucAd">'+ad+'</span><span class="ucDeger">'+(arti?"+":"")+para(deger)+"</span></div>"; };
       var gAd=N.tek ? cev(N.gc+" gece")+" × "+para(N.tek) : cev(N.gc+" gece");
-      var h='<div class="eyebrow lab" style="margin:0 0 .25rem">'+esc(cev("Normal ücret"))+"</div>"+sat(esc(gAd).replace(/ ₺/g,"&nbsp;₺"),N.geceler,false);
+      var h='<div class="eyebrow lab" style="margin:0 0 .25rem">'+esc(cev("Normal ücret"))+"</div>"+sat(esc(gAd).replace(/[ \u00a0]₺/g,"&nbsp;₺"),N.geceler,false);
       if(N.eksik) h+='<div class="sm warn" style="margin:-.25rem 0 .5rem">'+esc(cev(N.eksik+" gecenin fiyatı girilmemiş"))+"</div>";
       if(N.ek) h+=sat(esc(cev("Kısa konaklama ücreti")),N.ek,true);
       h+='<div class="ucCizgi"></div><div class="ucSatir ucToplam"><span class="ucAd">'+esc(cev("Konaklama ücreti"))+'</span><span class="ucDeger">'+para(N.konaklama)+"</span></div>";
       if(N.dep) h+=sat(esc(cev("Hasar depozitosu")),N.dep,true)+'<div class="sm muted" style="margin-top:.25rem">'+esc(cev(para(N.dep)+" depozito çıkışta iade edilir."))+"</div>";
-      el.innerHTML=h.replace(/(\d) ₺/g,"$1&nbsp;₺");   // 40.8
+      el.innerHTML=h.replace(/(\d)[ \u00a0]₺/g,"$1&nbsp;₺");   // 40.8
       ucDarAyar(el);
     }
     function karsiCiz(){
@@ -8321,7 +8322,7 @@
     var fl=[]; ayTumGunleri(y,m).forEach(function(k){ if(v.fiyatlar[k]) fl.push(v.fiyatlar[k]); });
     if(!fl.length) return "";
     var mn=Math.min.apply(null,fl), mx=Math.max.apply(null,fl);
-    return mn===mx ? binlik(mn)+" ₺" : binlik(mn)+"–"+binlik(mx)+" ₺";
+    return mn===mx ? binlik(mn)+"\u00a0₺" : binlik(mn)+"–"+binlik(mx)+"\u00a0₺";
   }
   // yıl seçicinin sınırları: fiyatı olan en eski yıl (en az geçen yıl) … iki yıl sonrası
   function fiyatYilAraligi(v){
@@ -8363,7 +8364,7 @@
         if(!fl.length) sag='<span class="sag yok">'+esc(cev("Fiyat girilmedi"))+"</span>";
         else{
           var mn=Math.min.apply(null,fl), mx=Math.max.apply(null,fl);
-          sag='<span class="sag">'+esc(mn===mx?cev(binlik(mn)+" ₺ / gece"):binlik(mn)+"–"+binlik(mx)+" ₺")+"</span>";
+          sag='<span class="sag">'+esc(mn===mx?cev(binlik(mn)+"\u00a0₺ / gece"):binlik(mn)+"–"+binlik(mx)+"\u00a0₺")+"</span>";
         }
         var gy=ayFiyatAraligi(v,y-1,m);
         var key=y+"-"+(m+1), sec=!!F.secAy[key];
@@ -8561,7 +8562,7 @@
     perde('<div class="fyPanel"><div class="head"><h2>'+esc(cev(baslik))+"</h2>"+kapatBtn()+"</div>"+
       '<div class="fyNot">'+esc(not)+"</div>"+
       (hz.length?'<div class="hazir">'+hz.map(function(f){
-        return '<button class="big renkli is-para" data-ik="etiket" data-ik-boy="16" data-hf="'+f+'">'+binlik(f)+" ₺</button>"; }).join("")+"</div>":"")+
+        return '<button class="big renkli is-para" data-ik="etiket" data-ik-boy="16" data-hf="'+f+'">'+binlik(f)+"\u00a0₺</button>"; }).join("")+"</div>":"")+
       (o.aylar?'<div class="fyLab'+(o.hsAcik?"":" hide")+'" id="fp-anaLab">'+esc(cev("Pazar – Perşembe geceleri"))+"</div>":"")+
       sayiAlan("fp-tutar",false,(ayni&&ilk)?ilk:0)+
       (o.aylar?'<button class="satirBtn hsAc'+(o.hsAcik?" on":"")+'" id="fp-hsAc" data-ikk="fiyat:takvim" style="margin-top:1rem"><span>'+esc(cev("Hafta sonu farklı fiyat"))+"</span></button>"+
@@ -8619,8 +8620,8 @@
         v.fiyatlar[k]=(fh && (g===5||g===6))?fh:f;
       });
       if(fh) sonFiyatEkle(fh); sonFiyatEkle(f);
-      bitir(eski, (fh && fh!==f) ? keys.length+" gün fiyatlandı · hafta içi "+binlik(f)+" ₺, hafta sonu "+binlik(fh)+" ₺"
-                                  : keys.length+" gün "+binlik(f)+" ₺ yapıldı");
+      bitir(eski, (fh && fh!==f) ? keys.length+" gün fiyatlandı · hafta içi "+binlik(f)+"\u00a0₺, hafta sonu "+binlik(fh)+"\u00a0₺"
+                                  : keys.length+" gün "+binlik(f)+"\u00a0₺ yapıldı");
     };
     var sil=document.getElementById("fp-sil");
     if(sil) sil.onclick=function(){
@@ -8779,7 +8780,7 @@
     var kartCiz=function(){
       var el=document.getElementById("f-ucret"); if(!el) return;
       var gAd = (tekFiyat && !h.eksik) ? cev(g+" gece")+" × "+para(tekFiyat) : cev(g+" gece");
-      var html=satir("geceler",esc(gAd).replace(/ ₺/g,"&nbsp;₺"),U.geceler,false);   // 31.10: "₺" tek başına alt satıra düşmesin
+      var html=satir("geceler",esc(gAd).replace(/[ \u00a0]₺/g,"&nbsp;₺"),U.geceler,false);   // 31.10: "₺" tek başına alt satıra düşmesin
       if(h.eksik && !U.geceler) html+='<div class="sm warn" style="margin:-.25rem 0 .5rem">'+esc(cev(h.eksik+" gecenin fiyatı girilmemiş, tutarı yazın"))+"</div>";
       if(U.ek || acik.ek) html+=satir("ek",esc(cev("Kısa konaklama ücreti")),U.ek,true);
       html+='<div class="ucCizgi"></div><div class="ucSatir ucToplam"><span class="ucAd">'+esc(cev("Konaklama ücreti"))+'</span><span class="ucDeger">'+para(konaklama())+"</span></div>";
@@ -8788,7 +8789,7 @@
       }
       html+='<div class="ucCizgi"></div><div class="ucSatir ucBuyuk"><span class="ucAd">'+esc(cev("Misafirden alınacak toplam"))+'</span><span class="ucDeger">'+para(toplamU())+"</span></div>";
       if(U.dep || acik.dep) html+='<div class="sm muted" id="f-depNot" style="margin-top:.25rem">'+esc(cev(para(U.dep)+" depozito çıkışta iade edilir."))+"</div>";
-      el.innerHTML=html.replace(/(\d) ₺/g,"$1&nbsp;₺");   // 40.8: ₺ sayıya bitişik
+      el.innerHTML=html.replace(/(\d)[ \u00a0]₺/g,"$1&nbsp;₺");   // 40.8: ₺ sayıya bitişik
       ucDarAyar(el);
       Array.prototype.forEach.call(el.querySelectorAll("[data-ud]"),function(bt){
         bt.onclick=function(){

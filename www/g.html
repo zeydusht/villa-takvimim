@@ -450,7 +450,7 @@
       "short-stay fee applies to stays of $1 nights or fewer."],
     [/^hasar depozitosu eve girişte alınır, hasar yoksa çıkışta iade edilir\.$/,
       "damage deposit is collected at check-in and refunded at check-out if there is no damage."],
-    [/^(.+) ₺ \/ (\d+) gece$/, "$1 ₺ / $2 nights"],
+    [/^(.+)[ \u00a0]₺ \/ (\d+) gece$/, "$1\u00a0₺ / $2 nights"],
     [/^Giriş (\d+) (\w+)$/, "Check-in $1 $2"],
     [/^Çıkış (\d+) (\w+)$/, "Check-out $1 $2"],
     [/^Önceki ay$/, "Previous month"], [/^Sonraki ay$/, "Next month"],
@@ -674,8 +674,8 @@
       '<div class="kurallar">'+ks.map(function(x){ return '<div class="kSat"><span class="kAd">'+ik(x[0],20)+"<span>"+x[1]+"</span></span>"+x[2]+"</div>"; }).join("")+"</div>";
     var bilgiL=[];
     if(D.ek && D.ek.sinir && D.ek.ucret) bilgiL.push(EN
-      ? nf.format(D.ek.ucret)+" ₺ short-stay fee applies to stays of "+D.ek.sinir+" nights or fewer."
-      : nf.format(D.ek.ucret)+" ₺ kısa konaklama ücreti, "+D.ek.sinir+" gece ve altındaki konaklamalara eklenir.");
+      ? nf.format(D.ek.ucret)+"\u00a0₺ short-stay fee applies to stays of "+D.ek.sinir+" nights or fewer."
+      : nf.format(D.ek.ucret)+"\u00a0₺ kısa konaklama ücreti, "+D.ek.sinir+" gece ve altındaki konaklamalara eklenir.");
     // 13.4: villa sahibinin eklediği kurallar (sahibin yazdığı dilde)
     (Array.isArray(b.kurallar)?b.kurallar:[]).forEach(function(t){ if(String(t||"").trim()) bilgiL.push(esc(t)); });
     if(bilgiL.length) kh+='<ul class="kBilgi">'+bilgiL.map(function(t){ return "<li>"+ik("bilgi-i",18)+"<span>"+t+"</span></li>"; }).join("")+"</ul>";
@@ -905,7 +905,7 @@
       takvimCiz(); altCiz(); secimKutusu();
       var hit=hitapG(TK.ad), gc=geceSay();
       var bas=hit ? (EN ? "A special offer for "+hit : hit+", size özel teklif") : CEV("Size özel teklif");
-      var fiyatH=(TK.normal && TK.normal!==TK.konaklama ? "<s>"+nf.format(TK.normal)+" ₺</s> " : "")+'<span class="tsFiyat">'+nf.format(TK.konaklama)+" ₺</span>";
+      var fiyatH=(TK.normal && TK.normal!==TK.konaklama ? "<s>"+nf.format(TK.normal)+"\u00a0₺</s> " : "")+'<span class="tsFiyat">'+nf.format(TK.konaklama)+"\u00a0₺</span>";
       serit("yesil",g3d("misafir-teklif","g3dTeklif")+'<div class="tsBas">'+esc(bas)+"</div>"+
         '<div class="tsAlt">'+esc(tarihMetni()+" · "+gc+" "+(EN?(gc===1?"night":"nights"):"gece"))+" · "+fiyatH+
         (TK.son?" · "+esc(gecerliYaz(TK.son)):"")+"</div>");
@@ -1035,7 +1035,7 @@
   function depKart(dep,kucuk){
     dep=+dep||0; if(!dep) return "";
     return '<div class="depKart'+(kucuk?" kucuk":"")+'">'+ik("kalkan",kucuk?22:28)+"<div>"+
-      '<div class="dkBas">'+(EN?"Damage deposit: ":"Hasar depozitosu: ")+nf.format(dep)+" ₺</div>"+
+      '<div class="dkBas">'+(EN?"Damage deposit: ":"Hasar depozitosu: ")+nf.format(dep)+"\u00a0₺</div>"+
       '<div class="dkAlt">'+(EN?"Taken at check-in and refunded at check-out if there is no damage. Not included in the total price."
                               :"Girişte alınır, hasar yoksa çıkışta iade edilir. Toplam fiyata dahil değildir.")+"</div></div></div>";
   }
@@ -1198,12 +1198,12 @@
       return;
     }
     var t=toplam(), gc=geceSay();
-    var satir=teklifAktif() ? nf.format(TK.konaklama)+" ₺" : (t.eksik? CEV("Fiyatı sorun") : nf.format(t.toplam)+" ₺");
+    var satir=teklifAktif() ? nf.format(TK.konaklama)+"\u00a0₺" : (t.eksik? CEV("Fiyatı sorun") : nf.format(t.toplam)+"\u00a0₺");
     var dep2=depTutar();
     bar.innerHTML='<div class="ic">'+
       '<div class="altozet"><span><span class="altTarih">'+tarihMetni()+"</span> · "+gc+" gece · "+kisiOzet().join(", ")+"</span>"+
       '<span class="altFiyat"><span class="altTutar">'+satir+"</span>"+
-        (dep2?'<span class="altDep">'+(EN?"+ "+nf.format(dep2)+" ₺ refundable deposit":"+ "+nf.format(dep2)+" ₺ iade edilen depozito")+"</span>":"")+"</span></div>"+
+        (dep2?'<span class="altDep">'+(EN?"+ "+nf.format(dep2)+"\u00a0₺ refundable deposit":"+ "+nf.format(dep2)+"\u00a0₺ iade edilen depozito")+"</span>":"")+"</span></div>"+
       '<div class="altBtn"><button class="altTemizle" id="altTmz" aria-label="'+CEV("Seçimi temizle")+'">'+ik("x",20)+"</button>"+
       (tel?'<a href="#" id="rez-ac">Rezervasyon isteği oluştur</a>'
           :'<a class="pasif">İletişim bilgisi yok</a>')+"</div></div>";
@@ -1219,7 +1219,7 @@
       var t=toplam(), gc=geceSay();
       var mesaj=(D.ad||"Villa")+" için "+tarihMetni()+" tarihleri arasında ("+gc+" gece) "+
         kisiMetin()+" ile rezervasyon yapmak istiyorum. Uygunluk ve fiyat için bilgi alabilir miyim?"+
-        (depTutar()?" "+nf.format(depTutar())+" ₺ hasar depozitosunun girişte alınıp çıkışta iade edileceğini biliyorum.":"")+
+        (depTutar()?" "+nf.format(depTutar())+"\u00a0₺ hasar depozitosunun girişte alınıp çıkışta iade edileceğini biliyorum.":"")+
         (teklifAktif()?" Teklif kodu: "+TK.kod:"");
       o.innerHTML='<div class="onaykutu">'+g3d("misafir-iletisim","g3dOnay")+'<h3>Kaç kişi geliyorsunuz?</h3>'+
         '<div style="color:var(--muted);font-size:.875rem;margin:.375rem 0 1rem">'+
@@ -1304,8 +1304,8 @@
     var not="";   // 14.7: depozito artık ayrı kartta (depKart)
     if(teklifAktif()){
       return '<div class="fs"><span style="color:var(--ink)">'+gece+" · "+CEV("size özel")+"</span><span>"+
-          (TK.normal && TK.normal!==TK.konaklama ? '<s class="tEski">'+nf.format(TK.normal)+" ₺</s> " : "")+nf.format(TK.konaklama)+" ₺</span></div>"+
-        '<div class="fs fsTop"><span>'+CEV("Toplam")+"</span><span>"+nf.format(TK.konaklama)+" ₺</span></div>"+not;
+          (TK.normal && TK.normal!==TK.konaklama ? '<s class="tEski">'+nf.format(TK.normal)+"\u00a0₺</s> " : "")+nf.format(TK.konaklama)+"\u00a0₺</span></div>"+
+        '<div class="fs fsTop"><span>'+CEV("Toplam")+"</span><span>"+nf.format(TK.konaklama)+"\u00a0₺</span></div>"+not;
     }
     if(t.eksik) return '<div class="fs fsTop"><span>'+CEV("Toplam")+'</span><span class="fiyatSor" style="white-space:normal">'+
       CEV("Bu tarihlerin fiyatını villa sahibine sorun")+"</span></div>"+not;
@@ -1314,15 +1314,15 @@
     var ayni=gunler.every(function(g){ return g.f===gunler[0].f; });
     var h;
     if(ayni || gc<2){
-      h='<div class="fs"><span style="color:var(--ink)">'+gece+(gc>1?" × "+nf.format(gunler[0].f)+" ₺":"")+"</span><span>"+nf.format(t.tutar)+" ₺</span></div>";
+      h='<div class="fs"><span style="color:var(--ink)">'+gece+(gc>1?" × "+nf.format(gunler[0].f)+"\u00a0₺":"")+"</span><span>"+nf.format(t.tutar)+"\u00a0₺</span></div>";
     } else {
-      h='<button class="fs fsGece" data-dokum aria-expanded="'+dokumAcik+'"><span>'+gece+'<i class="ok" aria-hidden="true"></i></span><span>'+nf.format(t.tutar)+" ₺</span></button>"+
+      h='<button class="fs fsGece" data-dokum aria-expanded="'+dokumAcik+'"><span>'+gece+'<i class="ok" aria-hidden="true"></i></span><span>'+nf.format(t.tutar)+"\u00a0₺</span></button>"+
         (dokumAcik?'<div class="fsDokum">'+gunler.map(function(g){
-          return '<div class="fs"><span>'+g.d.getDate()+" "+AYLAR[g.d.getMonth()].slice(0,3)+"</span><span>"+nf.format(g.f)+" ₺</span></div>";
+          return '<div class="fs"><span>'+g.d.getDate()+" "+AYLAR[g.d.getMonth()].slice(0,3)+"</span><span>"+nf.format(g.f)+"\u00a0₺</span></div>";
         }).join("")+"</div>":"");
     }
-    if(ek) h+='<div class="fs"><span>'+CEV("Kısa konaklama ücreti")+"</span><span>+"+nf.format(ek)+" ₺</span></div>";
-    h+='<div class="fs fsTop"><span>'+CEV("Toplam")+"</span><span>"+nf.format(t.toplam)+" ₺</span></div>"+not;
+    if(ek) h+='<div class="fs"><span>'+CEV("Kısa konaklama ücreti")+"</span><span>+"+nf.format(ek)+"\u00a0₺</span></div>";
+    h+='<div class="fs fsTop"><span>'+CEV("Toplam")+"</span><span>"+nf.format(t.toplam)+"\u00a0₺</span></div>"+not;
     return h;
   }
   function dokumTikla(e,sonra){
@@ -1332,8 +1332,8 @@
 
   // "Girişte 5.000 ₺ hasar depozitosu alınır, çıkışta iade edilir."
   function depNot(dep){
-    return EN ? "A "+nf.format(dep)+" ₺ damage deposit is taken at check-in and refunded at check-out."
-              : "Girişte "+nf.format(dep)+" ₺ hasar depozitosu alınır, çıkışta iade edilir.";
+    return EN ? "A "+nf.format(dep)+"\u00a0₺ damage deposit is taken at check-in and refunded at check-out."
+              : "Girişte "+nf.format(dep)+"\u00a0₺ hasar depozitosu alınır, çıkışta iade edilir.";
   }
   function secimKutusu(){
     var el=document.getElementById("secimAlan"); if(!el) return;
@@ -1349,7 +1349,7 @@
     if(!eksik) h+='<div class="fiyatKutu">'+fiyatOzet()+"</div>";
     h+=depKart(depTutar());
     h+='<div class="ozetkutu"><div class="sol">'+
-      '<div class="top'+(eksik?" fiyatSor":"")+'">'+(eksik?CEV("Bu tarihlerin fiyatını villa sahibine sorun"):nf.format(konaklamaT)+" ₺")+"</div>"+
+      '<div class="top'+(eksik?" fiyatSor":"")+'">'+(eksik?CEV("Bu tarihlerin fiyatını villa sahibine sorun"):nf.format(konaklamaT)+"\u00a0₺")+"</div>"+
       '<div style="color:var(--muted)">'+tarihMetni()+" · "+gc+" gece</div></div>"+
       '<button class="temizle" id="tmz">'+CEV("Seçimi temizle")+"</button></div>"+
       '<div class="kisiler">'+sayaclar(mx,b.evcil)+"</div>";

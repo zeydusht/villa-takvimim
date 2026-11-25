@@ -1566,8 +1566,16 @@
 
   function bosluksuz(t){ return String(t).replace(/\s+/g, " ").trim(); }
 
+  // 43.4: tutarlarda sayı ile ₺ arasında bölünmez boşluk var (para()). Sözlük ve kalıplar " ₺" ile yazılı: eşleşmede bölünmez
+  // boşluk normal sayılır, çeviride geri konur ("5.000 ₺ short" yine bölünmez).
   D.cevir = function (metin) {
     if (!D.ingilizce()) return metin;
+    var ham = String(metin);
+    if (ham.indexOf("\u00a0₺") < 0) return cevirIc(metin);
+    var n = ham.replace(/\u00a0₺/g, " ₺"), y = cevirIc(n);
+    return y === n ? metin : String(y).replace(/(\d) ₺/g, "$1\u00a0₺");
+  };
+  function cevirIc(metin) {
     var t = String(metin);
     var kirp = t.trim();
     if (!kirp) return metin;
@@ -1578,7 +1586,7 @@
       if (K[i][0].test(kirp)) return t.replace(kirp, kirp.replace(K[i][0], K[i][1]));
     }
     return metin;
-  };
+  }
 
   // ---------- DOM üzerinde uygula ----------
   function dugumCevir(n) {
