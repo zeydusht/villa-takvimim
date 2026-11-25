@@ -743,6 +743,7 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Netlify'a yüklenmedi. 8 yeni görsel `codex exec` ile (`docs/CODEX_3D_GORSELLER_3.md`). Rapor: `docs/qa/gorev39/README.md`.
       Hesap'taki ayar başlıkları çizgi ikonla kaldı.
 - [x] Görev 40 — Villa sayfası üst kartında büyük kare fotoğraf (dokununca galeri, yoksa "Fotoğraf ekle"), yeni `bolum-teklif`
+- [x] Görev 40 (veritabanı, PM uyguladı 25 Kasım) — `VERITABANI_GOREV40.sql`: 17:00 otomatik "giriş yaptı" kaldırıldı; 15:00 "16:00'da X gelecek · 1 saat kaldı" (yerleştirildiyse gitmez); "Misafiri yerleştir" anında bildirim (`tr_yerlesme_bildir` → `bildirim_anlik` → `bildirim_tetikle`; sahibe ödeme durumu, bakıcıya sadece "yerleşti", işaretleyene gitmez); 18:00 "yerleştirildi mi?" hatırlatması. Test edildi (geri alınan işlemde).
       görseli, sekme başlığı görselleri sola yaslı ve aynı yükseklikte, Villalarım'da "Bugün ve yarın" yerine arama (4+ villa;
       dolu / boş süzgeci), giriş yeşil / çıkış kırmızı, gri alana dokununca pencere kapanır (kaydedilmemiş değişiklik sorulur),
       yeni Ödemeler ekranı (Alınacak · Alınan · Kalan, ödeme listesi), hizalı tutar satırları · Claude Code (24 Kasım).
