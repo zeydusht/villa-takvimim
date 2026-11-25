@@ -134,7 +134,6 @@
     --hiz-baslik:150ms;           /* 34.2: üst çubukta küçük başlığın belirmesi */
     --hiz-morf-ac:380ms;          /* 34.1: kart → arama paneli büyümesi */
     --hiz-morf-kapa:260ms;        /* 34.1: panel → kart küçülmesi (açılıştan hızlı) */
-    --morf-bulanik:12px;          /* 34.1: arama açıkken arka planın bulanıklığı */
     --olcek-gelis:.96;
     /* 31.2: panel içeriği her açılışta kademeli gelir: öğe 8 pt aşağıdan + saydamdan 240 ms, öğeler arası 40 ms, ilk öğe panel
        açılmaya başladıktan 60 ms sonra, en fazla 6 kademe. "Hareketi azalt"ta yalnız 150 ms saydamlık. */
@@ -191,7 +190,7 @@
   .appBar.baslikli{box-shadow:0 1px 0 rgba(255,255,255,.14)}
   .wrap{width:100%; max-width:28rem; padding:2rem var(--sayfa-kenar) calc(2.5rem + env(safe-area-inset-bottom))}
   /* 34.4: kart yığını: büyük panel açıkken arkadaki sayfa küçülür ve yuvarlanır */
-  .wrap{transition:transform var(--hiz-ac) var(--egri-cekmece), border-radius var(--hiz-ac) var(--egri-cekmece)}
+  .wrap{transition:transform var(--hiz-ac) var(--egri-cekmece)}   /* 44.2: köşe yarıçapı animasyonsuz (her karede yeniden boyama yaptırıyordu); yalnız transform */
   html:has(body.yigin), html body.yigin{background:#101613 !important}
   body.yigin .wrap{transform:scale(.94); border-radius:12px; overflow:hidden; background:#fff}
   .hide{display:none !important}
@@ -943,9 +942,8 @@
      tam boyuna büyür (clip-path), arka plan bulanıklaşıp kararır, içerik büyümeden sonra solarak gelir; kapanışta kartın
      yerine küçülerek döner. Animasyonu JS sürer (morfAc / morfKapat); CSS'teki alttan kayma bu panelde kapalı. */
   .overlay.morf > .sheet, .overlay.morf.kapaniyor > .sheet{animation:none}
-  .overlay.morf{-webkit-backdrop-filter:blur(var(--morf-bulanik)); backdrop-filter:blur(var(--morf-bulanik))}
-  .overlay.morf.kapaniyor{-webkit-backdrop-filter:blur(0); backdrop-filter:blur(0);
-    transition:backdrop-filter var(--hiz-morf-kapa) var(--egri-gecis), -webkit-backdrop-filter var(--hiz-morf-kapa) var(--egri-gecis)}
+  /* 44.2: arka plan bulanıklığı (backdrop-filter) kaldırıldı: her karede arkadaki sayfanın tamamını yeniden bulanıklaştırıyordu,
+     telefonda en pahalı efekt. Yalnız karartma (overlay zemini, opacity) kalır. */
   @keyframes perdeOrtaAc{from{opacity:0; transform:scale(var(--olcek-gelis))}}
   @keyframes perdeOrtaKapa{to{opacity:0; transform:scale(var(--olcek-gelis))}}
   /* 9.3 / 31.1 bildirim: 8 pt aşağıdan 300 ms'de gelir, 200 ms'de solar. Geçiş (transition) olduğu için yenisi gelince
@@ -2368,7 +2366,15 @@
   /* sığmazsa yalnız ok: 48 pt dokunma alanı, 40 pt yarı saydam yuvarlak zemin */
   .barGeri.yalnizOk{width:48px; padding:0; justify-content:center}
   .barGeri.yalnizOk::before{inset:4px; border-radius:50%}
-  .barGeri.yalnizOk .bgYazi{display:none}
+  .barGeri.yalnizOk .bgYazi{position:absolute; visibility:hidden; pointer-events:none}   /* 44.2: ölçülebilsin diye yer kaplamadan durur */
+  .barMarka{white-space:nowrap; min-width:0; overflow:hidden; text-overflow:ellipsis}
+  /* ===== Görev 44.2: akıcılık ===== */
+  /* villa sayfasının ekran dışındaki bölümleri ekrana girene kadar dizilmez / boyanmaz (villaya girişte tek karede yapılan iş
+     yarıya iner). Boyutları bir kez görülünce hatırlanır (contain-intrinsic-size: auto), kaydırma yeri kaymaz. */
+  #takvim > .section{content-visibility:auto; contain-intrinsic-size:auto 320px}
+  /* Ajanda ve Villalarım listelerinde ekran dışındaki kartlar da (sekme açılırken dizilmez) */
+  #ajandaListe > .ajKart{content-visibility:auto; contain-intrinsic-size:auto 84px}
+  #villalar > .kart{content-visibility:auto; contain-intrinsic-size:auto 220px}
 </style>
 </head>
 <body>
@@ -4300,21 +4306,22 @@
     for(var i=0;i<l.length;i++) if(bolumIcindeGorunur(l[i],kok)) return true;
     return false;
   }
+  // 44.2: önce bütün yazmalar, sonra bütün okumalar, en son yazmalar: başlık başına bir zorunlu layout değil, toplam iki
   function bolumGorselDurum(){
     BOLUM_G3_KARE=0;
+    var l=[];
     Array.prototype.forEach.call(document.querySelectorAll(".eyebrow[data-g3d]"),function(el){
       var g=el.querySelector(":scope > .bolumG3"), acik=!!g && !g.classList.contains("yok") && !bolumBos(el);
       var u=el.parentElement, satir=(u && (u.classList.contains("bolumSatir") || u.id==="fotoBas")) ? u : el;
-      el.classList[acik?"add":"remove"]("g3dAcik");
-      satir.classList[acik?"add":"remove"]("g3dSatir");
-      // yer yoksa önce görsel küçülür (56 → 40 pt); yazı 40 pt'de de sığmazsa iki satıra iner (görsel iki satırın ortasında)
-      var kucuk=false;
-      if(acik && el.offsetParent!==null){
-        el.classList.remove("g3dKucuk"); satir.classList.remove("g3dKucuk");
-        kucuk=bolumSatirSayisi(el)>1;
-      }
-      el.classList[kucuk?"add":"remove"]("g3dKucuk"); satir.classList[kucuk?"add":"remove"]("g3dKucuk");
+      el.classList.toggle("g3dAcik",acik);
+      satir.classList.toggle("g3dSatir",acik);
+      l.push({el:el, satir:satir, acik:acik, kucuk:false});
     });
+    // yer yoksa önce görsel küçülür (56 → 40 pt); yazı 40 pt'de de sığmazsa iki satıra iner (görsel iki satırın ortasında)
+    var olc=l.filter(function(x){ return x.acik && x.el.offsetParent!==null; });
+    olc.forEach(function(x){ x.el.classList.remove("g3dKucuk"); x.satir.classList.remove("g3dKucuk"); });
+    olc.forEach(function(x){ x.kucuk=bolumSatirSayisi(x.el)>1; });
+    l.forEach(function(x){ x.el.classList.toggle("g3dKucuk",x.kucuk); x.satir.classList.toggle("g3dKucuk",x.kucuk); });
   }
   function bolumSatirSayisi(el){
     var t=[].filter.call(el.childNodes,function(n){ return n.nodeType===3 && n.textContent.trim(); }); if(!t.length) return 1;
@@ -5160,11 +5167,24 @@
   function vbFotoBoy(){
     var k=document.querySelector("#bugun .villaBas"); if(!k) return;
     var ad=k.querySelector(".vbAd"); if(!ad.clientWidth) return;   // ekran gizli: goster → baslikYenile yeniden ölçer
+    // 44.2: ad, genişlik ve yazı boyu değişmediyse sonuç aynı: yeniden ölçme (her çizimde 5–10 zorunlu layout yapıyordu)
+    var vbAnahtar=ad.textContent+"|"+k.clientWidth+"|"+kokPx();
+    if(VB_OLCU.anahtar===vbAnahtar){   // villa kartı her çizimde yeniden kurulur: sonuç (sınıflar, yazı boyu) yeniden uygulanır
+      ["vbDar","vbTasar","vbKir"].forEach(function(c){ var o=VB_OLCU.sinif.indexOf(c)>=0; if(k.classList.contains(c)!==o) k.classList.toggle(c,o); });
+      if(ad.style.fontSize!==VB_OLCU.font) ad.style.fontSize=VB_OLCU.font; return; }
+    try{ vbFotoBoyOlc(k,ad); }
+    finally{ VB_OLCU={anahtar:vbAnahtar, sinif:["vbDar","vbTasar","vbKir"].filter(function(c){ return k.classList.contains(c); }), font:ad.style.fontSize}; }
+  }
+  var VB_OLCU={anahtar:"", sinif:[], font:""};
+  function vbFotoBoyOlc(k,ad){
     var sigmaz=function(){
-      var r=document.createRange(), g=ad.clientWidth, enUzun=0;
+      var g=ad.clientWidth, enUzun=0, ek=[];
+      // bütün kelimeler bir kerede eklenir, sonra okunur (kelime başına bir layout değil)
       String(ad.textContent).split(/\s+/).forEach(function(w){
-        if(!w) return; var t=document.createElement("span"); t.style.whiteSpace="nowrap"; t.textContent=w; ad.appendChild(t);
-        enUzun=Math.max(enUzun,t.getBoundingClientRect().width); ad.removeChild(t); });
+        if(!w) return; var t=document.createElement("span"); t.style.whiteSpace="nowrap"; t.style.position="absolute"; t.style.visibility="hidden";
+        t.textContent=w; ad.appendChild(t); ek.push(t); });
+      ek.forEach(function(t){ enUzun=Math.max(enUzun,t.getBoundingClientRect().width); });
+      ek.forEach(function(t){ ad.removeChild(t); });
       var sat=Math.round(ad.getBoundingClientRect().height/parseFloat(getComputedStyle(ad).lineHeight));
       return { kelime:enUzun>g+.5, satir:sat };
     };
@@ -5266,7 +5286,7 @@
     kademeli(id);
     // 38.1: başka sekmelerin başlığında satır içi opacity / transform kalmasın; yeni sekmede durum bir kare sonra (içerik çizilince)
     baslikTemizle(document.getElementById(id));
-    requestAnimationFrame(baslikYenile);   // 34.2
+    baslikYenile();   // 34.2
   }
 
   // ================= 34.2 KAYARKEN KÜÇÜLEN BAŞLIK =================
@@ -5287,19 +5307,21 @@
     if(!h){ if(bar.classList.contains("baslikli")){ bar.classList.remove("baslikli"); barGeriAyar(); } return; }
     var alt=bar.getBoundingClientRect().bottom, r=h.getBoundingClientRect();
     var ilerleme=Math.max(0,Math.min(1,(alt-r.top+r.height*.25)/(r.height*1.25)));
-    if(!azHareket()){ h.style.opacity=String(1-ilerleme*.85); h.style.transform=ilerleme?"translateY("+(-ilerleme*6)+"px)":""; }
+    if(!azHareket()){ var op=ilerleme?String(1-ilerleme*.85):"", tr=ilerleme?"translateY("+(-ilerleme*6)+"px)":"";   // 44.2: değişmediyse yazma
+      if(h.style.opacity!==op) h.style.opacity=op; if(h.style.transform!==tr) h.style.transform=tr; }
     // 36.4: 3D görsel üst çubuğa girdikçe söner, yarısı çubuğun altına girdiğinde hiç görünmez (yarım kesik kalmaz).
     // Görselin üst %10'u şeffaf kenar: oraya kadar sönmez (sayfa en üstteyken tam görünür)
     // 38.1: görsel gizliyken (ya da kutusu yokken) dokunma: yükseklik 0 ölçülür, 0'a bölünüp kalıcı opacity:0 yazılırdı
     var g=h.querySelector(".baslikG");
     if(g){ var gr=g.getBoundingClientRect();
-      if(h.classList.contains("gorselGizli") || gr.height<1) g.style.opacity="";
-      else { var gs=Math.max(0,Math.min(1,(alt-gr.top-gr.height*.1)/(gr.height*.4))); g.style.opacity=gs?String(1-gs):""; } }
+      var gop="";
+      if(!(h.classList.contains("gorselGizli") || gr.height<1)){ var gs=Math.max(0,Math.min(1,(alt-gr.top-gr.height*.1)/(gr.height*.4))); gop=gs?String(1-gs):""; }
+      if(g.style.opacity!==gop) g.style.opacity=gop; }
     var metin=h.textContent.trim(), degisti=false;
     if(bb.textContent!==metin){ bb.textContent=metin; degisti=true; }
     var bl=r.bottom<=alt+2;
     if(bl!==bar.classList.contains("baslikli")){ bar.classList[bl?"add":"remove"]("baslikli"); degisti=true; }
-    if(degisti) barGeriAyar();   // 43.3: küçük başlık belirdi / değişti: geri düğmesinin yazısı sığıyor mu
+    if(degisti) barGeriOlc();   // 43.3: küçük başlık belirdi / değişti: geri düğmesinin yazısı sığıyor mu (zaten karenin içindeyiz)
   }
   function baslikIste(){ if(!BASLIK.kare) BASLIK.kare=requestAnimationFrame(baslikGuncelle); }
   window.addEventListener("scroll",baslikIste,{passive:true});
@@ -5323,7 +5345,11 @@
     h.classList[gizli?"add":"remove"]("gorselGizli");
     if(gizli && g) g.style.opacity="";
   }
-  function baslikYenile(){ BASLIK.kare=0; baslikGorselDurum(); baslikGuncelle(); if(window.bolumGorselIste) bolumGorselIste(); vbFotoBoy(); barGeriAyar(); }   // 39.3: bölüm başlıkları da (yazı boyutu, sekme, yazı tipi); 40.1 villa kartı fotoğrafı
+  // 44.2: çizimden sonra hemen ölçmek her çağrıda zorunlu yerleşim (layout) yaptırıyordu; aynı karedeki çağrılar birleşir ve ölçüm
+  // bir sonraki karenin başında (boyamadan önce: titreme olmaz) bir kez yapılır
+  var BASLIK_YEN=0;
+  function baslikYenile(){ if(!BASLIK_YEN) BASLIK_YEN=requestAnimationFrame(baslikYenileSimdi); }
+  function baslikYenileSimdi(){ BASLIK_YEN=0; BASLIK.kare=0; barGeriOlc(); baslikGorselDurum(); baslikGuncelle(); if(window.bolumGorselIste) bolumGorselIste(); vbFotoBoy(); }   // 39.3: bölüm başlıkları da (yazı boyutu, sekme, yazı tipi); 40.1 villa kartı fotoğrafı
   window.baslikYenile=baslikYenile;   // boş hâl görseli yüklenemeyince (onerror) de çağrılır
   // haric dışındaki ekranların başlıklarında satır içi değer kalmasın
   function baslikTemizle(haric){
@@ -5334,10 +5360,10 @@
   // bir çizim fonksiyonunu çalıştırır; nasıl biterse bitsin ardından başlık görselinin durumunu yeniler
   function baslikSonra(f,t,a){ try{ return f.apply(t,a); } finally{ try{ baslikYenile(); }catch(e){} } }
   var BASLIK_RS=0;
-  window.addEventListener("resize",function(){ if(!BASLIK_RS) BASLIK_RS=requestAnimationFrame(function(){ BASLIK_RS=0; baslikYenile(); }); });
+  window.addEventListener("resize",function(){ if(!BASLIK_RS) BASLIK_RS=requestAnimationFrame(function(){ BASLIK_RS=0; baslikYenileSimdi(); }); });
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ try{ baslikYenile(); }catch(e){} });
   // yazının genişliği çizim olmadan değişirse de (dil değişimi, yazı tipi geç yüklenmesi) yeniden ölçülür
-  if(window.ResizeObserver){ var BASLIK_RO=new ResizeObserver(function(){ if(!BASLIK_RS) BASLIK_RS=requestAnimationFrame(function(){ BASLIK_RS=0; baslikYenile(); }); });
+  if(window.ResizeObserver){ var BASLIK_RO=new ResizeObserver(function(){ if(!BASLIK_RS) BASLIK_RS=requestAnimationFrame(function(){ BASLIK_RS=0; baslikYenileSimdi(); }); });
     Array.prototype.forEach.call(document.querySelectorAll("h1.h1G > .baslikGK + span"),function(t){ BASLIK_RO.observe(t); }); }
 
   // ================= 26.3 KADEMELİ GİRİŞ / 26.4 KAYDIRINCA BELİRME =================
@@ -5820,7 +5846,7 @@
   }
   // kısa ekranda (ekran yüksekliği 44 satır yazıdan az: küçük telefon ya da büyük yazı) kişi sayısı sabit satırdan çıkar,
   // takvimin altında akar; sabit satırda yalnız tarih özeti ve "Boş villaları göster" kalır (takvim görünür kalsın)
-  function maKisaMi(){ var px=parseFloat(getComputedStyle(document.documentElement).fontSize)||16; return innerHeight/px<44; }
+  function maKisaMi(){ return innerHeight/kokPx()<44; }
   window.addEventListener("resize",function(){ if(MA.adim==="tarih" && document.getElementById("maAlt")) maAltCiz(); });
   function maKisiHTML(){
     return '<div class="sayacSatir maKisi"><span class="ikKutu is-rez">'+ikon("kisiler",{boy:20})+"</span>"+
@@ -6977,7 +7003,7 @@
       // sıradaki iş hemen alttaki "Sıradaki" kartında, bilgi tek yerde
       '<div class="villaBas"><div class="vbUst"><div class="vbSol"><div class="vbAd">'+esc(v.ad||cev("Villa"))+"</div>"+
       (konum?'<div class="vbKonum">'+esc(konum)+"</div>":"")+durumEtiket(dm.dolu,dm.misafir)+"</div>"+vbFotoHTML(v)+"</div></div>";
-    vbFotoBoy();
+    baslikYenile();   // 44.2: vbFotoBoy boyamadan önceki tek ölçüm karesinde (çizimin ortasında layout zorlamaz)
     var vHap=document.getElementById("villaHap"), vHapEski=vHap.innerHTML;
     vHap.innerHTML=hz.join("");
     document.getElementById("villaHapKap").classList[hz.length?"remove":"add"]("hide");
@@ -7335,13 +7361,16 @@
   },true);
   function secPanelKapat(){
     var p=document.getElementById("secPanel"); if(!p) return;
+    var acikti=p.classList.contains("acik") || document.body.classList.contains("secPanelAcik");
     p.classList.remove("acik"); p.dataset.durum=""; S.secSonToplam=null;
     TK.no++; cancelAnimationFrame(TK.raf);
     // 25.3: seçim kalkınca sayfa olduğu yerde kalır: panelin payı kalkınca sayfa kısalıp yukarı zıplayacaksa pay, kullanıcı
-    // yukarı kaydırıp gereksiz hâle gelene kadar kalır (secPay)
-    var yy=document.documentElement.scrollTop||0;
-    document.body.classList.remove("secPanelAcik");
-    if(document.body.classList.contains("secPay") || yy>document.documentElement.scrollHeight-window.innerHeight) document.body.classList.add("secPay");
+    // yukarı kaydırıp gereksiz hâle gelene kadar kalır (secPay). 44.2: panel zaten kapalıysa ölçü okunmaz (her çizimde layout)
+    if(acikti){
+      var yy=document.documentElement.scrollTop||0;
+      document.body.classList.remove("secPanelAcik");
+      if(document.body.classList.contains("secPay") || yy>document.documentElement.scrollHeight-window.innerHeight) document.body.classList.add("secPay");
+    }
     odakCiz();
   }
 
@@ -9105,7 +9134,7 @@
       if(girisGunu) h+='<button class="big renkli is-rez" data-ik="giris" id="ak-yerlestir">'+esc(cev("Ödeme almadan yerleştir"))+"</button>";
     } else {
       if(od.d==="fazla") h+='<div class="akisAlindi odRenk od-fazla">'+ikon("uyari-ucgen",{boy:18})+"<span>"+esc(cev(para(od.fazla)+" fazla alındı"))+"</span></div>";
-      else if(odemeTam(v,r)) h+='<div class="akisAlindi odRenk od-tam">'+ikon("tik",{boy:18,kalinlik:2.5})+"<span>"+esc(cev("Ödeme alındı"))+"</span></div>";
+      else if(od.d==="tam") h+='<div class="akisAlindi odRenk od-tam">'+ikon("tik",{boy:18,kalinlik:2.5})+"<span>"+esc(cev("Ödeme alındı"))+"</span></div>";
       h+='<button class="big" data-ik="giris" id="ak-yerlestir">'+esc(cev("Misafiri yerleştir"))+"</button>";
     }
     return h+"</div>";
@@ -9816,16 +9845,21 @@
   // 31.10: Normal artık 17 px (106,25 %); Büyük ve Çok büyük aynı oranla (18 → 19,1 px, 20 → 21,25 px)
   var YAZI={normal:"", buyuk:"119.53125%", cokbuyuk:"132.8125%"};
   function yaziAl(){ var y=store.get("vt-yazi"); return YAZI.hasOwnProperty(y) ? y : "normal"; }
+  // 44.2: kök yazı boyu (px) bir kez okunur, saklanır: getComputedStyle(html) her çağrıda bütün belgenin stilini hesaplatıyordu.
+  // Yazı boyu değişince ve pencere boyutu değişince sıfırlanır.
+  var KOK_PX=0;
+  function kokPx(){ return KOK_PX || (KOK_PX=parseFloat(getComputedStyle(document.documentElement).fontSize)||16); }
+  window.addEventListener("resize",function(){ KOK_PX=0; });
   function yaziUygula(y,kaydet2){
     if(!YAZI.hasOwnProperty(y)) y="normal";
-    document.documentElement.style.fontSize=YAZI[y];
+    document.documentElement.style.fontSize=YAZI[y]; KOK_PX=0;
     // 42.2: büyük yazıya özel kurallar (ikon kutusu küçülür, "Kapat" yuvarlak × olur) html[data-yazi] ile
     if(y==="normal") document.documentElement.removeAttribute("data-yazi"); else document.documentElement.setAttribute("data-yazi",y);
     if(kaydet2) store.set("vt-yazi",y);
     Array.prototype.forEach.call(document.querySelectorAll("#hs-yazi [data-y]"),function(b){
       b.classList[b.dataset.y===y?"add":"remove"]("on"); b.setAttribute("aria-pressed",String(b.dataset.y===y)); });
     try{ kabarcikYerle(); }catch(e){}
-    requestAnimationFrame(function(){ try{ baslikYenile(); }catch(e){} });   // 38.1
+    baslikYenile();   // 38.1
   }
   yaziUygula(yaziAl(),false);
   document.getElementById("hs-yazi").addEventListener("click",function(e){
@@ -14144,7 +14178,7 @@
   var KILIT={acik:false, y:0};
   function sayfaKilitle(){
     if(KILIT.acik) return;
-    KILIT.acik=true; KILIT.y=window.scrollY||0;
+    KILIT.acik=true; KILIT.y=(KILIT.on!=null ? KILIT.on : (window.scrollY||0)); KILIT.on=null;
     var b=document.body.style; b.position="fixed"; b.top=(-KILIT.y)+"px"; b.left="0"; b.right="0"; b.width="100%";
   }
   function sayfaKilitAc(){
@@ -14156,7 +14190,10 @@
   function kilitDenetle(){ if(document.querySelector(".overlay:not(.kapaniyor)")) sayfaKilitle(); else sayfaKilitAc(); yiginDenetle(); }
   // 34.4: ekranın neredeyse tamamını kaplayan panel açıkken arkadaki sayfa %94'e küçülür, köşeleri yuvarlanır (iPhone'daki
   // kart yığını). Küçük paneller (seçim paneli, onay soruları) etkilemez. Küçülme görünen alanın üstüne göre yapılır.
-  function yiginDenetle(){
+  // 44.2: pencerenin yüksekliği bir sonraki karede ölçülür (açılış karesinde ikinci bir zorunlu layout olmasın)
+  var YIGIN_RAF=0;
+  function yiginDenetle(){ if(!YIGIN_RAF) YIGIN_RAF=requestAnimationFrame(function(){ YIGIN_RAF=0; yiginOlc(); }); }
+  function yiginOlc(){
     var w=document.querySelector(".wrap"); if(!w) return;
     var l=document.querySelectorAll(".overlay:not(.kapaniyor)"), buyuk=false;
     for(var i=0;i<l.length;i++){ var sh=l[i].querySelector(".sheet");
@@ -14394,6 +14431,7 @@
       Array.prototype.forEach.call(document.querySelectorAll(".overlay.kapaniyor"),function(x){ x.remove(); });
       kapat(true);
     }
+    if(!KILIT.acik) KILIT.on=window.scrollY||0;   // 44.2: pencere eklenmeden (yerleşim temizken) okunur
     var o=document.createElement("div");
     o.className="overlay"+(yerine?" anlik":"");
     o.innerHTML='<div class="sheet">'+html+"</div>";
@@ -14692,25 +14730,41 @@
     if(on==="takvim"){ var v=aktif(); return (v && v.ad) || cev("Villa"); }
     return "";
   }
+  // 44.2: yazı ve aria-label hemen; ölçüm bir sonraki karede bir kez (aynı karedeki çağrılar birleşir), durum değişmediyse hiç
+  var BARGERI={raf:0, anahtar:""};
   function barGeriAyar(){
     var b=document.getElementById("barGeri"), y=document.getElementById("barGeriYazi");
     if(!b || !y || b.classList.contains("hide")) return;
     var ad=barGeriAd();
     if(y.textContent!==ad) y.textContent=ad;
     b.setAttribute("aria-label", ad ? cev("Geri")+": "+ad : cev("Geri"));
-    b.classList.remove("yalnizOk");
     if(!ad){ b.classList.add("yalnizOk"); return; }
-    var bar=document.getElementById("appBar"), ic=b.parentNode, r=b.getBoundingClientRect(), icR=ic.getBoundingClientRect(), sigmaz=false;
-    if(r.width>icR.width*.5) sigmaz=true;   // yazı çubuğun yarısından genişse (uzun villa adı)
+    if(!BARGERI.raf) BARGERI.raf=requestAnimationFrame(barGeriOlc);
+  }
+  function barGeriOlc(){
+    BARGERI.raf=0;
+    var b=document.getElementById("barGeri"), y=document.getElementById("barGeriYazi");
+    if(!b || !y || b.classList.contains("hide") || !y.textContent) return;
+    var bar=document.getElementById("appBar"), bb0=document.getElementById("barBaslik");
+    var anahtar=y.textContent+"|"+bar.classList.contains("baslikli")+"|"+(bb0?bb0.textContent:"")+"|"+innerWidth+"|"+kokPx();
+    if(anahtar===BARGERI.anahtar) return;
+    BARGERI.anahtar=anahtar;
+    // 44.2: yalnız okur, en sonda tek yazma (yalnizOk değişirse). Yazı gizliyken de ölçülür (.bgYazi yalnizOk'ta görünmez ama yer
+    // kaplamayan kutu olarak durur); düğmenin yazılı genişliği = şimdiki genişlik − ok düğmesi payı + yazı payı.
+    var ic=b.parentNode, r=b.getBoundingClientRect(), icR=ic.getBoundingClientRect(), sigmaz=false, yalniz=b.classList.contains("yalnizOk");
+    var yw=y.getBoundingClientRect().width, cs=getComputedStyle(b);
+    var genis=yalniz ? (parseFloat(cs.fontSize)*1.25 + 22 + 1 + yw) : r.width;   // .375rem + .875rem sol / sağ iç boşluk
+    var sag=r.left+genis, fark=genis-r.width;
+    if(genis>icR.width*.5) sigmaz=true;   // yazı çubuğun yarısından genişse (uzun villa adı)
     else if(bar.classList.contains("baslikli")){
       var bb=document.getElementById("barBaslik"), q=bb.getBoundingClientRect();
-      sigmaz = !!bb.textContent && r.right+8>q.left;
+      sigmaz = !!bb.textContent && sag+8>q.left;
     } else {
       var m=ic.querySelector(".barMarka");
-      // marka tek satırda ölçülür: sığmazsa iki satıra kırılır, o da çakışma sayılır
-      if(m && m.offsetParent!==null){ m.style.whiteSpace="nowrap"; var mr=m.getBoundingClientRect(); sigmaz = mr.right>icR.right+.5 || mr.left<r.right; m.style.whiteSpace=""; }
+      // marka tek satır (nowrap): yazılı düğmeyle kaç pt sağa kayacağı hesaplanır; sağdan taşarsa çakışma
+      if(m && m.offsetParent!==null){ var mr=m.getBoundingClientRect(); sigmaz = mr.left+fark+m.scrollWidth>icR.right+.5 || mr.left+fark<sag; }
     }
-    if(sigmaz) b.classList.add("yalnizOk");
+    if(sigmaz!==yalniz) b.classList.toggle("yalnizOk",sigmaz);
   }
   function kgAcik(){
     var ua=navigator.userAgent||"";
@@ -14754,7 +14808,7 @@
     if(s.sp) s.sp.style.opacity="";
     s.perde.remove(); s.golge.remove();
     document.body.classList.remove("kgSurukle");
-    requestAnimationFrame(function(){ try{ baslikYenile(); }catch(x){} });   // üst çubuktaki küçük başlık görünen ekrana göre
+    baslikYenile();   // üst çubuktaki küçük başlık görünen ekrana göre
   }
   function kgBirak(d,tamam){
     var bas=d.dx||0, hedef=tamam?innerWidth:0, t0=performance.now(), sure=tamam?220:250;

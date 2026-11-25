@@ -277,6 +277,18 @@ ile işaretlenir (iki kez çarpılmasın).
 - Çıkış gününde ızgaranın son satırı panelin 12 pt üstüne gelir.
 - Kaydırma konumu geri okunmaz.
 
+**Akıcılık (Görev 44.2):**
+- Yalnız `transform` ve `opacity` hareket eder. `top`, `left`, `height`, `margin`, `box-shadow`, `border-radius`, `clip-path` büyük alanda
+  hareket ettirilmez (34.1'deki "Hangi villam boş" büyümesi istisna: kısa ve tek panel).
+- Arka plan bulanıklığı (`backdrop-filter`) kullanılmaz; karartma yeter.
+- Dokununca yapılan işte ölçüm (layout okuma) ile yazma iç içe olmaz. Ölçümler bir sonraki karenin başında tek seferde yapılır
+  (`baslikYenile` → `baslikYenileSimdi`, `barGeriAyar` → `barGeriOlc`, `yiginDenetle` → `yiginOlc`). Değişmeyen sonuç yeniden
+  ölçülmez (`VB_OLCU`, `BARGERI.anahtar`); kök yazı boyu bir kez okunur (`kokPx`).
+- Döngüde "yaz → oku" yok: önce bütün yazmalar, sonra bütün okumalar (`bolumGorselDurum`).
+- Ekranın altında kalan büyük bloklar `content-visibility:auto` + `contain-intrinsic-size:auto …` alır (villa sayfası bölümleri,
+  Ajanda ve Villalarım kartları): ekrana girene kadar dizilmez.
+- `will-change` yalnız hareket sırasında. Ölçüm: `docs/qa/gorev44/performans.md` (CPU 4 kat yavaş).
+
 **Soldan kaydırarak geri (Görev 43.2):**
 - Sol kenardan (ilk 24 pt) başlayan yatay hareket; üstteki ekran parmağı takip eder (`translateX`, sol kenarında hafif gölge).
 - Arkadaki önceki ekran −%25'ten 0'a kayar (paralaks); üstündeki karartma kaydıkça açılır. Önceki ekran kendi kaydırma yerinde görünür.
