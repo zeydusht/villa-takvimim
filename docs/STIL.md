@@ -271,6 +271,18 @@ ile işaretlenir (iki kez çarpılmasın).
 - Çıkış gününde ızgaranın son satırı panelin 12 pt üstüne gelir.
 - Kaydırma konumu geri okunmaz.
 
+**Soldan kaydırarak geri (Görev 43.2):**
+- Sol kenardan (ilk 24 pt) başlayan yatay hareket; üstteki ekran parmağı takip eder (`translateX`, sol kenarında hafif gölge).
+- Arkadaki önceki ekran −%25'ten 0'a kayar (paralaks); üstündeki karartma kaydıkça açılır. Önceki ekran kendi kaydırma yerinde görünür.
+- Bırakınca genişliğin %35'i geçildiyse ya da hızlı fiske (0,5 px/ms) atıldıysa geri dönüş tamamlanır: `geriGit()`, geri düğmesiyle
+  aynı işlem. Değilse ekran 250 ms'de yerine döner.
+- Ekranlar: villa sayfası → Villalarım (Ajanda'dan gelindiyse Ajanda); Gelir & gider, Misafirler, Fiyatlar, Fotoğraflar, sihirbaz →
+  villa sayfası. Alttan açılan pencere (misafir kartı dahil) ya da rehber açıkken, destek modunda, takvimde sürükleme sürerken
+  çalışmaz. Kenardan başlamayan hareket yatay şeritlerin, takvimin, fotoğrafların kendi işidir.
+- Hareketi azalt: ekran parmağı takip etmez, bırakınca kısa (150 ms) solma ile geri döner.
+- Safari sekmesinde Safari'nin kendi kenar hareketi kalır; bizimki ana ekrana eklenmiş uygulamada (`display-mode: standalone`),
+  Capacitor uygulamasında ve iOS olmayan tarayıcılarda çalışır (`kgAcik`). İki animasyon üst üste binmez.
+
 ## 7. Durumlar
 
 - **Boş hâl (Görev 31.8, `bosHal`):**

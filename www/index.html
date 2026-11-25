@@ -2350,6 +2350,11 @@
   .eRozet{position:absolute; top:-3px; right:-3px; width:22px; height:22px; border-radius:50%; background:var(--rz,var(--r));
     color:#fff; border:2px solid #fff; display:flex; align-items:center; justify-content:center}
   .eylem.od-eksik .eRozet{color:var(--od-amber-yazi)}
+  /* ===== Görev 43.2: soldan kaydırarak geri ===== */
+  .kgPerde{position:fixed; inset:0; z-index:2; background:rgba(16,22,19,.14); pointer-events:none}
+  .kgGolge{position:fixed; top:0; bottom:0; left:0; width:16px; z-index:3; pointer-events:none;
+    background:linear-gradient(to left, rgba(16,22,19,.16), rgba(16,22,19,0))}
+  body.kgSurukle{overflow-x:hidden}
 </style>
 </head>
 <body>
@@ -5184,6 +5189,8 @@
   // geri dönünce (geri butonu, Android geri, kenardan kaydırma) ve sekme değişince kaldığı yere döner.
   var EKRANLAR=["giris","sifre","onay","ana","ajanda","hesapEkran","takvim","kasa","misafirler","fiyatEkran","fotoEkran","sihirbaz"];
   var SEVIYE={giris:0,sifre:0,onay:0,ana:0,ajanda:0,hesapEkran:0,takvim:1,kasa:2,misafirler:2,fiyatEkran:2,fotoEkran:2,sihirbaz:2};
+  // 43.2 kaydırarak geri: anim = bırakma animasyonu sürüyor; surduGeri = geri dönüş parmakla yapıldı (goster geçiş oynatmaz)
+  var KG={anim:false, surduGeri:false};
   var KAYDIR={};
   var OLC_SON_EKRAN="";
   function goster(id,geriDon){
@@ -5221,7 +5228,7 @@
     if(gb) gb.classList[(id==="takvim"||id==="kasa"||id==="misafirler"||id==="fiyatEkran"||id==="fotoEkran"||id==="sihirbaz")?"remove":"add"]("hide");
     // 18.14: ekranlar arası geçiş — ileri giderken yeni ekran sağdan 30 px + solma, geri gelirken soldan (260 ms);
     // sekme değişiminde yalnız solma. Altta sabit çubuğu olan ekranlarda (fiyat, fotoğraf, misafir) yalnız solma.
-    if(onceki && onceki!==id && !azHareket() && !document.getElementById("acilis")){
+    if(onceki && onceki!==id && !azHareket() && !document.getElementById("acilis") && !KG.surduGeri){
       var yeniEl=document.getElementById(id), fark=(SEVIYE[id]||0)-(SEVIYE[onceki]||0);
       var X=fark>0?30:(fark<0?-30:0);
       if(id==="fiyatEkran"||id==="fotoEkran"||id==="misafirler") X=0;
@@ -14645,24 +14652,117 @@
 
   document.getElementById("barGeri").onclick=function(){ geriGit(); };
 
-  // soldan sağa kaydırınca geri
+  // ================= 43.2 SOLDAN KAYDIRARAK GERİ (iOS gibi) =================
+  // Sol kenardan (ilk 24 pt) başlayan yatay harekette üstteki ekran parmağı takip eder (translateX, sol kenarında hafif gölge);
+  // arkadaki önceki ekran -%25'ten 0'a kayar (paralaks), üstündeki karartma kaydıkça açılır. Bırakınca genişliğin %35'i geçildiyse
+  // ya da hızlı fiske atıldıysa geri dönüş tamamlanır (geriGit: geri düğmesiyle aynı işlem); değilse ekran yerine döner (250 ms).
+  // Önceki ekran DOM'da hazır durur (gizli); hareket boyunca kendi kaydırma yerinde (KAYDIR) sabit konumla gösterilir.
+  // Çalışmadığı yerler: alttan açılan pencere ya da rehber açıkken, destek modunda, takvimde sürükleme sürerken; hareket
+  // kenardan başlamıyorsa (yatay kaydırılan şeritler, takvim, fotoğraflar kendi işini yapar). Hareketi azalt açıksa ekran
+  // parmağı takip etmez, kısa bir solma ile geri döner.
+  // Safari sekmesinde Safari'nin kendi kenar hareketi kalır (iki animasyon üst üste binmesin): bizimki ana ekrana eklenmiş
+  // uygulamada (display-mode: standalone), Capacitor uygulamasında ve iOS olmayan tarayıcılarda çalışır.
+  function kgOnceki(e){
+    if(e==="takvim") return S.destek ? null : (S.villaDonus==="ajanda" ? "ajanda" : "ana");
+    if(e==="kasa"||e==="misafirler"||e==="fiyatEkran"||e==="fotoEkran"||e==="sihirbaz") return "takvim";
+    return null;
+  }
+  function kgAcik(){
+    var ua=navigator.userAgent||"";
+    var ios=/iP(hone|ad|od)/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints>1);
+    var uygulama=(window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone===true ||
+      !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
+    return uygulama || !ios;
+  }
+  function kgBasla(d){
+    var cur=document.getElementById(d.cur), on=document.getElementById(d.on); if(!cur || !on) return;
+    var r=cur.getBoundingClientRect(), y=sayfaY(), bg=getComputedStyle(document.body).backgroundColor, kap=cur.parentNode;
+    on.classList.remove("hide");
+    var os=on.style; os.position="fixed"; os.left=r.left+"px"; os.top=(r.top+y-(KAYDIR[d.on]||0))+"px"; os.width=r.width+"px";
+    os.zIndex="1"; os.pointerEvents="none"; os.willChange="transform";
+    var perdeEl=document.createElement("div"); perdeEl.className="kgPerde"; kap.insertBefore(perdeEl,cur);
+    var cs=cur.style; cs.position="relative"; cs.zIndex="3"; cs.willChange="transform";
+    // üstteki ekranın zemini kenar boşluklarını ve üst alanı da kaplar (arkadaki ekran yalnız açılan yerde görünür)
+    cs.backgroundColor=bg; cs.boxShadow="0 0 0 100vmax "+bg; cs.clipPath="inset(-100vmax -100vmax -100vmax "+(-r.left)+"px)";
+    var golge=document.createElement("div"); golge.className="kgGolge"; kap.appendChild(golge);
+    // ekranın içindeki sabit alt çubuklar (fotoğraf, fiyat, misafir seçimi) hareket boyunca gizli: transform onları yerinden oynatır
+    var sabit=[].slice.call(cur.querySelectorAll(".ftAlt, .secBar")).filter(function(x){ return !x.classList.contains("hide"); });
+    sabit.forEach(function(x){ x.style.visibility="hidden"; });
+    d.sahne={cur:cur, on:on, perde:perdeEl, golge:golge, sabit:sabit, sp:document.getElementById("secPanel")};
+    document.body.classList.add("kgSurukle");
+  }
+  function kgCiz(d,dx){
+    var s=d.sahne, W=innerWidth, p=Math.max(0,Math.min(1,dx/W));
+    s.cur.style.transform="translate3d("+dx+"px,0,0)";
+    s.on.style.transform="translate3d("+(-.25*W*(1-p))+"px,0,0)";
+    s.perde.style.opacity=String(1-p);
+    s.golge.style.transform="translate3d("+(dx-16)+"px,0,0)";
+    s.golge.style.opacity=String(dx>0?1-p*.6:0);
+    if(s.sp) s.sp.style.opacity=String(1-p);
+  }
+  function kgTemizle(d,tamam){
+    var s=d.sahne;
+    ["position","left","top","width","zIndex","pointerEvents","willChange","transform"].forEach(function(k){ s.on.style[k]=""; s.cur.style[k]=""; });
+    s.cur.style.boxShadow=""; s.cur.style.clipPath=""; s.cur.style.backgroundColor="";
+    if(!tamam) s.on.classList.add("hide");
+    s.sabit.forEach(function(x){ x.style.visibility=""; });
+    if(s.sp) s.sp.style.opacity="";
+    s.perde.remove(); s.golge.remove();
+    document.body.classList.remove("kgSurukle");
+    requestAnimationFrame(function(){ try{ baslikYenile(); }catch(x){} });   // üst çubuktaki küçük başlık görünen ekrana göre
+  }
+  function kgBirak(d,tamam){
+    var bas=d.dx||0, hedef=tamam?innerWidth:0, t0=performance.now(), sure=tamam?220:250;
+    KG.anim=true;
+    var adim=function(t){
+      var k=Math.min(1,Math.max(0,(t-t0)/sure)), e=1-Math.pow(1-k,3);
+      kgCiz(d,bas+(hedef-bas)*e);
+      if(k<1){ requestAnimationFrame(adim); return; }
+      KG.anim=false;
+      try{ if(tamam){ d.sahne.on.classList.add("hide"); KG.surduGeri=true; geriGit(); } }   // acikEkran() alttakini açık sanmasın; goster aynı karede açar
+      finally{ KG.surduGeri=false; kgTemizle(d,tamam); }
+    };
+    requestAnimationFrame(adim);
+  }
+  function kgSolarakGeri(){
+    if(!geriGit()) return;
+    var el=null; EKRANLAR.forEach(function(x){ var e=document.getElementById(x); if(e && !e.classList.contains("hide")) el=e; });
+    try{ if(el && el.animate) el.animate([{opacity:0},{opacity:1}],{duration:150}); }catch(x){}
+  }
   (function(){
-    var bx=0, by=0, izle=false;
+    var KENAR=24, d=null;
+    var engel=function(){ return !kgAcik() || KG.anim || document.querySelector(".overlay") || (window.Rehber && Rehber.aktif()) ||
+      SURUKLE.aktif || Date.now()-SURUKLE.son<300 || (KLAVYE && KLAVYE.h>0); };
     document.addEventListener("touchstart",function(e){
-      if(!e.touches || e.touches.length!==1){ izle=false; return; }
-      var t=e.touches[0];
-      izle = t.clientX <= 32;
-      bx=t.clientX; by=t.clientY;
+      d=null;
+      if(!e.touches || e.touches.length!==1) return;
+      var t=e.touches[0]; if(t.clientX>KENAR || engel()) return;
+      var cur=acikEkran(), on=kgOnceki(cur); if(!on) return;
+      d={x0:t.clientX, y0:t.clientY, cur:cur, on:on, basladi:false, dx:0, iz:[{x:t.clientX, t:e.timeStamp}]};
     },{passive:true});
-    document.addEventListener("touchend",function(e){
-      if(!izle) return;
-      izle=false;
-      var t=e.changedTouches && e.changedTouches[0];
-      if(!t) return;
-      var yatay=t.clientX-bx, dikey=Math.abs(t.clientY-by);
-      if(SURUKLE.aktif || Date.now()-SURUKLE.son<300 || (window.Rehber && Rehber.aktif())) return;
-      if(yatay>70 && dikey<50) geriGit();
-    },{passive:true});
+    document.addEventListener("touchmove",function(e){
+      if(!d || !e.touches || e.touches.length!==1) return;
+      var t=e.touches[0], dx=t.clientX-d.x0, dy=t.clientY-d.y0;
+      if(!d.basladi){
+        if(Math.abs(dx)<8 && Math.abs(dy)<8) return;
+        if(dx<=0 || Math.abs(dy)>Math.abs(dx)*.8 || SURUKLE.aktif){ d=null; return; }   // dikey ya da sola: bizim hareket değil
+        d.basladi=true;
+        if(!azHareket()) kgBasla(d);
+      }
+      if(e.cancelable) e.preventDefault();
+      d.iz.push({x:t.clientX, t:e.timeStamp}); if(d.iz.length>6) d.iz.shift();
+      d.dx=Math.max(0,dx);
+      if(d.sahne) kgCiz(d,d.dx);
+    },{passive:false});
+    var bitir=function(iptal){
+      var g=d; d=null; if(!g || !g.basladi) return;
+      var a=g.iz[0], b=g.iz[g.iz.length-1], hiz=(b.t-a.t)>0 ? (b.x-a.x)/(b.t-a.t) : 0;   // px / ms
+      var tamam=!iptal && (g.dx>innerWidth*.35 || (hiz>.5 && g.dx>24));
+      if(!g.sahne){ if(tamam) kgSolarakGeri(); return; }
+      kgBirak(g,tamam);
+    };
+    document.addEventListener("touchend",function(){ bitir(false); },{passive:true});
+    document.addEventListener("touchcancel",function(){ bitir(true); },{passive:true});
   })();
 
   cfgYukle();
