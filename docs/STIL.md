@@ -53,6 +53,9 @@ Kullanıcı yaşlı bir villa sahibi. Her karar "daha sade, daha net" yönünde 
   - Normal %106,25 = **17 px** (iOS'un varsayılan gövde boyutu);
   - Büyük %119,5 (≈ 19 px);
   - Çok büyük %132,8 (≈ 21 px).
+  - İstisna (Görev 42.2): satırlardaki ikon kutusu (`--ik-kutu` 36 px), ok (›), sayfa ve pencere kenar boşluğu
+    (`--sayfa-kenar` en çok 20 px, `--panel-kenar` en çok 24 px) ve büyük yazıdaki yuvarlak × Kapat (48 px) yazıyla büyümez.
+    Büyük yazıda yer yazıya kalsın diye. Büyük yazıya özel kurallar `html[data-yazi]` ile yazılır.
 - **Satır yüksekliği:** gövdede 1.45 (`--satir-govde`), başlıklarda 1.2 (`--satir-baslik`).
 - **Serif başlıklarda** harf aralığı `-.01em` (`--harf-serif`).
 - **Kalın yazı yok.** Tek istisna: takvim seçim panelinin yeşil başlığı ve büyük toplamı (600, Görev 20.5).
@@ -74,6 +77,22 @@ Kullanıcı yaşlı bir villa sahibi. Her karar "daha sade, daha net" yönünde 
 - **Para biçimi:** her yerde `12.300 ₺` (binlik nokta, boşluk, ₺). Takvim hücresinde dar bölünmeyen boşlukla `4.100 ₺`, yüz binin
   üstünde `120b ₺`. Tek kaynak: `para()` (uygulama), `nf.format(n)+" ₺"` (misafir sayfası).
 - **Dar alanda büyük yazı:** yan yana öğeler sığmazsa alt satıra geçer (`flex-wrap`, `min-width:min-content`, kap sorgusu); üst üste binmez.
+- **Okunabilirlik: kelime bölünmez; dar yerde sağdaki öğe alta iner (Görev 42).**
+  - **Kelime bölünmez.** Normal yazıda `overflow-wrap:anywhere` ve `word-break:break-all` kullanılmaz. Yalnız boşluksuz tek parça
+    şeyler bölünebilir: bağlantı adresi (`.dtLink`, `.lsLink`, `.tlLink`), e-posta (`#hesapAd`) ve kod (`.mfaGizli code`).
+  - **Yazı sütunu daralmaz.** Satırlardaki yazı sütunu `flex:1 1 var(--yazi-en-az)` (8em, ≈ 8 harf) ve `min-width:auto` alır: en uzun
+    kelimesinden dar olmaz. `min-width:0` ile yazının daralmasına izin verilmez.
+  - **Satır düzeni:** `[ikon] [başlık + alt yazı] [sağdaki etiket / sayı / anahtar] [›]`, satır `flex-wrap` ile kendi genişliğine bakar.
+    - Sağdaki öğe başlığın yanına sığmazsa başlığın altına, sola yaslı iner. "…" ile kesilmez.
+    - İkon solda, ok sağda, ikisi de dikey ortada ve akıştan ayrı (`position:absolute`). Alta inen etiket ikonun değil,
+      başlığın altına gelir.
+  - **Yan yana kutular:** sütun sayısı kutunun yazısına göre değişir (`repeat(auto-fit, minmax(min(100%, Nem), 1fr))`, Fiyatlar,
+    Gelir & gider, fotoğraf kutuları, özellik çipleri) ya da kap sorgusuyla alt alta geçer (Ödemeler kutuları, Giriş / Çıkış).
+  - **Bölünmeyen parçalar:** tarih ("27 Kasım"), ay adı ("Kasım 2026") ve "· 4/7" gibi sayaçlar bölünmez (`.nw`, bölünmez boşluk).
+  - **Dengeli satırlar:** başlıklar ve kısa etiketler `text-wrap:balance` alır, ortada tek kelimelik kısa satır kalmaz.
+  - **Büyük yazıda "Kapat":** "✕ Kapat" hapı yerine 48 pt yuvarlak × (`aria-label="Kapat"`; dokunma alanı en az 48 pt), başlıklar daralmaz.
+  - **Denetim:** `docs/qa/gorev42/test/okunabilirlik.js`. Varsayılan chromium, 320 genişlik, Çok büyük (tam matris: 320 ve 375 × Büyük ve Çok büyük × chromium ve webkit);
+    0 bölünmüş kelime, 0 dar sütun, 0 taşma olmalı. Yeni ekran eklenince bu teste de eklenir.
 - **Uzunluk:** bir satır en fazla ~40 karakter (telefonda). Rehber baloncuğu en fazla 2 satır. Rehber katmanı 16 px tabanlı eski
   ölçülerinde kalır (`--rh-olcek`, Görev 31.10); yazı boyutu ayarıyla yine büyür.
 

@@ -755,6 +755,12 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       "Yerleştirildi · 11:45" / "Çıktı" satırında "Geri al" yerine "Düzenle" (saat değiştir / geri al) · Claude Code (24–25 Kasım).
       41.1–41.7 ayrı commit; Netlify'a yüklenmedi. Rapor: `docs/qa/gorev41/README.md`. Amber yalnız Sıradaki "bekliyor" hâlinde
       (STIL.md'de sarı yasağının tek istisnası).
+- [x] Görev 42 — Büyük yazıda okunabilirlik: kelime asla bölünmüyor ("Villa bilgileri" artık harf harf alt alta dizilmiyor),
+      yazı sütunu en az ≈ 8 harf, satırlarda sağdaki etiket / tutar sığmazsa başlığın altına iniyor, büyük yazıda "✕ Kapat" yerine
+      yuvarlak ×, Ödemeler / Fiyatlar / fotoğraf kutuları dar yerde alt alta · Claude Code (25 Kasım). 42.1–42.5 ayrı commit;
+      Netlify'a yüklenmedi. Rapor: `docs/qa/gorev42/README.md` (önce / sonra görüntüleri). Kalıcı test
+      `docs/qa/gorev42/test/okunabilirlik.js`: 43 ekranda 0 bölünmüş kelime / 0 dar / 0 taşma (öncesi 124 / 210 / 8).
+      Sapma: "dar" kuralı paragrafın kısa son satırını saymıyor; × Kapat 48 pt (dokunma alanı kuralı).
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
