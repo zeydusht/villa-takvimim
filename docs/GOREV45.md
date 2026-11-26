@@ -92,7 +92,49 @@ Sitenin iki ayar dosyası var:
 7. **Netlify'ı kapatma, yönlendir.** `villatakvim.netlify.app/*` adresinden `https://villatakvimim.com/:splat` adresine 301 yönlendirme. Bunun için Netlify'a son bir kez sadece `_redirects` yönlendirmesi olan küçük bir yayın yapılacak. Eski paylaşılmış linkler kırılmasın.
 8. Uygulama mağaza sürümünde (Capacitor) yeni adres: bir sonraki TestFlight derlemesiyle gelir.
 
-## 45.6 — Bitiş
+## 45.6 — WhatsApp / iMessage önizlemesi: "Villa Salta · Villa Takvimim"
+
+**Zeyd'in hedefi:** Villa sahibi uygulamada "Paylaş"a basıp linki WhatsApp'tan gönderiyor. Karşı taraf mesajda hemen şu önizlemeyi görmeli:
+- villanın **kapak fotoğrafı**;
+- başlık **"Villa Salta · Kalkan"**;
+- altında "Boş günler ve fiyatlar · Villa Takvimim".
+
+Linke dokununca bizim misafir sayfamız açılsın. Adres `villatakvimim.com/villa-salta-k7m2` gibi olsun.
+
+**Şu anki durum:** `g.html`'de hiç `og:` etiketi yok, `<title>Villa</title>`. Ayrıca WhatsApp önizleme için sayfayı JavaScript çalıştırmadan okur. Villa adı ve fotoğrafı sonradan JS ile geldiği için önizlemede **hiçbir şey görünmez**.
+
+**Çözüm.** Sayfa sunulurken villaya özel etiketler sunucuda eklenecek. Cloudflare Pages Function ile yapılacak (ücretsiz pakette günde 100.000 istek, bize fazlasıyla yeter).
+
+1. **Pages Function yaz:** `functions/[[yol]].js` ya da 45.1'de seçtiğin yapı. Paylaşım linki isteği gelince (dosya olmayan, `^[a-z0-9-]+$` biçimindeki yol):
+   - Supabase'ten villanın herkese açık galeri dosyasını al: `.../storage/v1/object/public/galeri/<yol>.json`. g.html de zaten bunu okuyor. Adresi ve anahtarı `config.js`'teki değerlerden ya da Pages ortam değişkenlerinden al, koda ikinci kez gömme.
+   - `g.html`'i al. `<head>` içine şunları **HTML'e kaçışlı (escape)** olarak yaz:
+     - `<title>`;
+     - `og:title` ("Villa Adı · Konum");
+     - `og:description` ("Boş günler ve fiyatlar · Villa Takvimim");
+     - `og:image` (kapak fotoğrafının tam adresi);
+     - `og:image:width` / `og:image:height` (biliniyorsa);
+     - `og:url`;
+     - `og:site_name` ("Villa Takvimim");
+     - `og:locale` ("tr_TR");
+     - `twitter:card` ("summary_large_image").
+   - Sonucu `Cache-Control: public, max-age=600` ile döndür.
+   - Villa bulunamazsa ya da Supabase cevap vermezse genel etiketlerle normal `g.html`'i döndür. Sayfa asla hata vermesin.
+   - Kullanıcı Supabase'i beklemesin: en fazla 1,5 saniye bekle, sonra genel etiketlerle dön.
+   - `?teklif=KOD` linkleri: başlık "Villa Salta · size özel teklif" olsun.
+2. **Kapak fotoğrafı önizlemeye uygun olsun.**
+   - WhatsApp büyük resimleri göstermeyebilir. Galeri JSON'unda küçük boyutlu bir kapak sürümü varsa (yaklaşık 1200 px, 300 KB altı) onu kullan.
+   - Yoksa Supabase Storage'ın resim dönüştürme adresini dene: `/render/image/public/...?width=1200&quality=70`. Projede açık mı, test et.
+   - O da yoksa en küçük mevcut sürümü kullan.
+   - Fotoğrafı olmayan villada `www/img/paylasim-genel.jpg` kullan. 1200×630, uygulamanın yeşili, Villa Takvimim logosu ve 3D villa görseli; Codex ya da mevcut 3D görsellerden üret.
+3. **Genel etiketler `g.html`'e statik de konsun.** Netlify'da ve Function çalışmazsa en azından "Villa Takvimim" başlığı ve genel görsel görünsün. Adresler `config.js`'teki `siteUrl`'den gelsin; `npm run alan-adi` bunları da güncellesin.
+4. **Uygulamanın ana sayfası (`index.html`)** için de genel `og:` etiketleri olsun: "Villa Takvimim · Villa sahipleri için rezervasyon takvimi" ve genel görsel.
+5. **Test.**
+   - `wrangler pages dev` ile `/villa-salta-k7m2` isteğine `curl -A "WhatsApp/2.23"` at. Dönen HTML'de etiketler doğru dolu mu bak. Sahte Supabase cevabı kullanabilirsin.
+   - Tırnak, `<` ve `&` içeren villa adıyla kaçış testi yap.
+   - Supabase yanıt vermezken sayfa yine açılıyor mu, bak.
+   - Önizlemenin nasıl görüneceğini gösteren bir taklit görüntü `docs/qa/gorev45/onizleme.png`: WhatsApp mesaj balonu içinde fotoğraf, başlık, açıklama ve adres.
+
+## 45.7 — Bitiş
 
 - `docs/qa/gorev45/` klasörüne şunları koy:
   - wrangler testlerinin çıktısı (adres → durum kodu → hangi dosya geldi);
