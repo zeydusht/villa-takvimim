@@ -3021,8 +3021,8 @@
 <script>
   // Destek WhatsApp numarası (örn. "905320000000"). Boş kalırsa onay ekranındaki WhatsApp butonu gizlenir.
   var DESTEK_WHATSAPP="";
-  // Uygulamanın web adresi (davet bağlantıları bununla kurulur). Zeyd kesinleştirince değiştirilecek.
-  var UYGULAMA_ADRESI="https://zeydusht.github.io/villa-takvimim/";
+  // Uygulamanın web adresi (davet bağlantıları bununla kurulur). Görev 45.2: config.js'ten gelir (davetUrl, boşsa siteUrl).
+  var UYGULAMA_ADRESI=(function(){ var c=window.VILLA_CONFIG||{}; return String(c.davetUrl||c.siteUrl||"").replace(/\/+$/,"")+"/"; })();
   var DAVET_BEKLEYEN="villa-takvim-davet";
   // ?davet=KOD ile açıldıysa kodu hatırla (giriş/kayıt sonrası otomatik katılım).
   // localStorage doğrudan kullanılır: bu satır "store" tanımlanmadan önce çalışıyor.
@@ -14031,7 +14031,7 @@
   function ayarSheet(){
     perde('<div class="head"><h2>Paylaşım ayarları</h2>'+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 1.25rem">Bu ekran uygulamayı kuran kişi içindir; villa sahiplerine görünmez.</div>'+
-      alan("a-site","Site adresi","https://villa-takvimim.netlify.app","text",S.cfg.site||"")+
+      alan("a-site","Site adresi",(window.VILLA_CONFIG||{}).siteUrl||"https://villatakvimim.com","text",S.cfg.site||"")+
       alan("a-url","Supabase Project URL","https://xxxx.supabase.co","text",S.cfg.url||"")+
       alan("a-key","Publishable / anon anahtarı","sb_publishable_... veya eyJ...","text",S.cfg.key||"")+
       '<button class="big renkli is-gri" data-ik="kopyala" id="a-sql" style="margin-top:0">Kurulum SQL\'ini kopyala</button>'+

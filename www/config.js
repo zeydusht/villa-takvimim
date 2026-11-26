@@ -4,7 +4,14 @@
 ---------------------------------------------------------------- */
 
 window.VILLA_CONFIG = {
+  // Canlı adres. Cloudflare'a geçiş günü SADECE bu satır değişir (ardından: npm run alan-adi):
   siteUrl:     "https://villatakvim.netlify.app",
+  // siteUrl:  "https://villatakvimim.com",
+
+  // Görev 45.2: davet linklerinin açıldığı adres (eskiden index.html içindeydi; davranış aynı).
+  // Boş bırakılırsa siteUrl kullanılır. Geçiş günü boşaltılabilir: docs/ALAN_ADI_GECIS.md 4. adım.
+  davetUrl:    "https://zeydusht.github.io/villa-takvimim/",
+
   supabaseUrl: "https://qmfyqixilkvcvidigngt.supabase.co",
   supabaseKey: "sb_publishable_Tsr2CFKCR68Yl3mVQ2Bvhg_jaLVaEcC",
 
