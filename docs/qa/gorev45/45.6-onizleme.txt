@@ -1,0 +1,57 @@
+=== /villa-salta-k7m2
+durum 200 | süre 0.015575 sn | Cache-Control: public, max-age=600
+<title>Villa Salta · Kalkan</title>
+<meta property="og:title" content="Villa Salta · Kalkan">
+<meta property="og:url" content="http://127.0.0.1:8788/villa-salta-k7m2">
+<meta property="og:image" content="https://ornek.test/galeri/v1/f/kapak.jpg">
+g.html gövdesi var (eşleşme sayısı): 2
+=== /villa-salta-k7m2?teklif=ab12cd34
+durum 200 | süre 0.013695 sn | Cache-Control: public, max-age=600
+<title>Villa Salta · size özel teklif</title>
+<meta property="og:title" content="Villa Salta · size özel teklif">
+<meta property="og:url" content="http://127.0.0.1:8788/villa-salta-k7m2?teklif=AB12CD34">
+<meta property="og:image" content="https://ornek.test/galeri/v1/f/kapak.jpg">
+g.html gövdesi var (eşleşme sayısı): 2
+=== /villa-kacis-x1y2z3
+durum 200 | süre 0.015879 sn | Cache-Control: public, max-age=600
+<title>Villa &quot;Mavi&quot; &lt;script&gt;alert(1)&lt;/script&gt; &amp; Ev&#39;im · Kaş &amp; &lt;Kalkan&gt;</title>
+<meta property="og:title" content="Villa &quot;Mavi&quot; &lt;script&gt;alert(1)&lt;/script&gt; &amp; Ev&#39;im · Kaş &amp; &lt;Kalkan&gt;">
+<meta property="og:url" content="http://127.0.0.1:8788/villa-kacis-x1y2z3">
+<meta property="og:image" content="https://ornek.test/guvenli.jpg">
+g.html gövdesi var (eşleşme sayısı): 2
+=== /villa-fotosuz-a1b2c3
+durum 200 | süre 0.015120 sn | Cache-Control: public, max-age=600
+<title>Villa Zeytin · Villa Takvimim</title>
+<meta property="og:title" content="Villa Zeytin · Villa Takvimim">
+<meta property="og:url" content="http://127.0.0.1:8788/villa-fotosuz-a1b2c3">
+<meta property="og:image" content="http://127.0.0.1:8788/img/paylasim-genel.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+g.html gövdesi var (eşleşme sayısı): 2
+=== /villa-kapakli-a1b2c3
+durum 200 | süre 0.017987 sn | Cache-Control: public, max-age=600
+<title>Villa Kapak · Kaş</title>
+<meta property="og:title" content="Villa Kapak · Kaş">
+<meta property="og:url" content="http://127.0.0.1:8788/villa-kapakli-a1b2c3">
+<meta property="og:image" content="https://ornek.test/kucuk-1200.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="900">
+g.html gövdesi var (eşleşme sayısı): 2
+=== /villa-yok-a1b2c3
+durum 200 | süre 0.016967 sn | Cache-Control: public, max-age=60
+<title>Villa Takvimim</title>
+<meta property="og:title" content="Villa Takvimim">
+<meta property="og:url" content="http://127.0.0.1:8788/villa-yok-a1b2c3">
+<meta property="og:image" content="http://127.0.0.1:8788/img/paylasim-genel.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+g.html gövdesi var (eşleşme sayısı): 2
+=== /villa-yavas-a1b2c3
+durum 200 | süre 1.527861 sn | Cache-Control: public, max-age=60
+<title>Villa Takvimim</title>
+<meta property="og:title" content="Villa Takvimim">
+<meta property="og:url" content="http://127.0.0.1:8788/villa-yavas-a1b2c3">
+<meta property="og:image" content="http://127.0.0.1:8788/img/paylasim-genel.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+g.html gövdesi var (eşleşme sayısı): 2
