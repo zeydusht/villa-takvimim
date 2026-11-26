@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "description": "Görev 45.1: Cloudflare Pages Function yalnız sayfa adreslerinde çalışsın; dosyalar doğrudan gelsin (ücretsiz istek sınırı harcanmasın).",
+  "include": ["/*"],
+  "exclude": [
+    "/img/*", "/ical-deneme/*",
+    "/_headers", "/_routes.json", "/404.html",
+    "/acilis.js", "/adlar.js", "/config.js", "/dil.js", "/fiyat.js", "/ikonlar.js", "/magaza.js",
+    "/native.js", "/olcum.js", "/ozellik.js", "/rehber.js", "/sw.js", "/veri.js",
+    "/favicon-32.png", "/favicon.ico", "/icon-180.png", "/icon-192.png", "/icon-512-maskable.png", "/icon-512.png",
+    "/manifest.json", "/robots.txt"
+  ]
+}

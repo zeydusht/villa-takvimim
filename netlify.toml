@@ -1,2 +1,12 @@
 [build]
   publish = "www"
+
+# Görev 45.1: paylaşım linkleri (villatakvim.netlify.app/villa-salta-k7m2).
+# Dosya olmayan tüm adresler misafir sayfası g.html'i açar, adres değişmez (200).
+# Var olan dosyalar (index.html, config.js, resimler) kendileri gelir: Netlify kuralı yalnız dosya yoksa uygular.
+# Bu kural eskiden www/_redirects içindeydi; Cloudflare Pages o dosyayı okuyup her adresi g.html'e yönlendirdiği için
+# buraya taşındı (Cloudflare netlify.toml'u okumaz; orada aynı işi functions/[[yol]].js yapar).
+[[redirects]]
+  from = "/*"
+  to = "/g.html"
+  status = 200

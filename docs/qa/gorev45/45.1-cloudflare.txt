@@ -1,0 +1,28 @@
+Görev 45.1 — wrangler pages dev www (yerel Cloudflare Pages), adres → durum|içerik türü|yönlendirme → gelen sayfa
+
+ÖNCE (www/_redirects içinde '/* /g.html 200' varken): her adres, dosyalar dahil, /g'ye 308 ile yönleniyordu; site Cloudflare'da hiç açılmazdı.
+/  -> 308 -> /g ; /config.js -> 308 -> /g ; /img/3d/baslik-takvim-512.webp -> 308 -> /g ; /g -> 308 -> /g (döngü)
+
+SONRA (kural netlify.toml'da, Cloudflare'da functions/[[yol]].js):
+/ -> 200|text/html; charset=utf-8| -> <title>Villa Takvimim</titl
+/index.html -> 308||http://127.0.0.1:8788/ -> 
+/config.js -> 200|application/javascript| -> /* --------------------------
+/veri.js -> 200|application/javascript| -> /* ==========================
+/img/3d/baslik-takvim-512.webp -> 200|image/webp| -> (webp resim dosyası)
+/manifest.json -> 200|application/json| -> {  "name": "Villa Takvimim",  "shor
+/sw.js -> 200|application/javascript| -> /* Villa Takvimim — bildiri
+/favicon.ico -> 200|image/vnd.microsoft.icon| -> (ikon dosyası)
+/robots.txt -> 200|text/plain; charset=utf-8| -> User-agent: *Disallow: /
+/villa-salta-k7m2 -> 200|text/html; charset=utf-8| -> <title>Villa</title>
+/villa-salta-k7m2?teklif=ABCD1234 -> 200|text/html; charset=utf-8| -> <title>Villa</title>
+/g.html?v=villa-salta-k7m2 -> 308||http://127.0.0.1:8788/g?v=villa-salta-k7m2 -> 
+/g -> 200|text/html; charset=utf-8| -> <title>Villa</title>
+/gizlilik.html -> 308||http://127.0.0.1:8788/gizlilik -> 
+/kosullar.html -> 308||http://127.0.0.1:8788/kosullar -> 
+/yok/derin/yol -> 200|text/html; charset=utf-8| -> <title>Villa</title>
+/ical-deneme/airbnb-7f3k2.ics -> 200|text/calendar; charset=utf-8| -> BEGIN:VCALENDARPRODID:-
+
+Not: Cloudflare .html uzantısını kendisi kaldırır (/g.html → /g, /gizlilik.html → /gizlilik, 308). Sorgu (?v=, ?teklif=) korunur, sayfa aynı açılır.
+Başlıklar (_headers) hem dosyalarda hem Function yanıtında geliyor: X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy, HSTS, X-Robots-Tag.
+Önbellek: JSON 30 sn / fotoğraf 3600 sn _headers'ta değil; Supabase'e yüklerken (index.html sbYaz, cache-control) veriliyor, sunucu değişikliğinden etkilenmez.
+Servis çalışanı: /sw.js kapsam '/' ile kaydoldu, aktif (Playwright). sw.js yalnız bildirim içindir, fetch önbelleği yok; çevrimdışı açılış Netlify'da da yok, davranış aynı.
