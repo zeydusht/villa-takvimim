@@ -1,6 +1,6 @@
 # Villa Takvim — Proje Durumu
 
-_Son güncelleme: 25 Kasım 2026_
+_Son güncelleme: 27 Kasım 2026_
 
 ## Ne bu?
 Villa Takvim'in (villatakvim.netlify.app) iPhone/Android uygulaması. App adı: **Villa Takvimim**.
@@ -773,6 +773,18 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Netlify'a yüklenmedi. Rapor: `docs/qa/gorev44/README.md`, ölçüm `performans.md`, adaylar `www/img/3d/aday/`.
       Kalan: ekran açılışının ilk karesi hâlâ 50 ms'yi geçiyor (büyük ekranı parça parça çizmek ayrı iş). Görev 43.1'de silinen
       `odemeTam` (giriş günü detay hatası) 44.2'de düzeltildi. GERÇEK İPHONE'DA BAKILACAK: akıcılık, 120 Hz.
+- [x] Görev 45 — Cloudflare Pages'e geçişe hazırlık (villatakvimim.com) ve WhatsApp önizlemesi · Claude Code (27 Kasım). 45.1–45.7
+      ayrı commit; Netlify'a yüklenmedi, veritabanına dokunulmadı. Adres hâlâ `villatakvim.netlify.app`.
+      45.1: `/* → g.html` kuralı Cloudflare'da her adresi (config.js, resimler dahil) /g'ye yönlendiriyordu. Kural `www/_redirects`'ten
+      `netlify.toml`'a taşındı; Netlify CLI bu dosyayı yayınla birlikte yüklüyor, davranış aynı. Cloudflare'da `functions/[[yol]].js`
+      (dosya yoksa g.html, 200), `www/_routes.json` (dosyalar Function'a uğramaz), `www/404.html` (Function çalışmazsa yedek).
+      45.2: adres tek yerde (`config.js` siteUrl); davet adresi `davetUrl` (hâlâ test sitesi, eskisi gibi); `npm run alan-adi`.
+      45.3: `destekPosta` (boş → "yakında eklenecek"). 45.4: `docs/YAYIN.md`. 45.5: `docs/ALAN_ADI_GECIS.md`.
+      45.6: WhatsApp/iMessage önizlemesi — Cloudflare'da villaya özel og etiketleri ("Villa Salta · Kalkan", kapak fotoğrafı);
+      Netlify'da genel etiketler + `www/img/paylasim-genel.jpg`. Rapor: `docs/qa/gorev45/README.md`, taklit `onizleme.png`.
+      GEÇİŞ İÇİN BEKLEYEN: domain + Cloudflare Pages bağlantısı + Supabase adresleri (Site URL / Redirect URLs).
+      Not: `robots.txt` her şeyi kapatıyor (Disallow: /). WhatsApp/iMessage önizlemeyi telefondan çektiği için etkilenmez;
+      Facebook/Telegram gibi robots'a bakan önizlemeler görmeyebilir. Gerekirse ayrı karar.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
