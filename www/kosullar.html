@@ -85,12 +85,17 @@
 <h2>10. İletişim</h2>
 <p>Sorularınız için uygulamada Hesap → Bize ulaşın bölümünü kullanabilir ya da aşağıdaki adrese yazabilirsiniz.<br>
 <b>Zeyd Tekin</b><br>
-E-posta: <b>yakında eklenecek</b></p>
+E-posta: <b id="destekPosta">yakında eklenecek</b></p>
 
 <div class="dip">
   Bu metin bilgilendirme amaçlıdır ve hukuki danışmanlık yerine geçmez. Yayından önce bir avukata
   inceletmeniz önerilir. Köşeli parantezli alanları kendi bilgilerinizle doldurunuz.
 </div>
 </div>
+<!-- Görev 45.3: destek e-postası config.js → destekPosta. Doluysa tıklanabilir (mailto), boşsa "yakında eklenecek". -->
+<script src="config.js"></script>
+<script>(function(){ var p=String((window.VILLA_CONFIG||{}).destekPosta||"").trim(), b=document.getElementById("destekPosta");
+  if(!b || !/^[^\s@<>"]+@[^\s@<>"]+\.[a-z]{2,}$/i.test(p)) return;
+  var a=document.createElement("a"); a.href="mailto:"+p; a.textContent=p; b.textContent=""; b.appendChild(a); })();</script>
 </body>
 </html>

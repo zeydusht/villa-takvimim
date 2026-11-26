@@ -12,6 +12,10 @@ window.VILLA_CONFIG = {
   // Boş bırakılırsa siteUrl kullanılır. Geçiş günü boşaltılabilir: docs/ALAN_ADI_GECIS.md 4. adım.
   davetUrl:    "https://zeydusht.github.io/villa-takvimim/",
 
+  // Görev 45.3: destek e-postası. Doluysa gizlilik ve şartlar sayfalarında tıklanabilir görünür, boşsa "yakında eklenecek".
+  // Geçiş günü: "destek@villatakvimim.com" (Cloudflare e-posta yönlendirmesi). Ardından: npm run alan-adi
+  destekPosta: "",
+
   supabaseUrl: "https://qmfyqixilkvcvidigngt.supabase.co",
   supabaseKey: "sb_publishable_Tsr2CFKCR68Yl3mVQ2Bvhg_jaLVaEcC",
 

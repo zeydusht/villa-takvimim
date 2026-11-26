@@ -126,7 +126,7 @@
 <h2>11. İletişim</h2>
 <p>Veri sorumlusu: <b>Zeyd Tekin</b><br>
 Adres: <b>Ergin Sokak, Beşiktaş, İstanbul</b><br>
-E-posta: <b>yakında eklenecek</b></p>
+E-posta: <b id="destekPosta">yakında eklenecek</b></p>
 
 <div class="dip">
   Bu metin bilgilendirme amaçlıdır ve hukuki danışmanlık yerine geçmez. Ticari kullanımdan önce
@@ -135,5 +135,10 @@ E-posta: <b>yakında eklenecek</b></p>
 </div>
 
 </div>
+<!-- Görev 45.3: destek e-postası config.js → destekPosta. Doluysa tıklanabilir (mailto), boşsa "yakında eklenecek". -->
+<script src="config.js"></script>
+<script>(function(){ var p=String((window.VILLA_CONFIG||{}).destekPosta||"").trim(), b=document.getElementById("destekPosta");
+  if(!b || !/^[^\s@<>"]+@[^\s@<>"]+\.[a-z]{2,}$/i.test(p)) return;
+  var a=document.createElement("a"); a.href="mailto:"+p; a.textContent=p; b.textContent=""; b.appendChild(a); })();</script>
 </body>
 </html>
