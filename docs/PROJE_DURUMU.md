@@ -9,7 +9,7 @@ Site kodu **baştan yazılmadı**; Capacitor ile aynı HTML bir app kabuğuna sa
 Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
 
 ## Klasörler
-- `www/` → uygulamanın kendisi (siteyle aynı dosyalar). Netlify de bu klasörü yayınlar (`netlify.toml`). (geçişten sonra: Cloudflare, docs/YAYIN.md)
+- `www/` → uygulamanın kendisi (siteyle aynı dosyalar). Canlı site bu klasörü yayınlar: yayınla (Cloudflare, docs/YAYIN.md). `netlify-yonlendirme/` → eski Netlify adresi için yalnız 301.
   - `www/native.js` → YENİ. Sadece app içinde çalışır, sitede hiçbir şey yapmaz:
     dış linkler (WhatsApp, gizlilik vb.) app içinde açılır, üst durum çubuğu rengi ekrana göre değişir, Android geri tuşu.
 - `ios/` → iPhone projesi (Xcode). Bundle ID: `com.zeydtekin.villatakvim`
@@ -46,7 +46,7 @@ https://zeydusht.github.io/villa-takvimim/ — GitHub Pages, main'e her gönderi
 Gerçek veritabanına bağlı. Canlı site (villatakvim.netlify.app) de 14 Kasım'dan beri yeni sürümde.
 
 ## Yön ve kararlar (Zeyd, 7 Kasım)
-- **14 Kasım: Netlify yeni sürümde; her görevden sonra deploy edilir** (`npx netlify-cli deploy --prod --dir www`). (geçişten sonra: Cloudflare, docs/YAYIN.md)
+- **14 Kasım: Netlify yeni sürümde; her görevden sonra deploy edilir** (`npx netlify-cli deploy --prod --dir www`). Görev 46'dan sonra: yayınla (Cloudflare, docs/YAYIN.md).
   Misafir paylaşım linkleri villatakvim.netlify.app'e gidiyor, site her zaman GitHub ile aynı tutulur.
   Proje klasörü villatakvim sitesine bağlı (`.netlify/`, GitHub'a gönderilmez). Canlıda sw.js sürümü kontrol edilir.
   Hedef yine **uygulama**: istenen sürüme getirip **TestFlight**'a atmak.

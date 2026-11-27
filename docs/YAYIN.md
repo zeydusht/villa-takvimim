@@ -7,25 +7,34 @@ Bu not PM ve Claude Code için. Yayın yalnızca Zeyd "yayınla" deyince yapıl�
 2. `www/sw.js` → `SURUM` artırılmış olmalı.
 3. `npx cap sync` çalıştırılmış olmalı.
 
-## Geçişten önce: Netlify (şu anki durum)
-```sh
-npx netlify-cli deploy --prod --dir www
-```
-- Komutu proje kökünden çalıştır. Paylaşım linki kuralı (`/*` → `/g.html` 200) Görev 45.1'den beri kökteki `netlify.toml` dosyasında duruyor. Netlify CLI bu dosyayı yayınla birlikte yükler.
-- Yayından sonra kontrol et (`ADRES=https://villatakvim.netlify.app`):
-  - `curl -s $ADRES/sw.js | grep SURUM` → yeni sürüm görünmeli;
-  - `curl -sI $ADRES/villa-deneme-abc123` → `200` ve `text/html` dönmeli (misafir sayfası);
-  - `curl -sI $ADRES/config.js` → `application/javascript` dönmeli.
-
-## Geçişten sonra: Cloudflare Pages
+## Her "yayınla": Cloudflare Pages (Görev 46'dan sonra)
 ```sh
 git push origin main:canli
 ```
-- İlk yayında `canli` dalı bu komutla oluşur. Önceden oluşturma.
-- Cloudflare yeni gönderimi görüp kendisi yayınlar (1–2 dakika sürer).
-- Kontrol yukarıdakiyle aynı, `ADRES=https://villatakvimim.com` ile. Ek olarak:
+- Cloudflare yeni gönderimi görüp kendisi yayınlar (1–2 dakika sürer). `canli` dalı 27 Kasım'da oluşturuldu.
+- Yayından sonra kontrol et (`ADRES=https://villatakvimim.com`):
+  - `curl -s $ADRES/sw.js | grep SURUM` → yeni sürüm görünmeli;
+  - `curl -sI $ADRES/villa-deneme-abc123` → `200` ve `text/html` dönmeli (misafir sayfası);
+  - `curl -sI $ADRES/config.js` → `application/javascript` dönmeli;
   - `curl -s -A "WhatsApp/2.23" $ADRES/<gerçek-paylaşım-adı>` → yanıtta `og:title` ve `og:image` dolu olmalı.
-- Netlify'a bundan sonra yayın yapılmaz. Tek istisna 301 yönlendirme yayınıdır, bkz. `docs/ALAN_ADI_GECIS.md` 7. adım.
+- Netlify'a artık uygulama yayınlanmaz.
+
+## Geçiş yayını (tek seferlik, ilk "yayınla"da sırayla)
+1. **Cloudflare:** `git push origin main:canli`. Yukarıdaki kontroller yeni adreste geçmeli. 2. adıma ancak bundan sonra geç.
+2. **Netlify → yalnız yönlendirme.** Uygulama değil, sadece `netlify-yonlendirme/` klasörü yayınlanır. Klasörde tek dosya var: `_redirects` → `/*  https://villatakvimim.com/:splat  301!`.
+   ```sh
+   npx netlify-cli deploy --prod --dir netlify-yonlendirme
+   ```
+   - Komutu proje kökünden çalıştır: site bağlantısı `.netlify/state.json` içinde.
+   - Kökteki `netlify.toml`'daki g.html kuralı da yüklenir ama sorun olmaz. Netlify `_redirects` kurallarını önce uygular, `301!` (zorla) her adresi yakalar.
+   - Kontrol (`ESKI=https://villatakvim.netlify.app`):
+     - `curl -sI "$ESKI/villa-salta-k7m2?teklif=AB12CD34"` → `301`, `Location: https://villatakvimim.com/villa-salta-k7m2?teklif=AB12CD34`. Netlify sorgu parametrelerini kendisi taşır; bu yayından önce yerelde denenemedi, burada doğrula.
+     - `curl -sI $ESKI/` → `301` → `https://villatakvimim.com/`.
+     - `curl -sI $ESKI/config.js` → `301`. Eski sürüm uygulama artık Netlify'dan açılmaz.
+   - Sorgu taşınmıyorsa `_redirects` satırının sonuna kural ekleme. Önce Netlify belgesine bak, PM'e bildir.
+3. **Supabase Site URL** → `https://villatakvimim.com`. Bunu PM panelden yapar (Authentication → URL Configuration). Claude Code veritabanına ve Supabase ayarlarına dokunmaz.
+
+Bundan sonraki her "yayınla"da yalnız "Her yayınla" bölümü yapılır. 2 ve 3 tek seferliktir.
 
 ## Cloudflare Pages proje ayarları (bir kez yapılır)
 - **Kaynak:** GitHub, `zeydusht/villa-takvimim`.
