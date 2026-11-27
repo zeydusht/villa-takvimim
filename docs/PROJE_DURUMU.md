@@ -885,3 +885,8 @@ uygulama da opsiyonları bilgi'den bu sütunlara taşıyacak şekilde güncellen
 - **Henüz yapılmayan (geçiş günü, docs/ALAN_ADI_GECIS.md):** `config.js` siteUrl → villatakvimim.com, destek@ e-posta yönlendirmesi, Netlify → 301 yönlendirme, robots.txt önizleme botları, paylasim-genel.jpg yeni görsel.
 - Supabase Redirect URLs eklendi (27 Kasım, Zeyd onayıyla): `https://villatakvimim.com/**`, `https://www.villatakvimim.com/**`, `https://villatakvim.netlify.app/**`. Site URL hâlâ `https://villatakvim.netlify.app` — geçiş günü `https://villatakvimim.com` yapılacak (PM, Supabase panelinden).
 - Netlify hâlâ canlı ve paylaşım linkleri hâlâ Netlify adresini üretiyor.
+
+## Yayın (27 Kasım 2026, 17:25)
+- Zeyd "yayınla" dedi: PM `main` → `canli` itti (e912eff), Cloudflare yayınladı. villatakvimim.com'da siteUrl yeni domain, robots, gizlilik doğrulandı.
+- Supabase Site URL → `https://villatakvimim.com` (PM, panelden).
+- **Bekleyen:** Netlify'a `netlify-yonlendirme/` yayını (Claude Code, Netlify oturumu Zeyd'in PC'sinde), destek@villatakvimim.com e-posta yönlendirmesi (Zeyd'in e-posta onayı bekleniyor).
