@@ -871,5 +871,6 @@ uygulama da opsiyonları bilgi'den bu sütunlara taşıyacak şekilde güncellen
   - Canlı dal: **`canli`** (otomatik yayın açık → "yayınla" = `git push origin main:canli`). Önizleme dağıtımları kapalı (main'e push Cloudflare'ı etkilemez).
   - Build komutu yok, çıktı klasörü `www`, Functions `functions/` (WhatsApp önizlemesi).
   - Özel alan adları: `villatakvimim.com` ve `www.villatakvimim.com` (DNS CNAME → villatakvimim.pages.dev, proxied). villatakvimim.com çalışıyor (giriş ekranı açılıyor, config.js/resimler/paylaşım yolu doğru).
-- **Henüz yapılmayan (geçiş günü, docs/ALAN_ADI_GECIS.md):** Supabase Redirect URLs'e `https://villatakvimim.com/**` (Zeyd Supabase'e giriş yapınca PM ekleyecek), `config.js` siteUrl → villatakvimim.com, destek@ e-posta yönlendirmesi, Netlify → 301 yönlendirme, robots.txt önizleme botları, paylasim-genel.jpg yeni görsel.
+- **Henüz yapılmayan (geçiş günü, docs/ALAN_ADI_GECIS.md):** `config.js` siteUrl → villatakvimim.com, destek@ e-posta yönlendirmesi, Netlify → 301 yönlendirme, robots.txt önizleme botları, paylasim-genel.jpg yeni görsel.
+- Supabase Redirect URLs eklendi (27 Kasım, Zeyd onayıyla): `https://villatakvimim.com/**`, `https://www.villatakvimim.com/**`, `https://villatakvim.netlify.app/**`. Site URL hâlâ `https://villatakvim.netlify.app` — geçiş günü `https://villatakvimim.com` yapılacak (PM, Supabase panelinden).
 - Netlify hâlâ canlı ve paylaşım linkleri hâlâ Netlify adresini üretiyor.
