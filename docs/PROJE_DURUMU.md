@@ -864,3 +864,12 @@ uygulama da opsiyonları bilgi'den bu sütunlara taşıyacak şekilde güncellen
 - Şifre sıfırlama e-postası şu an siteye yönlendiriyor (çalışıyor ama app'e dönmüyor) → ileride deep link.
 - App Store incelemesi için app'e özel özellikler (Apple "sadece site" uygulamalarını reddedebilir).
 - Paylaş (navigator.share) ve PDF dışa aktarma gerçek iPhone'da test edilecek.
+
+## Cloudflare Pages kurulumu (27 Kasım 2026, PM)
+- Domain alındı: **villatakvimim.com** (Cloudflare Registrar, Zeyd'in Cloudflare hesabı).
+- Cloudflare Pages projesi **villatakvimim** kuruldu, GitHub'a bağlandı (Cloudflare GitHub uygulaması yalnız `zeydusht/villa-takvimim` deposuna erişebiliyor).
+  - Canlı dal: **`canli`** (otomatik yayın açık → "yayınla" = `git push origin main:canli`). Önizleme dağıtımları kapalı (main'e push Cloudflare'ı etkilemez).
+  - Build komutu yok, çıktı klasörü `www`, Functions `functions/` (WhatsApp önizlemesi).
+  - Özel alan adları: `villatakvimim.com` ve `www.villatakvimim.com` (DNS CNAME → villatakvimim.pages.dev, proxied). villatakvimim.com çalışıyor (giriş ekranı açılıyor, config.js/resimler/paylaşım yolu doğru).
+- **Henüz yapılmayan (geçiş günü, docs/ALAN_ADI_GECIS.md):** Supabase Redirect URLs'e `https://villatakvimim.com/**` (Zeyd Supabase'e giriş yapınca PM ekleyecek), `config.js` siteUrl → villatakvimim.com, destek@ e-posta yönlendirmesi, Netlify → 301 yönlendirme, robots.txt önizleme botları, paylasim-genel.jpg yeni görsel.
+- Netlify hâlâ canlı ve paylaşım linkleri hâlâ Netlify adresini üretiyor.
