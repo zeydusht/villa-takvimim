@@ -20,7 +20,7 @@ Durum (27 Kasım, Görev 46 sonu): kod hazır ve main'de; `canli` dalına ve Net
 - [ ] `www.` adresi `villatakvimim.com`'a yönleniyor mu? (27 Kasım: yönlenmiyor, www de 200 ile aynı siteyi açıyor. Çalışıyor ama tek adres için Cloudflare'da Redirect Rule önerilir — PM.)
 
 ## 3. Supabase giriş adresleri (Zeyd panelden yapar, PM adım adım anlatır)
-- [ ] Authentication → URL Configuration → **Site URL**: `https://villatakvimim.com`.
+- [x] Authentication → URL Configuration → **Site URL**: `https://villatakvimim.com`. (27 Kasım, PM)
 - [x] **Redirect URLs** listesine `https://villatakvimim.com` ve `https://villatakvimim.com/**` eklendi mi?
 - [x] Eski `https://villatakvim.netlify.app` adresi bir süre (en az birkaç hafta) listede kalsın. Eski e-postalardaki bağlantılar çalışmaya devam etsin.
 - Claude Code veritabanına ve Supabase ayarlarına dokunmaz.
@@ -32,7 +32,7 @@ Durum (27 Kasım, Görev 46 sonu): kod hazır ve main'de; `canli` dalına ve Net
 - [x] `www/sw.js` → `SURUM` artırıldı (`vt-2026-11-27-46`).
 - [x] `npx cap sync` çalıştırıldı.
 - [x] Commit, `git push` yapıldı.
-- [ ] `git push origin main:canli` — Zeyd "yayınla" deyince.
+- [x] `git push origin main:canli` — Zeyd "yayınla" deyince. (27 Kasım, e912eff)
 - **Değiştirme:** iCal UID'leri (`rez-…@villatakvim`, `tutma-…@villatakvim`). Bunlar Airbnb/Booking'deki kayıt kimlikleri. Değişirse oralarda kopya rezervasyon oluşur.
 
 ## 5. Destek e-postası
@@ -59,3 +59,5 @@ Durum (27 Kasım, Görev 46 sonu): kod hazır ve main'de; `canli` dalına ve Net
 ## 8. Uygulama (Capacitor / mağaza)
 - [x] Uygulama, paylaşım linkini `www/config.js` → `siteUrl` değerinden kurar. `npx cap sync` bu değeri `ios/App/App/public/config.js` ve `android/app/src/main/assets/public/config.js` dosyalarına kopyalar. Kopyaların yeni adresi gösterdiğini doğrula. (27 Kasım: ikisi de villatakvimim.com)
 - [ ] Yeni adres, bir sonraki TestFlight / Play derlemesiyle gelir. O zamana kadar mağaza sürümü eski Netlify adresiyle link üretir. Bu linkler 7. adımdaki 301 yönlendirmesi sayesinde çalışır.
+
+- [x] Netlify'a yalnız `netlify-yonlendirme/` yayınlandı (27 Kasım, Claude Code): `villatakvim.netlify.app/*` → 301 `villatakvimim.com/:splat`, sorgu ekleri taşınıyor.
