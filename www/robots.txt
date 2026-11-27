@@ -1,2 +1,16 @@
+# Görev 46.2: link önizleme botları sayfayı okuyabilsin (WhatsApp, Messenger, Instagram, Telegram, Slack …).
+# Google vb. listelemesin: sayfalar X-Robots-Tag: noindex (_headers) ve <meta name="robots" content="noindex"> ile kapalı.
+User-agent: facebookexternalhit
+User-agent: Facebot
+User-agent: meta-externalagent
+User-agent: WhatsApp
+User-agent: TelegramBot
+User-agent: Twitterbot
+User-agent: Slackbot
+User-agent: LinkedInBot
+User-agent: Discordbot
+User-agent: Applebot
+Allow: /
+
 User-agent: *
 Disallow: /
