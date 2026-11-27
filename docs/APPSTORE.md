@@ -122,10 +122,10 @@ The first version of Villa Takvimim: calendar, bookings, payments, villa page, o
 
 | Alan | Adres | Not |
 |---|---|---|
-| Gizlilik politikası (zorunlu) | https://villatakvim.netlify.app/gizlilik.html | Sayfa yayında. Köşeli parantezli iletişim alanları doldurulmalı. |
-| Destek | https://villatakvim.netlify.app/kosullar.html | Apple destek adresinde iletişim bilgisi arıyor. Kullanım koşullarının 10. bölümü iletişim; Netlify'a yüklenince açılır. İleride ayrı bir "destek" sayfası daha iyi olur. |
-| Kullanım koşulları (EULA) | Apple'ın standart EULA'sı yeterli; açıklamanın sonuna ya da "Lisans Sözleşmesi" alanına https://villatakvim.netlify.app/kosullar.html | Abonelik açılınca zorunlu. |
-| Pazarlama (isteğe bağlı) | https://villatakvim.netlify.app | — |
+| Gizlilik politikası (zorunlu) | https://villatakvimim.com/gizlilik | Sayfa yayında (Cloudflare `.html` uzantısını kaldırır; `/gizlilik.html` da `/gizlilik`e gider). Köşeli parantezli iletişim alanları doldurulmalı. |
+| Destek | https://villatakvimim.com/kosullar | Apple destek adresinde iletişim bilgisi arıyor. Kullanım koşullarının 10. bölümü iletişim: destek@villatakvimim.com (Görev 46 yayınlanınca tıklanabilir görünür). İleride ayrı bir "destek" sayfası daha iyi olur. |
+| Kullanım koşulları (EULA) | Apple'ın standart EULA'sı yeterli; açıklamanın sonuna ya da "Lisans Sözleşmesi" alanına https://villatakvimim.com/kosullar | Abonelik açılınca zorunlu. |
+| Pazarlama (isteğe bağlı) | https://villatakvimim.com | — |
 
 ## Yaş derecelendirmesi cevapları
 
