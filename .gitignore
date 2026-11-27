@@ -4,3 +4,22 @@ build/
 *.p8
 .netlify/
 .wrangler/
+
+# IOS_YAYIN_DERSLERI §5: anahtar, sertifika ve profiller asla commit edilmez (yalnız GitHub Secrets)
+*.p12
+*.cer
+*.mobileprovision
+*.provisionprofile
+.env
+.env.*
+# tarayıcı / Playwright profil ve çıktı klasörleri (içinde anahtar kalabilir)
+*-profil/
+*-profile/
+profil/
+profile/
+user-data/
+user-data-dir/
+chrome-data/
+.playwright/
+playwright-report/
+test-results/

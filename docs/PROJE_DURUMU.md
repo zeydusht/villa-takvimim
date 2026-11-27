@@ -796,6 +796,13 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       `netlify-yonlendirme/` 3) PM: Supabase Site URL → https://villatakvimim.com. Ayrıca: destek@ e-posta yönlendirmesi (PM),
       www.villatakvimim.com şu an yönlenmiyor, aynı siteyi açıyor (isteğe bağlı Redirect Rule). Yayına kadar uygulama ve test sitesi
       yeni adresle link üretir; canlı Cloudflare sitesi Görev 45 sürümünde ama aynı paylaşım adlarını açtığı için linkler çalışır.
+- [x] iOS riskleri (docs/IOS_YAYIN_DERSLERI.md, "Claude Code için yapılacaklar" 1–9) · Claude Code (27 Kasım). Yayın, TestFlight,
+      App Store Connect ve veritabanı yok. ios.yml: arşiv → .ipa (ExportOptions `destination=export`) → `ios/ci/imza-duzelt.sh`
+      (İ: 49cc87 → c4b0, yeniden imza, verify) → `altool --validate-app` → `altool --upload-app`; isteğe bağlı `IOS_DIST_P12` /
+      `IOS_DIST_P12_SIFRE` sırrı (tek dağıtım sertifikası). Info.plist: `NSPhotoLibraryAddUsageDescription` (TR/EN) eklendi;
+      şifreleme NO, iPhone-only, diğer izin metinleri zaten vardı. `.gitattributes` (LF), `.gitignore` (p12, profil, .env, tarayıcı
+      profilleri). App'te gizlenen: bildirim ayarı, Pro/üyelik (mağaza kapalıyken), "Bize ulaşın"daki "yakında" → destek e-postası.
+      Ad: görünür "Villa Takvim" yoktu; yedek dosya adları `villa-takvimim-…json`. `docs/IPHONE_KONTROL.md` hazır. sw `vt-2026-11-27-ios1`.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.

@@ -1161,6 +1161,7 @@
     "Sık sorulan sorular":"Frequently asked questions",
     "Tur için önce bir villa ekleyin.":"Add a villa first to see the tour.",
     "Merhaba, Villa Takvimim hakkında bir sorum var.":"Hello, I have a question about Villa Takvimim.",
+    "Sorularınız için bize e-posta gönderin.":"Email us with your questions.",
     "Destek hattımız çok yakında burada olacak. O zamana kadar \"Sık sorulan sorular\"a göz atabilirsiniz.":"Our support line will be here very soon. Until then, have a look at the frequently asked questions.",
     "Rezervasyon nasıl girilir?":"How do I enter a reservation?",
     "Villayı açın. Takvimde misafirin gireceği güne, sonra çıkacağı güne dokunun. Alttaki panelde \"Rezervasyon\"a dokunun, misafirin adını yazıp kaydedin.":"Open the villa. On the calendar, tap the guest's check-in day, then the check-out day. Tap \"Reservation\" in the panel below, enter the guest's name and save.",

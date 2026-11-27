@@ -1,0 +1,6 @@
+# IOS_YAYIN_DERSLERI §3: Mac'te çalışan dosyalar her zaman LF satır sonuyla kalsın (CRLF bash'i bozar)
+*.sh       text eol=lf
+*.yml      text eol=lf
+*.plist    text eol=lf
+*.pbxproj  text eol=lf
+*.strings  text eol=lf

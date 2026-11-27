@@ -2,3 +2,4 @@
 "NSCameraUsageDescription" = "The camera is needed to take photos of villas and receipts.";
 "NSPhotoLibraryUsageDescription" = "Access to your photo library is needed to add villa photos.";
 "NSFaceIDUsageDescription" = "To open Villa Takvimim with Face ID.";
+"NSPhotoLibraryAddUsageDescription" = "Permission is needed to save the images you share to your photo library.";

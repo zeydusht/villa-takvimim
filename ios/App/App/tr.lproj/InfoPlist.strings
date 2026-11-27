@@ -2,3 +2,4 @@
 "NSCameraUsageDescription" = "Villa ve fiş fotoğrafı çekmek için kamera gerekir.";
 "NSPhotoLibraryUsageDescription" = "Villa fotoğraflarını eklemek için galerinize erişim gerekir.";
 "NSFaceIDUsageDescription" = "Villa Takvimim'i Face ID ile açmak için.";
+"NSPhotoLibraryAddUsageDescription" = "Paylaştığınız görselleri galerinize kaydetmek için izin gerekir.";

@@ -6498,7 +6498,8 @@
     var bitti=false;
     var son=function(a){
       if(bitti) return; bitti=true;
-      if(a && a.sinir_acik===true && a.villa_ekleyebilir===false){ PRO.sonra=villaEkleAc; proSheet(); }
+      // proGizli: uygulamada mağaza kapalıyken Pro ekranı açılmaz, ekleme sunucunun kararına bırakılır
+      if(a && a.sinir_acik===true && a.villa_ekleyebilir===false && !proGizli()){ PRO.sonra=villaEkleAc; proSheet(); }
       else devam();
     };
     setTimeout(function(){ son(null); },3000);
@@ -9781,6 +9782,16 @@
   document.getElementById("destekBtn").onclick=function(){
     var no=String(DESTEK_WHATSAPP||"").replace(/\D/g,"");
     if(no){ window.open("https://wa.me/"+no+"?text="+encodeURIComponent(cev("Merhaba, Villa Takvimim hakkında bir sorum var.")),"_blank"); return; }
+    // IOS_YAYIN_DERSLERI §4: uygulamada "yakında" metni görünmesin; destek e-postası gösterilir (site aynı kalır)
+    var posta=String((window.VILLA_CONFIG&&VILLA_CONFIG.destekPosta)||"").trim();
+    if(document.documentElement.classList.contains("native") && posta){
+      perde('<div class="head"><h2>'+esc(cev("Bize ulaşın"))+"</h2>"+kapatBtn()+"</div>"+
+        '<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Sorularınız için bize e-posta gönderin."))+"</div>"+
+        '<a class="big" data-ik="mesaj" id="dsPosta" href="mailto:'+esc(posta)+'" style="margin-top:1.25rem;display:flex;align-items:center;justify-content:center;text-decoration:none">'+esc(posta)+"</a>"+
+        '<button class="big ghost" id="dsSss" style="margin-top:.75rem">'+esc(cev("Sık sorulan sorular"))+"</button>");
+      document.getElementById("dsSss").onclick=function(){ document.getElementById("sssBtn").click(); };
+      return;
+    }
     perde('<div class="head"><h2>'+esc(cev("Bize ulaşın"))+"</h2>"+kapatBtn()+"</div>"+
       '<div class="sm muted" style="margin:.5rem 0 0">'+esc(cev("Destek hattımız çok yakında burada olacak. O zamana kadar \"Sık sorulan sorular\"a göz atabilirsiniz."))+"</div>"+
       '<button class="big renkli is-rez" data-ik="bilgi-i" id="dsSss" style="margin-top:1.25rem">'+esc(cev("Sık sorulan sorular"))+"</button>");
@@ -9791,7 +9802,9 @@
     var bulut=!!(S.bulut && window.VT && VT.girisli && VT.girisli());
     if(bulut && VT.yonetici && VT.yonetici() && document.getElementById("talepBtn")) talepSayiYaz();   // 33.8: rozet her açılışta güncel
     document.getElementById("cikisBtn").classList[bulut?"remove":"add"]("hide");
-    document.getElementById("hsBildirimBolum").classList[bulut?"remove":"add"]("hide");
+    // IOS_YAYIN_DERSLERI §4: uygulamada Web Push yok; native bildirim gelene kadar bildirim ayarı app'te hiç görünmez
+    var appIci=document.documentElement.classList.contains("native");
+    document.getElementById("hsBildirimBolum").classList[(bulut && !appIci)?"remove":"add"]("hide");
     var no=String(DESTEK_WHATSAPP||"").replace(/\D/g,"");
     // 18.21: "Bize ulaşın" her zaman görünür; numara girilmemişse açıklama gösterir
     document.getElementById("destekSag").textContent=no?"WhatsApp":"";
@@ -9799,8 +9812,8 @@
     document.getElementById("bakiciEkleBtn").classList[(bulut && !S.destek && sahipVillalari().length)?"remove":"add"]("hide");
     Array.prototype.forEach.call(document.querySelectorAll("#hs-dil button"),function(b){
       b.classList[((window.DIL&&DIL.dil)||"tr")===b.dataset.d?"add":"remove"]("on"); });
-    if(bulut) bildirimAnahtari();
-    var app=document.documentElement.classList.contains("native");
+    if(bulut && !appIci) bildirimAnahtari();
+    var app=appIci;
     document.getElementById("hsTitresimBolum").classList[app?"remove":"add"]("hide");
     document.getElementById("hs-titresim").className="svic"+(store.get(TITRESIM)==="kapali"?"":" on");
     olcumCiz();
@@ -9927,7 +9940,7 @@
     document.getElementById("h-veri").onclick=function(){
       var d={ hesap:(k&&k.email)||"", tarih:new Date().toISOString(), villalar:S.villalar };
       var blob=new Blob([JSON.stringify(d,null,2)],{type:"application/json"});
-      var ad="villa-takvim-verilerim-"+fmt(new Date())+".json";
+      var ad="villa-takvimim-verilerim-"+fmt(new Date())+".json";
       if(dosyaVer(blob,ad)) return;
       var a=document.createElement("a");
       a.href=URL.createObjectURL(blob);
@@ -10438,6 +10451,8 @@
   // ================= Görev 30 VİLLA TAKVİMİM PRO (abonelik) =================
   // Pro ekranı yalnız sunucu "sınır açık" derken ve kullanıcı yeni villa ekleyemezken açılır (30.3); sinir_acik kapalıyken hiçbir yerde görünmez.
   var ABO=null;   // son abonelik_durumum() cevabı; sunucu güncellemesi yoksa null
+  // IOS_YAYIN_DERSLERI §4: uygulamada mağaza (RevenueCat) kapalıyken abonelik ve Pro hiçbir yerde görünmez. Site aynı kalır.
+  function proGizli(){ return document.documentElement.classList.contains("native") && !(window.Magaza && Magaza.hazir()); }
   function aboYukle(){
     if(!(window.VT && VT.abonelikDurumum && VT.girisli && VT.girisli())) return Promise.resolve(null);
     return VT.abonelikDurumum().then(function(d){
@@ -10568,7 +10583,7 @@
   function uyelikCiz(){
     var b=document.getElementById("uyelikBtn"); if(!b) return;
     var bulut=!!(S.bulut && window.VT && VT.girisli && VT.girisli());
-    var g=bulut && ABO && (ABO.sinir_acik===true || ABO.abone===true) ? uyelikBilgi(ABO) : null;
+    var g=bulut && ABO && !proGizli() && (ABO.sinir_acik===true || ABO.abone===true) ? uyelikBilgi(ABO) : null;
     b.classList[g?"remove":"add"]("hide");
     if(!g) return;
     document.getElementById("uyelikDurum").textContent=cev(g.sag);
@@ -10643,6 +10658,7 @@
   }
   document.getElementById("uyelikBtn").onclick=function(){ uyelikSheet(); };
   function uyelikSheet(){
+    if(proGizli()) return;
     var g=uyelikBilgi(ABO); if(!g) return;
     var M=window.Magaza;
     var magazaAd=ABO.kaynak==="google"?"Google Play":"App Store";
@@ -14661,7 +14677,7 @@
 
   document.getElementById("yedek").onclick=function(){
     var blob=new Blob([JSON.stringify({villalar:S.villalar,cfg:S.cfg},null,2)],{type:"application/json"});
-    var ad="villa-takvim-"+fmt(new Date())+".json";
+    var ad="villa-takvimim-"+fmt(new Date())+".json";
     if(dosyaVer(blob,ad)) return;
     var a=document.createElement("a");
     a.href=URL.createObjectURL(blob);

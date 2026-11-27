@@ -2,6 +2,7 @@ name: iOS (TestFlight)
 
 # main'e her gönderimde iPhone uygulaması bulutta derlenir.
 # Apple anahtarları eklendiyse TestFlight'a da yüklenir.
+# Sıra (IOS_YAYIN_DERSLERI §1-2): arşivle -> .ipa'ya aktar -> imza kontrolü + İ düzeltmesi -> Apple doğrulaması -> yükle.
 on:
   push:
     branches: [main]
@@ -15,6 +16,9 @@ jobs:
       ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
       ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+      # İsteğe bağlı (§2): tek dağıtım sertifikası. Varsa her derlemede bu kullanılır, İ düzeltmesi de ancak bununla yapılabilir.
+      IOS_DIST_P12: ${{ secrets.IOS_DIST_P12 }}            # .p12 dosyasının base64 hali
+      IOS_DIST_P12_SIFRE: ${{ secrets.IOS_DIST_P12_SIFRE }}
     steps:
       - uses: actions/checkout@v4
       - uses: maxim-lobanov/setup-xcode@v1
@@ -32,24 +36,73 @@ jobs:
         run: |
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug \
             -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+          echo "Derleme tamam (Apple anahtarı yok, TestFlight'a yüklenmedi)."
 
-      - name: Arşivle ve TestFlight'a yükle
+      - name: Dağıtım sertifikasını yükle (.p12 varsa)
+        if: env.ASC_KEY_P8 != '' && env.IOS_DIST_P12 != ''
+        run: |
+          KC="$RUNNER_TEMP/vt-imza.keychain-db"
+          KCS="$(uuidgen)"
+          security create-keychain -p "$KCS" "$KC"
+          security set-keychain-settings -lut 21600 "$KC"
+          security unlock-keychain -p "$KCS" "$KC"
+          printf '%s' "$IOS_DIST_P12" | base64 --decode > "$RUNNER_TEMP/dagitim.p12"
+          security import "$RUNNER_TEMP/dagitim.p12" -P "$IOS_DIST_P12_SIFRE" -A -t cert -f pkcs12 -k "$KC" \
+            || { echo "::error::Sertifika (.p12) açılamadı: şifre ya da dosya yanlış."; exit 1; }
+          rm -f "$RUNNER_TEMP/dagitim.p12"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KCS" "$KC" >/dev/null
+          security list-keychains -d user -s "$KC" $(security list-keychains -d user | tr -d '"')
+          echo "Dağıtım sertifikası geçici anahtar zincirine yüklendi."
+
+      - name: Arşivle
         if: env.ASC_KEY_P8 != ''
         run: |
           mkdir -p ~/private_keys
           printf '%s' "$ASC_KEY_P8" > ~/private_keys/AuthKey_$ASC_KEY_ID.p8
           KEY=~/private_keys/AuthKey_$ASC_KEY_ID.p8
-          sed "s/__TEAM_ID__/$TEAM_ID/" ios/ci/ExportOptions.plist > build-export.plist
-
           xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release \
             -destination 'generic/platform=iOS' -archivePath build/App.xcarchive \
             DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
             -allowProvisioningUpdates \
             -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
-            archive
+            archive \
+            || { echo "::error::Arşivleme başarısız (derleme ya da imza hatası)."; exit 1; }
+          echo "Arşiv tamam, build numarası ${{ github.run_number }}."
 
+      - name: .ipa olarak dışa aktar
+        if: env.ASC_KEY_P8 != ''
+        run: |
+          KEY=~/private_keys/AuthKey_$ASC_KEY_ID.p8
+          sed "s/__TEAM_ID__/$TEAM_ID/" ios/ci/ExportOptions.plist > build-export.plist
           xcodebuild -exportArchive -archivePath build/App.xcarchive \
             -exportOptionsPlist build-export.plist -exportPath build/export \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+            -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            || { echo "::error::Dışa aktarma başarısız (imza ya da profil hatası)."; exit 1; }
+          IPA="$(ls build/export/*.ipa | head -1)"
+          [ -f "$IPA" ] || { echo "::error::.ipa oluşmadı."; exit 1; }
+          echo "IPA=$IPA" >> "$GITHUB_ENV"
+          echo ".ipa hazır: $IPA"
+
+      - name: İmza kontrolü ve İ düzeltmesi
+        if: env.ASC_KEY_P8 != ''
+        run: bash ios/ci/imza-duzelt.sh "$IPA"
+
+      - name: Apple doğrulaması
+        if: env.ASC_KEY_P8 != ''
+        run: |
+          xcrun altool --validate-app -f "$IPA" -t ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID" \
+            || { echo "::error::Apple doğrulaması geçmedi, yüklenmedi. Günlüğün ekran görüntüsünü PM'e at."; exit 1; }
+          echo "Apple doğrulaması geçti."
+
+      - name: TestFlight'a yükle
+        if: env.ASC_KEY_P8 != ''
+        run: |
+          xcrun altool --upload-app -f "$IPA" -t ios --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID" \
+            || { echo "::error::TestFlight'a yükleme başarısız. Günlüğün ekran görüntüsünü PM'e at."; exit 1; }
+          echo "TestFlight'a yüklendi (build ${{ github.run_number }}). İşlenmesi 10-30 dakika sürer."
+
+      - name: Sonuç
+        if: failure()
+        run: echo "::error::iOS derlemesi durdu. Kırmızı adımın ekran görüntüsünü PM'e at."
