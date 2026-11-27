@@ -4,17 +4,16 @@
 ---------------------------------------------------------------- */
 
 window.VILLA_CONFIG = {
-  // Canlı adres. Cloudflare'a geçiş günü SADECE bu satır değişir (ardından: npm run alan-adi):
-  siteUrl:     "https://villatakvim.netlify.app",
-  // siteUrl:  "https://villatakvimim.com",
+  // Canlı adres (Görev 46.1: Cloudflare Pages). Adres değişirse SADECE bu satır değişir (ardından: npm run alan-adi):
+  siteUrl:     "https://villatakvimim.com",
+  // eski: "https://villatakvim.netlify.app" (artık villatakvimim.com'a 301 yönlendirir: netlify-yonlendirme/)
 
-  // Görev 45.2: davet linklerinin açıldığı adres (eskiden index.html içindeydi; davranış aynı).
-  // Boş bırakılırsa siteUrl kullanılır. Geçiş günü boşaltılabilir: docs/ALAN_ADI_GECIS.md 4. adım.
-  davetUrl:    "https://zeydusht.github.io/villa-takvimim/",
+  // Davet linklerinin açıldığı adres (Görev 45.2'de buraya taşındı, 46.1'de yeni domaine çevrildi). Boşsa siteUrl kullanılır.
+  davetUrl:    "https://villatakvimim.com",
 
   // Görev 45.3: destek e-postası. Doluysa gizlilik ve şartlar sayfalarında tıklanabilir görünür, boşsa "yakında eklenecek".
-  // Geçiş günü: "destek@villatakvimim.com" (Cloudflare e-posta yönlendirmesi). Ardından: npm run alan-adi
-  destekPosta: "",
+  // Cloudflare e-posta yönlendirmesiyle Zeyd'in postasına gider. Değişirse: npm run alan-adi
+  destekPosta: "destek@villatakvimim.com",
 
   supabaseUrl: "https://qmfyqixilkvcvidigngt.supabase.co",
   supabaseKey: "sb_publishable_Tsr2CFKCR68Yl3mVQ2Bvhg_jaLVaEcC",
