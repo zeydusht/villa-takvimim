@@ -31,8 +31,9 @@ Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
 - [ ] App Store Connect'te uygulama kaydı (bundle ID: com.zeydtekin.villatakvim)
 - [ ] App Store Connect API anahtarı (Admin) + Team ID → GitHub repo Secrets:
       `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`
-      28 Kasım: dört sır eklendi (anahtar 24XGL5ZG5Y). Ama dışa aktarma "Cloud signing permission error" verdi:
-      anahtarın rolü büyük ihtimalle Admin değil. Admin rolüyle yeni anahtar gerekiyor (bkz. Görev 47).
+      28 Kasım: dört sır eklendi; Admin rollü anahtar T7Q3ZFT98L ile ASC_KEY_ID / ASC_KEY_P8 güncellendi, dışa aktarma çalışıyor.
+- [ ] Dağıtım sertifikası (.p12) → Secrets `IOS_DIST_P12` (base64) + `IOS_DIST_P12_SIFRE`. İ harfi hatası çıktı (Görev 47),
+      düzeltmek için gerekli.
 - [ ] Veritabanı Adım C: canlı site (villatakvim.netlify.app) yeni sürüme geçirildikten SONRA Claude
       sohbetten yapacak. Önce yapılırsa canlı sitede fotoğraf yükleme çalışmaz.
       **Not (14 Kasım): Netlify güncellendi, artık yapılabilir — Claude yapacak.**
@@ -811,7 +812,10 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       .ipa dışa aktarma DURDU → "Cloud signing permission error", "No signing certificate iOS Distribution", "No profiles for
       com.zeydtekin.villatakvim". Anahtar bulut imzalama yetkisine sahip değil: App Store Connect → Users and Access →
       Integrations → Team Keys'te ROLÜ ADMIN olan yeni anahtar gerekiyor (sonra ASC_KEY_ID ve ASC_KEY_P8 güncellenir).
-      İmza kontrolü (c4b0), altool doğrulama ve yükleme bu yüzden çalışmadı. 47.3: zaten vardı (`docs/appstore-ekranlar/`,
+      Zeyd Admin anahtar T7Q3ZFT98L'yi oluşturdu, iki sır güncellendi. Run 46084159980 (build 276): arşiv TAMAM, .ipa TAMAM,
+      imza kontrolü DURDU: Capacitor.framework, Cordova.framework ve App.app'te kural bozuk (49cc87, İ harfi; §1 tahmini doğru).
+      Bulut imzası kullanıldığı için sertifikanın özel anahtarı makinede yok, yeniden imzalanamadı. Çözüm: kendi "Apple
+      Distribution" sertifikamız (.p12) Secrets'a (§2). Apple doğrulaması ve TestFlight yüklemesi henüz çalışmadı. 47.3: zaten vardı (`docs/appstore-ekranlar/`,
       6 TR + 6 EN, 1320 × 2868). 47.4: zaten vardı (`docs/APPSTORE.md` → App Privacy, Review Notes; demo hesap satırı boş).
       App Store Connect'te "Villa Takvimim" kaydı açılıp açılmadığı kontrol edilemedi (Apple sitesine girilmedi).
 
