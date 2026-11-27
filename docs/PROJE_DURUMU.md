@@ -784,7 +784,18 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Netlify'da genel etiketler + `www/img/paylasim-genel.jpg`. Rapor: `docs/qa/gorev45/README.md`, taklit `onizleme.png`.
       GEÇİŞ İÇİN BEKLEYEN: domain + Cloudflare Pages bağlantısı + Supabase adresleri (Site URL / Redirect URLs).
       Not: `robots.txt` her şeyi kapatıyor (Disallow: /). WhatsApp/iMessage önizlemeyi telefondan çektiği için etkilenmez;
-      Facebook/Telegram gibi robots'a bakan önizlemeler görmeyebilir. Gerekirse ayrı karar.
+      Facebook/Telegram gibi robots'a bakan önizlemeler görmeyebilir. Gerekirse ayrı karar. (46.2'de çözüldü.)
+- [x] Görev 46 — villatakvimim.com geçişi HAZIR (yayınlanmadı) · Claude Code (27 Kasım). 46.1–46.6 ayrı commit; Netlify'a ve
+      `canli` dalına yayın yapılmadı, veritabanına dokunulmadı. 46.1: `siteUrl` ve `davetUrl` → https://villatakvimim.com,
+      `destekPosta` → destek@villatakvimim.com, `npm run alan-adi`, sw.js `vt-2026-11-27-46`, cap sync (davet linki yerel
+      Cloudflare'da denendi). 46.2: robots.txt önizleme botlarına açık (facebookexternalhit, WhatsApp, TelegramBot …), diğerlerine
+      kapalı; noindex başlıkları aynen. 46.3: `paylasim-genel.jpg` yeni villa görseliyle (57 KB). 46.4: `netlify-yonlendirme/_redirects`
+      (301! → villatakvimim.com), `docs/YAYIN.md` geçiş sırası. 46.5: `docs/APPSTORE.md` adresleri (…/gizlilik, …/kosullar; canlıda 200).
+      46.6: `docs/ALAN_ADI_GECIS.md` işaretlendi.
+      YAYIN GÜNÜ (Zeyd "yayınla" deyince, docs/YAYIN.md → "Geçiş yayını"): 1) `git push origin main:canli` 2) Netlify'a yalnız
+      `netlify-yonlendirme/` 3) PM: Supabase Site URL → https://villatakvimim.com. Ayrıca: destek@ e-posta yönlendirmesi (PM),
+      www.villatakvimim.com şu an yönlenmiyor, aynı siteyi açıyor (isteğe bağlı Redirect Rule). Yayına kadar uygulama ve test sitesi
+      yeni adresle link üretir; canlı Cloudflare sitesi Görev 45 sürümünde ama aynı paylaşım adlarını açtığı için linkler çalışır.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.

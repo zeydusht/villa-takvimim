@@ -2,40 +2,43 @@
 
 Bu liste PM ve Claude Code için. Sırayla git, her adımı bitirmeden sonrakine geçme. Yayın komutları `docs/YAYIN.md` içinde.
 
+Durum (27 Kasım, Görev 46 sonu): kod hazır ve main'de; `canli` dalına ve Netlify'a henüz yayın yapılmadı. Kalanlar: `docs/YAYIN.md` → "Geçiş yayını" (Zeyd "yayınla" deyince).
+
 ## 1. Cloudflare Pages projesi
-- [ ] Proje GitHub'a bağlandı mı? Ayarlar `docs/YAYIN.md`'deki gibi olmalı: canlı dal `canli`, çıktı klasörü `www`, build komutu boş, önizleme dağıtımları kapalı.
-- [ ] İlk yayın oldu mu? Bunun için `git push origin main:canli` çalıştırılır.
-- [ ] `https://<proje>.pages.dev` adresinde şunlar açılıyor mu?
+- [x] Proje GitHub'a bağlandı mı? Ayarlar `docs/YAYIN.md`'deki gibi olmalı: canlı dal `canli`, çıktı klasörü `www`, build komutu boş, önizleme dağıtımları kapalı.
+- [x] İlk yayın oldu mu? Bunun için `git push origin main:canli` çalıştırılır.
+- [x] `https://<proje>.pages.dev` adresinde şunlar açılıyor mu? (PM, 27 Kasım; villatakvimim.pages.dev/config.js 200)
   - `/` → uygulama;
   - `/config.js` → JS dosyası (g.html değil);
   - `/villa-deneme-abc123` → misafir sayfası, durum 200, "Bu bağlantı artık geçerli değil" yazısı;
   - gerçek bir paylaşım adı → villa sayfası.
-- [ ] Gerçek bir paylaşım adıyla `curl -s -A "WhatsApp/2.23" https://<proje>.pages.dev/<ad>` çalıştır. Yanıtta `og:title`, `og:image` ve `og:url` dolu olmalı.
+- [ ] Gerçek bir paylaşım adıyla `curl -s -A "WhatsApp/2.23" https://<proje>.pages.dev/<ad>` çalıştır. Yanıtta `og:title`, `og:image` ve `og:url` dolu olmalı. (Function canlıda çalışıyor: deneme adı → 200, genel etiketler, `max-age=60`. Gerçek adla deneme yayından sonra.)
 
 ## 2. Özel alan adı
-- [ ] Pages projesine Custom domains → `villatakvimim.com` ve `www.villatakvimim.com` eklendi mi?
-- [ ] İkisi de "Active" mi, sertifika hazır mı?
-- [ ] `www.` adresi `villatakvimim.com`'a yönleniyor mu?
+- [x] Pages projesine Custom domains → `villatakvimim.com` ve `www.villatakvimim.com` eklendi mi?
+- [x] İkisi de "Active" mi, sertifika hazır mı?
+- [ ] `www.` adresi `villatakvimim.com`'a yönleniyor mu? (27 Kasım: yönlenmiyor, www de 200 ile aynı siteyi açıyor. Çalışıyor ama tek adres için Cloudflare'da Redirect Rule önerilir — PM.)
 
 ## 3. Supabase giriş adresleri (Zeyd panelden yapar, PM adım adım anlatır)
 - [ ] Authentication → URL Configuration → **Site URL**: `https://villatakvimim.com`.
-- [ ] **Redirect URLs** listesine `https://villatakvimim.com` ve `https://villatakvimim.com/**` eklendi mi?
-- [ ] Eski `https://villatakvim.netlify.app` adresi bir süre (en az birkaç hafta) listede kalsın. Eski e-postalardaki bağlantılar çalışmaya devam etsin.
+- [x] **Redirect URLs** listesine `https://villatakvimim.com` ve `https://villatakvimim.com/**` eklendi mi?
+- [x] Eski `https://villatakvim.netlify.app` adresi bir süre (en az birkaç hafta) listede kalsın. Eski e-postalardaki bağlantılar çalışmaya devam etsin.
 - Claude Code veritabanına ve Supabase ayarlarına dokunmaz.
 
 ## 4. Kod (Claude Code)
-- [ ] `www/config.js` → `siteUrl: "https://villatakvimim.com"` yapıldı. Hazır duran açıklama satırı kullanılabilir.
-- [ ] Davet linkleri: `www/config.js` → `davetUrl` şu an test sitesini gösteriyor (`https://zeydusht.github.io/villa-takvimim/`). Görev 45.2'den önce de böyleydi. Zeyd/PM onaylarsa `davetUrl: ""` yap, davetler de yeni adrese gitsin.
-- [ ] `npm run alan-adi` çalıştırıldı. Bu komut `index.html` ve `g.html`'deki `og:url` / `og:image` adreslerini ve gizlilik/şartlar sayfasındaki e-postayı günceller. Eski Netlify adresi kodda kalmışsa hata verir.
-- [ ] `www/sw.js` → `SURUM` artırıldı.
-- [ ] `npx cap sync` çalıştırıldı.
-- [ ] Commit, `git push`, ardından `git push origin main:canli` yapıldı.
+- [x] `www/config.js` → `siteUrl: "https://villatakvimim.com"` yapıldı (Görev 46.1).
+- [x] Davet linkleri: `davetUrl: "https://villatakvimim.com"` (Görev 46.1; `?davet=KOD` yerel Cloudflare'da denendi).
+- [x] `npm run alan-adi` çalıştırıldı. Bu komut `index.html` ve `g.html`'deki `og:url` / `og:image` adreslerini ve gizlilik/şartlar sayfasındaki e-postayı günceller. Eski Netlify adresi kodda kalmışsa hata verir.
+- [x] `www/sw.js` → `SURUM` artırıldı (`vt-2026-11-27-46`).
+- [x] `npx cap sync` çalıştırıldı.
+- [x] Commit, `git push` yapıldı.
+- [ ] `git push origin main:canli` — Zeyd "yayınla" deyince.
 - **Değiştirme:** iCal UID'leri (`rez-…@villatakvim`, `tutma-…@villatakvim`). Bunlar Airbnb/Booking'deki kayıt kimlikleri. Değişirse oralarda kopya rezervasyon oluşur.
 
 ## 5. Destek e-postası
 - [ ] Cloudflare → villatakvimim.com → Email → Email Routing açıldı mı?
 - [ ] `destek@villatakvimim.com` → Zeyd'in kendi postasına yönlendirme kuruldu mu? Zeyd gelen doğrulama e-postasını onaylar.
-- [ ] `www/config.js` → `destekPosta: "destek@villatakvimim.com"` yazıldı, `npm run alan-adi` çalıştırıldı. Bu adım 4. adımla aynı commit'e girebilir.
+- [x] `www/config.js` → `destekPosta: "destek@villatakvimim.com"` yazıldı, `npm run alan-adi` çalıştırıldı. Bu adım 4. adımla aynı commit'e girebilir.
 - [ ] Deneme postası gönderildi ve Zeyd'e ulaştı mı?
 
 ## 6. Test (yeni adreste)
@@ -48,15 +51,11 @@ Bu liste PM ve Claude Code için. Sırayla git, her adımı bitirmeden sonrakine
 - [ ] Gizlilik ve şartlar sayfalarında e-posta tıklanabilir mi?
 
 ## 7. Netlify'ı kapatma, yönlendir
-- [ ] Eski paylaşılmış linkler kırılmasın diye Netlify'a son bir yayın yapılacak. Bu yayının içinde yalnız yönlendirme olacak:
-  ```
-  # ayrı, boş bir klasörde: _redirects
-  /*  https://villatakvimim.com/:splat  301!
-  ```
-  Komut: `npx netlify-cli deploy --prod --dir <o klasör>`. Bu yayını proje kökünden değil, o klasörün içinden çalıştır. Yoksa kökteki `netlify.toml`'daki g.html kuralı da yüklenir.
+- [x] Yönlendirme klasörü hazır: `netlify-yonlendirme/_redirects` → `/*  https://villatakvimim.com/:splat  301!` (Görev 46.4).
+- [ ] Netlify'a yalnız bu klasör yayınlanacak: `docs/YAYIN.md` → "Geçiş yayını" 2. adım (proje kökünden `--dir netlify-yonlendirme`; `_redirects` kuralları önce uygulandığı için kökteki `netlify.toml` sorun olmaz).
 - [ ] Kontrol: `curl -sI https://villatakvim.netlify.app/villa-salta-k7m2?teklif=AB12CD34` → `301` dönmeli, `Location: https://villatakvimim.com/villa-salta-k7m2?teklif=AB12CD34` olmalı. Netlify sorguyu (`?…`) kendisi ekler, doğrula.
 - [ ] Netlify sitesi silinmez, yönlendirme olarak kalır.
 
 ## 8. Uygulama (Capacitor / mağaza)
-- [ ] Uygulama, paylaşım linkini `www/config.js` → `siteUrl` değerinden kurar. `npx cap sync` bu değeri `ios/App/App/public/config.js` ve `android/app/src/main/assets/public/config.js` dosyalarına kopyalar. Kopyaların yeni adresi gösterdiğini doğrula.
+- [x] Uygulama, paylaşım linkini `www/config.js` → `siteUrl` değerinden kurar. `npx cap sync` bu değeri `ios/App/App/public/config.js` ve `android/app/src/main/assets/public/config.js` dosyalarına kopyalar. Kopyaların yeni adresi gösterdiğini doğrula. (27 Kasım: ikisi de villatakvimim.com)
 - [ ] Yeni adres, bir sonraki TestFlight / Play derlemesiyle gelir. O zamana kadar mağaza sürümü eski Netlify adresiyle link üretir. Bu linkler 7. adımdaki 301 yönlendirmesi sayesinde çalışır.
