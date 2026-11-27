@@ -31,6 +31,8 @@ Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
 - [ ] App Store Connect'te uygulama kaydı (bundle ID: com.zeydtekin.villatakvim)
 - [ ] App Store Connect API anahtarı (Admin) + Team ID → GitHub repo Secrets:
       `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`
+      28 Kasım: dört sır eklendi (anahtar 24XGL5ZG5Y). Ama dışa aktarma "Cloud signing permission error" verdi:
+      anahtarın rolü büyük ihtimalle Admin değil. Admin rolüyle yeni anahtar gerekiyor (bkz. Görev 47).
 - [ ] Veritabanı Adım C: canlı site (villatakvim.netlify.app) yeni sürüme geçirildikten SONRA Claude
       sohbetten yapacak. Önce yapılırsa canlı sitede fotoğraf yükleme çalışmaz.
       **Not (14 Kasım): Netlify güncellendi, artık yapılabilir — Claude yapacak.**
@@ -803,6 +805,15 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       şifreleme NO, iPhone-only, diğer izin metinleri zaten vardı. `.gitattributes` (LF), `.gitignore` (p12, profil, .env, tarayıcı
       profilleri). App'te gizlenen: bildirim ayarı, Pro/üyelik (mağaza kapalıyken), "Bize ulaşın"daki "yakında" → destek e-postası.
       Ad: görünür "Villa Takvim" yoktu; yedek dosya adları `villa-takvimim-…json`. `docs/IPHONE_KONTROL.md` hazır. sw `vt-2026-11-27-ios1`.
+- [ ] Görev 47 — TestFlight'a gönderilebilir hâle getir · Claude Code (28 Kasım). YARIM.
+      47.1: gh kuruldu; `ASC_KEY_ID`, `ASC_ISSUER_ID`, `APPLE_TEAM_ID`, `ASC_KEY_P8` Secrets'a eklendi (Zeyd'in verdiği değerler;
+      .p8 İndirilenler'de kaldı, repoya kopyalanmadı). 47.2: ios.yml elle tetiklendi (run 46083515964, build 275): arşiv TAMAM,
+      .ipa dışa aktarma DURDU → "Cloud signing permission error", "No signing certificate iOS Distribution", "No profiles for
+      com.zeydtekin.villatakvim". Anahtar bulut imzalama yetkisine sahip değil: App Store Connect → Users and Access →
+      Integrations → Team Keys'te ROLÜ ADMIN olan yeni anahtar gerekiyor (sonra ASC_KEY_ID ve ASC_KEY_P8 güncellenir).
+      İmza kontrolü (c4b0), altool doğrulama ve yükleme bu yüzden çalışmadı. 47.3: zaten vardı (`docs/appstore-ekranlar/`,
+      6 TR + 6 EN, 1320 × 2868). 47.4: zaten vardı (`docs/APPSTORE.md` → App Privacy, Review Notes; demo hesap satırı boş).
+      App Store Connect'te "Villa Takvimim" kaydı açılıp açılmadığı kontrol edilemedi (Apple sitesine girilmedi).
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.
