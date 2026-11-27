@@ -36,8 +36,8 @@ Durum (27 Kasım, Görev 46 sonu): kod hazır ve main'de; `canli` dalına ve Net
 - **Değiştirme:** iCal UID'leri (`rez-…@villatakvim`, `tutma-…@villatakvim`). Bunlar Airbnb/Booking'deki kayıt kimlikleri. Değişirse oralarda kopya rezervasyon oluşur.
 
 ## 5. Destek e-postası
-- [ ] Cloudflare → villatakvimim.com → Email → Email Routing açıldı mı?
-- [ ] `destek@villatakvimim.com` → Zeyd'in kendi postasına yönlendirme kuruldu mu? Zeyd gelen doğrulama e-postasını onaylar.
+- [x] Cloudflare → villatakvimim.com → Email → Email Routing açıldı mı? (27 Kasım, PM: MX/SPF/DKIM eklendi)
+- [x] `destek@villatakvimim.com` → zeydtekin12@gmail.com (aktif; adres hesap e-postası olduğu için doğrulanmış geldi).
 - [x] `www/config.js` → `destekPosta: "destek@villatakvimim.com"` yazıldı, `npm run alan-adi` çalıştırıldı. Bu adım 4. adımla aynı commit'e girebilir.
 - [ ] Deneme postası gönderildi ve Zeyd'e ulaştı mı?
 
