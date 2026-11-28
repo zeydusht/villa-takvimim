@@ -30,7 +30,8 @@
               "not": ""
             }
           ],
-          "odenen": 24000
+          "odenen": 24000,
+          "color": "#0B5B57"
         },
         {
           "id": "9fa3c349-7b4d-45b1-be27-3250f1a03d4f",
@@ -53,7 +54,8 @@
           "odenen": 12000,
           "depozito": {
             "tutar": 5000
-          }
+          },
+          "color": "#0B5B57"
         },
         {
           "id": "ab79c5ec-ef8a-4db0-a2f0-82e8c0491e4f",
@@ -73,7 +75,8 @@
               "not": ""
             }
           ],
-          "odenen": 7000
+          "odenen": 7000,
+          "color": "#0B5B57"
         },
         {
           "id": "6122e941-ec9a-4f6d-b698-5626d19541bc",
@@ -96,7 +99,8 @@
           "odenen": 20000,
           "depozito": {
             "tutar": 10000
-          }
+          },
+          "color": "#0B5B57"
         },
         {
           "id": "6a96ff68-ee2a-4c02-9c9e-2d6034aa4ce2",
@@ -119,7 +123,8 @@
           "odenen": 25000,
           "depozito": {
             "tutar": 10000
-          }
+          },
+          "color": "#0B5B57"
         }
       ],
       "giderler": [
@@ -171,7 +176,8 @@
               "not": ""
             }
           ],
-          "odenen": 18000
+          "odenen": 18000,
+          "color": "#7A4B8C"
         },
         {
           "id": "e6df45b0-963f-4045-8807-600a2698be54",
@@ -194,7 +200,8 @@
           "odenen": 6000,
           "depozito": {
             "tutar": 5000
-          }
+          },
+          "color": "#7A4B8C"
         },
         {
           "id": "71b07699-c7fb-4042-ad19-5a214f0a3159",
@@ -214,7 +221,8 @@
               "not": ""
             }
           ],
-          "odenen": 14000
+          "odenen": 14000,
+          "color": "#7A4B8C"
         }
       ],
       "giderler": [
@@ -254,7 +262,8 @@
               "not": ""
             }
           ],
-          "odenen": 16000
+          "odenen": 16000,
+          "color": "#2E6E8E"
         },
         {
           "id": "5b3d3c14-da79-40f7-a289-4758b38c61ae",
@@ -277,7 +286,8 @@
           "odenen": 9000,
           "depozito": {
             "tutar": 5000
-          }
+          },
+          "color": "#2E6E8E"
         },
         {
           "id": "21e1c7d9-8a50-48fe-a681-8a5cab47be59",
@@ -290,7 +300,8 @@
           "tutar": 15000,
           "ekUcret": 0,
           "odemeler": [],
-          "odenen": 0
+          "odenen": 0,
+          "color": "#2E6E8E"
         }
       ],
       "giderler": [

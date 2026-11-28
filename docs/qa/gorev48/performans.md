@@ -85,3 +85,14 @@
 6. **Akıcılık göstergesi:** Hesap → Gelişmiş, yalnız yönetici hesabında, varsayılan kapalı, cihazda saklanır (`vt-fps`).
    - `481-akicilik-gostergesi.png`: göstergenin ekran görüntüsü.
    - `481-rehber-perde.png`: yeni perdeyle rehber.
+
+## 48.3 sonrası (yeni rehber, WebKit 3x)
+
+Tanıtımın adımları değiştiği için (eski 2. adım tarih seçtiriyordu) rehber satırları birebir aynı hareket değil.
+Demo verisine rezervasyon renkleri eklendi (takvim artık renkli çiziliyor).
+
+| Hareket | ≤16,7 ms % / en kötü ms / >33 ms kare |
+|---|---|
+| Rehberin açılması | 86,8 / 41 / 15 |
+| Rehberde adım geçişi (İleri) | 69,1 / 48 / 36 |
+| Rehberin kapanması | 79,8 / 45 / 15 |

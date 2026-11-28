@@ -1,6 +1,6 @@
 # Villa Takvim — Proje Durumu
 
-_Son güncelleme: 27 Kasım 2026_
+_Son güncelleme: 28 Kasım 2026_
 
 ## Ne bu?
 Villa Takvim'in (villatakvim.netlify.app) iPhone/Android uygulaması. App adı: **Villa Takvimim**.
@@ -827,6 +827,21 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       Distribution" sertifikamız (.p12) Secrets'a (§2). Apple doğrulaması ve TestFlight yüklemesi henüz çalışmadı. 47.3: zaten vardı (`docs/appstore-ekranlar/`,
       6 TR + 6 EN, 1320 × 2868). 47.4: zaten vardı (`docs/APPSTORE.md` → App Privacy, Review Notes; demo hesap satırı boş).
       App Store Connect'te "Villa Takvimim" kaydı açılıp açılmadığı kontrol edilemedi (Apple sitesine girilmedi).
+- [x] Görev 48 — Rehber ve karartma akıcılığı, titreşim, rehber daha az ısrarcı · Claude Code (28 Kasım). 48.1–48.4 ayrı commit, `[skip ci]`
+      YOK (her biri TestFlight derlemesi). Veritabanı ve yayın yok. Test: `docs/qa/gorev48/` (webkit).
+      48.1: pencere karartması ayrı katman (`.overlay::before`), yalnız saydamlık (eskiden zemin rengi her karede değişiyordu);
+      aşağı çekmede duraklatılmış animasyon (`perdeYaz`). Rehber perdesi 200vmax gölge yerine 4 düz renk parçası (transform),
+      baloncuk transform ile, boy ölçümü önbellekte, katman boyu 12 karede bir. Hesap → Gelişmiş → "Akıcılık göstergesi" (yalnız
+      yönetici; `vt-fps`). WebKit'te CPU 4x yapılamadı (yöntem ve tablolar `performans.md`): WebKit 3x'te rehber adım geçişinde
+      33 ms'yi geçen kare 39 → 1, rehber açılışında en kötü kare 62 → 42 ms; pencere çekmede Windows-WebKit'te kötüleşti
+      (yazılım birleştirme), telefonda göstergeyle doğrulanmalı.
+      48.2: TITRESIM_DILI: sekme impact LIGHT; ana düğme basınca, kart, pencere açılınca LIGHT; çekme eşiği MEDIUM, kenardan geri
+      eşiği LIGHT; segment selection. Kaydırmada yok, 80 ms tekrar yok, asenkron; yalnız uygulamada (`html.native`).
+      48.3: tanıtım 4 adım, yalnız gösterir; her adımda "Rehberi kapat" + "İleri" (aynı boy), ✕ kalktı; yazı / düzenleme adımında
+      "Bu adımı geç" (asla pasif değil), yazı adımı dokunuşu engellemez; lime ok (3 kez sallanır); ipuçları hesaba bağlı bir kez
+      (`vt-ipucu:<hesap>`), işi yapan kullanıcıya hiç, 2 kez kapatınca susar; Yardımlı mod yeniden açılınca sıfırlanır;
+      Hesap → Yardım → "Tanıtımı baştan göster". 48.4: rehber 20 / titreşim 15 kontrol 0 hata; demo-yedek.json'a rezervasyon
+      renkleri. sw `vt-2026-11-28-48d`.
 
 ## Veritabanı için gerekenler (Görev 18) — YAPILMADI (taslak; şimdilik cihazda saklanıyor)
 1. **Villa sırası kullanıcıya özel ve kalıcı olsun (18.16).** Şu an sıra cihazda (`vt-villa-sira`); başka telefonda varsayılan sıra görünür.

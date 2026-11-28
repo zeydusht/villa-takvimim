@@ -3221,7 +3221,7 @@
   // - Ana düğme (.big, Kaydet, Villa ekle, Ödemeyi al…): parmak BASINCA (touchstart).
   // - Kart / liste satırı (yeni ekran ya da pencere açar): parmak kalkınca, kaymadıysa.
   // - Parmak 10 pt'den fazla kaydıysa ya da sayfa / liste o an kayıyorsa (kaydırmayı durduran dokunuş) titreşim yok.
-  var TT_ANA="button.big, button.renkli, .altSabit button, #f-kaydet, .spBtn.ana";
+  var TT_ANA="button.big, button.renkli, .altSabit button, #f-kaydet, .spBtn.ana, button.hap.ana, .kurBtn";
   var TT_KART="button.kart, .kart[data-id], .ajKart, .misSatir, .tkSatir, .rezSatir, .akKart, .ekleKart, .satirBtn, .sirKart";
   var TT={d:null, kaydi:0};
   document.addEventListener("scroll",function(){ TT.kaydi=performance.now(); },{capture:true, passive:true});
