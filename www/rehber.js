@@ -203,15 +203,22 @@
     ".rh.kapaniyor{opacity:0;transition:opacity 200ms " + EG + "}" +
     ".rh.duraklat,.rh.gizli{visibility:hidden}" +
     ".rh.duraklat *,.rh.gizli *{pointer-events:none!important}" +
-    // tek "delik": konum transform ile, boyut genişlik/yükseklik ile; perde = büyük box-shadow; çerçeve sabit (nabız yok)
-    ".rhDelik{position:absolute;left:0;top:0;width:0;height:0;border-radius:14px;pointer-events:none;will-change:transform;" +
-      "box-shadow:0 0 0 3px #9FE0C9,0 0 0 200vmax rgba(16,22,19,.6);transition:opacity 200ms " + EI + "}" +
-    ".rh.yok .rhDelik{box-shadow:0 0 0 200vmax rgba(16,22,19,.6)}" +
+    // 48.1: delik = yalnız çerçeve (konum transform, boyut genişlik/yükseklik; küçük alan). Perde artık büyük box-shadow değil:
+    // deliğin üstünde, altında, solunda, sağında dört düz renk parçası (.rhPerde). Parçalar YALNIZ transform ile yer değiştirir
+    // (iPhone'da her karede ekranın tamamı yeniden boyanmaz; düz renk katmanı GPU'da taşınır).
+    ".rhDelik{position:absolute;left:0;top:0;width:0;height:0;border-radius:12px;pointer-events:none;will-change:transform;" +
+      "box-shadow:0 0 0 3px #9FE0C9;transition:opacity 200ms " + EI + "}" +
+    ".rh.yok .rhDelik{opacity:0}" +
+    ".rhPerde{position:absolute;left:0;top:0;width:100%;height:30000px;background:rgba(16,22,19,.6);pointer-events:none;" +
+      "transform-origin:0 0;will-change:transform;transition:opacity 200ms " + EI + "}" +
+    ".rhPerde.y{height:100px}" +
     // 20.2: perde dokunuşu ve kaydırmayı yutmaz; hedef dışındaki dokunuşu belge düzeyinde yakalayıcı iptal eder
     ".rhSoluk{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;background:rgba(16,22,19,.6);border-radius:12px}" +
     // 21: baloncuk hedefin hemen üstünde, hedefin genişliğinde (konum ve genişlik her karede motor tarafından yazılır)
     ".rhBalon{position:absolute;left:0;top:0;width:300px;pointer-events:auto;transition:opacity 200ms " + EI + "}" +
-    ".rh.araniyor .rhBalon,.rh.araniyor .rhDelik{opacity:0;pointer-events:none}" +
+    // 48.1: baloncuk top/left ile değil transform ile kayar; yalnız kayarken ayrı katman (gölgesi yeniden boyanmaz)
+    ".rh.kayiyor .rhBalon{will-change:transform}" +
+    ".rh.araniyor .rhBalon,.rh.araniyor .rhDelik,.rh.araniyor .rhPerde{opacity:0;pointer-events:none}" +
     ".rhIc{background:#fff;color:#101613;border-radius:18px;padding:.25rem 1rem 1rem;box-shadow:0 12px 32px rgba(0,0,0,.28);position:relative}" +
     ".rhUst{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-right:-.625rem}" +
     ".rhSay{font-size:.875rem;letter-spacing:.18em;color:#B8C2BC;white-space:nowrap}" +
@@ -257,7 +264,7 @@
     ".rhBosluk{display:block;width:100%;pointer-events:none}" +
     // 22.2: rehber açıkken panellerdeki "?" görünmez (yer tutar, başlık kaymaz)
     "html.rhAcik .rhSoru{visibility:hidden}" +
-    "@media (prefers-reduced-motion: reduce){.rhDelik,.rhBalon{transition:none}" +
+    "@media (prefers-reduced-motion: reduce){.rhDelik,.rhBalon,.rhPerde{transition:none}" +
       ".rh.kapaniyor,.rhSon.kapaniyor{transition:none}}";
   function cssKur() {
     if (document.getElementById("rhCss")) return;
@@ -373,7 +380,8 @@
     cssKur();
     var o = document.createElement("div");
     o.className = "rh araniyor yok";
-    o.innerHTML = '<div class="rhDelik"></div>' +
+    o.innerHTML = '<div class="rhPerde u"></div><div class="rhPerde a"></div><div class="rhPerde y s"></div><div class="rhPerde y g"></div>' +
+      '<div class="rhDelik"></div>' +
       '<div class="rhBalon" role="dialog" aria-modal="true" aria-live="polite"><div class="rhIc">' +
         '<div class="rhUst"><span class="rhSay"></span><button type="button" class="rhKapat" aria-label="' + esc(cev("Kapat")) + '">' +
           '<span class="rhKapatX" aria-hidden="true">' + (ikonHTML("x", 18) || "×") + '</span><span class="rhKapatYazi">' + esc(cev("Kapat")) + '</span></button></div>' +
@@ -385,7 +393,7 @@
     var q = function (s) { return o.querySelector(s); };
     D = {
       t: t, o: o, i: -1, a: null, gecmis: [], raf: 0, anahtar: "", basari: null, basariAlt: null,
-      delik: q(".rhDelik"), balon: q(".rhBalon"), ic: q(".rhIc"), ok: q(".rhOk"), ilk: true, pay: 4,
+      delik: q(".rhDelik"), balon: q(".rhBalon"), perde: o.querySelectorAll(".rhPerde"), bhKirli: true, ic: q(".rhIc"), ok: q(".rhOk"), ilk: true, pay: 4,
       say: q(".rhSay"), metin: q(".rhMetin"), alt: q(".rhAlt"), geri: q(".rhGeri"), ileri: q(".rhIleri"), ust: q(".rhUst"),
       a_gizli: function () { return !!(this.a && this.a.gizli); }
     };
@@ -499,6 +507,7 @@
     var m = metinAl(a);
     D.metinSon = m;
     D.metin.innerHTML = metinHTML(m || "");
+    D.bhKirli = true;
     var sonAdim = D.i === sonGorunen();
     D.ileri.textContent = cev(a.bekle === "deger" ? "Tamam" : (sonAdim ? "Bitir" : "İleri"));
     D.ileri.classList.toggle("hide", !(a.bekle === "ileri" || (a.bekle === "deger" && degerVar())));
@@ -509,6 +518,7 @@
   function metinAl(a) { try { return (typeof a.metin === "function" ? a.metin() : a.metin) || ""; } catch (e) { return ""; } }
   // 21.1: yalnız "Geri" varsa üst satıra geçer (baloncuk kısa kalır, uzun hedeflerle birlikte sığar)
   function altDuzen() {
+    D.bhKirli = true;
     var tekGeri = D.ileri.classList.contains("hide") && !D.geri.classList.contains("hide");
     if (tekGeri && D.geri.parentNode !== D.ust) D.ust.insertBefore(D.geri, D.ust.querySelector(".rhKapat"));
     if (!tekGeri && D.geri.parentNode !== D.alt) D.alt.insertBefore(D.geri, D.ileri);
@@ -642,6 +652,7 @@
     var bh = D.balon.offsetHeight;
     if (klavyeAcik() && g.ust + 12 + bh + r.height > odakHatti(els[0], g)) { D.o.classList.add("dar"); bh = D.balon.offsetHeight; }
     D.balon.style.width = ew;
+    D.bhKirli = true;
     return bh;
   }
   // hedefin kabı: sabit (position:fixed) bir panelin içindeyse o panel (kaydırma kabı), sabit başka bir öğeyse ekran,
@@ -685,7 +696,8 @@
   // katmanın boyu = kabın içeriği (katman hariç); sabit kapta ekran
   // 26.1: bir karede bir kez (döngü, yerleştirme ve geçiş aynı karede çağırıyordu); zorla: kap değişti / hizalama
   function katmanBoyu(zorla) {
-    if (!zorla && D.kbKare === D.kare) return;
+    // 48.1: her karede değil, 12 karede bir (sayfadaki bütün öğeleri ölçmek pahalı); kap değişince ve hizalamada hemen
+    if (!zorla && D.kbKare != null && D.kare - D.kbKare < 12) return;
     D.kbKare = D.kare;
     var kap = D.o.parentNode, h = window.innerHeight, c;
     if (!kap) return;
@@ -749,17 +761,33 @@
     return { l: bl, w: bw };
   }
   // ekran koordinatındaki pencere + baloncuk → kap koordinatı (kaydırmada değişmez → tarayıcı kaydırmasıyla aynı karede)
+  // 48.1: baloncuğun boyu yalnız içerik / genişlik / biçim değişince ölçülür (her karede zorunlu layout yok)
+  function balonBoyu(w) {
+    if (D.bhKirli || D.bhW !== w) { D.bhKirli = false; D.bhW = w; D.bh = D.balon.offsetHeight; }
+    return D.bh;
+  }
+  // 48.1: perde parçaları: üst (deliğin üstüne kadar), alt (deliğin altından), sol ve sağ (delik boyunda bant)
+  function perdeCiz(x, y, w, h) {
+    var p = D.perde, W = D.o.clientWidth || window.innerWidth, k = Math.max(0, h) / 100;
+    yaz(p[0], "transform", "translate(0px," + (y - 30000) + "px)");
+    yaz(p[1], "transform", "translate(0px," + (y + h) + "px)");
+    yaz(p[2], "transform", "translate(" + (x - W) + "px," + y + "px) scale(1," + k.toFixed(4) + ")");
+    yaz(p[3], "transform", "translate(" + (x + w) + "px," + y + "px) scale(1," + k.toFixed(4) + ")");
+  }
   function ciz(d, b) {
     var o = D.o.getBoundingClientRect(), ox = o.left, oy = o.top, pay = D.pay;
-    yaz(D.delik, "transform", "translate(" + Math.round(d.l - ox) + "px," + Math.round(d.t - oy) + "px)");
-    yaz(D.delik, "width", Math.max(0, Math.round(d.w)) + "px"); yaz(D.delik, "height", Math.max(0, Math.round(d.h)) + "px");
-    yaz(D.balon, "left", Math.round(b.l - ox) + "px"); yaz(D.balon, "width", Math.round(b.w) + "px");
-    var bh = D.balon.offsetHeight, g = alan();
+    var dx = Math.round(d.l - ox), dy = Math.round(d.t - oy), dw = Math.max(0, Math.round(d.w)), dh = Math.max(0, Math.round(d.h));
+    yaz(D.delik, "transform", "translate(" + dx + "px," + dy + "px)");
+    yaz(D.delik, "width", dw + "px"); yaz(D.delik, "height", dh + "px");
+    perdeCiz(dx, dy, dw, dh);
+    var bw = Math.round(b.w);
+    yaz(D.balon, "width", bw + "px");
+    var bh = balonBoyu(bw), g = alan();
     // baloncuğun alt kenarı hedefin üst kenarının 8 px üstünde. 31.10: üstte yer yoksa (yazı 17 px olunca hedefler büyüdü)
     // hedefin 8 px altına; altta da yer yoksa ekranın üst kenarına yapışır (ekrandan taşmaz)
     var bt = d.t + pay - 8 - bh;
     if (bt < g.ust + 4) bt = (d.t + d.h - pay + 8 + bh <= g.alt - 4) ? d.t + d.h - pay + 8 : g.ust + 4;
-    yaz(D.balon, "top", Math.round(bt - oy) + "px");
+    yaz(D.balon, "transform", "translate(" + Math.round(b.l - ox) + "px," + Math.round(bt - oy) + "px)");
     D.delikEkran = d; D.balonEkran = b;
   }
   function solukCiz(d) {
@@ -853,11 +881,12 @@
       tw.yeniB = balonOlcu(tw.yeniD.l, tw.yeniD.w, alan().W);
     }
     // içerik kaydırması ve pencere boyu aynı karede, aynı eğriyle
+    if (!D.o.classList.contains("kayiyor")) D.o.classList.add("kayiyor");
     if (tw.S) kabaYaz(tw.S, ara(tw.s0, tw.s1, e));
     katmanBoyu();
     var d = { l: ara(tw.eskiD.l, tw.yeniD.l, e), t: ara(tw.eskiD.t, tw.yeniD.t, e), w: ara(tw.eskiD.w, tw.yeniD.w, e), h: ara(tw.eskiD.h, tw.yeniD.h, e) };
     ciz(d, { l: ara(tw.eskiB.l, tw.yeniB.l, e), w: ara(tw.eskiB.w, tw.yeniB.w, e) });
-    if (k >= 1) D.tw = null;
+    if (k >= 1) { D.tw = null; D.o.classList.remove("kayiyor"); }
   }
   // ---------- 21.3 geçici boşluk ----------
   // alt: içerik sonuna boşluk (panelde panelin sonuna, sayfada belgenin sonuna)

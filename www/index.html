@@ -933,16 +933,22 @@
   /* 41.5 bırakınca yerine yaylanarak döner (çekmece eğrisi) */
   .sheet.donuyor{transition:transform var(--hiz-ac) var(--egri-cekmece)}
   /* 9.5 Paneller: aşağıdan kayarak açılır, arka plan %40 kararır; kapanışta tersi */
-  .overlay{background:rgba(16,22,19,.4)}
+  /* 48.1: karartma ayrı bir katman (::before), yalnız saydamlığı (opacity) değişir. Eskiden panelin zemin RENGİ değişiyordu:
+     iPhone'da her karede bütün ekran yeniden boyanıyordu (kasma). Aşağı çekerken saydamlık --perde ile (JS) verilir. */
+  .overlay{background:transparent}
+  .overlay:not(.gorucu)::before{content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:rgba(16,22,19,.4); opacity:var(--perde,1)}
   /* 31.1: panel 340 ms --egri-cekmece ile açılır, 220 ms --egri-gecis ile kapanır; kararma 240 / 200 ms, yalnız saydamlık */
-  .overlay:not(.gorucu):not(.anlik){animation:perdeKarar var(--hiz-karar-ac) var(--egri-giris)}
+  .overlay:not(.gorucu):not(.anlik)::before{animation:perdeKarar var(--hiz-karar-ac) var(--egri-giris)}
   .overlay > .sheet{animation:perdeAc var(--hiz-ac) var(--egri-cekmece)}
-  .overlay.kapaniyor, .overlay.kapaniyor:not(.gorucu):not(.anlik){animation:perdeAydin var(--hiz-karar-kapa) var(--egri-gecis) forwards}
+  .overlay.kapaniyor:not(.gorucu)::before{animation:perdeAydin var(--hiz-karar-kapa) var(--egri-gecis) forwards}
+  .overlay.gorucu.kapaniyor{animation:gorucuAydin var(--hiz-karar-kapa) var(--egri-gecis) forwards}
   /* 31.12: kapanmakta olan panele dokunulunca kapanış durur, panel olduğu yerden geri açılır (animasyonu JS sürer) */
-  .overlay.geriAciliyor, .overlay.geriAciliyor > .sheet{animation:none !important}
+  .overlay.geriAciliyor, .overlay.geriAciliyor::before, .overlay.geriAciliyor > .sheet{animation:none !important}
   .overlay.kapaniyor > .sheet{animation:perdeKapa var(--hiz-kapa) var(--egri-gecis) forwards}
-  @keyframes perdeKarar{from{background-color:rgba(16,22,19,0)}}
-  @keyframes perdeAydin{to{background-color:rgba(16,22,19,0)}}
+  @keyframes perdeKarar{from{opacity:0}}
+  @keyframes perdeAydin{to{opacity:0}}
+  @keyframes gorucuAydin{to{background-color:rgba(11,15,13,0)}}
   @keyframes perdeAc{from{transform:translateY(100%)}}
   @keyframes perdeKapa{to{transform:translateY(100%)}}
   /* geniş ekranda panel ortada: ortadan büyür (scale(.96) + saydamlık), solarak küçülür */
@@ -2667,6 +2673,12 @@
       <div class="grup">
       <button class="satirBtn" id="yedek" data-ikk="hesap:indir"><span>Yedek al</span></button>
       <button class="satirBtn" id="geriyukle" data-ikk="hesap:yukle"><span>Geri yükle</span></button>
+      </div>
+      <!-- 48.1: yalnız yönetici hesabında görünür; telefonda akıcılığı ölçmek için -->
+      <div class="grup hide" id="fpsGrup">
+      <div class="anahtar" id="fpsSatir"><span>Akıcılık göstergesi
+        <span class="satirAlt">Köşede saniyedeki kare sayısı ve en uzun kare</span></span>
+        <span class="svic" id="hs-fps" role="switch" aria-checked="false" aria-label="Akıcılık göstergesi"><i></i></span></div>
       </div>
     </div>
     <input type="file" id="dosya" accept="application/json" style="display:none; width:auto">
@@ -9800,6 +9812,7 @@
   // Hesap sekmesi: buluta bağlı satırlar, dil seçici, destek
   function hesapEkranCiz(){
     var bulut=!!(S.bulut && window.VT && VT.girisli && VT.girisli());
+    if(typeof fpsUygula==="function") fpsUygula();   // 48.1
     if(bulut && VT.yonetici && VT.yonetici() && document.getElementById("talepBtn")) talepSayiYaz();   // 33.8: rozet her açılışta güncel
     document.getElementById("cikisBtn").classList[bulut?"remove":"add"]("hide");
     // IOS_YAYIN_DERSLERI §4: uygulamada Web Push yok; native bildirim gelene kadar bildirim ayarı app'te hiç görünmez
@@ -9915,7 +9928,39 @@
   });
   document.getElementById("cikisBtn").onclick=function(){ cikisYap(); };
   // (18.21: "Bize ulaşın" yukarıda, Yardım bölümünde)
+  // ================= 48.1 AKICILIK GÖSTERGESİ (yalnız yönetici) =================
+  // Açıkken sol üst köşede son 1 saniyenin kare sayısı (FPS) ve en uzun karesi (ms). Cihazda saklanır, varsayılan kapalı.
+  var FPS={an:"vt-fps", el:null, raf:0, kareler:[], son:0, yazT:0};
+  function fpsYonetici(){ return !!(window.VT && VT.yonetici && VT.girisli && VT.girisli() && VT.yonetici()); }
+  function fpsAcik(){ return store.get(FPS.an)==="1"; }
+  function fpsDongu(t){
+    FPS.raf=requestAnimationFrame(fpsDongu);
+    if(FPS.son) FPS.kareler.push({t:t, d:t-FPS.son});
+    FPS.son=t;
+    while(FPS.kareler.length && t-FPS.kareler[0].t>1000) FPS.kareler.shift();
+    if(t-FPS.yazT<250) return;
+    FPS.yazT=t;
+    var en=0; FPS.kareler.forEach(function(k){ if(k.d>en) en=k.d; });
+    FPS.el.textContent=FPS.kareler.length+" FPS · en uzun "+Math.round(en)+" ms";
+    FPS.el.style.background = en>33.4 ? "rgba(155,44,74,.85)" : (en>18.4 ? "rgba(122,75,0,.85)" : "rgba(11,91,87,.85)");
+  }
+  function fpsUygula(){
+    if(!FPS) return;   // (tanımdan önce çağrılırsa)
+    var ac=fpsAcik() && fpsYonetici();
+    if(ac && !FPS.el){
+      var e=document.createElement("div"); e.id="fpsKutu"; e.setAttribute("aria-hidden","true");
+      e.style.cssText="position:fixed;top:calc(env(safe-area-inset-top) + 4px);left:4px;z-index:9999;pointer-events:none;"+
+        "font:600 11px/1.2 -apple-system,system-ui,sans-serif;color:#fff;padding:3px 6px;border-radius:6px;font-variant-numeric:tabular-nums";
+      document.body.appendChild(e); FPS.el=e; FPS.kareler=[]; FPS.son=0; FPS.raf=requestAnimationFrame(fpsDongu);
+    } else if(!ac && FPS.el){ cancelAnimationFrame(FPS.raf); FPS.el.remove(); FPS.el=null; }
+    var g=document.getElementById("fpsGrup"), sw=document.getElementById("hs-fps");
+    if(g) g.classList[fpsYonetici()?"remove":"add"]("hide");
+    if(sw){ sw.className="svic"+(fpsAcik()?" on":""); sw.setAttribute("aria-checked",String(fpsAcik())); }
+  }
+  document.getElementById("fpsSatir").onclick=function(){ store.set(FPS.an, fpsAcik()?"0":"1"); fpsUygula(); titret("anahtar"); };
+  setTimeout(fpsUygula,1500);
   document.getElementById("gelismisAc").onclick=function(){
+    fpsUygula();
     var g=document.getElementById("gelismis"), ac=g.classList.contains("hide");
     g.classList[ac?"remove":"add"]("hide"); this.classList[ac?"add":"remove"]("on");
   };
@@ -14512,7 +14557,7 @@
       !!(window.Rehber && Rehber.aktif && Rehber.aktif()) || (typeof SURUKLE!=="undefined" && !!SURUKLE.aktif); };
     var sifirla=function(gecis){
       if(gecis) sh.classList.add("donuyor");
-      sh.style.transform=""; o.style.backgroundColor="";
+      sh.style.transform=""; if(gecis) perdeGec(o,1,hiz("ac"),egriAl("cekmece")); else perdeYaz(o,null);
       if(gecis) setTimeout(function(){ sh.classList.remove("donuyor"); },hiz("ac")+20);
     };
     sh.addEventListener("touchstart",function(e){
@@ -14544,7 +14589,7 @@
       if(azHareket()) return;   // hareket azaltılmış: pencere parmağı izlemez
       var boy=Math.min(sh.offsetHeight,window.innerHeight)||1;
       sh.style.transform="translateY("+d.dy+"px)";
-      o.style.backgroundColor="rgba(16,22,19,"+(0.4*Math.max(0,1-d.dy/boy)).toFixed(3)+")";
+      perdeYaz(o,Math.max(0,1-d.dy/boy));   // 48.1: yalnız karartma katmanının saydamlığı
     },{passive:false});
     var birak=function(){
       if(!d) return;
@@ -14559,11 +14604,30 @@
       var kapan = c.dy>boy*hiz("--cek-oran") || (c.dy>hiz("--cek-fiske-en-az") && hz0>hiz("--cek-hiz-esigi"));
       if(!kapan || !o.parentNode){ sifirla(true); return; }
       if(formDegisti(o)){ sifirla(true); cikisSor(o,{metin:"Değişiklikler kaydedilmedi. Çıkılsın mı?", devam:"Devam et"}); return; }
-      o.style.backgroundColor="";
+      perdeGec(o,0,hiz("karar-kapa"),egriAl("gecis"));   // 48.1: kararma çekilen yerden solar
       kapatOverlay(o);
     };
     sh.addEventListener("touchend",birak);
     sh.addEventListener("touchcancel",birak);
+  }
+  // 48.1: karartma katmanının (::before) saydamlığını parmakla sürmek. Değişken (--perde) her karede değişince pencerenin bütün
+  // içeriğinin stili yeniden hesaplanıyordu; duraklatılmış animasyon yalnız katmanın saydamlığını değiştirir. Desteklemeyen
+  // tarayıcıda değişkene düşer.
+  var PERDE_ANIM=(function(){ try{ return typeof KeyframeEffect!=="undefined" && "pseudoElement" in KeyframeEffect.prototype; }catch(e){ return false; } })();
+  function perdeYaz(o,v){
+    if(v==null){ if(o._perdeA){ try{ o._perdeA.cancel(); }catch(e){} o._perdeA=null; } o.style.removeProperty("--perde"); return; }
+    if(PERDE_ANIM){
+      if(!o._perdeA){ try{ o._perdeA=o.animate([{opacity:0},{opacity:1}],{duration:1000, fill:"both", pseudoElement:"::before", olcekli:1}); o._perdeA.pause(); }catch(e){ o._perdeA=null; } }
+      if(o._perdeA){ o._perdeA.currentTime=v*1000; return; }
+    }
+    o.style.setProperty("--perde",v);
+  }
+  // karartma o anki saydamlığından hedefe geçer (bırakınca geri dönüş / kapanış)
+  function perdeGec(o,son,sure,egri){
+    var v=o._perdeA ? (o._perdeA.currentTime||0)/1000 : 1;
+    perdeYaz(o,null);
+    if(!PERDE_ANIM || o.classList.contains("gorucu")) return;
+    try{ o.animate([{opacity:v},{opacity:son}],{duration:sure, easing:egri, fill:son===0?"forwards":"none", pseudoElement:"::before", olcekli:1}); }catch(e){}
   }
   // Paneli kapat: aşağı kayar, arka plan açılır (--hiz-kapa). anlik=true ise hemen kaldırır.
   function kapatOverlay(o,anlik){
@@ -14580,13 +14644,15 @@
   function geriAc(o){
     if(!o || !o.classList.contains("kapaniyor")) return;
     clearTimeout(o._kapaT);
-    var sh=o.querySelector(".sheet"), cs=sh?getComputedStyle(sh):null, tr=cs?cs.transform:"none", op=cs?cs.opacity:"1", bg=getComputedStyle(o).backgroundColor;
+    var sh=o.querySelector(".sheet"), cs=sh?getComputedStyle(sh):null, tr=cs?cs.transform:"none", op=cs?cs.opacity:"1", pd=getComputedStyle(o,"::before").opacity;
     if(o._morfAnim){ try{ o._morfAnim.cancel(); }catch(e){} o._morfAnim=null; }
     o.classList.remove("kapaniyor"); o.classList.add("geriAciliyor"); kilitDenetle();
     if(sh) sh.style.transform="";   // aşağı çekilerek kapandıysa parmağın bıraktığı yer silinir
+    perdeYaz(o,null);
     try{
       if(sh) sh.animate([{transform:tr==="none"?"translateY(0)":tr, opacity:op},{transform:"translateY(0)", opacity:1}],{duration:hiz("ac"), easing:egriAl("cekmece"), olcekli:1});
-      o.animate([{backgroundColor:bg},{backgroundColor:"rgba(16,22,19,.4)"}],{duration:hiz("karar-ac"), easing:egriAl("giris"), olcekli:1});
+      // 48.1: kararma katmanı (::before) yalnız saydamlıkla geri gelir
+      if(!o.classList.contains("gorucu") && PERDE_ANIM) o.animate([{opacity:pd},{opacity:1}],{duration:hiz("karar-ac"), easing:egriAl("giris"), pseudoElement:"::before", olcekli:1});
     }catch(e){}
   }
   function kapat(anlik){

@@ -128,6 +128,7 @@
     "Villalarım":"My villas", "Villa ekle":"Add villa", "Henüz villa yok.":"No villas yet.",
     "Aşağıdan ilk villanızı ekleyin.":"Add your first villa below.",
     "Yedek al":"Back up", "Geri yükle":"Restore", "Hesabım":"My account",
+    "Akıcılık göstergesi":"Smoothness meter", "Köşede saniyedeki kare sayısı ve en uzun kare":"Frames per second and the longest frame, in the corner",
     "Villa davet kodu gir":"Enter villa invite code", "Bakıcıysanız":"If you are a caretaker",
     "Kullanıcılar":"Users", "Bugün ve yarın":"Today and tomorrow",
     "Bugün boş":"Free today", "Bugün dolu":"Occupied today", "Henüz yok":"None yet",
