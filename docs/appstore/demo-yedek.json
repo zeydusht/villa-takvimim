@@ -1,0 +1,310 @@
+{
+  "villalar": [
+    {
+      "id": "5dd0d3c6-294a-4741-b83b-0386644a8957",
+      "ad": "Villa Zeytin",
+      "color": "#0B5B57",
+      "bilgi": {},
+      "rez": [
+        {
+          "id": "2e17ea20-6105-498b-ad6e-ecd7f6edd4b4",
+          "start": "2026-11-14",
+          "end": "2026-11-18",
+          "guest": "Ayşe Demirtaş",
+          "phone": "+90 555 010 0101",
+          "people": "4",
+          "note": "",
+          "tutar": 24000,
+          "ekUcret": 0,
+          "odemeler": [
+            {
+              "id": "e5edb1b3-fc0b-4344-803d-9476c31cb04c",
+              "tarih": "2026-10-20",
+              "tutar": 8000,
+              "not": ""
+            },
+            {
+              "id": "bc361334-bdad-4458-84d6-202f05c10908",
+              "tarih": "2026-11-14",
+              "tutar": 16000,
+              "not": ""
+            }
+          ],
+          "odenen": 24000
+        },
+        {
+          "id": "9fa3c349-7b4d-45b1-be27-3250f1a03d4f",
+          "start": "2026-11-26",
+          "end": "2026-12-02",
+          "guest": "Mehmet Kaya",
+          "phone": "+90 555 010 0102",
+          "people": "6",
+          "note": "Geç giriş, 20:00 civarı",
+          "tutar": 36000,
+          "ekUcret": 0,
+          "odemeler": [
+            {
+              "id": "ac7fe5f5-97d1-47a2-a39a-ac0e97622afb",
+              "tarih": "2026-11-01",
+              "tutar": 12000,
+              "not": ""
+            }
+          ],
+          "odenen": 12000,
+          "depozito": {
+            "tutar": 5000
+          }
+        },
+        {
+          "id": "ab79c5ec-ef8a-4db0-a2f0-82e8c0491e4f",
+          "start": "2026-12-12",
+          "end": "2026-12-16",
+          "guest": "Elif Yıldırım",
+          "phone": "+90 555 010 0103",
+          "people": "2",
+          "note": "",
+          "tutar": 22000,
+          "ekUcret": 0,
+          "odemeler": [
+            {
+              "id": "1621eba1-16f8-4014-aeec-2603ad8224a2",
+              "tarih": "2026-11-20",
+              "tutar": 7000,
+              "not": ""
+            }
+          ],
+          "odenen": 7000
+        },
+        {
+          "id": "6122e941-ec9a-4f6d-b698-5626d19541bc",
+          "start": "2026-12-29",
+          "end": "2027-01-03",
+          "guest": "Can Öztürk",
+          "phone": "+90 555 010 0104",
+          "people": "8",
+          "note": "Yılbaşı",
+          "tutar": 60000,
+          "ekUcret": 0,
+          "odemeler": [
+            {
+              "id": "d8510367-984b-4caf-bcf5-50e4d9edf1ba",
+              "tarih": "2026-11-10",
+              "tutar": 20000,
+              "not": ""
+            }
+          ],
+          "odenen": 20000,
+          "depozito": {
+            "tutar": 10000
+          }
+        },
+        {
+          "id": "6a96ff68-ee2a-4c02-9c9e-2d6034aa4ce2",
+          "start": "2027-07-05",
+          "end": "2027-07-12",
+          "guest": "Zeynep Arslan",
+          "phone": "+90 555 010 0105",
+          "people": "5",
+          "note": "",
+          "tutar": 84000,
+          "ekUcret": 0,
+          "odemeler": [
+            {
+              "id": "066ab1c7-3a1e-42c7-b13b-e2cb8d14d6f0",
+              "tarih": "2026-11-25",
+              "tutar": 25000,
+              "not": ""
+            }
+          ],
+          "odenen": 25000,
+          "depozito": {
+            "tutar": 10000
+          }
+        }
+      ],
+      "giderler": [
+        {
+          "id": "c0cae3ff-44a5-4540-8a9e-54013633c359",
+          "aciklama": "Havuz bakımı",
+          "tutar": 3500,
+          "tarih": "2026-11-05"
+        },
+        {
+          "id": "550caffd-eb6b-41d8-9440-55c7cfe77a42",
+          "aciklama": "Temizlik",
+          "tutar": 2000,
+          "tarih": "2026-11-18"
+        }
+      ],
+      "fotolar": [],
+      "fiyatlar": {},
+      "gelirler": [],
+      "misafirNot": {}
+    },
+    {
+      "id": "6bd5ea51-aaa8-4f4d-8e96-52042b940854",
+      "ad": "Villa Lavanta",
+      "color": "#7A4B8C",
+      "bilgi": {},
+      "rez": [
+        {
+          "id": "a2e2c13b-5281-4d91-897b-9bedb04bfb56",
+          "start": "2026-11-20",
+          "end": "2026-11-24",
+          "guest": "Burak Şahin",
+          "phone": "+90 555 010 0201",
+          "people": "3",
+          "note": "",
+          "tutar": 18000,
+          "ekUcret": 0,
+          "odemeler": [
+            {
+              "id": "125042fc-53c8-4ead-94b9-e5138497cbd8",
+              "tarih": "2026-11-01",
+              "tutar": 6000,
+              "not": ""
+            },
+            {
+              "id": "f962451b-66f4-4be0-95b4-ec4625789ea3",
+              "tarih": "2026-11-20",
+              "tutar": 12000,
+              "not": ""
+            }
+          ],
+          "odenen": 18000
+        },
+        {
+          "id": "e6df45b0-963f-4045-8807-600a2698be54",
+          "start": "2026-12-05",
+          "end": "2026-12-09",
+          "guest": "Selin Aydın",
+          "phone": "+90 555 010 0202",
+          "people": "4",
+          "note": "",
+          "tutar": 20000,
+          "ekUcret": 0,
+          "odemeler": [
+            {
+              "id": "fd7c8eab-6d0f-432b-952f-257ff08a242d",
+              "tarih": "2026-11-22",
+              "tutar": 6000,
+              "not": ""
+            }
+          ],
+          "odenen": 6000,
+          "depozito": {
+            "tutar": 5000
+          }
+        },
+        {
+          "id": "71b07699-c7fb-4042-ad19-5a214f0a3159",
+          "start": "2026-12-30",
+          "end": "2027-01-02",
+          "guest": "Emre Çelik",
+          "phone": "+90 555 010 0203",
+          "people": "6",
+          "note": "",
+          "tutar": 42000,
+          "ekUcret": 0,
+          "odemeler": [
+            {
+              "id": "326503e7-0c28-4aee-935d-7e1a6088fbed",
+              "tarih": "2026-11-15",
+              "tutar": 14000,
+              "not": ""
+            }
+          ],
+          "odenen": 14000
+        }
+      ],
+      "giderler": [
+        {
+          "id": "08cf4b2e-3a87-4b29-b0c4-b369fd7caaf5",
+          "aciklama": "Elektrik faturası",
+          "tutar": 1850,
+          "tarih": "2026-11-10"
+        }
+      ],
+      "fotolar": [],
+      "fiyatlar": {},
+      "gelirler": [],
+      "misafirNot": {}
+    },
+    {
+      "id": "db1ad48e-fcd9-4294-8e26-bec6ec102483",
+      "ad": "Villa Deniz",
+      "color": "#2E6E8E",
+      "bilgi": {},
+      "rez": [
+        {
+          "id": "6e80c999-47b9-471d-bc4e-c2e2673670c5",
+          "start": "2026-11-07",
+          "end": "2026-11-11",
+          "guest": "Deniz Koç",
+          "phone": "+90 555 010 0301",
+          "people": "2",
+          "note": "",
+          "tutar": 16000,
+          "ekUcret": 0,
+          "odemeler": [
+            {
+              "id": "84812bdd-3274-4677-a896-fce8ee4eb513",
+              "tarih": "2026-10-25",
+              "tutar": 16000,
+              "not": ""
+            }
+          ],
+          "odenen": 16000
+        },
+        {
+          "id": "5b3d3c14-da79-40f7-a289-4758b38c61ae",
+          "start": "2026-12-19",
+          "end": "2026-12-23",
+          "guest": "Murat Erdem",
+          "phone": "+90 555 010 0302",
+          "people": "5",
+          "note": "",
+          "tutar": 28000,
+          "ekUcret": 0,
+          "odemeler": [
+            {
+              "id": "c3460a35-59f1-4053-9413-3b72bf9afec1",
+              "tarih": "2026-11-26",
+              "tutar": 9000,
+              "not": ""
+            }
+          ],
+          "odenen": 9000,
+          "depozito": {
+            "tutar": 5000
+          }
+        },
+        {
+          "id": "21e1c7d9-8a50-48fe-a681-8a5cab47be59",
+          "start": "2027-02-13",
+          "end": "2027-02-16",
+          "guest": "Gizem Polat",
+          "phone": "+90 555 010 0303",
+          "people": "2",
+          "note": "",
+          "tutar": 15000,
+          "ekUcret": 0,
+          "odemeler": [],
+          "odenen": 0
+        }
+      ],
+      "giderler": [
+        {
+          "id": "2d4ce76f-0c89-4af3-8e80-0ae50bd629c4",
+          "aciklama": "Bahçe bakımı",
+          "tutar": 1500,
+          "tarih": "2026-11-12"
+        }
+      ],
+      "fotolar": [],
+      "fiyatlar": {},
+      "gelirler": [],
+      "misafirNot": {}
+    }
+  ]
+}

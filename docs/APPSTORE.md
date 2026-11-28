@@ -182,7 +182,30 @@ Password: (to be filled in by the product manager)
 
 The demo account contains sample villas and bookings. For "Which villa is free?", open the Calendar tab and pick a date range.
 There are no in-app purchases in this version. Account deletion: Account → My account → Permanently delete my account.
+
+Native features in the iOS app:
+- Face ID app lock (Account tab → "Lock the app with Face ID")
+- Haptic feedback when saving and on alerts (Account tab setting)
+- Native share sheet for the guest villa page and booking forms
+- Saving and sharing booking forms as PDF
+- Adding villa and receipt photos from the camera or photo library
 ```
+
+## Demo inceleme hesabı (28 Kasım 2026)
+
+Veritabanına elle dokunmadan, uygulamanın kendi özellikleriyle kurulur. **Şifre bu dosyaya ya da repoya yazılmaz** (repo herkese açık); yalnız App Store Connect → App Review Information → Sign-in required alanına girilir.
+
+1. **E-posta:** `demo@villatakvimim.com` (öneri). Kayıt doğrulama e-postası gelirse okunabilmesi için Cloudflare → Email Routing'de destek@ gibi demo@ yönlendirmesi eklenir.
+2. **Kayıt:** Zeyd uygulamada / sitede bu e-postayla kaydolur, şifreyi kendisi koyar (bir yere not eder).
+3. **Onay:** Zeyd kendi hesabıyla Hesap → Kullanıcılar → demo hesabını onaylar.
+4. **Örnek veri:** Demo hesapla giriş → Hesap → Gelişmiş → Geri yükle → `docs/appstore/demo-yedek.json`.
+   3 villa (Zeytin, Lavanta, Deniz), 11 rezervasyon (Kasım 2026 – Temmuz 2027), ödemeler, depozitolar, birkaç gider. Adlar ve telefonlar uydurma (+90 555 010 …).
+   **DİKKAT:** Geri yükle mevcut villaların yerine yazar. Yalnız boş demo hesapta kullan, kendi hesabında asla.
+5. **Kontrol:** Çıkış yap, demo hesapla yeniden gir (ya da başka cihazdan gir): villalar buluttan geliyor olmalı.
+6. **App Store Connect:** e-posta + şifre "Sign-in required" alanına; yukarıdaki İngilizce not "Notes" alanına (Email/Password satırları gerekmez, alanları ayrı).
+7. İnceleme gelecek aylara sarkarsa rezervasyon tarihleri eskir; gerekirse dosya yeni tarihlerle yeniden üretilir.
+
+Yerel deneme (Claude Code, 28 Kasım): girişsiz yerel kopyada Geri yükle → 3 villa, "1 dolu · 2 boş", Sıradaki kartları doğru, sayfa hatası 0. Buluta yazma yolu (girişli hesap) denenmedi; 5. adım bunu doğrular.
 
 ## Ekran görüntüleri (6,9" iPhone, 1320 × 2868)
 
