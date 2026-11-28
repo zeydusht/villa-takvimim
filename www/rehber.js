@@ -97,7 +97,7 @@
     // 32.3 dış takvim bağlama
     dtEkle: "Başka sitedeki takvimi bağlamak için ‘Site takvimi bağla’ya dokunun.",
     dtKaynak: "Takvimin geleceği siteye dokunun.",
-    dtSecenek: "Linki kendiniz bağlamak için bu karta dokunun. İsterseniz üstteki kartla bağlamayı ekibimize bırakabilirsiniz.",
+    dtSecenek: "Linki kendiniz bağlamak için bu karta dokunun. İşi üstteki kartla ekibimize de bırakabilirsiniz.",
     dtAdres: "Sitenin verdiği takvim linkini buraya yapıştırın.",
     dtBagla: "‘Bağla’ya dokunun. Link hemen denenir.",
     // paylaş
@@ -123,7 +123,7 @@
     misafirIsaretle: "Teklif göndereceğiniz misafirlere dokunun.",
     misafirTeklif: "Sonra ‘Teklif hazırla’ya dokunun.",
     fotoSira: "Sırayı değiştirmek için fotoğrafa basılı tutun ve sürükleyin.",
-    fotoSec: "Kapak yapmak ya da silmek için ‘Birden fazla seç’e dokunun; fotoğrafı seçip ‘Kapak yap’a ya da ‘Sil’e dokunun.",
+    fotoSec: "Kapak yapmak ya da silmek için ‘Birden fazla seç’e dokunun.",
     bilgiOda: "Odaları buradan ekleyin: türü, katı ve yatakları.",
     bilgiKural: "Ev kurallarınızı buradan ekleyin; misafirler villa sayfasında görür.",
     bilgiKonum: "Haritadaki konum bağlantısını kopyalayıp buraya yapıştırın.",
@@ -137,7 +137,7 @@
     musaitGiris: "Müşterinin istediği *giriş* gününe dokunun.",
     musaitCikis: "Şimdi *çıkış* gününe dokunun.",
     musaitCikisGiris: "Giriş: {g} · şimdi *çıkış* gününe dokunun.",
-    musaitKisi: "Kaç kişi gelecek? *+* ile seçin. Kapasitesi yetmeyen villalar gösterilmez. Bilmiyorsanız *İleri*.",
+    musaitKisi: "Kaç kişi gelecek? *+* ile seçin ya da *İleri*'ye dokunun.",   // 48.3: en fazla 2 kısa cümle
     musaitGoster: "‘Boş villaları göster’e dokunun.",
     musaitSonuc: "Boş villalar ve toplam fiyatları burada. Göndermek için ‘Seç ve gönder’.",
     musaitSonucSade: "Bu tarihlerde boş olan villalar burada.",
@@ -145,6 +145,11 @@
     turSira: "Burada her zaman sıradaki iş yazar: kim girecek, ne kadar alınacak.",
     turPanel: "Rezervasyon, teklif ya da opsiyon buradan seçilir.",
     turSekme: "Takvim sekmesinde tüm villalarınızın giriş-çıkışları, Hesap'ta ayarlar.",
+    // 48.3 tanıtım: en fazla 4 adım, yalnız gösterir (kullanıcıya iş yaptırmaz)
+    tur1: "Bütün villalarınız *Villalar* sekmesinde.",
+    tur2: "Rezervasyon için takvimde *giriş* ve *çıkış* gününe dokunursunuz.",
+    tur3: "Açılan pencerede misafiri yazıp *Kaydet*'e dokunursunuz.",
+    tur4: "Villa sayfanızı buradan misafirlerinize gönderirsiniz.",
     // villa ekleme sihirbazı (19.9: her adımda üstte küçük ipucu)
     villa1: "Villanızın adını ve bulunduğu yeri yazın.",
     villa2: "Kaç kişi kalabilir? − ve + ile ayarlayın.",
@@ -170,9 +175,31 @@
   }
   function tercihYaz() { try { localStorage.setItem(ANAHTAR, JSON.stringify(P)); } catch (e) {} }
   R.modAcik = function () { return tercih().acik; };
-  R.modAyarla = function (ac) { tercih().acik = !!ac; tercihYaz(); };
-  // işlem rehberle mi başlasın: Yardımlı mod açık mı (20.3: işlem bazında kapatma yok)
-  R.gerekli = function () { return tercih().acik; };
+  R.modAyarla = function (ac) {
+    tercih().acik = !!ac; tercihYaz();
+    if (ac) { var p = ipucu(); p.sus = false; p.k = 0; ipYaz(); }   // 48.3: Yardımlı mod yeniden açılınca ipuçları yine çıkar
+  };
+  // ================= 48.3 İPUÇLARI BİR KEZ (hesaba bağlı, cihazda) =================
+  // g: gösterilen ipuçları, y: kullanıcının kendisi yaptığı işler ("kaydedildi:rez" → rez), k: "Rehberi kapat" sayısı,
+  // sus: 2 kez kapatıldı → otomatik ipucu yok (yalnız "Nasıl?" düğmeleri). Veritabanı yok; uygulama silinirse en fazla bir kez daha.
+  var IP = null, IPK = "";
+  function ipucu() {
+    var h = "yerel"; try { if (A.hesap) h = A.hesap() || "yerel"; } catch (e) {}
+    var k = "vt-ipucu:" + h;
+    if (IP && IPK === k) return IP;
+    var x = null; try { x = JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { x = null; }
+    IPK = k; IP = (x && typeof x === "object") ? x : {};
+    IP.g = IP.g || {}; IP.y = IP.y || {}; IP.k = IP.k || 0;
+    return IP;
+  }
+  function ipYaz() { try { localStorage.setItem(IPK, JSON.stringify(IP)); } catch (e) {} }
+  // otomatik başlayan rehber / tanıtım çıkabilir mi
+  R.otomatik = function () { return tercih().acik && !ipucu().sus; };
+  // işlem rehberle mi başlasın: Yardımlı mod açık, susturulmamış, bu ipucu daha önce gösterilmemiş ve iş daha önce yapılmamış
+  R.gerekli = function (ad) { var p = ipucu(); return tercih().acik && !p.sus && !(ad && (p.g[ad] || p.y[ad])); };
+  R.goruldu = function (ad) { if (!ad) return; var p = ipucu(); if (!p.g[ad]) { p.g[ad] = 1; ipYaz(); } };
+  R.yapildi = function (ad) { if (!ad) return; var p = ipucu(); if (!p.y[ad]) { p.y[ad] = 1; ipYaz(); } };
+  R.ipucuDurum = function () { var p = ipucu(); return { gosterilen: Object.keys(p.g), yapilan: Object.keys(p.y), kapatma: p.k, sus: !!p.sus }; };
 
   // ================= GÖRÜNÜM =================
   // 19B.5: uygulamanın iki standart eğrisi (index.html :root'ta tanımlı; yoksa aynı değerler)
@@ -219,33 +246,34 @@
     // 48.1: baloncuk top/left ile değil transform ile kayar; yalnız kayarken ayrı katman (gölgesi yeniden boyanmaz)
     ".rh.kayiyor .rhBalon{will-change:transform}" +
     ".rh.araniyor .rhBalon,.rh.araniyor .rhDelik,.rh.araniyor .rhPerde{opacity:0;pointer-events:none}" +
-    ".rhIc{background:#fff;color:#101613;border-radius:18px;padding:.25rem 1rem 1rem;box-shadow:0 12px 32px rgba(0,0,0,.28);position:relative}" +
-    ".rhUst{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-right:-.625rem}" +
+    ".rhIc{background:#fff;color:#101613;border-radius:18px;padding:.875rem 1rem 1rem;box-shadow:0 12px 32px rgba(0,0,0,.28);position:relative}" +
+    ".rhUst{display:flex;align-items:center;justify-content:space-between;gap:.5rem}" +
     ".rhSay{font-size:.875rem;letter-spacing:.18em;color:#B8C2BC;white-space:nowrap}" +
     ".rhSay .on{color:#0B5B57}" +
-    // 22.1: sağ üstte ✕ ve yanında küçük "Kapat": yalnız bu rehberi kapatır
-    ".rhKapat{display:inline-flex;align-items:center;gap:.25rem;min-height:3rem;padding:0 .625rem;border:0;background:none;color:#5F6A64;" +
-      "font:inherit;font-size:.875rem;white-space:nowrap;border-radius:99px;cursor:pointer}" +
-    ".rhKapat:active{background:#F1F5F3}" +
+    // 48.3: "Rehberi kapat" baloncuğun altında, "İleri" ile aynı büyüklükte (baş parmağın eriştiği yerde); sağ üstte ✕ yok
     ".rhKapatX{display:inline-flex;font-size:1.25rem;line-height:1}" +
     ".rhIleri:disabled{opacity:.45}" +
     // 21.1: klavye açıkken yer dar: baloncuk hedefin hemen üstünde tek satır ("Misafirin adını yazın · Tamam ×")
     ".rh.dar .rhIc{display:flex;align-items:center;gap:.5rem;padding:.25rem .25rem .25rem 1rem;border-radius:14px}" +
-    ".rh.dar .rhUst{order:3;margin:0}.rh.dar .rhSay,.rh.dar .rhKapatYazi,.rh.dar .rhGeri{display:none}" +
-    ".rh.dar .rhKapat{min-width:3rem;padding:0;justify-content:center}" +
+    ".rh.dar .rhUst,.rh.dar .rhKapatYazi{display:none}" +
     ".rh.dar .rhMetin{flex:1;min-width:0;margin:0;font-size:1rem;line-height:1.3}" +
-    ".rh.dar .rhAlt{margin:0}.rh.dar .rhIleri{flex:none;padding:0 1rem}" +
-    ".rhUst .rhGeri{min-height:3rem;padding:0 1rem;border-radius:.75rem;font:inherit;font-size:.9375rem;margin-left:auto;background:#fff;color:#101613;border:2px solid #5F6A64}" +
+    ".rh.dar .rhAlt{margin:0;flex:none}.rh.dar .rhAlt button{flex:none}.rh.dar .rhIleri{padding:0 1rem}" +
+    ".rh.dar .rhKapat{order:2;min-width:3rem;padding:0;border-color:transparent}" +
+    ".rhUst .rhGeri{min-height:2.75rem;padding:0 1rem;border-radius:.75rem;font:inherit;font-size:.9375rem;margin:0 0 .25rem auto;background:#fff;color:#101613;border:2px solid #5F6A64;cursor:pointer}" +
     ".rhMetin{font-size:1.125rem;line-height:1.4;margin-top:.125rem}" +
     ".rhMetinEski{position:absolute;left:1rem;right:1rem;font-size:1.125rem;line-height:1.4;pointer-events:none}" +
     ".rhVurgu{color:#0B5B57;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}" +
     ".rhAlt{display:flex;gap:.5rem;margin-top:.875rem}" +
-    ".rhAlt.hide,.rhAlt .hide{display:none}" +
-    ".rhAlt button{min-height:3rem;border-radius:.75rem;font:inherit;font-size:1rem;padding:0 1.125rem;cursor:pointer;text-align:center}" +
-    ".rhGeri{background:#fff;color:#101613;border:2px solid #5F6A64}" +
-    ".rhIleri{flex:1;background:#0B5B57;color:#fff;border:0}" +
-    ".rhAlt button:active{transform:scale(.97)}" +
-    ".rhOk{display:none}" +
+    ".rhAlt .hide,.rhUst .hide{display:none}" +
+    ".rhAlt button{box-sizing:border-box;flex:1 1 0;min-width:0;min-height:3rem;border-radius:.75rem;font:inherit;font-size:1rem;line-height:1.2;padding:.375rem .625rem;" +
+      "cursor:pointer;text-align:center;display:inline-flex;align-items:center;justify-content:center;gap:.375rem}" +
+    ".rhKapat{background:#fff;color:#101613;border:2px solid #5F6A64}" +
+    ".rhIleri{background:#0B5B57;color:#fff;border:2px solid #0B5B57}" +
+    ".rhAlt button:active,.rhUst button:active{transform:scale(.97)}" +
+    // 48.3: hedefi gösteren tombul ok (uygulamanın lime vurgusu; kırmızı değil). Baloncuk hedefin üstündeyse aşağı, altındaysa yukarı.
+    ".rhOk{position:absolute;left:0;top:100%;width:28px;height:28px;margin-top:3px;pointer-events:none;transform-origin:14px 14px}" +
+    ".rhOk svg{display:block}" +
+    ".rh.yok .rhOk,.rh.dar .rhOk,.rh.okYok .rhOk{display:none}" +
     // başarı ve soru kartı
     ".rhSon{position:fixed;inset:0;z-index:76;display:flex;align-items:center;justify-content:center;padding:1.5rem;" +
       "background:rgba(16,22,19,.35)}" +
@@ -383,17 +411,19 @@
     o.innerHTML = '<div class="rhPerde u"></div><div class="rhPerde a"></div><div class="rhPerde y s"></div><div class="rhPerde y g"></div>' +
       '<div class="rhDelik"></div>' +
       '<div class="rhBalon" role="dialog" aria-modal="true" aria-live="polite"><div class="rhIc">' +
-        '<div class="rhUst"><span class="rhSay"></span><button type="button" class="rhKapat" aria-label="' + esc(cev("Kapat")) + '">' +
-          '<span class="rhKapatX" aria-hidden="true">' + (ikonHTML("x", 18) || "×") + '</span><span class="rhKapatYazi">' + esc(cev("Kapat")) + '</span></button></div>' +
+        '<div class="rhUst"><span class="rhSay"></span><button type="button" class="rhGeri">' + esc(cev("Geri")) + '</button></div>' +
         '<div class="rhMetin"></div>' +
-        '<div class="rhAlt"><button type="button" class="rhGeri">' + esc(cev("Geri")) + '</button><button type="button" class="rhIleri"></button></div>' +
-      '</div><span class="rhOk ust"></span></div>';
+        '<div class="rhAlt"><button type="button" class="rhKapat" aria-label="' + esc(cev("Rehberi kapat")) + '">' +
+          '<span class="rhKapatX" aria-hidden="true">' + (ikonHTML("x", 18) || "×") + '</span><span class="rhKapatYazi">' + esc(cev("Rehberi kapat")) + '</span></button>' +
+          '<button type="button" class="rhIleri"></button></div>' +
+      '</div><span class="rhOk" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 28 28">' +
+        '<path d="M9.5 2.5h9v10.5h6L14 25.5 3.5 13h6z" fill="#9FE870" stroke="#0B3E3B" stroke-width="2" stroke-linejoin="round"/></svg></span></div>';
     document.body.appendChild(o);
     olcum("rehber_basla", { konu: t.ad });
     var q = function (s) { return o.querySelector(s); };
     D = {
       t: t, o: o, i: -1, a: null, gecmis: [], raf: 0, anahtar: "", basari: null, basariAlt: null,
-      delik: q(".rhDelik"), balon: q(".rhBalon"), perde: o.querySelectorAll(".rhPerde"), bhKirli: true, ic: q(".rhIc"), ok: q(".rhOk"), ilk: true, pay: 4,
+      delik: q(".rhDelik"), balon: q(".rhBalon"), perde: o.querySelectorAll(".rhPerde"), bhKirli: true, okIc: q(".rhOk svg"), okD: "a", ic: q(".rhIc"), ok: q(".rhOk"), ilk: true, pay: 4,
       say: q(".rhSay"), metin: q(".rhMetin"), alt: q(".rhAlt"), geri: q(".rhGeri"), ileri: q(".rhIleri"), ust: q(".rhUst"),
       a_gizli: function () { return !!(this.a && this.a.gizli); }
     };
@@ -509,21 +539,24 @@
     D.metin.innerHTML = metinHTML(m || "");
     D.bhKirli = true;
     var sonAdim = D.i === sonGorunen();
-    D.ileri.textContent = cev(a.bekle === "deger" ? "Tamam" : (sonAdim ? "Bitir" : "İleri"));
-    D.ileri.classList.toggle("hide", !(a.bekle === "ileri" || (a.bekle === "deger" && degerVar())));
-    D.ileri.disabled = !ileriEtkin();
+    // 48.3: yazı adımında alan boşsa "Bu adımı geç", doluysa "Tamam"; dokunuş / olay bekleyen adımda yalnız "Rehberi kapat"
+    D.dv = a.bekle === "deger" && degerVar();
+    D.ie = ileriEtkin();
+    D.ileri.textContent = cev(anaMetin(a, sonAdim));
+    D.ileri.classList.toggle("hide", !(a.bekle === "ileri" || a.bekle === "deger"));
+    D.ileri.disabled = false;
     D.geri.classList.toggle("hide", !geriGosterilir());
     altDuzen();
   }
-  function metinAl(a) { try { return (typeof a.metin === "function" ? a.metin() : a.metin) || ""; } catch (e) { return ""; } }
-  // 21.1: yalnız "Geri" varsa üst satıra geçer (baloncuk kısa kalır, uzun hedeflerle birlikte sığar)
-  function altDuzen() {
-    D.bhKirli = true;
-    var tekGeri = D.ileri.classList.contains("hide") && !D.geri.classList.contains("hide");
-    if (tekGeri && D.geri.parentNode !== D.ust) D.ust.insertBefore(D.geri, D.ust.querySelector(".rhKapat"));
-    if (!tekGeri && D.geri.parentNode !== D.alt) D.alt.insertBefore(D.geri, D.ileri);
-    D.alt.classList.toggle("hide", D.ileri.classList.contains("hide") && (D.geri.classList.contains("hide") || tekGeri));
+  // 48.3: ana düğmenin yazısı. Kullanıcı yazmadan / düzenlemeyi kapatmadan da geçebilir: "Bu adımı geç" (asla pasif değil)
+  function anaMetin(a, sonAdim) {
+    if (a.bekle === "deger") return D.dv ? "Tamam" : "Bu adımı geç";
+    if (!D.ie) return "Bu adımı geç";
+    return (sonAdim == null ? D.i === sonGorunen() : sonAdim) ? "Bitir" : "İleri";
   }
+  function metinAl(a) { try { return (typeof a.metin === "function" ? a.metin() : a.metin) || ""; } catch (e) { return ""; } }
+  // 48.3: "Geri" her zaman üst satırda (küçük); alt satırda "Rehberi kapat" + ana düğme
+  function altDuzen() { D.bhKirli = true; }
   function ileriEtkin() { var a = D.a; try { return !a.ileri_eger || !!a.ileri_eger(); } catch (e) { return true; } }
   function sonGorunen() {
     var l = D.t.adimlar;
@@ -581,6 +614,12 @@
       return;
     }
     D.yokBas = 0;
+    // 48.3: hedefsiz bilgi adımı (ör. tanıtım): delik yok, baloncuk ekranın ortasında; ölçülecek hedef yok
+    if (!a.hedef) {
+      if (!D.bulundu) { D.bulundu = true; D.ilk = false; D.tw = null; D.o.classList.remove("araniyor"); D.o.classList.remove("kayiyor"); }
+      if (d === D) yerlestir([]);
+      return;
+    }
     // başka bir panel (uyarı, ayrıntı) hedefin üstünü kapattıysa rehber o kapanana kadar bekler
     var up = ustPanel();
     var ortu = !!(up && els.length && !els.some(function (x) { return up.contains(x); }));
@@ -602,6 +641,7 @@
       D.ilk = false;
       D.o.classList.remove("araniyor");
       D.elsK = elsAnahtar(els);
+      okSalla();   // 48.3
     } else if (!D.tw || D.tw.takip) {
       // 24.2: hedef değişti (satır içi düzenleme açıldı / kapandı, klavye oturdu / kapandı): pencere hemen, 300 ms'de yeni
       // hedefe uyar. Kaydırma gerekip gerekmediğine klavye durunca (yerleşim son hâlindeyken) bir kez bakılır.
@@ -614,16 +654,8 @@
     }
     // metni duruma bağlı adım (ör. ücret kartında düzenleme açıkken "Yeni tutarı yazın…"): metin değişince çapraz geçiş
     if (typeof a.metin === "function" && !D.metinBekliyor && metinAl(a) !== D.metinSon) icerik(true);
-    var ie = ileriEtkin();
-    if (D.ileri.disabled === ie) D.ileri.disabled = !ie;
-    if (a.bekle === "deger") {
-      var dv = degerVar();
-      if (dv === D.ileri.classList.contains("hide")) {
-        D.ileri.classList.toggle("hide", !dv);
-        altDuzen();
-        D.anahtar = "";
-      }
-    }
+    var ie = ileriEtkin(), dv = a.bekle === "deger" && degerVar();
+    if (ie !== D.ie || dv !== !!D.dv) { D.ie = ie; D.dv = dv; D.ileri.textContent = cev(anaMetin(a)); altDuzen(); D.anahtar = ""; }
     if (d === D) { if (D.tw) gecisAdim(); else yerlestir(els); }
   }
   var KIMLIK = 0;
@@ -635,7 +667,7 @@
   function hedefDegisti(els) {
     if (odakGirdi()) return;
     var g = odakAlan(els[0]), bh = darAyarla(els, g), r = birlesik(els);
-    if (r.top - bh - 8 < g.ust + 4 || r.bottom > g.alt - 4) hizala(els, 300);
+    if (r.top - bh - bosluk8() < g.ust + 4 || r.bottom > g.alt - 4) hizala(els, 300);
   }
   // pencere ve baloncuk şimdiki yerlerinden, hedefi her karede izleyerek ona uyar (içeriği kaydırmaz)
   function takip(sure) {
@@ -755,9 +787,10 @@
     return y;
   }
   function balonOlcu(hl, hw, W) {
-    var bw = Math.min(Math.max(hw, 260), W - 16);
+    // 48.3: en dar 300 px ("Rehberi kapat" ve "İleri" yan yana sığsın)
+    var bw = Math.min(Math.max(hw, 300), W - 16);
     var bl = Math.max(8, Math.min(W - 8 - bw, hl + hw / 2 - bw / 2));
-    if (hw >= 260 && hl >= 8 && hl + hw <= W - 8) { bl = hl; bw = hw; }
+    if (hw >= 300 && hl >= 8 && hl + hw <= W - 8) { bl = hl; bw = hw; }
     return { l: bl, w: bw };
   }
   // ekran koordinatındaki pencere + baloncuk → kap koordinatı (kaydırmada değişmez → tarayıcı kaydırmasıyla aynı karede)
@@ -774,6 +807,18 @@
     yaz(p[2], "transform", "translate(" + (x - W) + "px," + y + "px) scale(1," + k.toFixed(4) + ")");
     yaz(p[3], "transform", "translate(" + (x + w) + "px," + y + "px) scale(1," + k.toFixed(4) + ")");
   }
+  // 48.3: ok gösterilir mi (hedef var, klavyede kısa biçim değil) ve baloncukla hedef arasındaki boşluk
+  function okVar() { return !!(D.a && D.a.hedef) && !D.o.classList.contains("dar") && !D.o.classList.contains("yok"); }
+  function bosluk8() { return okVar() ? 34 : 8; }
+  function okSalla() {
+    clearTimeout(D.okT);
+    if (azH() || !D.okIc || !D.okIc.animate) return;
+    var ok = D.okIc;
+    D.okT = setTimeout(function () {
+      try { ok.animate([{ transform: "translateY(0)" }, { transform: "translateY(6px)" }, { transform: "translateY(0)" }],
+        { duration: 560, iterations: 3, easing: "ease-in-out" }); } catch (e) {}
+    }, 440);
+  }
   function ciz(d, b) {
     var o = D.o.getBoundingClientRect(), ox = o.left, oy = o.top, pay = D.pay;
     var dx = Math.round(d.l - ox), dy = Math.round(d.t - oy), dw = Math.max(0, Math.round(d.w)), dh = Math.max(0, Math.round(d.h));
@@ -783,10 +828,25 @@
     var bw = Math.round(b.w);
     yaz(D.balon, "width", bw + "px");
     var bh = balonBoyu(bw), g = alan();
-    // baloncuğun alt kenarı hedefin üst kenarının 8 px üstünde. 31.10: üstte yer yoksa (yazı 17 px olunca hedefler büyüdü)
-    // hedefin 8 px altına; altta da yer yoksa ekranın üst kenarına yapışır (ekrandan taşmaz)
-    var bt = d.t + pay - 8 - bh;
-    if (bt < g.ust + 4) bt = (d.t + d.h - pay + 8 + bh <= g.alt - 4) ? d.t + d.h - pay + 8 : g.ust + 4;
+    // baloncuğun alt kenarı hedefin üst kenarının 8 px üstünde (48.3: ok varken 34 px). 31.10: üstte yer yoksa (yazı 17 px olunca
+    // hedefler büyüdü) hedefin altına; altta da yer yoksa ekranın üst kenarına yapışır (ekrandan taşmaz; ok gizlenir)
+    var G = bosluk8(), yon = "a";
+    var bt = d.t + pay - G - bh;
+    if (bt < g.ust + 4) {
+      if (d.t + d.h - pay + G + bh <= g.alt - 4) { bt = d.t + d.h - pay + G; yon = "u"; } else { bt = g.ust + 4; yon = ""; }
+    }
+    // ok: hedefin ortasına, baloncuğun içinde kalacak şekilde; yalnız transform
+    var okGiz = G < 34 || !yon;
+    if (okGiz !== !!D.okGiz) { D.okGiz = okGiz; D.o.classList.toggle("okYok", okGiz); }
+    if (!okGiz) {
+      var ax = Math.max(20, Math.min(bw - 20, d.l + d.w / 2 - b.l)) - 14;
+      yaz(D.ok, "transform", "translateX(" + Math.round(ax) + "px)" + (yon === "u" ? " rotate(180deg)" : ""));
+      if (yon !== D.okD) {
+        D.okD = yon;
+        D.ok.style.top = yon === "u" ? "auto" : ""; D.ok.style.bottom = yon === "u" ? "100%" : "";
+        D.ok.style.marginTop = yon === "u" ? "0" : ""; D.ok.style.marginBottom = yon === "u" ? "3px" : "";
+      }
+    }
     yaz(D.balon, "transform", "translate(" + Math.round(b.l - ox) + "px," + Math.round(bt - oy) + "px)");
     D.delikEkran = d; D.balonEkran = b;
   }
@@ -811,7 +871,7 @@
     var g = alan();
     D.o.classList.toggle("yok", !els.length);
     if (!els.length) {
-      var bw = Math.min(360, g.W - 32), bh = D.balon.offsetHeight, cy = (g.ust + g.alt) / 2;
+      var bw = Math.min(360, g.W - 32), bh = balonBoyu(Math.round(bw)), cy = (g.ust + g.alt) / 2;
       ciz({ l: g.W / 2, t: cy + bh / 2 + 8 - D.pay, w: 0, h: 0 }, { l: (g.W - bw) / 2, w: bw });
       return;
     }
@@ -852,7 +912,7 @@
       var Y = odakHatti(els[0], g);
       // klavye açıkken hedef her zaman klavyenin 12 px üstünde (yazılan görünür kalır);
       // klavye kapalı ve hedef + baloncuk hatta sığmıyorsa (uzun hedef): ikisinin birlikte görünebileceği en düşük konum
-      var B = kl ? Y : Math.max(Y, g.ust + 12 + bh + r.height);
+      var B = kl ? Y : Math.max(Y, g.ust + 12 + bh + (bosluk8() - 8) + r.height);
       dy = r.bottom - B;
       var s0 = kabY(S), s1 = s0 + dy;
       // 21.3: kaydırma alanı yetmezse geçici boşluk
@@ -958,7 +1018,8 @@
   };
   // 20.2: rehber açıkken hedefin dışındaki dokunuşlar iptal edilir, baloncuk sallanır. Kaydırma ve sürükleme serbest:
   // parmak 10 px'ten fazla kaydıysa dokunuş sayılmaz. touchend iptal edilince ne tıklama ne odak (klavye) oluşur.
-  function engelVar() { return !!(D && D.a && !D.a.gizli && !D.ortu && D.bulundu); }
+  // 48.3: yazı bekleyen adım hiçbir yere dokunmayı engellemez (kullanıcı yazmak istemezse başka yere geçebilir)
+  function engelVar() { return !!(D && D.a && !D.a.gizli && !D.ortu && D.bulundu && D.a.bekle !== "deger"); }
   function izinli(t) {
     if (!t || !t.closest) return true;
     if (D.o.contains(t) || t.closest(".rhSon")) return true;
@@ -1025,12 +1086,16 @@
       D.boy = r.height;
       takip(300);
       D.elsK = elsAnahtar(els);
-      return { kutu: r, ust: bh + 8 };
+      return { kutu: r, ust: bh + bosluk8() };
     } catch (e) { cokme(e); return null; }
   };
 
   // uygulamadan gelen olay: "baslangic", "aralik", "secimTemizlendi", "panel:fiyat", "kaydedildi:rez"…
-  R.bildir = function (olay, veri) { try { bildirIc(olay, veri); } catch (e) { cokme(e); } };
+  R.bildir = function (olay, veri) {
+    // 48.3: kullanıcı işi bir kez kendisi yaptıysa (ör. ilk rezervasyonunu kaydetti) o ipucu bir daha çıkmaz
+    try { var m = /^kaydedildi:(.+)$/.exec(String(olay || "")); if (m) R.yapildi(m[1]); } catch (e) {}
+    try { bildirIc(olay, veri); } catch (e) { cokme(e); }
+  };
   function bildirIc(olay, veri) {
     if (!D) return;
     var a = D.a, t = D.t;
@@ -1059,6 +1124,9 @@
     // 29.1 ölçüm: yalnız rehberin adı ve kalınan adımın sırası
     if (tamamlandi) olcum("rehber_bitir", { konu: d.t.ad }); else olcum("rehber_kapat", { konu: d.t.ad, adim: Math.max(0, d.i) + 1 });
     document.documentElement.classList.remove("rhAcik");
+    clearTimeout(d.okT);
+    // 48.3: "Rehberi kapat" 2 kez → otomatik ipuçları susar (yalnız "Nasıl?" düğmeleri kalır)
+    if (elle) { try { var ip = ipucu(); ip.k = (ip.k || 0) + 1; if (ip.k >= 2) ip.sus = true; ipYaz(); } catch (e) {} }
     if (elle && d.a) {
       try {
         var hs = hedefler(d.a), ov = (hs[0] && hs[0].closest && hs[0].closest(".overlay")) || ustPanel();

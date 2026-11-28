@@ -2648,7 +2648,7 @@
       <span class="satirAlt">Açıkken her işlemde adım adım yardım gösterilir.</span></span>
       <span class="svic on" id="hs-yardim" role="switch" aria-checked="true" aria-label="Yardımlı mod"><i></i></span></div>
     <button class="satirBtn" id="turTekrarBtn" data-ikk="hesap:sihirli">
-      <span><span>Uygulama turunu tekrar göster</span><span class="satirAlt">Villa ekranında adım adım</span></span>
+      <span><span>Tanıtımı baştan göster</span><span class="satirAlt">Villa ekranında 4 kısa adım</span></span>
     </button>
     <button class="satirBtn" id="sssBtn" data-ikk="hesap:bilgi-i">
       <span>Sık sorulan sorular</span>
@@ -3221,7 +3221,7 @@
   // - Ana düğme (.big, Kaydet, Villa ekle, Ödemeyi al…): parmak BASINCA (touchstart).
   // - Kart / liste satırı (yeni ekran ya da pencere açar): parmak kalkınca, kaymadıysa.
   // - Parmak 10 pt'den fazla kaydıysa ya da sayfa / liste o an kayıyorsa (kaydırmayı durduran dokunuş) titreşim yok.
-  var TT_ANA="button.big, button.renkli, .altSabit button, #f-kaydet";
+  var TT_ANA="button.big, button.renkli, .altSabit button, #f-kaydet, .spBtn.ana";
   var TT_KART="button.kart, .kart[data-id], .ajKart, .misSatir, .tkSatir, .rezSatir, .akKart, .ekleKart, .satirBtn, .sirKart";
   var TT={d:null, kaydi:0};
   document.addEventListener("scroll",function(){ TT.kaydi=performance.now(); },{capture:true, passive:true});
@@ -7444,6 +7444,8 @@
   var RM=Rehber.M;
   Rehber.ayarla({
     cevir:cev, titret:titret, bildir:function(m,sure){ bildir(m,sure); },
+    // 48.3: hangi ipucunun gösterildiği hesaba bağlı saklanır (cihazda)
+    hesap:function(){ try{ var k=window.VT && VT.kullanici && VT.kullanici(); return (k && k.id) || "yerel"; }catch(e){ return "yerel"; } },
     olay:function(ad,v){ olc(ad,v); },   // 29.1: rehber_basla / rehber_bitir / rehber_kapat
     // 24.1: klavyenin OTURMUŞ hâli (açılırken ara karelerde değişmez); hareketliyken rehber yeni adımı yerleştirmeyi bekler
     klavye:function(){ return KLAVYE.h; }, klavyeUst:function(){ return KLAVYE.ust; }, klavyeHareketli:klavyeHareketli, klavyeKalan:klavyeKalan,
@@ -7481,7 +7483,10 @@
   function rehberAc(ad,tanim,soruTanim){
     rhSoru(soruTanim||tanim);   // 26.6: "?" isterse daha geniş yardım açar
     if(!window.Rehber || !Rehber.gerekli(ad) || Rehber.aktif()) return false;
-    return Rehber.baslat(tanim());
+    // 48.3: her ipucu bir kez (hesaba bağlı); kullanıcı o işi kendisi yaptıysa hiç
+    var b=Rehber.baslat(tanim());
+    if(b && Rehber.goruldu) Rehber.goruldu(ad);
+    return b;
   }
   // 22.2: panel başlığının yanında "?": o işlemin rehberini kalınan adımdan (bilinmiyorsa ilk boş alandan) tek seferlik açar.
   // Yardımlı mod kapalıyken de görünür.
@@ -7746,17 +7751,18 @@
         {hedef:rhTek("#td-cevir"), metin:RM.teklifCevir, bekle:"ileri", istege:true},
         {hedef:rhTek("#td-tekrar"), metin:RM.teklifTekrar, bekle:"ileri", istege:true}
       ]}; },
-    // 18.13 uygulama turu (kurulum bitince bir kez; Hesap → Yardım'dan tekrar)
+    // 18.13 uygulama turu (kurulum bitince bir kez; Hesap → Yardım → "Tanıtımı baştan göster")
+    // 48.3: en fazla 4 adım, yalnız GÖSTERİR: villalar → takvimden tarih → rezervasyon kaydı → villa sayfası. Kullanıcıya iş
+    // yaptırmaz (tarih seçtirmez, yazı bekletmez); her adımda "İleri" ve "Rehberi kapat".
     tur:function(){ return {ad:"tur", sormaz:true,
       bitince:function(){ rhNabizKaldir(); if(S.secim||S.start||S.rezModu){ S.secim=null; S.start=null; S.rezModu=false; ciz(); } },
       adimlar:[
-        {hedef:function(){ return document.querySelector("#siradaki .sirKart"); }, metin:RM.turSira, bekle:"ileri", istege:true,
-         hazirla:function(){ try{ window.scrollTo(0,0); }catch(e){} }}
-      ].concat(rhTarih(false)).concat([
-        {hedef:function(){ return document.getElementById("secPanel"); }, metin:RM.turPanel, bekle:"ileri", dokunulmaz:true},
-        {hedef:function(){ return document.getElementById("sekmeler"); }, metin:RM.turSekme, bekle:"ileri", dokunulmaz:true,
-         hazirla:function(){ S.secim=null; S.start=null; ciz(); }}
-      ])}; }
+        {hedef:function(){ return document.querySelector('#sekmeler [data-sekme="ana"]'); }, metin:RM.tur1, bekle:"ileri", dokunulmaz:true, istege:true,
+         hazirla:function(){ try{ window.scrollTo(0,0); }catch(e){} }},
+        {hedef:rhTakvim, metin:RM.tur2, bekle:"ileri", dokunulmaz:true},
+        {hedef:null, metin:RM.tur3, bekle:"ileri"},
+        {hedef:function(){ var b=document.getElementById("paylasBtn"); return (b && b.offsetParent!==null) ? b : null; }, metin:RM.tur4, bekle:"ileri", dokunulmaz:true, istege:true}
+      ]}; }
   };
   // 18.5 "Nasıl yapılır?" (boş Sıradaki kartı): Yardımlı mod kapalı olsa da rezervasyon rehberi
   function turTakvim(){
@@ -7768,6 +7774,7 @@
   function turGosterildi(){ try{ return !!localStorage.getItem(TUR_ANAHTAR); }catch(e){ return true; } }
   function turAna(){
     if(!aktif()) return;
+    if(Rehber.aktif()) Rehber.kapat();
     try{ localStorage.setItem(TUR_ANAHTAR,"1"); }catch(e){}
     S.secim=null; S.start=null; S.rezModu=false; S.rezNiyet=false; S.uyari=""; ciz();
     try{ window.scrollTo(0,0); }catch(e){}
@@ -9808,7 +9815,7 @@
   };
   // 18.21: uygulama turunu tekrar göster — ilk villanın ekranında
   document.getElementById("turTekrarBtn").onclick=function(){
-    if(!S.villalar.length) return bildir(cev("Tur için önce bir villa ekleyin."));
+    if(!S.villalar.length) return bildir(cev("Tanıtım için önce bir villa ekleyin."));
     var v=S.villalar[0];
     ac(v.id);
     setTimeout(function(){ if(aktif()===v) turAna(); },350);
@@ -12445,7 +12452,7 @@
     var degisti=function(){ kaydet(); };
     if(a>SH_ADIM){
       // 18.11 / 18.13: villa ekranı açılır, uygulama turu (ilk kez) kendiliğinden başlar
-      $("shTakvim").onclick=function(){ goster("takvim"); ciz(); if(!turGosterildi()) setTimeout(turAna,350); };
+      $("shTakvim").onclick=function(){ goster("takvim"); ciz(); if(!turGosterildi() && Rehber.otomatik()) setTimeout(turAna,350); };
       return;
     }
     if(a===1){
