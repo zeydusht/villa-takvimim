@@ -3195,18 +3195,55 @@
   var TITRESIM="villa-takvim-titresim";
   // 31.4 titreşim dili: tek eşleme tablosu. Kod olayın adını verir, titreşimin türü buradan gelir. Titreşim hiçbir zaman tek başına
   // bilgi taşımaz: her çağrının yanında görsel bir geri bildirim (bildirim, renk, panel, hata yazısı) vardır.
+  // 48.2: iOS'un kendi uygulamalarındaki gibi: dokunuşlarda hafif ama hissedilen "tık" (impact LIGHT), eşiklerde orta.
   var TITRESIM_DILI={
     kaydedildi:"basari", odeme:"basari", villa_eklendi:"basari",     // kaydetme, ödeme alma, villa ekleme başarılı
-    silindi:"sil", iptal:"sil",                                      // silme, iptal
+    silindi:"sil", iptal:"sil",                                      // silme, iptal (impact MEDIUM)
     hata:"uyari", eksik:"uyari",                                     // hata, eksik alan
-    aralik:"secim", sekme:"secim", anahtar:"secim", secim:"secim",   // aralığın 2. günü, sekme değişimi, anahtar, değer seçimi
+    aralik:"secim", anahtar:"secim", secim:"secim",                  // takvim günü, anahtar, hap / segment / filtre (selection)
+    sekme:"hafif",                                                   // 48.2: alt sekme değişimi (selection çok zayıftı)
+    dokun:"hafif", kart:"hafif", pencere:"hafif", geri_esik:"hafif", // 48.2: ana düğme, kart, pencere açıldı, kenardan geri eşiği
+    cek_esik:"orta",                                                 // 48.2: pencere aşağı çekilip kapanma eşiği geçildi
     uzun_bas:"hafif", oturdu:"hafif"                                 // uzun basma başladı, sürükleme bir yere oturdu
   };
+  // 48.2: aynı titreşim 80 ms içinde iki kez çalmaz (art arda basılan düğmeler vızıldamaz). Çağrı dokunuşu bekletmez (asenkron).
+  var TITRESIM_SON={};
   function titret(olay){
     if(store.get(TITRESIM)==="kapali") return;
     var tur=TITRESIM_DILI[olay]; if(!tur) return;
-    try{ if(window.VTNative && VTNative.titret) VTNative.titret(tur); }catch(e){}
+    if(!(window.VTNative && VTNative.titret)) return;   // yalnız uygulamada
+    var t=performance.now();
+    if(TITRESIM_SON[tur]!=null && t-TITRESIM_SON[tur]<80) return;
+    TITRESIM_SON[tur]=t;
+    Promise.resolve().then(function(){ try{ VTNative.titret(tur); }catch(e){} });
   }
+  // 48.2: dokunuş titreşimi (yalnız uygulamada; sitede hiçbir şey yapmaz).
+  // - Ana düğme (.big, Kaydet, Villa ekle, Ödemeyi al…): parmak BASINCA (touchstart).
+  // - Kart / liste satırı (yeni ekran ya da pencere açar): parmak kalkınca, kaymadıysa.
+  // - Parmak 10 pt'den fazla kaydıysa ya da sayfa / liste o an kayıyorsa (kaydırmayı durduran dokunuş) titreşim yok.
+  var TT_ANA="button.big, button.renkli, .altSabit button, #f-kaydet";
+  var TT_KART="button.kart, .kart[data-id], .ajKart, .misSatir, .tkSatir, .rezSatir, .akKart, .ekleKart, .satirBtn, .sirKart";
+  var TT={d:null, kaydi:0};
+  document.addEventListener("scroll",function(){ TT.kaydi=performance.now(); },{capture:true, passive:true});
+  document.addEventListener("touchstart",function(e){
+    TT.d=null;
+    if(!document.documentElement.classList.contains("native") || !e.touches || e.touches.length!==1) return;
+    var t=e.target, x=e.touches[0];
+    TT.d={x:x.clientX, y:x.clientY, t:t, kaydi:performance.now()-TT.kaydi<120, ana:false};
+    if(TT.d.kaydi || !t.closest) return;
+    var b=t.closest(TT_ANA);
+    if(b && !b.disabled && !b.closest(".rh")){ TT.d.ana=true; titret("dokun"); }
+  },{capture:true, passive:true});
+  document.addEventListener("touchmove",function(e){
+    var d=TT.d; if(!d || !e.touches[0]) return;
+    if(Math.abs(e.touches[0].clientX-d.x)>10 || Math.abs(e.touches[0].clientY-d.y)>10) d.kaydi=true;
+  },{capture:true, passive:true});
+  document.addEventListener("touchend",function(){
+    var d=TT.d; TT.d=null;
+    if(!d || d.kaydi || d.ana || !d.t.closest) return;
+    var k=d.t.closest(TT_KART);
+    if(k && !k.disabled) titret("kart");
+  },{capture:true, passive:true});
   // ================= 32 DIŞ TAKVİMLER (Airbnb, Booking, Vrbo, Villasepeti, diğer) =================
   // Sunucu tarafı (VERITABANI_GOREV32.sql + takvim-esitle / takvim-ver) yoksa DT.hazir=false: satır ve bölümler gizli kalır.
   var DT={hazir:null, bloklar:{}, durum:{}, cakismalar:[], son:{}};
@@ -6202,7 +6239,7 @@
   }
   document.getElementById("ajUst").addEventListener("click",function(e){
     var b=e.target.closest("[data-u]"); if(!b || b.dataset.u===AJ.ust) return;
-    AJ.ust=b.dataset.u; titret("sekme");
+    AJ.ust=b.dataset.u; titret("secim");   // 48.2: segment (selection)
     if(AJ.ust==="misafir") olc("misafirler_ac");
     cizAjanda();
   });
@@ -14510,6 +14547,7 @@
     var o=document.createElement("div");
     o.className="overlay"+(yerine?" anlik":"");
     o.innerHTML='<div class="sheet">'+html+"</div>";
+    titret("pencere");   // 48.2 (80 ms kuralı: düğmenin tıkıyla üst üste binmez)
     var sh=o.firstChild;
     // Tek kapatma yolu: sağ üstteki X. Başlığında X olmayan panellere de eklenir.
     if(altKapat!==false && !sh.querySelector(".x")) sh.insertAdjacentHTML("afterbegin",kapatBtn());
@@ -14588,6 +14626,10 @@
       if(d.dy<=0){ d.cek=false; sh.classList.remove("cekiliyor"); sifirla(false); return; }   // geri yukarı: pencere yerinde, içerik kayar
       if(azHareket()) return;   // hareket azaltılmış: pencere parmağı izlemez
       var boy=Math.min(sh.offsetHeight,window.innerHeight)||1;
+      // 48.2: kapanma eşiği geçilince bir kez orta titreşim (geri çekilip yeniden geçilirse yine)
+      if(d.oran==null) d.oran=hiz("--cek-oran");
+      var esik=d.dy>boy*d.oran;
+      if(esik!==!!d.esik){ d.esik=esik; if(esik) titret("cek_esik"); }
       sh.style.transform="translateY("+d.dy+"px)";
       perdeYaz(o,Math.max(0,1-d.dy/boy));   // 48.1: yalnız karartma katmanının saydamlığı
     },{passive:false});
@@ -14947,6 +14989,9 @@
       if(e.cancelable) e.preventDefault();
       d.iz.push({x:t.clientX, t:e.timeStamp}); if(d.iz.length>6) d.iz.shift();
       d.dx=Math.max(0,dx);
+      // 48.2: geri dönme eşiği (ekranın %35'i) geçilince bir kez hafif titreşim
+      var esik=d.dx>innerWidth*.35;
+      if(esik!==!!d.esik){ d.esik=esik; if(esik) titret("geri_esik"); }
       if(d.sahne) kgCiz(d,d.dx);
     },{passive:false});
     var bitir=function(iptal){

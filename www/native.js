@@ -143,7 +143,7 @@
   window.VTNative.dosyaPaylas = dosyaPaylas;
 
   // Gerçek titreşim (iPhone'da navigator.vibrate çalışmaz). Sadece uygulama içinde; web'de bu dosya hiçbir şey yapmaz.
-  //   "basari" → notification success, "uyari" → notification warning, "sil" → impact medium, "hafif" → impact light,
+  //   "basari" → notification success, "uyari" → notification warning, "sil" / "orta" → impact medium, "hafif" → impact light,
   //   "secim" → selectionChanged (31.4). Hangi olayda hangisi: index.html TITRESIM_DILI.
   window.VTNative.titret = function (tur) {
     var H = P.Haptics;
@@ -153,6 +153,7 @@
       else if (tur === "uyari") H.notification({ type: "WARNING" }).catch(function () {});
       else if (tur === "sil") H.impact({ style: "MEDIUM" }).catch(function () {});
       else if (tur === "hafif") H.impact({ style: "LIGHT" }).catch(function () {});
+      else if (tur === "orta") H.impact({ style: "MEDIUM" }).catch(function () {});   // 48.2: pencere çekme eşiği
       else if (tur === "secim") {
         // iOS'ta selectionChanged yalnız selectionStart ile selectionEnd arasında titreşir
         Promise.resolve(H.selectionStart && H.selectionStart()).then(function () { return H.selectionChanged(); })
