@@ -148,3 +148,10 @@ Her maddeyi projede kontrol et. Olanları "var" diye işaretle, olmayanları yap
 - Yayın yapma: Cloudflare ya da `canli` dalına itme.
 
 **Bitiş:** Commit + push (`main`). Mesajının en altına kısa özet yaz: ne var, ne eklendi, Zeyd'in ya da PM'in yapması gereken ne kaldı.
+
+### İlk TestFlight yüklemesi (Claude Code, 28 Kasım 2026)
+- API anahtarının rolü **Admin** olmalı. Değilse dışa aktarma "Cloud signing permission error" verir.
+- Apple'ın bulut imzası (cloud-managed sertifika) kullanılınca İ hatası çıktı (Capacitor, Cordova, App: 49cc87) ve özel anahtar makinede olmadığı için düzeltilemedi.
+- Kendi "Apple Distribution" sertifikamız (`IOS_DIST_P12`) yüklenince kural baştan doğru çıktı (c4b0); build 278 doğrulandı ve yüklendi.
+- .p12 Windows'ta openssl ile yapıldı (CSR → Apple → .cer → .p12, `-certpbe/-keypbe PBE-SHA1-3DES -macalg sha1`). Şifre dosyasında `\r` kalırsa Mac "passphrase not correct" der.
+- Sırlar eklendiği için artık main'e her push TestFlight'a yükler; yalnız belge değişen commit'lere `[skip ci]` ekle.

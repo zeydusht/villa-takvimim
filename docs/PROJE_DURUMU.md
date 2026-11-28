@@ -28,12 +28,18 @@ Veritabanı aynı: Supabase "VillaTakvim Project" (qmfyqixilkvcvidigngt).
 
 ## Bekleyenler (Zeyd'den)
 - [x] GitHub repo açıldı, kod gönderildi; Android APK ve iOS derleme kontrolü başarılı (7 Kasım)
-- [ ] App Store Connect'te uygulama kaydı (bundle ID: com.zeydtekin.villatakvim)
-- [ ] App Store Connect API anahtarı (Admin) + Team ID → GitHub repo Secrets:
+- [x] App Store Connect'te uygulama kaydı (bundle ID: com.zeydtekin.villatakvim) — 28 Kasım: build 278 yüklendi, demek ki kayıt var
+      (sayfaya bakılmadı).
+- [x] App Store Connect API anahtarı (Admin) + Team ID → GitHub repo Secrets:
       `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_P8`
-      28 Kasım: dört sır eklendi; Admin rollü anahtar T7Q3ZFT98L ile ASC_KEY_ID / ASC_KEY_P8 güncellendi, dışa aktarma çalışıyor.
-- [ ] Dağıtım sertifikası (.p12) → Secrets `IOS_DIST_P12` (base64) + `IOS_DIST_P12_SIFRE`. İ harfi hatası çıktı (Görev 47),
-      düzeltmek için gerekli.
+      28 Kasım: dört sır eklendi; Admin rollü anahtar T7Q3ZFT98L. İlk anahtar (24XGL5ZG5Y) Admin değildi, kullanılmıyor.
+- [x] Dağıtım sertifikası (.p12) → Secrets `IOS_DIST_P12` (base64) + `IOS_DIST_P12_SIFRE` (28 Kasım). Windows'ta openssl ile
+      CSR → Apple Distribution (bitiş 27 Kasım 2027) → .p12. Dosyalar repo DIŞINDA: `C:\Users\zeydt\Downloads\vt-sertifika\`
+      (gizli anahtar + şifre; silinmemeli, paylaşılmamalı). Şifre dosyasında Windows satır sonu (\r) olmamalı, yoksa Mac
+      "passphrase not correct" der.
+- [ ] DİKKAT: Artık main'e her push TestFlight'a yeni build yükler. Yalnız belge değişikliklerinde commit'e `[skip ci]` ekle.
+- [ ] Nisan 2027'den önce: Apple, yüklemelerde iOS 27 SDK (Xcode 27) isteyecek (uyarı 90725). ios.yml `latest-stable` kullanıyor;
+      Xcode 27 runner'a gelince kendiliğinden geçer, Mart 2027'de kontrol et.
 - [ ] Veritabanı Adım C: canlı site (villatakvim.netlify.app) yeni sürüme geçirildikten SONRA Claude
       sohbetten yapacak. Önce yapılırsa canlı sitede fotoğraf yükleme çalışmaz.
       **Not (14 Kasım): Netlify güncellendi, artık yapılabilir — Claude yapacak.**
@@ -806,7 +812,10 @@ telefon boyutunda test eder, önce/sonra gösterir, sonraki bölümün mesajın�
       şifreleme NO, iPhone-only, diğer izin metinleri zaten vardı. `.gitattributes` (LF), `.gitignore` (p12, profil, .env, tarayıcı
       profilleri). App'te gizlenen: bildirim ayarı, Pro/üyelik (mağaza kapalıyken), "Bize ulaşın"daki "yakında" → destek e-postası.
       Ad: görünür "Villa Takvim" yoktu; yedek dosya adları `villa-takvimim-…json`. `docs/IPHONE_KONTROL.md` hazır. sw `vt-2026-11-27-ios1`.
-- [ ] Görev 47 — TestFlight'a gönderilebilir hâle getir · Claude Code (28 Kasım). YARIM.
+- [x] Görev 47 — TestFlight'a gönderilebilir hâle getir · Claude Code (28 Kasım). TAMAM: build 278 TestFlight'a yüklendi
+      (run 46085313638, Delivery UUID ca044be6-9950-40e4-8ec3-4fc8ef659916). Kendi .p12 sertifikamızla imza kuralı zaten doğru
+      çıktı (c4b0, "satisfies its Designated Requirement"), düzeltme gerekmedi; İ hatası yalnız Apple'ın bulut imzasında oluyor.
+      altool doğrulama: hata yok, 1 uyarı (90725, iOS 27 SDK Nisan 2027). Ayrıntılı geçmiş:
       47.1: gh kuruldu; `ASC_KEY_ID`, `ASC_ISSUER_ID`, `APPLE_TEAM_ID`, `ASC_KEY_P8` Secrets'a eklendi (Zeyd'in verdiği değerler;
       .p8 İndirilenler'de kaldı, repoya kopyalanmadı). 47.2: ios.yml elle tetiklendi (run 46083515964, build 275): arşiv TAMAM,
       .ipa dışa aktarma DURDU → "Cloud signing permission error", "No signing certificate iOS Distribution", "No profiles for
